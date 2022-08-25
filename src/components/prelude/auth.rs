@@ -41,12 +41,12 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         ).await
     });
 
-    multipass.set(Some(Arc::new(RwLock::new(Box::new(mp)))));
-
     let status = match mp.value() {
-        Some(Ok(val)) => "ready!",
-        Some(Err(err)) => "errored!",
-        None => "loading!",
+        Some(Ok(val)) => {
+            multipass.set(Some(Arc::new(RwLock::new(Box::new(mp)))));
+        },
+        Some(Err(err)) => {},
+        None => {},
     };
 
     let css = css!("
