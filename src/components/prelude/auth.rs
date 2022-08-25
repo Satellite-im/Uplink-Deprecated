@@ -75,12 +75,16 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             div {
                 class: "{css}",
                 if account_fetch_status {
-                    label {
-                        "hmm"
+                    rsx! {
+                        span {
+                            "hmm"
+                        }
                     }
                 } else {
-                    Loader {
-                        text: l.checking_account
+                    rsx! {
+                        Loader {
+                            text: l.checking_account
+                        }
                     }
                 }
             }
