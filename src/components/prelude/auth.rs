@@ -32,18 +32,18 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let tess = use_atom_ref(&cx, TESSERACT);
     let multipass = use_atom_ref(&cx, MULTIPASS);
-    let tesseract = TessHolder(tess.read().clone());
-    let mp = use_future(&cx, &(&tesseract,), |(&tesseract,)| async move {
+    let tess = tess.read().clone();
+    let mp = use_future(&cx, (&tess,), |(tess,)| async move {
         warp_mp_ipfs::ipfs_identity_persistent(
             MpIpfsConfig::production("./.cache"),
-            tesseract.as_ref().clone(),
+            tess,
             None,
-        ).await
+        ).await.map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
     });
 
     let account_fetch_status = match mp.value() {
         Some(Ok(val)) => {
-            multipass.set(Some(Arc::new(RwLock::new(Box::new(val)))));
+            multipass.set(Some(val));
             true
         },
         Some(Err(err)) => {
@@ -55,7 +55,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         },
     };
 
-    
 
     let css = css!("
         max-width: 350px;
@@ -75,8 +74,14 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             class: "{parent_css}",
             div {
                 class: "{css}",
-                Loader {
-                    text: l.checking_account
+                if account_fetch_status {
+                    label {
+                        "hmm"
+                    }
+                } else {
+                    Loader {
+                        text: l.checking_account
+                    }
                 }
             }
         }
