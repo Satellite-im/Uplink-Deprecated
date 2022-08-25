@@ -1,90 +1,148 @@
+use dioxus::{prelude::*, events::KeyCode};
+use dioxus_heroicons::outline::Shape;
+use sir::css;
 use warp::tesseract::Tesseract;
-use yew::prelude::*;
 
-use crate::language;
+use crate::{components::ui_kit::{pin::Pin, icon_button::IconButton}, TESSERACT};
 
-
-pub enum SupportedMessages {
-    TryUnlock
+// Remember: owned props must implement PartialEq!
+#[derive(PartialEq, Props)]
+pub struct UnlockProps {
+    pin: String,
 }
 
-pub struct UnlockComponent {
-    pub locked: bool,
-    pub unlock_phrase: String,
-}
+#[allow(non_snake_case)]
+pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
+    let tess = use_atom_ref(&cx, TESSERACT);
 
-impl Component for UnlockComponent {
-    type Message = SupportedMessages;
-    type Properties = ();
+    let css = css!("
+        max-width: 350px;
+        position: relative;
+    ");
 
-    fn create(_ctx: &Context<Self>) -> Self {
-        let tesseract = Tesseract::from_file(".warp_datastore");
-        
-        Self {
-            locked: !tesseract.is_ok(),
-            unlock_phrase: String::from("")
+    let parent_css = css!("
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        height: 80%;
+    ");
+
+    let invis_input = css!("
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        cursor: default;
+        opacity: 0;
+        font-size: 0;
+    ");
+
+    let confirm_button = css!("
+        position: absolute;
+        right: -80px;
+        bottom: -12px;
+        disabled: true;
+        z-index: 3;
+    ");
+
+    let pin = use_state(&cx, || String::from(""));
+    let error = use_state(&cx, || String::from(""));
+    let error_class = if error.is_empty() {
+        css!("
+            opacity: 0,
+        ")
+    } else {
+        "error_text"
+    };
+    let valid_pin = pin.len() >= 4;
+    // Used later to try to unlock as we type a valid pin automatically much like modern phones and operating systems.
+    let tesseract_exists = Tesseract::from_file(".warp_datastore").is_ok();
+
+    cx.render(rsx!{
+        div {
+            class: "{parent_css}",
+            div {
+                class: "{css}",
+                h2 {
+                    "Create Pin"
+                },
+                label {
+                    tesseract_exists.then(|| "Enter pin to unlock your account."),
+                    (!tesseract_exists).then(|| "Choose a 4-6 diget pin to secure your account."),
+                },
+                div {
+                    class: "m-bottom-xl",
+                },
+                div {
+                    style: "position: relative;",
+                    Pin {
+                        pin: pin.as_bytes().to_vec(),
+                        error: !error.is_empty()
+                    },
+                    valid_pin.then(||
+                        rsx! {
+                            span {
+                                class: "{confirm_button}",
+                                IconButton {
+                                    icon: if error.is_empty() {
+                                        Shape::Check
+                                    } else {
+                                        Shape::X
+                                    }
+                                    onclick: move |_| {
+                                        match tess.write().unlock(pin.as_bytes()) {
+                                            Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                            Err(_) => error.set(String::from("Invalid or incorrect pin supplied.")),
+                                        }
+                                    },
+                                },
+                            },
+                        }
+                    ),
+                }
+                div {
+                    class: "m-bottom-xl",
+                },
+                p {
+                    class: "{error_class}",
+                    "Error: {error} "
+                },
+                input {
+                    class: "{invis_input}",
+                    value: "{pin}",
+                    onkeypress: move |evt| {
+                        error.set(String::from(""));
+                        if evt.key_code == KeyCode::Enter {
+                            if pin.len() < 4 {
+                                error.set(String::from("Your pin must be at least 4 characters."));
+                            } else {
+                                match tess.write().unlock(pin.as_bytes()) {
+                                    Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                    Err(_) => error.set(String::from("Invalid or incorrect pin supplied.")),
+                                }
+                            }
+                        }
+                    },
+                    oninput: move |evt| {
+                        pin.set(evt.value.clone());
+                        // If tesseract exists, we can try to unlock as we type to save time
+                        // We can ignore the error though since we're doing this without the users command
+                        if pin.len() >= 4 && tesseract_exists {
+                            match tess.write().unlock(pin.as_bytes()) {
+                                Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                Err(_) => {},
+                            }
+                        }
+                        // If the pin entered is longer than the allowed limit, we'll just set it back to the max.
+                        if pin.len() > 6 {
+                            pin.set(evt.value[..6].to_string());
+                        }
+                    },
+                }
+            }
         }
-    }
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            SupportedMessages::TryUnlock => {
-                println!("Try Unlock");
-                true
-            },
-        }
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
-        let language = language::by_locale(language::AvailableLanguages::EN_US);
-
-        html! {
-            <div class="h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-                <div class="max-w-md w-full space-y-8 align-middle ">
-                    <div>
-                        <h2 class="mt-6 text-center text-3xl tracking-tight font-bold text-gray-900">{language.unlock_title}</h2>
-                        <p class="text-center text-gray-900">{language.unlock_desc}</p>
-                    </div>
-                    <form class="mt-8 space-y-6" action="#" method="POST">
-                        <input type="hidden" name="remember" value="true" />
-                        <div class="rounded-md shadow-sm -space-y-px">
-                            <div>
-                                <label for="password" class="sr-only">{"Enter your Pin"}</label>
-                                <input
-                                    id="password" 
-                                    name="password" 
-                                    type="password" 
-                                    autocomplete="current-password" 
-                                    required=true 
-                                    class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                    placeholder={ format!("{}..", language.passphrase) } />
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
-                                <label for="remember-me" class="ml-2 block text-sm text-gray-900"> {"Remember me"} </label>
-                            </div>
-
-                            <div class="text-sm">
-                                <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500"> { "Recover an Account?" }</a>
-                            </div>
-                        </div>
-                        <div>
-                            <button 
-                                onclick={link.callback(|_| SupportedMessages::TryUnlock)}
-                                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                                        <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
-                                { language.unlock }
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        }
-    }
+    })
 }

@@ -6,9 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
+sir = { version = "0.2.2", features = ["dioxus"] }
+dioxus-heroicons = "0.1.4"
+
 warp = { git = "https://github.com/Satellite-im/Warp" } 
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
-
-# this is the development version of Yew
-yew = { git = "https://github.com/yewstack/yew/", features = ["csr"] }
-yew-router = { git = "https://github.com/yewstack/yew.git" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+anyhow = "1.0"
