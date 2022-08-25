@@ -41,9 +41,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         ).await
     });
 
-    let status = match mp.value() {
+    let account_fetch_status = match mp.value() {
         Some(Ok(val)) => {
-            multipass.set(Some(Arc::new(RwLock::new(Box::new(mp)))));
+            multipass.set(Some(Arc::new(RwLock::new(Box::new(val)))));
             true
         },
         Some(Err(err)) => {
@@ -54,6 +54,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             false
         },
     };
+
+    
 
     let css = css!("
         max-width: 350px;
