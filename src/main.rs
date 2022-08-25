@@ -1,7 +1,12 @@
+use std::sync::Arc;
+
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use language::{AvailableLanguages, Language};
 use sir::AppStyle;
 use sir::{css, global_css};
+use warp::multipass::MultiPass;
+use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{unlock, auth};
@@ -16,14 +21,16 @@ use crate::components::ui_kit::pin::Pin;
 
 pub mod components;
 pub mod themes;
+pub mod language;
 
 #[derive(PartialEq, Props)]
 pub struct State {
     locked: bool,
 }
 
-
 static TESSERACT: AtomRef<Tesseract> = |_| Tesseract::default();
+static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EN_US);
+static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
 
 fn main() {
     dioxus::desktop::launch(App);

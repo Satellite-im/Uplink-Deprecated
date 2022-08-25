@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use sir::css;
 use warp::tesseract::Tesseract;
 
-use crate::{components::ui_kit::{pin::Pin, icon_button::IconButton}, TESSERACT};
+use crate::{components::ui_kit::{pin::Pin, icon_button::IconButton}, TESSERACT, LANGUAGE};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -14,6 +14,7 @@ pub struct UnlockProps {
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
+    let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let css = css!("
         max-width: 350px;
@@ -67,7 +68,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
             div {
                 class: "{css}",
                 h2 {
-                    "Create Pin"
+                    "{l.create_pin}",
                 },
                 label {
                     tesseract_exists.then(|| "Enter pin to unlock your account."),

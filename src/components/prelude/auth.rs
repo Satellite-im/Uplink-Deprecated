@@ -1,9 +1,11 @@
+use std::sync::Arc;
+
 use dioxus::prelude::*;
 use sir::css;
-use warp::tesseract::Tesseract;
+use warp::{tesseract::Tesseract, sync::RwLock, multipass::MultiPass};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::loader::Loader, TESSERACT};
+use crate::{components::ui_kit::loader::Loader, TESSERACT, MULTIPASS};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -28,6 +30,7 @@ impl PartialEq for TessHolder {
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
+    let multipass = use_atom_ref(&cx, MULTIPASS);
     let tesseract = TessHolder(tess.read().clone());
     let mp = use_future(&cx, &(&tesseract,), |(&tesseract,)| async move {
         warp_mp_ipfs::ipfs_identity_persistent(
@@ -36,6 +39,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             None,
         ).await
     });
+
+    multipass.set(Some(Arc::new(RwLock::new(Box::new(mp)))));
 
     let status = match mp.value() {
         Some(Ok(val)) => "ready!",
