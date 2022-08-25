@@ -6,6 +6,10 @@ pub enum AvailableLanguages {
 
 pub struct Language {
     pub create_pin: String,
+    pub enter_your_pin: String,
+    pub choose_a_pin: String,
+    pub invalid_pin: String,
+    pub short_pin: String,
 }
 
 impl Language {

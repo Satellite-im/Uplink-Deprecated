@@ -71,8 +71,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     "{l.create_pin}",
                 },
                 label {
-                    tesseract_exists.then(|| "Enter pin to unlock your account."),
-                    (!tesseract_exists).then(|| "Choose a 4-6 diget pin to secure your account."),
+                    tesseract_exists.then(|| l.enter_your_pin),
+                    (!tesseract_exists).then(|| l.choose_a_pin),
                 },
                 div {
                     class: "m-bottom-xl",
@@ -96,7 +96,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     onclick: move |_| {
                                         match tess.write().unlock(pin.as_bytes()) {
                                             Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                            Err(_) => error.set(String::from("Invalid or incorrect pin supplied.")),
+                                            Err(_) => error.set(l.invalid_pin),
                                         }
                                     },
                                 },
@@ -109,7 +109,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 },
                 p {
                     class: "{error_class}",
-                    "Error: {error} "
+                    "{error} "
                 },
                 input {
                     class: "{invis_input}",
@@ -118,11 +118,11 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
                         if evt.key_code == KeyCode::Enter {
                             if pin.len() < 4 {
-                                error.set(String::from("Your pin must be at least 4 characters."));
+                                error.set(String::from(l.short_pin));
                             } else {
                                 match tess.write().unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                    Err(_) => error.set(String::from("Invalid or incorrect pin supplied.")),
+                                    Err(_) => error.set(String::from(l.invalid_pin)),
                                 }
                             }
                         }
