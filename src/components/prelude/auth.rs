@@ -44,9 +44,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let status = match mp.value() {
         Some(Ok(val)) => {
             multipass.set(Some(Arc::new(RwLock::new(Box::new(mp)))));
+            true
         },
-        Some(Err(err)) => {},
-        None => {},
+        Some(Err(err)) => {
+            // TODO: Make an error page and reroute there
+            false
+        },
+        None => {
+            false
+        },
     };
 
     let css = css!("
