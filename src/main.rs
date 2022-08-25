@@ -2,9 +2,6 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::AppStyle;
 use sir::{css, global_css};
-use warp::multipass::MultiPass;
-use warp::sync::RwLock;
-use std::sync::Arc;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{unlock, auth};
@@ -53,7 +50,7 @@ fn App(cx: Scope) -> Element {
             AppStyle {},
             Router {
                 Route { to: "/", unlock::Unlock { pin: String::from("")} }
-                Route { to: "/auth", auth::Auth {} },
+                Route { to: "/auth", auth::Auth { has_account: false } },
                 Route { 
                     to: "/components", 
                     div {
