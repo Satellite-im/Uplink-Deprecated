@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
+use sir::global_css;
 
-use crate::themes::Theme;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -9,38 +9,32 @@ pub struct Props {
     error: bool,
 }
 
-pub fn styles() -> String {
-    format!(
-        "
-        .pin {{
+
+#[allow(non_snake_case)]
+pub fn Pin(cx: Scope<Props>) -> Element {
+    global_css! {"
+        .pin {
             width: 100%;
             display: flex;
             justify-content: space-between;
             transition: .2s;
-        }}
-        .pin span {{
+        }
+        .pin span {
             display: inline-block;
             height: 16px;
             width: 16px;
-            background: {secondary};
+            background: var(--theme-secondary);
             border-radius: 8px;
             transition: .2s;
-        }}
-        span.active {{
-            background: {primary};
-        }}
-        span.error {{
-            background: {red}
-        }}
-        ",
-        primary = Theme::load_or_default().primary,
-        secondary = Theme::load_or_default().secondary,
-        red = Theme::load_or_default().red,
-    )
-}
+        }
+        .pin span.active {
+            background: var(--theme-primary);
+        }
+        .pin span.error {
+            background: var(--theme-red);
+        }"
+    }
 
-#[allow(non_snake_case)]
-pub fn Pin(cx: Scope<Props>) -> Element {
     let mut active_or_error = "active";
     if cx.props.error {
         active_or_error = "error";

@@ -60,4 +60,46 @@ impl Theme {
         // TODO: Support loading themes in memory
         Self::default()
     }
+
+    pub fn rosetta(&self) -> String {
+        let root = format!(
+            ":root {{
+                --theme-primary: {};
+                --theme-primary-dark: {};
+                --theme-primary-light: {};
+                --theme-secondary: {};
+                --theme-secondary-light: {};
+                --theme-green: {};
+                --theme-light-green: {};
+                --theme-red: {};
+                --theme-light-red: {};
+                --theme-background: {};
+                --theme-background-light: {};
+                --theme-text: {};
+                --theme-text-muted: {};
+                --theme-text-bright: {};
+                --theme-placeholder: {};
+                --theme-borders: {};
+                --theme-highlight: {};
+            }}",
+            &self.primary,
+            &self.primary_dark,
+            &self.primary_light,
+            &self.secondary,
+            &self.secondary_light,
+            &self.green,
+            &self.light_green,
+            &self.red,
+            &self.light_red,
+            &self.background,
+            &self.background_light,
+            &self.text,
+            &self.text_muted,
+            &self.text_bright,
+            &self.placeholder,
+            &self.borders,
+            &self.highlight,
+        );
+        root
+    }
 }

@@ -8,10 +8,13 @@ pub mod input;
 pub mod icon_input;
 pub mod pin;
 pub mod loader;
+pub mod photo_picker;
 
 pub fn build_style_tag() -> String {
     format!(
         "
+            @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Space+Mono&display=swap');
+            {theme_colors}
             body, html {{
                 background: {background};
                 color: {text};
@@ -53,25 +56,26 @@ pub fn build_style_tag() -> String {
 
             {button}
             {icon_button}
+            {icon_input}
             {tooltip}
             {switch}
             {input}
-            {icon_input}
-            {pin}
             {loader}
 
             ::placeholder {{
                 color: {placeholder};
             }}
         ",
-        button = button::styles(),
-        switch = switch::styles(),
-        pin = pin::styles(),
-        input = input::styles(),
-        loader = loader::styles(),
-        icon_input = icon_input::styles(),
-        tooltip = tooltip::styles(),
-        icon_button = icon_button::styles(),
+        theme_colors = Theme::load_or_default().rosetta(),
+
+        button = button::css(),
+        icon_button = icon_button::css(),
+        icon_input = icon_input::css(),
+        input = input::css(),
+        switch = switch::css(),
+        loader = loader::css(),
+        tooltip = tooltip::css(),
+
         background = Theme::load_or_default().background,
         placeholder = Theme::load_or_default().placeholder,
         text = Theme::load_or_default().text,

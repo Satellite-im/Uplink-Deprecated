@@ -1,3 +1,5 @@
+use std::fmt::Arguments;
+
 use dioxus::{prelude::*, events::MouseEvent};
 use dioxus_heroicons::{Icon, outline::Shape};
 
@@ -17,28 +19,26 @@ pub struct Props<'a> {
     large: Option<bool>,
     #[props(optional)]
     state: Option<State>,
+    #[props(optional)]
+    disabled: Option<bool>
 }
 
-pub fn styles() -> String {
-    format!(
-        "
-        .icon-button {{
-            user-select: none;
-            min-width: 40px;
-        }}
-        .icon-button svg {{
-            margin-bottom: 0;
-            margin-right: 0;
-            fill: transparent;
-        }}
-        .icon-button-lg {{
-            min-width: 52px;
-            height: 52px;
-            border-radius: 26px;
-        }}
-        ",
-    )
-}
+pub fn css() -> String {"
+    .icon-button {
+        user-select: none;
+        min-width: 40px;
+    }
+    .icon-button svg {
+        margin-bottom: 0;
+        margin-right: 0;
+        fill: transparent;
+    }
+    .icon-button-lg {
+        min-width: 52px;
+        height: 52px;
+        border-radius: 26px;
+    }
+    ".to_string()}
 
 #[allow(non_snake_case)]
 pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
@@ -60,6 +60,7 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     cx.render(rsx!{
         div {
+            style: "max-width: 40px; display: inline-block;",
             button {
                 class: "{class}",
                 onclick: move |evt| cx.props.onclick.call(evt),

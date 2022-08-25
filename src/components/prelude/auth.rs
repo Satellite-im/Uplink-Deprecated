@@ -5,7 +5,7 @@ use sir::css;
 use warp::{tesseract::Tesseract, sync::RwLock, multipass::MultiPass};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::loader::Loader, TESSERACT, MULTIPASS, LANGUAGE};
+use crate::{components::ui_kit::{loader::Loader, input::Input, photo_picker::PhotoPicker}, TESSERACT, MULTIPASS, LANGUAGE};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -56,18 +56,18 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
 
-    let css = css!("
+    let css = css! {"
         max-width: 350px;
         position: relative;
-    ");
+    "};
 
-    let parent_css = css!("
+    let parent_css = css! {"
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
         height: 80%;
-    ");
+    "};
 
     cx.render(rsx!{
         div {
@@ -76,14 +76,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 class: "{css}",
                 if account_fetch_status {
                     rsx! {
-                        span {
-                            "hmm"
-                        }
+                        PhotoPicker {},
+                        Input {
+                            placeholder: "Choose a username..".to_string()
+                        },
                     }
                 } else {
                     rsx! {
                         Loader {
-                            text: l.checking_account
+                            text: l.checking_account.clone()
                         }
                     }
                 }

@@ -4,7 +4,6 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use language::{AvailableLanguages, Language};
 use sir::AppStyle;
-use sir::{css, global_css};
 use warp::multipass::MultiPass;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
@@ -29,7 +28,7 @@ pub struct State {
 }
 
 static TESSERACT: AtomRef<Tesseract> = |_| Tesseract::default();
-static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EN_US);
+static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
 
 fn main() {
@@ -38,30 +37,20 @@ fn main() {
 
 #[allow(non_snake_case)]
 fn App(cx: Scope) -> Element {
-    global_css!("
-        @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Space+Mono&display=swap');
-    ");
-    
-
-    let container = css!("
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-    ");
-
     let styles = ui_kit::build_style_tag();
 
     cx.render(rsx! (
         rsx!{
+            style {
+                "{styles}"
+            },
             AppStyle {},
             Router {
                 Route { to: "/", unlock::Unlock { pin: String::from("")} }
                 Route { to: "/auth", auth::Auth { has_account: false } },
                 Route { 
-                    to: "/components", 
+                    to: "/f", 
                     div {
-                        class: "{container}", 
                         div {
                             Button { 
                                 text: String::from("Button"),
@@ -73,6 +62,10 @@ fn App(cx: Scope) -> Element {
                             Button { 
                                 text: String::from("Button Alt"),
                                 state: button::State::Secondary,
+                            },
+                            Button { 
+                                text: String::from("Button Success"),
+                                state: button::State::Success,
                             },
                             Button { 
                                 text: String::from("Button Large"),
@@ -143,9 +136,6 @@ fn App(cx: Scope) -> Element {
                     },
                 }
             }
-        }
-        style {
-            "{styles}"
         }
     ))
 }

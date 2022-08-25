@@ -1,9 +1,9 @@
 use dioxus::{prelude::*, events::KeyCode};
 use dioxus_heroicons::outline::Shape;
-use sir::css;
+use sir::{css, global_css};
 use warp::tesseract::Tesseract;
 
-use crate::{components::ui_kit::{pin::Pin, icon_button::IconButton}, TESSERACT, LANGUAGE};
+use crate::{components::ui_kit::{pin::Pin, icon_button::{IconButton, self}}, TESSERACT, LANGUAGE};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -15,21 +15,38 @@ pub struct UnlockProps {
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l2 = l.clone();
+    
+    global_css! {"
+        .login-actions {
+            div {
+                padding: 0.2rem 0.6rem;
+            }
+        }
+    "}
 
-    let css = css!("
-        max-width: 350px;
-        position: relative;
-    ");
+    let css = css! { "max-width: 350px;position: relative;" };
 
-    let parent_css = css!("
+    let login_actions_css = css! {"
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        left: 2rem;
+        max-height: 40px;
+        display: inline-block;
+        text-align: right;
+        z-index: 3;
+    "};
+
+    let parent_css = css! {"
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
         height: 80%;
-    ");
+    "};
 
-    let invis_input = css!("
+    let invis_input = css! {"
         position: fixed;
         top: 0;
         left: 0;
@@ -39,22 +56,20 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
         cursor: default;
         opacity: 0;
         font-size: 0;
-    ");
+    "};
 
-    let confirm_button = css!("
+    let confirm_button = css! {"
         position: absolute;
         right: -80px;
         bottom: -12px;
         disabled: true;
         z-index: 3;
-    ");
+    "};
 
     let pin = use_state(&cx, || String::from(""));
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
-        css!("
-            opacity: 0,
-        ")
+        css!("opacity: 0")
     } else {
         "error_text"
     };
@@ -71,8 +86,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     "{l.create_pin}",
                 },
                 label {
-                    tesseract_exists.then(|| l.enter_your_pin),
-                    (!tesseract_exists).then(|| l.choose_a_pin),
+                    tesseract_exists.then(|| l.enter_your_pin.clone()),
+                    (!tesseract_exists).then(|| l.choose_a_pin.clone()),
                 },
                 div {
                     class: "m-bottom-xl",
@@ -96,7 +111,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     onclick: move |_| {
                                         match tess.write().unlock(pin.as_bytes()) {
                                             Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                            Err(_) => error.set(l.invalid_pin),
+                                            Err(_) => error.set(l2.invalid_pin.clone()),
                                         }
                                     },
                                 },
@@ -109,7 +124,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 },
                 p {
                     class: "{error_class}",
-                    "{error} "
+                    "{error}　"
                 },
                 input {
                     class: "{invis_input}",
@@ -118,11 +133,11 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
                         if evt.key_code == KeyCode::Enter {
                             if pin.len() < 4 {
-                                error.set(String::from(l.short_pin));
+                                error.set(String::from(l.short_pin.clone()));
                             } else {
                                 match tess.write().unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                    Err(_) => error.set(String::from(l.invalid_pin)),
+                                    Err(_) => error.set(String::from(l.invalid_pin.clone())),
                                 }
                             }
                         }
@@ -143,7 +158,22 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         }
                     },
                 }
-            }
+            },
+        },
+        div {
+            class: "login-actions {login_actions_css}",
+            IconButton {
+                icon: Shape::User,
+                disabled: true,
+                state: icon_button::State::Secondary,
+                onclick: move |_| {},
+            },
+            IconButton {
+                icon: Shape::GlobeAlt,
+                disabled: true,
+                state: icon_button::State::Secondary,
+                onclick: move |_| {},
+            },
         }
     })
 }

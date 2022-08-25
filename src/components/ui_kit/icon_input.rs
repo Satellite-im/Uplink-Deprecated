@@ -1,9 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
-use crate::themes::Theme;
-
-
 #[derive(PartialEq)]
 pub enum State {
     Success,
@@ -19,31 +16,25 @@ pub struct Props {
     text: Option<String>,
 }
 
-pub fn styles() -> String {
-    format!(
-        "
-        .icon-input {{
-            position: relative;
-        }}
-        .icon-input .input {{
-            padding-left: 40px;
-        }}
-        .icon-input svg {{
-            position: absolute;
-            z-index: 2;
-            stroke: {placeholder};
-            top: 11px;
-            left: 10px;
-            fill: transparent;
-        }}
-        .icon-input:has(> input:focus) svg {{
-            stroke: {primary} !important;
-        }}
-        ",
-        placeholder = Theme::load_or_default().placeholder,
-        primary = Theme::load_or_default().primary
-    )
-}
+
+pub fn css() -> String {"
+    .icon-input {
+        position: relative;
+    }
+    .icon-input .input {
+        padding-left: 40px;
+    }
+    .icon-input svg {
+        position: absolute;
+        z-index: 2;
+        stroke: var(--theme-placeholder);
+        top: 11px;
+        left: 10px;
+        fill: transparent;
+    }
+    .icon-input:has(> input:focus) svg {
+        stroke: var(--theme-primary) !important;
+    }".to_string()}
 
 #[allow(non_snake_case)]
 pub fn IconInput(cx: Scope<Props>) -> Element {

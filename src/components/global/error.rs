@@ -15,12 +15,12 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
-    let css = css!("
+    let css = style!("
         max-width: 350px;
         position: relative;
     ");
 
-    let parent_css = css!("
+    let parent_css = style!("
         display: flex;
         justify-content: center;
         align-items: center;
