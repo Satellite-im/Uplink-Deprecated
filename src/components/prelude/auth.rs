@@ -43,7 +43,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
     let account_fetch_status = match mp.value() {
         Some(Ok(val)) => {
-            multipass.set(Some(val));
+            multipass.set(Some(val.clone()));
             true
         },
         Some(Err(err)) => {
