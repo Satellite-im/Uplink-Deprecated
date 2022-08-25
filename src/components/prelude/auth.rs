@@ -5,7 +5,7 @@ use sir::css;
 use warp::{tesseract::Tesseract, sync::RwLock, multipass::MultiPass};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::loader::Loader, TESSERACT, MULTIPASS};
+use crate::{components::ui_kit::loader::Loader, TESSERACT, MULTIPASS, LANGUAGE};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -29,6 +29,7 @@ impl PartialEq for TessHolder {
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
+    let l = use_atom_ref(&cx, LANGUAGE).read();
     let tess = use_atom_ref(&cx, TESSERACT);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tesseract = TessHolder(tess.read().clone());
@@ -67,7 +68,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             div {
                 class: "{css}",
                 Loader {
-                    text: "Checking account..".to_string()
+                    text: l.checking_account
                 }
             }
         }

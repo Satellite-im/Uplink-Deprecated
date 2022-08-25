@@ -10,6 +10,7 @@ pub struct Language {
     pub choose_a_pin: String,
     pub invalid_pin: String,
     pub short_pin: String,
+    pub checking_account: String,
 }
 
 impl Language {

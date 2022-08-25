@@ -7,5 +7,6 @@ pub fn make() -> Language {
         choose_a_pin: "Choose a 4-6 diget pin to secure your account.".to_string(),
         invalid_pin: "Invalid or incorrect pin supplied.".to_string(),
         short_pin: "Your pin must be at least 4 characters.".to_string(),
+        checking_account: "Checking account..".to_string(),
     }
 }
