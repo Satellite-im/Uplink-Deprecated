@@ -1,16 +1,14 @@
-use std::fmt::Arguments;
-
 use dioxus::{prelude::*, events::MouseEvent};
 use dioxus_heroicons::{Icon, outline::Shape};
 
 #[derive(PartialEq)]
 pub enum State {
+    Primary,
+    Secondary,
     Success,
     Danger,
-    Secondary,
 }
 
-// Remember: owned props must implement PartialEq!
 #[derive(Props)]
 pub struct Props<'a> {
     icon: Shape,
@@ -20,6 +18,8 @@ pub struct Props<'a> {
     #[props(optional)]
     state: Option<State>,
     #[props(optional)]
+    text: Option<String>,
+    #[props(optional)]
     disabled: Option<bool>
 }
 
@@ -27,6 +27,7 @@ pub fn css() -> String {"
     .icon-button {
         user-select: none;
         min-width: 40px;
+        padding: 0;
     }
     .icon-button svg {
         margin-bottom: 0;
@@ -52,7 +53,8 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             match state {
                 State::Success => "button-success ",
                 State::Danger => "button-danger ",
-                State::Secondary => "button-secondary"
+                State::Secondary => "button-secondary",
+                _ => " "
             }
         },
         None => "",
@@ -66,7 +68,8 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 onclick: move |evt| cx.props.onclick.call(evt),
                 Icon {
                     icon: cx.props.icon,
-                }
+                },
+                cx.props.text.clone().map(|text| rsx!("{text}")),
             }
         }
     })

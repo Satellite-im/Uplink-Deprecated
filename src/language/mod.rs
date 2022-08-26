@@ -12,6 +12,8 @@ pub struct Language {
     pub invalid_pin: String,
     pub short_pin: String,
     pub checking_account: String,
+    pub create_account: String,
+    pub create_account_desc: String,
 }
 
 impl Language {

@@ -36,6 +36,7 @@ pub fn build_style_tag() -> String {
             }}
             h1, h2, h3, h4, h5, h6 {{
                 font-family: 'Space Mono', monospace;
+                margin-bottom: 0;
             }}
 
             h1 {{
@@ -50,6 +51,10 @@ pub fn build_style_tag() -> String {
                 margin-bottom: 2rem;
             }}
 
+            .m-bottom-sm {{
+                margin-bottom: 1rem;
+            }}
+
             .m-bottom-xl {{
                 margin-bottom: 4rem;
             }}
@@ -61,6 +66,7 @@ pub fn build_style_tag() -> String {
             {switch}
             {input}
             {loader}
+            {photo_picker}
 
             ::placeholder {{
                 color: {placeholder};
@@ -75,6 +81,7 @@ pub fn build_style_tag() -> String {
         switch = switch::css(),
         loader = loader::css(),
         tooltip = tooltip::css(),
+        photo_picker = photo_picker::css(),
 
         background = Theme::load_or_default().background,
         placeholder = Theme::load_or_default().placeholder,

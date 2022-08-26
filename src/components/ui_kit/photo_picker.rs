@@ -3,7 +3,6 @@ use dioxus_heroicons::{outline::Shape, Icon};
 
 use crate::components::ui_kit::icon_button::IconButton;
 
-// Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct Props {
     text: Option<String>
@@ -11,9 +10,38 @@ pub struct Props {
 
 pub fn css() -> String {"
     .photo-picker {
-        width: 60px;
-        heigth: 60px;
-        background: red;
+        width: 100px;
+        height: 100px;
+        background: var(--theme-secondary);
+        border-radius: 50px;
+        display: inline-block;
+        position: relative;
+    }
+    .photo-picker .display {
+        height: 100%;
+        width: 100%;
+        display: inline-flex;
+        justify-content: center;
+    }
+    .photo-picker .display svg {
+        display: inline-block;
+        vertical-align: middle;
+        align-self: center;
+        width: 30px;
+        height: 30px;
+        stroke: var(--theme-text-muted);
+    }
+    .photo-picker .icon-button {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        min-width: 30px;
+        height: 30px;
+        overflow: hidden;
+        padding: 0;
+    }
+    .photo-picker .icon-button svg {
+        padding-top: 2px;
     }
     ".to_string()}
 

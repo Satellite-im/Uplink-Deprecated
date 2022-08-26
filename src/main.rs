@@ -54,85 +54,9 @@ fn App(cx: Scope) -> Element {
                         div {
                             Button { 
                                 text: String::from("Button"),
-                            },
-                            Button { 
-                                text: String::from("Button Icon"),
-                                icon: Shape::Chat,
-                            },
-                            Button { 
-                                text: String::from("Button Alt"),
-                                state: button::State::Secondary,
-                            },
-                            Button { 
-                                text: String::from("Button Success"),
-                                state: button::State::Success,
-                            },
-                            Button { 
-                                text: String::from("Button Large"),
-                                large: true,
-                            },
-                            IconButton { 
-                                icon: Shape::Plus,
-                                large: true,
-                                onclick: |_| {},
-                            },
-                            IconButton { 
-                                icon: Shape::PhoneOutgoing,
-                                large: true,
-                                state: icon_button::State::Success,
-                                onclick: |_| {},
-                            },
-                            IconButton { 
-                                icon: Shape::PhoneMissedCall,
-                                large: true,
-                                state: icon_button::State::Danger,
-                                onclick: |_| {},
-                            },
-                            IconButton { 
-                                icon: Shape::Microphone
-                                large: true,
-                                state: icon_button::State::Secondary,
-                                onclick: |_| {},
-                            },
-                            IconButton { 
-                                icon: Shape::Plus,
-                                onclick: |_| {},
-                            },
-                            Tooltip {
-                                text: String::from("Copied!"),
-                                arrow_position: ui_kit::tooltip::ArrowPosition::BottomRight
-                            },
-                            Tooltip {
-                                text: String::from("Copied!"),
-                                state: ui_kit::tooltip::State::Secondary,
-                                arrow_position: ui_kit::tooltip::ArrowPosition::TopLeft
-                            },
-                            Switch {
-                                active: false
-                            },
-                            Switch {
-                                active: true
-                            },
-                            Input {
-                                placeholder: "Say Something...".to_string(),
-                            },
-                            IconInput {
-                                icon: Shape::Search,
-                                placeholder: "Search..".to_string(),
-                            },
-                            Pin {
-                                pin: vec![8],
-                                error: true,
-                            },
-                            Pin {
-                                pin: vec![8,3,2],
-                                error: true,
-                            },
-                            Pin {
-                                pin: vec![8, 9, 2, 3, 4]
-                                error: false,
+                                onclick: |_| {}
                             }
-                        },
+                        }
                     },
                 }
             }

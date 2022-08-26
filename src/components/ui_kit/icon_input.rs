@@ -7,7 +7,6 @@ pub enum State {
     Danger,
 }
 
-// Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct Props {
     icon: Shape,

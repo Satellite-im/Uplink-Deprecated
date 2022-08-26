@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 
-// Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct Props {
     text: Option<String>

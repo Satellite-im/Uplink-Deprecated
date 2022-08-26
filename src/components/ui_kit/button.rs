@@ -1,16 +1,17 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::MouseEvent};
 use dioxus_heroicons::{Icon, outline::Shape};
 
 #[derive(PartialEq)]
 pub enum State {
+    Primary,
     Success,
     Danger,
     Secondary,
 }
 
-// Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
-pub struct Props {
+#[derive(Props)]
+pub struct Props<'a> {
+    onclick: EventHandler<'a, MouseEvent>,
     #[props(optional)]
     /// Text to be displayed within the button
     text: Option<String>,
@@ -20,6 +21,8 @@ pub struct Props {
     large: Option<bool>,
     #[props(optional)]
     state: Option<State>,
+    #[props(optional)]
+    disabled: Option<bool>
 }
 
 pub fn css() -> String {"
@@ -35,6 +38,7 @@ pub fn css() -> String {"
         gap: 8px;
         color: var(--theme-text-bright);
         stroke: var(--theme-text-bright);
+        padding: 0 2rem;
     }
     .button:hover {
         background-color: var(--theme-primary-light);
@@ -57,8 +61,10 @@ pub fn css() -> String {"
     }
     .button svg {
         margin-bottom: -5px;
-        padding-top: 5px;
+        padding-top: 3px;
         margin-right: 5px;
+        fill: transparent;
+        stroke: var(--theme-text-bright);
     }
     .button-lg {
         height: 52px;
@@ -86,7 +92,8 @@ pub fn css() -> String {"
 
 
 #[allow(non_snake_case)]
-pub fn Button(cx: Scope<Props>) -> Element {
+pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    let disabled = if cx.props.disabled.is_some() { true } else { false };
 
     let text = match cx.props.text.clone() {
         Some(t) => t,
@@ -103,7 +110,8 @@ pub fn Button(cx: Scope<Props>) -> Element {
             match state {
                 State::Success => "button-success ",
                 State::Danger => "button-danger ",
-                State::Secondary => "button-secondary "
+                State::Secondary => "button-secondary ",
+                _ => " "
             }
         },
         None => "",
@@ -114,6 +122,8 @@ pub fn Button(cx: Scope<Props>) -> Element {
             div {
                 button {
                     class: "{class}",
+                    onclick: move |evt| cx.props.onclick.call(evt),
+                    disabled: "{disabled}",
                     Icon {
                         icon: icon,
                     },
@@ -127,6 +137,8 @@ pub fn Button(cx: Scope<Props>) -> Element {
             div {
                 button {
                     class: "{class}",
+                    disabled: "{disabled}",
+                    onclick: move |evt| cx.props.onclick.call(evt),
                     "{text}"
                 }
             }

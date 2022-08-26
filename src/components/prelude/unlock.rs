@@ -129,6 +129,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 input {
                     class: "{invis_input}",
                     value: "{pin}",
+                    autofocus: "true",
                     onkeypress: move |evt| {
                         error.set(String::from(""));
                         if evt.key_code == KeyCode::Enter {

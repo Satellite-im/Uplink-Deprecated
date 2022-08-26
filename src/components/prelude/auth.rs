@@ -1,11 +1,12 @@
 use std::sync::Arc;
 
-use dioxus::prelude::*;
-use sir::css;
+use dioxus::{prelude::*, events::FormEvent};
+use dioxus_heroicons::outline::Shape;
+use sir::{global_css};
 use warp::{tesseract::Tesseract, sync::RwLock, multipass::MultiPass};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::{loader::Loader, input::Input, photo_picker::PhotoPicker}, TESSERACT, MULTIPASS, LANGUAGE};
+use crate::{components::ui_kit::{loader::Loader, input::Input, photo_picker::PhotoPicker, button::{Button, self}}, TESSERACT, MULTIPASS, LANGUAGE};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -31,6 +32,11 @@ impl PartialEq for TessHolder {
 pub fn Auth(cx: Scope<Props>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let tess = use_atom_ref(&cx, TESSERACT);
+
+    let username = use_state(&cx, || String::from(""));
+    let valid_username = username.len() >= 4;
+
+
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tess = tess.read().clone();
     let mp = use_future(&cx, (&tess,), |(tess,)| async move {
@@ -55,31 +61,72 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         },
     };
 
+    global_css! {"
+        .auth {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 80%;
 
-    let css = css! {"
-        max-width: 350px;
-        position: relative;
-    "};
+            .container {
+                min-width: 300px;
+                max-width: 720px;
+                position: relative;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
 
-    let parent_css = css! {"
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        height: 80%;
-    "};
+                .full-width {
+                    .input {
+                        width: 100%;
+                    }
+                    .button {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    "}
+
 
     cx.render(rsx!{
         div {
-            class: "{parent_css}",
+            class: "auth",
             div {
-                class: "{css}",
+                class: "container",
                 if account_fetch_status {
                     rsx! {
-                        PhotoPicker {},
-                        Input {
-                            placeholder: "Choose a username..".to_string()
+                        h2 {
+                            "{l.create_account}",
                         },
+                        label {
+                            "{l.create_account_desc}",
+                        },
+                        div { class: "m-bottom" },
+                        PhotoPicker {},
+                        div { class: "m-bottom" },
+                        div {
+                            class: "full-width",
+                            Input {
+                                placeholder: "Choose a username..".to_string(),
+                                oninput: move | evt: FormEvent | {
+                                    username.set(evt.value.clone());
+                                },
+                            },
+                            div { class: "m-bottom-sm" },
+                            Button {
+                                icon: Shape::Check,
+                                text: "Create Account".to_string(),
+                                disabled: true,
+                                state: match valid_username {
+                                    true => button::State::Primary,
+                                    false => button::State::Secondary,
+                                },
+                                onclick: move |_| {},
+                            }
+                        }
                     }
                 } else {
                     rsx! {
