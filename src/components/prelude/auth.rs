@@ -13,7 +13,7 @@ use crate::{
         loader::Loader,
         photo_picker::PhotoPicker,
     },
-    LANGUAGE, MULTIPASS, RAYGUN, DEFAULT_PATH,
+    DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -26,7 +26,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    
+
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, || String::from(""));
@@ -60,6 +60,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
         None => false,
     };
+
+    // Start UI
 
     global_css! {"
         .auth {
@@ -98,7 +100,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         .create_identity(Some(username), None)
     {
         Ok(_) => {
-
             use_router(&cx).push_route("/chat", None, None);
         }
         Err(_) => error.set("".into()),

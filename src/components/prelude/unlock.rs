@@ -28,55 +28,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
 
-    global_css! {"
-        .login-actions {
-            div {
-                padding: 0.2rem 0.6rem;
-            }
-        }
-    "}
-
-    let css = css! { "max-width: 350px;position: relative;" };
-
-    let login_actions_css = css! {"
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        left: 2rem;
-        max-height: 40px;
-        display: inline-block;
-        text-align: right;
-        z-index: 3;
-    "};
-
-    let parent_css = css! {"
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        height: 80%;
-    "};
-
-    let invis_input = css! {"
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 2;
-        cursor: default;
-        opacity: 0;
-        font-size: 0;
-    "};
-
-    let confirm_button = css! {"
-        position: absolute;
-        right: -80px;
-        bottom: -12px;
-        disabled: true;
-        z-index: 3;
-    "};
-
     let pin = use_state(&cx, || String::from(""));
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
@@ -104,14 +55,65 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     //     tess.write().set_file(default_path.read().join(".keystore"));
     //     tess.write().set_autosave();
     // }
-    let mut tesseract = cx.props.tesseract.clone();
 
     let tesseract_available = tesseract.exist("keypair");
+
+    // Start UI
+
+    global_css! {"
+        .unlock {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 80%;
+
+            .container {
+                max-width: 350px;position: relative;
+                .invis-input {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    z-index: 2;
+                    cursor: default;
+                    opacity: 0;
+                    font-size: 0;
+                }
+                .confirm-button {
+                    position: absolute;
+                    right: -80px;
+                    bottom: -12px;
+                    z-index: 3;
+                }
+            }
+
+            .login-actions {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                left: 2rem;
+                max-height: 40px;
+                display: inline-block;
+                text-align: right;
+                z-index: 3;
+                div {
+                    padding: 0.2rem 0.6rem;
+                    &:last-of-type {
+                        padding-right: 0;
+                    }
+                }
+            }
+
+        }
+    "}
+
     cx.render(rsx! {
         div {
-            class: "{parent_css}",
+            class: "unlock",
             div {
-                class: "{css}",
+                class: "container",
                 h2 {
                     "{l.create_pin}",
                 },
@@ -131,7 +133,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     valid_pin.then(||
                         rsx! {
                             span {
-                                class: "{confirm_button}",
+                                class: "confirm-button",
                                 IconButton {
                                     icon: if error.is_empty() {
                                         Shape::Check
@@ -160,7 +162,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     "{error}　"
                 },
                 input {
-                    class: "{invis_input}",
+                    class: "invis-input",
                     value: "{pin}",
                     autofocus: "true",
                     onkeypress: move |evt| {
@@ -195,21 +197,21 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     },
                 }
             },
+            div {
+                class: "login-actions",
+                IconButton {
+                    icon: Shape::User,
+                    disabled: true,
+                    state: icon_button::State::Secondary,
+                    onclick: move |_| {},
+                },
+                IconButton {
+                    icon: Shape::GlobeAlt,
+                    disabled: true,
+                    state: icon_button::State::Secondary,
+                    onclick: move |_| {},
+                },
+            }
         },
-        div {
-            class: "login-actions {login_actions_css}",
-            IconButton {
-                icon: Shape::User,
-                disabled: true,
-                state: icon_button::State::Secondary,
-                onclick: move |_| {},
-            },
-            IconButton {
-                icon: Shape::GlobeAlt,
-                disabled: true,
-                state: icon_button::State::Secondary,
-                onclick: move |_| {},
-            },
-        }
     })
 }

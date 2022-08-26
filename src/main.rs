@@ -12,7 +12,6 @@ use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{auth, unlock};
 use crate::components::ui_kit;
-use crate::components::ui_kit::button::Button;
 
 pub mod components;
 pub mod language;
@@ -39,38 +38,26 @@ fn main() {
             tess
         }
     };
-    dioxus::desktop::launch_with_props(
-        App,
-        State {
-            tesseract,
-        },
-        |c| c.with_window(|w| w.with_title("Warp by Satellite").with_resizable(true)),
-    );
+    dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
+        c.with_window(|w| w.with_title("Warp by Satellite").with_resizable(true))
+    });
 }
 
 #[allow(non_snake_case)]
 fn App(cx: Scope<State>) -> Element {
+    // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
 
-    cx.render(rsx!(rsx! {
-        style {
-            "{styles}"
-        },
-        AppStyle {},
-        Router {
-            Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
-            Route { to: "/auth", auth::Auth { has_account: false, tesseract: cx.props.tesseract.clone() } },
-            Route {
-                to: "/f",
-                div {
-                    div {
-                        Button {
-                            text: String::from("Button"),
-                            onclick: |_| {}
-                        }
-                    }
-                },
+    cx.render(rsx! (
+        rsx!{
+            style {
+                "{styles}"
+            },
+            AppStyle {},
+            Router {
+                Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+                Route { to: "/auth", auth::Auth { has_account: false, tesseract: cx.props.tesseract.clone() } },
             }
         }
-    }))
+    ))
 }
