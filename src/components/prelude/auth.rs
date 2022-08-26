@@ -13,7 +13,7 @@ use crate::{
         loader::Loader,
         photo_picker::PhotoPicker,
     },
-    LANGUAGE, MULTIPASS, TESSERACT,
+    LANGUAGE, MULTIPASS, RAYGUN, TESSERACT, DEFAULT_PATH,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -40,15 +40,19 @@ impl PartialEq for TessHolder {
 pub fn Auth(cx: Scope<Props>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let tess = use_atom_ref(&cx, TESSERACT);
-
+    let default_path = use_atom_ref(&cx, DEFAULT_PATH);
+    
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, || String::from(""));
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
+    let _raygun = use_atom_ref(&cx, RAYGUN);
     let tess = tess.read().clone();
+    let dp = default_path.clone();
+
     let mp = use_future(&cx, (&tess,), |(tess,)| async move {
-        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production("./.cache"), tess, None)
+        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production(dp.read().clone()), tess, None)
             .await
             .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
     });
@@ -71,8 +75,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
         None => false,
     };
-
-    // let account_create = ;
 
     global_css! {"
         .auth {
@@ -111,10 +113,12 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         .create_identity(Some(username), None)
     {
         Ok(_) => {
+            
             use_router(&cx).push_route("/chat", None, None);
         }
         Err(_) => error.set("".into()),
     };
+
     cx.render(rsx! {
         div {
             class: "auth",

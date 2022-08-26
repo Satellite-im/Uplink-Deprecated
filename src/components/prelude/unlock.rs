@@ -86,10 +86,27 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     };
     let valid_pin = pin.len() >= 4;
     // Used later to try to unlock as we type a valid pin automatically much like modern phones and operating systems.
-    
-    let tesseract_exists = default_path.read().join(".keystore").exists();
 
-    cx.render(rsx!{
+    if default_path.read().join(".keystore").exists() {
+        tess.set(
+            match Tesseract::from_file(default_path.read().join(".keystore")) {
+                Ok(tess) => tess, //tesseract exist and is loaded
+                Err(_) => {
+                    //doesnt exist so its set
+                    let mut tess = Tesseract::default();
+                    tess.set_file(default_path.read().join(".keystore"));
+                    tess.set_autosave();
+                    tess
+                }
+            },
+        );
+    } else {
+        tess.write().set_file(default_path.read().join(".keystore"));
+        tess.write().set_autosave();
+    }
+
+    let tesseract_available = tess.read().exist("keypair");
+    cx.render(rsx! {
         div {
             class: "{parent_css}",
             div {
@@ -98,8 +115,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     "{l.create_pin}",
                 },
                 label {
-                    tesseract_exists.then(|| l.enter_your_pin.clone()),
-                    (!tesseract_exists).then(|| l.choose_a_pin.clone()),
+                    (tesseract_available).then(|| l.enter_your_pin.clone()),
+                    (!tesseract_available).then(|| l.choose_a_pin.clone()),
                 },
                 div {
                     class: "m-bottom-xl",
@@ -161,7 +178,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         pin.set(evt.value.clone());
                         // If tesseract exists, we can try to unlock as we type to save time
                         // We can ignore the error though since we're doing this without the users command
-                        if pin.len() >= 4 && tesseract_exists {
+                        if pin.len() >= 4 && tesseract_available {
                             match tess.write().unlock(pin.as_bytes()) {
                                 Ok(_) => use_router(&cx).push_route("/auth", None, None),
                                 Err(_) => {},
