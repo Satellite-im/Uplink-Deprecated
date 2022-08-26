@@ -40,6 +40,12 @@ pub fn css() -> String {"
         stroke: var(--theme-text-bright);
         padding: 0 2rem;
     }
+    button:disabled,
+    button[disabled] {
+        cursor: default;
+        opacity: 0.5;
+        pointer-events: none;
+    }
     .button:hover {
         background-color: var(--theme-primary-light);
     }
@@ -93,7 +99,10 @@ pub fn css() -> String {"
 
 #[allow(non_snake_case)]
 pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let disabled = if cx.props.disabled.is_some() { true } else { false };
+    let disabled = match cx.props.disabled {
+        Some(b) => b,
+        None => false,
+    };
 
     let text = match cx.props.text.clone() {
         Some(t) => t,

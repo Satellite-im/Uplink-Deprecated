@@ -34,8 +34,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
 
     let username = use_state(&cx, || String::from(""));
+    let create_account = use_state(&cx, || false);
     let valid_username = username.len() >= 4;
-
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tess = tess.read().clone();
@@ -50,7 +50,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let account_fetch_status = match mp.value() {
         Some(Ok(val)) => {
             multipass.set(Some(val.clone()));
-            true
+            match val.read().get_own_identity() {
+                Ok(_) => {
+                    use_router(&cx).push_route("/chat", None, None);
+                    false
+                },
+                Err(_) => {
+                    true
+                },
+            }
         },
         Some(Err(_)) => {
             // TODO: Make an error page and reroute there
@@ -119,12 +127,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             Button {
                                 icon: Shape::Check,
                                 text: "Create Account".to_string(),
-                                disabled: true,
+                                disabled: !valid_username,
                                 state: match valid_username {
                                     true => button::State::Primary,
                                     false => button::State::Secondary,
                                 },
-                                onclick: move |_| {},
+                                onclick: move |_| {
+                                    create_account.set(true);
+                                    println!("Clicked {}", username);
+                                },
                             }
                         }
                     }

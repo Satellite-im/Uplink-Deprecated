@@ -27,8 +27,7 @@ pub fn css() -> String {"
         display: inline-block;
         vertical-align: middle;
         align-self: center;
-        width: 30px;
-        height: 30px;
+        fill: transparent;
         stroke: var(--theme-text-muted);
     }
     .photo-picker .icon-button {
@@ -53,7 +52,8 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
             div {
                 class: "display",
                 Icon {
-                    icon: Shape::Photograph,
+                    icon: Shape::User,
+                    size: 30,
                 }
             }
             IconButton {
