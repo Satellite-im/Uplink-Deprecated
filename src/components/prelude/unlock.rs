@@ -8,22 +8,22 @@ use crate::{
         icon_button::{self, IconButton},
         pin::Pin,
     },
-    DEFAULT_PATH, LANGUAGE, TESSERACT,
+    DEFAULT_PATH, LANGUAGE,
 };
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct UnlockProps {
-    pin: String,
+    tesseract: Tesseract,
 }
 
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
-    let tess = use_atom_ref(&cx, TESSERACT);
-    let default_path = use_atom_ref(&cx, DEFAULT_PATH);
+    // let tess = use_atom_ref(&cx, TESSERACT);
+    // let default_path = use_atom_ref(&cx, DEFAULT_PATH);
 
     //TODO: Display an error instead of panicing
-    std::fs::create_dir_all(default_path.read().clone()).expect("Error creating directory");
+    std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
@@ -87,25 +87,26 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let valid_pin = pin.len() >= 4;
     // Used later to try to unlock as we type a valid pin automatically much like modern phones and operating systems.
 
-    if default_path.read().join(".keystore").exists() {
-        tess.set(
-            match Tesseract::from_file(default_path.read().join(".keystore")) {
-                Ok(tess) => tess, //tesseract exist and is loaded
-                Err(_) => {
-                    //doesnt exist so its set
-                    let mut tess = Tesseract::default();
-                    tess.set_file(default_path.read().join(".keystore"));
-                    tess.set_autosave();
-                    tess
-                }
-            },
-        );
-    } else {
-        tess.write().set_file(default_path.read().join(".keystore"));
-        tess.write().set_autosave();
-    }
+    // if default_path.read().join(".keystore").exists() {
+    //     tess.set(
+    //         match Tesseract::from_file(default_path.read().join(".keystore")) {
+    //             Ok(tess) => tess, //tesseract exist and is loaded
+    //             Err(_) => {
+    //                 //doesnt exist so its set
+    //                 let mut tess = Tesseract::default();
+    //                 tess.set_file(default_path.read().join(".keystore"));
+    //                 tess.set_autosave();
+    //                 tess
+    //             }
+    //         },
+    //     );
+    // } else {
+    //     tess.write().set_file(default_path.read().join(".keystore"));
+    //     tess.write().set_autosave();
+    // }
+    let mut tesseract = cx.props.tesseract.clone();
 
-    let tesseract_available = tess.read().exist("keypair");
+    let tesseract_available = tesseract.exist("keypair");
     cx.render(rsx! {
         div {
             class: "{parent_css}",
@@ -138,7 +139,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         Shape::X
                                     }
                                     onclick: move |_| {
-                                        match tess.write().unlock(pin.as_bytes()) {
+                                        let mut tesseract = cx.props.tesseract.clone();
+                                        match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
                                                 use_router(&cx).push_route("/auth", None, None)
                                             },
@@ -167,7 +169,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             if pin.len() < 4 {
                                 error.set(l.short_pin.clone());
                             } else {
-                                match tess.write().unlock(pin.as_bytes()) {
+                                let mut tesseract = cx.props.tesseract.clone();
+                                match tesseract.unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/auth", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),
                                 }
@@ -179,7 +182,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         // If tesseract exists, we can try to unlock as we type to save time
                         // We can ignore the error though since we're doing this without the users command
                         if pin.len() >= 4 && tesseract_available {
-                            match tess.write().unlock(pin.as_bytes()) {
+                            let mut tesseract = cx.props.tesseract.clone();
+                            match tesseract.unlock(pin.as_bytes()) {
                                 Ok(_) => use_router(&cx).push_route("/auth", None, None),
                                 Err(_) => {},
                             }
