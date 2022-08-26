@@ -76,6 +76,21 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         None => false,
     };
 
+    let new_account = move |_| match multipass
+        .read()
+        .clone()
+        .unwrap()
+        .write()
+        .create_identity(Some(username), None)
+    {
+        Ok(_) => {
+            use_router(&cx).push_route("/chat", None, None);
+        }
+        Err(_) => error.set("".into()),
+    };
+
+    // Start UI
+
     global_css! {"
         .auth {
             display: flex;
@@ -104,21 +119,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             }
         }
     "}
-
-    let new_account = move |_| match multipass
-        .read()
-        .clone()
-        .unwrap()
-        .write()
-        .create_identity(Some(username), None)
-    {
-        Ok(_) => {
-            
-            use_router(&cx).push_route("/chat", None, None);
-        }
-        Err(_) => error.set("".into()),
-    };
-
     cx.render(rsx! {
         div {
             class: "auth",
