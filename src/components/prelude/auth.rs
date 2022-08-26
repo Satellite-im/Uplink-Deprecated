@@ -52,7 +52,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             multipass.set(Some(val.clone()));
             true
         },
-        Some(Err(err)) => {
+        Some(Err(_)) => {
             // TODO: Make an error page and reroute there
             false
         },

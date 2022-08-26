@@ -43,6 +43,8 @@ pub fn css() -> String {"
 
 #[allow(non_snake_case)]
 pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    let disabled = if cx.props.disabled.is_some() { true } else { false };
+
     let mut class = String::from("");
     class += match cx.props.large {
         Some(_) => "button icon-button icon-button-lg ",
@@ -66,6 +68,7 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             button {
                 class: "{class}",
                 onclick: move |evt| cx.props.onclick.call(evt),
+                disabled: "{disabled}",
                 Icon {
                     icon: cx.props.icon,
                 },

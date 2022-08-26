@@ -9,8 +9,6 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     placeholder: String,
-    #[props(optional)]
-    text: Option<String>,
     oninput: EventHandler<'a, FormEvent>
 }
 

@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 use language::{AvailableLanguages, Language};
 use sir::AppStyle;
 use warp::multipass::MultiPass;
@@ -9,14 +8,8 @@ use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{unlock, auth};
-use crate::components::ui_kit::{self, icon_button, button};
+use crate::components::ui_kit;
 use crate::components::ui_kit::button::Button;
-use crate::components::ui_kit::icon_button::IconButton;
-use crate::components::ui_kit::tooltip::Tooltip;
-use crate::components::ui_kit::switch::Switch;
-use crate::components::ui_kit::input::Input;
-use crate::components::ui_kit::icon_input::IconInput;
-use crate::components::ui_kit::pin::Pin;
 
 pub mod components;
 pub mod themes;
