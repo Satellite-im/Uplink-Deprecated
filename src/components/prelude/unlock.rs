@@ -1,9 +1,15 @@
-use dioxus::{prelude::*, events::KeyCode};
+use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::{css, global_css};
 use warp::tesseract::Tesseract;
 
-use crate::{components::ui_kit::{pin::Pin, icon_button::{IconButton, self}}, TESSERACT, LANGUAGE};
+use crate::{
+    components::ui_kit::{
+        icon_button::{self, IconButton},
+        pin::Pin,
+    },
+    DEFAULT_PATH, LANGUAGE, TESSERACT,
+};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -14,9 +20,14 @@ pub struct UnlockProps {
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
+    let default_path = use_atom_ref(&cx, DEFAULT_PATH);
+
+    //TODO: Display an error instead of panicing
+    std::fs::create_dir_all(default_path.read().clone()).expect("Error creating directory");
+
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
-    
+
     global_css! {"
         .login-actions {
             div {
@@ -75,7 +86,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     };
     let valid_pin = pin.len() >= 4;
     // Used later to try to unlock as we type a valid pin automatically much like modern phones and operating systems.
-    let tesseract_exists = Tesseract::from_file(".warp_datastore").is_ok();
+    
+    let tesseract_exists = default_path.read().join(".keystore").exists();
 
     cx.render(rsx!{
         div {
@@ -110,7 +122,9 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     }
                                     onclick: move |_| {
                                         match tess.write().unlock(pin.as_bytes()) {
-                                            Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                            Ok(_) => {
+                                                use_router(&cx).push_route("/auth", None, None)
+                                            },
                                             Err(_) => error.set(l2.invalid_pin.clone()),
                                         }
                                     },
@@ -134,11 +148,11 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
                         if evt.key_code == KeyCode::Enter {
                             if pin.len() < 4 {
-                                error.set(String::from(l.short_pin.clone()));
+                                error.set(l.short_pin.clone());
                             } else {
                                 match tess.write().unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                    Err(_) => error.set(String::from(l.invalid_pin.clone())),
+                                    Err(_) => error.set(l.invalid_pin.clone()),
                                 }
                             }
                         }

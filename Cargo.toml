@@ -10,8 +10,8 @@ dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
 sir = { version = "0.2.2", features = ["dioxus"] }
 dioxus-heroicons = "0.1.4"
 
-warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/testbed-tesseract"} 
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/testbed-tesseract" }
+warp = { git = "https://github.com/Satellite-im/Warp" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 anyhow = "1.0"

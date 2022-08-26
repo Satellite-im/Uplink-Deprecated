@@ -1,15 +1,23 @@
 use std::sync::Arc;
 
-use dioxus::{prelude::*, events::FormEvent};
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use sir::{global_css};
-use warp::{tesseract::Tesseract, sync::RwLock, multipass::MultiPass};
+use sir::global_css;
+use warp::{multipass::MultiPass, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::{loader::Loader, input::Input, photo_picker::PhotoPicker, button::{Button, self}}, TESSERACT, MULTIPASS, LANGUAGE};
+use crate::{
+    components::ui_kit::{
+        button::{self, Button},
+        input::Input,
+        loader::Loader,
+        photo_picker::PhotoPicker,
+    },
+    LANGUAGE, MULTIPASS, TESSERACT,
+};
 
 // Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     has_account: bool,
 }
@@ -35,38 +43,36 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;
+    let error = use_state(&cx, || String::from(""));
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tess = tess.read().clone();
     let mp = use_future(&cx, (&tess,), |(tess,)| async move {
-        warp_mp_ipfs::ipfs_identity_persistent(
-            MpIpfsConfig::production("./.cache"),
-            tess,
-            None,
-        ).await.map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
+        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production("./.cache"), tess, None)
+            .await
+            .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
     });
 
     let account_fetch_status = match mp.value() {
         Some(Ok(val)) => {
-            multipass.set(Some(val.clone()));
+            *multipass.write() = Some(val.clone());
+
             match val.read().get_own_identity() {
                 Ok(_) => {
                     use_router(&cx).push_route("/chat", None, None);
                     false
-                },
-                Err(_) => {
-                    true
-                },
+                }
+                Err(_) => true,
             }
-        },
+        }
         Some(Err(_)) => {
             // TODO: Make an error page and reroute there
             false
-        },
-        None => {
-            false
-        },
+        }
+        None => false,
     };
+
+    // let account_create = ;
 
     global_css! {"
         .auth {
@@ -97,7 +103,19 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
     "}
 
-    cx.render(rsx!{
+    let new_account = move |_| match multipass
+        .read()
+        .clone()
+        .unwrap()
+        .write()
+        .create_identity(Some(username), None)
+    {
+        Ok(_) => {
+            use_router(&cx).push_route("/chat", None, None);
+        }
+        Err(_) => error.set("".into()),
+    };
+    cx.render(rsx! {
         div {
             class: "auth",
             div {
@@ -130,10 +148,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     true => button::State::Primary,
                                     false => button::State::Secondary,
                                 },
-                                onclick: move |_| {
-                                    println!("Clicked {}", username);
-                                    // TODO: Create account in tess 
-                                },
+                                onclick: new_account,
                             }
                         }
                     }
