@@ -16,8 +16,8 @@ pub fn build_style_tag() -> String {
             @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Space+Mono&display=swap');
             {theme_colors}
             body, html {{
-                background: {background};
-                color: {text};
+                background: var(--theme-background);
+                color: var(--theme-text);
                 font-family: 'Poppins', sans-serif;
                 font-size: 12pt;
                 height: 100%;
@@ -27,10 +27,10 @@ pub fn build_style_tag() -> String {
                 height: 100%;
             }}
             label {{
-                color: {text_muted};
+                color: var(--theme-text-muted);
             }}
             .error_text {{
-                color: {red};
+                color: var(--theme-red);
                 opacity: 1;
                 transition: 0.2s;
             }}
@@ -69,7 +69,7 @@ pub fn build_style_tag() -> String {
             {photo_picker}
 
             ::placeholder {{
-                color: {placeholder};
+                color: var(--theme-placeholder);
             }}
         ",
         theme_colors = Theme::load_or_default().rosetta(),
@@ -82,11 +82,5 @@ pub fn build_style_tag() -> String {
         loader = loader::css(),
         tooltip = tooltip::css(),
         photo_picker = photo_picker::css(),
-
-        background = Theme::load_or_default().background,
-        placeholder = Theme::load_or_default().placeholder,
-        text = Theme::load_or_default().text,
-        text_muted = Theme::load_or_default().text_muted,
-        red = Theme::load_or_default().red,
     )
 }

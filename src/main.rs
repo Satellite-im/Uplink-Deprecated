@@ -9,7 +9,6 @@ use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{unlock, auth};
 use crate::components::ui_kit;
-use crate::components::ui_kit::button::Button;
 
 pub mod components;
 pub mod themes;
@@ -30,6 +29,7 @@ fn main() {
 
 #[allow(non_snake_case)]
 fn App(cx: Scope) -> Element {
+    // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
 
     cx.render(rsx! (
@@ -41,17 +41,6 @@ fn App(cx: Scope) -> Element {
             Router {
                 Route { to: "/", unlock::Unlock { pin: String::from("")} }
                 Route { to: "/auth", auth::Auth { has_account: false } },
-                Route { 
-                    to: "/f", 
-                    div {
-                        div {
-                            Button { 
-                                text: String::from("Button"),
-                                onclick: |_| {}
-                            }
-                        }
-                    },
-                }
             }
         }
     ))
