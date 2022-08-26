@@ -34,7 +34,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let tess = use_atom_ref(&cx, TESSERACT);
 
     let username = use_state(&cx, || String::from(""));
-    let create_account = use_state(&cx, || false);
     let valid_username = username.len() >= 4;
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
@@ -98,7 +97,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
     "}
 
-
     cx.render(rsx!{
         div {
             class: "auth",
@@ -133,8 +131,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     false => button::State::Secondary,
                                 },
                                 onclick: move |_| {
-                                    create_account.set(true);
                                     println!("Clicked {}", username);
+                                    // TODO: Create account in tess 
                                 },
                             }
                         }
