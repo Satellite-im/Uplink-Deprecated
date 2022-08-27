@@ -47,6 +47,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 input {
                     class: "input",
                     placeholder: "{cx.props.placeholder}",
+                    oninput: move |e| cx.props.oninput.call(e)
                 },
             }
         }
