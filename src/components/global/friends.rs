@@ -84,7 +84,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         IconInput {
                             placeholder: "Warp#a3fdc6..".to_string(),
                             icon: Shape::UserAdd,
-                            oninput: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
+                            oninput: move |evt: FormEvent| remote_friend.set(&evt.value.clone()),
                         }
                         IconButton {
                             icon: Shape::Plus,
