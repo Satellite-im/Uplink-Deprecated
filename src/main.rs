@@ -12,7 +12,7 @@ use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{auth, unlock};
-use crate::components::ui_kit;
+use crate::components::{ui_kit, main};
 
 pub mod components;
 pub mod language;
@@ -62,7 +62,8 @@ fn App(cx: Scope<State>) -> Element {
             AppStyle {},
             Router {
                 Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
-                Route { to: "/auth", auth::Auth { has_account: false, tesseract: cx.props.tesseract.clone() } },
+                Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },
+                Route { to: "/main", main::Main { tesseract: cx.props.tesseract.clone() } },
             }
         }
     ))

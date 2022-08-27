@@ -19,7 +19,6 @@ use crate::{
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct Props {
-    has_account: bool,
     tesseract: Tesseract,
 }
 
@@ -48,7 +47,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
             match val.read().get_own_identity() {
                 Ok(_) => {
-                    use_router(&cx).push_route("/chat", None, None);
+                    use_router(&cx).push_route("/main", None, None);
                     false
                 }
                 Err(_) => true,
@@ -62,7 +61,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
     // Start UI
-
     global_css! {"
         .auth {
             display: flex;
@@ -100,7 +98,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         .create_identity(Some(username), None)
     {
         Ok(_) => {
-            use_router(&cx).push_route("/chat", None, None);
+            use_router(&cx).push_route("/main", None, None);
         }
         Err(_) => error.set("".into()),
     };
