@@ -1,12 +1,17 @@
 use std::sync::{Arc, RwLock};
 
-use dioxus::{prelude::*, events::FormEvent};
-use dioxus_heroicons::{Icon, outline::Shape};
+use dioxus::{events::FormEvent, prelude::*};
+use dioxus_heroicons::{outline::Shape, Icon};
 use sir::global_css;
-use warp::{tesseract::Tesseract, multipass::MultiPass};
+use warp::{multipass::MultiPass, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::{components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton, button::Button}, MULTIPASS, DEFAULT_PATH};
+use crate::{
+    components::ui_kit::{
+        button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup,
+    },
+    DEFAULT_PATH, MULTIPASS,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -19,8 +24,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let error = use_state(&cx, || "");
-    let remote_friend = use_state(&cx, || "");
-
+    let remote_friend = use_state(&cx, String::new);
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tess = cx.props.tesseract.clone();
@@ -47,9 +51,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    "}
+    "};
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         Popup {
             onclick: |_| cx.props.onclick.call(()),
             children: cx.render(rsx!(
@@ -72,7 +76,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             text: "Copy Code".to_string(),
                             icon: Shape::ClipboardCopy,
                             onclick: move |_| {
-                                
+
                             }
                         }
                     },
