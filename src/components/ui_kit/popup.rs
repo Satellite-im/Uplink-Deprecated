@@ -5,7 +5,8 @@ use warp::tesseract::Tesseract;
 #[derive(Props)]
 pub struct Props<'a> {
     tesseract: Tesseract,
-    children: Element<'a>
+    children: Element<'a>,
+    close: EventHandler<'a>,
 }
 
 #[allow(non_snake_case)]
@@ -14,8 +15,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     global_css! {"
         .popup-mask {
-            backdrop-filter: blur(10px);
-            background: var(--theme-semi-transparent);
+            -webkit-backdrop-filter: blur(3px);
             position: absolute;
             top: 0;
             right: 0;
@@ -25,7 +25,6 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             
             .popup {
                 align-self: center;
-                width: 300px;
                 min-height: 150px;
                 border-radius: 8px 8px 0 0;
                 position: absolute;
@@ -71,6 +70,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             .popup_full {
                 transition: max-height 0.2s ease;
                 max-height: 90%;
+                min-height: 50%;
             }
         }
     "}
@@ -83,6 +83,9 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx!(
         div {
             class: "popup-mask",
+            onclick: move |_| {
+                cx.props.close.call(());
+            },
             div {
                 class: "{full_class}",
                 button {

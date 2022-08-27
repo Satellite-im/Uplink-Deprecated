@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use warp::tesseract::Tesseract;
 
-use crate::components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button}, main::sidebar::nav::Nav};
+use crate::components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button}, main::sidebar::nav::{Nav, NavEvent}};
 
 pub mod nav;
 
@@ -14,7 +14,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
-    let show_friends = false;
+    let show_friends = use_state(&cx, || false);
 
     global_css! {"
         .main {
@@ -83,10 +83,24 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     title: "Friends".to_string(),
                     icon: Shape::Users,
                     tesseract: cx.props.tesseract.clone(),
+                    close: move |_| {
+                        show_friends.set(false);
+                    }
                 }
             }),
             Nav {
-                onclick: move | _ | {}
+                onclick: move | e: NavEvent | {
+                    match e {
+                        NavEvent::Home => {
+                            show_friends.set(false);
+                        },
+                        NavEvent::Files => {},
+                        NavEvent::Friends => {
+                            show_friends.set(true);
+                        },
+                        NavEvent::Profile => todo!(),
+                    }
+                }
             }
         }
     })

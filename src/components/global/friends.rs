@@ -5,15 +5,16 @@ use warp::tesseract::Tesseract;
 
 use crate::components::ui_kit::{popup::Popup, input::Input, icon_input::IconInput, icon_button::IconButton};
 
-#[derive(PartialEq, Props)]
-pub struct Props {
+#[derive(Props)]
+pub struct Props<'a> {
     tesseract: Tesseract,
     icon: Shape,
     title: String,
+    close: EventHandler<'a>,
 }
 
 #[allow(non_snake_case)]
-pub fn Friends(cx: Scope<Props>) -> Element {
+pub fn Friends<'a>(cx: Scope<Props<'a>>) -> Element<'a> {
     global_css! {"
         .friends {
             display: inline-flex;
@@ -34,6 +35,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     cx.render(rsx!{
         Popup {
             tesseract: cx.props.tesseract.clone(),
+            close: cx.props.close,
             children: cx.render(rsx!(
                 div {
                     class: "friends",

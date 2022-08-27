@@ -47,22 +47,28 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "nav",
             IconButton {
                 onclick: move |_| {
-                    let _ = &cx.props.onclick<NavEvent::Home>;
+                    let _ = &cx.props.onclick.call(NavEvent::Home);
                 },
                 icon: Shape::Home
             },
             IconButton {
-                onclick: move |_| {},
+                onclick: move |_| {
+                    let _ = &cx.props.onclick.call(NavEvent::Files);
+                },
                 state: icon_button::State::Secondary,
                 icon: Shape::Folder
             },
             IconButton {
-                onclick: move |_| {},
+                onclick: move |_| {
+                    let _ = &cx.props.onclick.call(NavEvent::Friends);
+                },
                 state: icon_button::State::Secondary,
                 icon: Shape::Users
             },
             IconButton {
-                onclick: move |_| {},
+                onclick: move |_| {
+                    let _ = &cx.props.onclick.call(NavEvent::Profile);
+                },
                 state: icon_button::State::Secondary,
                 icon: Shape::UserCircle
             },
