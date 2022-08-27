@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use dioxus::desktop::tao::dpi::LogicalSize;
 use dioxus::prelude::*;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
@@ -39,7 +40,12 @@ fn main() {
         }
     };
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
-        c.with_window(|w| w.with_title("Warp by Satellite").with_resizable(true))
+        c.with_window(|w| {
+            w
+                .with_title("Warp by Satellite")
+                .with_resizable(true)
+                .with_inner_size(LogicalSize::new(900.0, 600.0))
+        })
     });
 }
 
