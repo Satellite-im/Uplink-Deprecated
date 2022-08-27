@@ -12,8 +12,6 @@ pub struct Props<'a> {
     icon: Shape,
     oninput: EventHandler<'a, FormEvent>,
     placeholder: String,
-    #[props(optional)]
-    text: Option<String>,
 }
 
 

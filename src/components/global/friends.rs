@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
 use sir::global_css;
-use warp::{multipass::MultiPass, tesseract::Tesseract};
+use warp::{multipass::MultiPass, tesseract::Tesseract, crypto::DID};
 use warp_mp_ipfs::config::MpIpfsConfig;
 
 use crate::{
@@ -93,18 +93,27 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         IconButton {
                             icon: Shape::Plus,
                             onclick: move |_| {
-                                match multipass
-                                    .read()
-                                    .clone()
-                                    .unwrap()
-                                    .write()
-                                    .create_identity(Some("test"), None)
-                                {
-                                    Ok(_) => {
-                                        use_router(&cx).push_route("/main", None, None);
-                                    }
-                                    Err(_) => error.set("Something went wrong.".into()),
-                                };
+                                let did = DID::try_from(remote_friend.clone().to_string());
+                                match did {
+                                    Ok(d) => {
+                                        match multipass
+                                            .read()
+                                            .clone()
+                                            .unwrap()
+                                            .write()
+                                            .send_request(&d)
+                                        {
+                                            Ok(_) => {
+                                                println!("Sent request");
+                                                error.set("".into());
+                                                remote_friend.set("".into());
+                                            }
+                                            Err(_) => error.set("Something went wrong.".into()),
+                                        };
+                                    },
+                                    Err(_) => error.set("Invalid friend code.".into()),
+
+                                }
                             },
                         }
                     },
