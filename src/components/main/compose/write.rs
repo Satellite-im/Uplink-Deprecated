@@ -13,7 +13,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    global_css! {"
+    global_css! ("
         .write {
             display: inline-flex;
             flex-direction: row;
@@ -24,7 +24,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 stroke: var(--theme-primary);
             }
         }
-    "}
+    ");
+    
     cx.render(rsx!{
         div {
             class: "write",
