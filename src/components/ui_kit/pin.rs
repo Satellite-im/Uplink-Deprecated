@@ -32,12 +32,32 @@ pub fn Pin(cx: Scope<Props>) -> Element {
         }
         .pin span.error {
             background: var(--theme-red);
-        }"
+        }
+        .shake {
+            animation: shake 0.3s;
+        }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        "
     }
 
     let mut active_or_error = "active";
+    let mut shake = "no-shake";
+
     if cx.props.error {
         active_or_error = "error";
+        shake = "shake";
     }
     // TODO: clean this up with an iterator
     let classes = (
@@ -94,7 +114,7 @@ pub fn Pin(cx: Scope<Props>) -> Element {
     } else if cx.props.pin.len() == 5 {
         rsx! {
             div {
-                class: "pin",
+                class: "pin {shake}",
                 span {
                     class: "{classes.0}"
                 },
@@ -116,7 +136,7 @@ pub fn Pin(cx: Scope<Props>) -> Element {
     } else {
         rsx! {
             div {
-                class: "pin",
+                class: "pin {shake}",
                 span {
                     class: "{classes.0}"
                 },
