@@ -83,7 +83,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     title: "Friends".to_string(),
                     icon: Shape::Users,
                     tesseract: cx.props.tesseract.clone(),
-                    close: move |_| {
+                    handle_close: move |_| {
                         show_friends.set(false);
                     }
                 }

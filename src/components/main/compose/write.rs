@@ -30,7 +30,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "write",
             IconButton {
                 icon: Shape::Plus,
-                onclick: cx.props.upload,
+                onclick: |_| {},
             },
             textarea {
             
@@ -38,7 +38,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             IconButton {
                 icon: Shape::ArrowRight,
                 state: icon_button::State::Secondary,
-                onclick: cx.props.submit,
+                onclick: |_| {},
             },
         },
     })

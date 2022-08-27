@@ -10,7 +10,7 @@ pub struct Props<'a> {
     tesseract: Tesseract,
     icon: Shape,
     title: String,
-    close: EventHandler<'a>,
+    handle_close: EventHandler<'a>,
 }
 
 #[allow(non_snake_case)]
@@ -35,7 +35,7 @@ pub fn Friends<'a>(cx: Scope<Props<'a>>) -> Element<'a> {
     cx.render(rsx!{
         Popup {
             tesseract: cx.props.tesseract.clone(),
-            close: cx.props.close,
+            close: cx.props.handle_close,
             children: cx.render(rsx!(
                 div {
                     class: "friends",
