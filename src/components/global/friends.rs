@@ -1,9 +1,12 @@
+use std::sync::{Arc, RwLock};
+
 use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
 use sir::global_css;
 use warp::{tesseract::Tesseract, multipass::MultiPass};
+use warp_mp_ipfs::config::MpIpfsConfig;
 
-use crate::components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton, button::Button};
+use crate::{components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton, button::Button}, MULTIPASS, DEFAULT_PATH};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -15,7 +18,15 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    // static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
+    let multipass = use_atom_ref(&cx, MULTIPASS);
+    let tess = cx.props.tesseract.clone();
+    let dp = DEFAULT_PATH.read().clone();
+
+    let mp = use_future(&cx, (&tess,), |(tess,)| async move {
+        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production(dp), tess, None)
+            .await
+            .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
+    });
 
     global_css! {"
         .friends {

@@ -1,6 +1,8 @@
 use dioxus::prelude::*;
 use warp::tesseract::Tesseract;
 
+use crate::components::main::compose::write::Write;
+
 #[derive(PartialEq, Props)]
 pub struct Props {
     tesseract: Tesseract,
@@ -13,7 +15,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
     cx.render(rsx!{
         div {
-            "Compose"
+            "Compose",
+            Write {
+                submit: move |_| {},
+                upload: move |_| {},
+            }
         }
     })
 }

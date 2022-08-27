@@ -6,9 +6,9 @@ use crate::components::ui_kit::icon_button::{IconButton, self};
 
 #[derive(Props)]
 pub struct Props<'a> {
-    submit: EventHandler<'a>,
-    keypress: EventHandler<'a>,
-    upload: EventHandler<'a>,
+    submit: EventHandler<'a, ()>,
+    // keypress: EventHandler<'a, ()>,
+    upload: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
@@ -30,7 +30,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "write",
             IconButton {
                 icon: Shape::Plus,
-                onclick: |_| {},
+                onclick: move |_| {
+                    let _ = &cx.props.upload.call(());
+                },
             },
             textarea {
             
@@ -38,7 +40,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             IconButton {
                 icon: Shape::ArrowRight,
                 state: icon_button::State::Secondary,
-                onclick: |_| {},
+                onclick: move |_| {
+                    let _ = &cx.props.submit.call(());
+                },
             },
         },
     })
