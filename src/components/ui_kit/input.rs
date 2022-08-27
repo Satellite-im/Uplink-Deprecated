@@ -22,7 +22,7 @@ pub fn css() -> String {"
         color: var(--theme-text);
         border-radius: 4px;
         border: none;
-        background: var(--theme-secondary);
+        background: var(--theme-foreground);
         box-sizing: border-box;
         border: 1px solid transparent;
         transition: .2s;

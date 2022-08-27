@@ -23,6 +23,13 @@ pub fn build_style_tag() -> String {
                 font-size: 12pt;
                 height: 100%;
                 overflow: hidden;
+                margin: 0;
+                padding: 0;
+            }}
+
+            svg {{
+                fill: transparent;
+                stroke: var(--theme-text);
             }}
             #main {{
                 height: 100%;
@@ -58,6 +65,15 @@ pub fn build_style_tag() -> String {
 
             .m-bottom-xl {{
                 margin-bottom: 4rem;
+            }}
+
+            label {{
+                font-size: 10pt;
+                text-align: left;
+                margin: 1rem 0;
+                font-family: 'Space Mono', monospace;
+                color: var(--theme-text-muted);
+
             }}
 
             {button}

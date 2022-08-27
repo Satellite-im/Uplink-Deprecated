@@ -29,7 +29,7 @@ pub fn css() -> String {"
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: var(--theme-secondary);
+        background-color: var(--theme-foreground);
         -webkit-transition: .2s;
         transition: .2s;
         border-radius: 10px;

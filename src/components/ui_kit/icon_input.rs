@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::FormEvent};
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
@@ -7,9 +7,10 @@ pub enum State {
     Danger,
 }
 
-#[derive(PartialEq, Props)]
-pub struct Props {
+#[derive(Props)]
+pub struct Props<'a> {
     icon: Shape,
+    oninput: EventHandler<'a, FormEvent>,
     placeholder: String,
     #[props(optional)]
     text: Option<String>,
@@ -36,7 +37,7 @@ pub fn css() -> String {"
     }".to_string()}
 
 #[allow(non_snake_case)]
-pub fn IconInput(cx: Scope<Props>) -> Element {
+pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(rsx!{
             div {
                 class: "icon-input",

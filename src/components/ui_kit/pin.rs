@@ -23,7 +23,7 @@ pub fn Pin(cx: Scope<Props>) -> Element {
             display: inline-block;
             height: 16px;
             width: 16px;
-            background: var(--theme-secondary);
+            background: var(--theme-foreground);
             border-radius: 8px;
             transition: .2s;
         }

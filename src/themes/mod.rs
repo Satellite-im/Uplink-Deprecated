@@ -15,6 +15,8 @@ pub struct Theme {
     pub background_dark: String,
     pub background_light: String,
 
+    pub foreground: String,
+
     pub text: String,
     pub text_muted: String,
     pub text_bright: String,
@@ -22,6 +24,9 @@ pub struct Theme {
     pub placeholder: String,
     pub borders: String,
     pub highlight: String,
+
+    pub semi_transparent: String,
+    pub modal: String,
 }
 
 // When dealing with colors and backgrounds we should only use values provided within the Themes
@@ -42,15 +47,19 @@ impl Default for Theme {
 
             background: String::from("#0e0d17"), 
             background_dark: String::from("#0e0d17"), 
-            background_light: String::from("#191729"), 
+            background_light: String::from("#1A1E2E"), 
+
+            foreground: String::from("#232838"),
             
-            text: String::from("#cdcbce"),
-            text_muted: String::from("#A8AABE"),
-            text_bright: String::from("#fefbff"),
+            text: String::from("#EEF0F2"),
+            text_muted: String::from("#6F748A"),
+            text_bright: String::from("#EEEFFF"),
             placeholder: String::from("#6F748A"),
             
-            borders: String::from("#3c334b"), 
-            highlight: String::from("#2b2843")
+            borders: String::from("#232838"), 
+            highlight: String::from("#2b2843"),
+            semi_transparent: String::from("rgba(14, 13, 23, 0.2)"),
+            modal: String::from("#1A1E2E"),
         }
     }
 }
@@ -81,6 +90,9 @@ impl Theme {
                 --theme-placeholder: {};
                 --theme-borders: {};
                 --theme-highlight: {};
+                --theme-semi-transparent: {};
+                --theme-modal: {};
+                --theme-foreground: {};
             }}",
             &self.primary,
             &self.primary_dark,
@@ -99,6 +111,9 @@ impl Theme {
             &self.placeholder,
             &self.borders,
             &self.highlight,
+            &self.semi_transparent,
+            &self.modal,
+            &self.foreground,
         );
         root
     }
