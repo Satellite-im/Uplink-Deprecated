@@ -1,9 +1,9 @@
-use dioxus::{prelude::*, events::FormEvent};
+use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
 use sir::global_css;
 use warp::tesseract::Tesseract;
 
-use crate::components::ui_kit::{popup::Popup, input::Input, icon_input::IconInput, icon_button::IconButton};
+use crate::components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton};
 
 #[derive(Props)]
 pub struct Props<'a> {

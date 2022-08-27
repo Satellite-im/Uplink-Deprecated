@@ -1,9 +1,8 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
-use warp::tesseract::Tesseract;
 
-use crate::components::{global::friends::Friends, ui_kit::{icon_button::{IconButton, self}, button::Button}};
+use crate::components::{ui_kit::{icon_button::{IconButton, self}}};
 
 pub enum NavEvent {
     Home,
