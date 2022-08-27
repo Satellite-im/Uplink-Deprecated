@@ -1,12 +1,10 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::tesseract::Tesseract;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    tesseract: Tesseract,
     children: Element<'a>,
-    close: EventHandler<'a>,
+    onclick: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
@@ -16,6 +14,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     global_css! {"
         .popup-mask {
             -webkit-backdrop-filter: blur(3px);
+            background: var(--theme-semi-transparent);
             position: absolute;
             top: 0;
             right: 0;
@@ -83,18 +82,22 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx!(
         div {
             class: "popup-mask",
-            onclick: move |_| {
-                cx.props.close.call(());
-            },
+            onclick: move |_| cx.props.onclick.call(()),
             div {
                 class: "{full_class}",
                 button {
                     class: "handle",
-                    onclick: move |_| {
+                    onclick: move |evt| {
+                        evt.cancel_bubble();
                         full.set(!full.get());
                     }
                 }
-                cx.props.children.as_ref()
+                div {
+                    onclick: move |evt| {
+                        evt.cancel_bubble();
+                    },
+                    cx.props.children.as_ref()
+                }
             }
         }
     ))

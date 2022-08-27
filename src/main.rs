@@ -39,6 +39,7 @@ fn main() {
             tess
         }
     };
+
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
             w

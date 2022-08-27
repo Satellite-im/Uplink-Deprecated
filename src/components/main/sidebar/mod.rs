@@ -76,16 +76,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             Button {
                 icon: Shape::UserAdd,
                 text: "Add Someone".to_string(),
-                onclick: move | _ | {},
+                onclick: move |_| show_friends.set(true),
             },
             show_friends.then(|| rsx!{
                 Friends {
                     title: "Friends".to_string(),
                     icon: Shape::Users,
                     tesseract: cx.props.tesseract.clone(),
-                    handle_close: move |_| {
-                        show_friends.set(false);
-                    }
+                    onclick: move |_| show_friends.set(false),
                 }
             }),
             Nav {

@@ -1,20 +1,22 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
 use sir::global_css;
-use warp::tesseract::Tesseract;
+use warp::{tesseract::Tesseract, multipass::MultiPass};
 
-use crate::components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton};
+use crate::components::ui_kit::{popup::Popup, icon_input::IconInput, icon_button::IconButton, button::Button};
 
 #[derive(Props)]
 pub struct Props<'a> {
     tesseract: Tesseract,
     icon: Shape,
     title: String,
-    handle_close: EventHandler<'a>,
+    onclick: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
-pub fn Friends<'a>(cx: Scope<Props<'a>>) -> Element<'a> {
+pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    // static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
+
     global_css! {"
         .friends {
             display: inline-flex;
@@ -34,8 +36,7 @@ pub fn Friends<'a>(cx: Scope<Props<'a>>) -> Element<'a> {
 
     cx.render(rsx!{
         Popup {
-            tesseract: cx.props.tesseract.clone(),
-            close: cx.props.handle_close,
+            onclick: move |_| cx.props.onclick.call(()),
             children: cx.render(rsx!(
                 div {
                     class: "friends",
@@ -45,11 +46,24 @@ pub fn Friends<'a>(cx: Scope<Props<'a>>) -> Element<'a> {
                             icon: cx.props.icon,
                             size: 20,
                         },
-                        "{cx.props.title}"
+                        "{cx.props.title}",
                     },
                     label {
-                        "Add Someone"
-                    }
+                        "Copy Your Friend Code",
+                    },
+                    div {
+                        class: "add",
+                        Button {
+                            text: "Copy Code".to_string(),
+                            icon: Shape::ClipboardCopy,
+                            onclick: move |_| {
+                                
+                            }
+                        }
+                    },
+                    label {
+                        "Add Someone",
+                    },
                     div {
                         class: "add",
                         IconInput {

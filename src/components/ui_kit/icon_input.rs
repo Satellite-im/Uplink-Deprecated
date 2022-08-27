@@ -46,7 +46,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 },
                 input {
                     class: "input",
-                    placeholder: "{cx.props.placeholder}"
+                    placeholder: "{cx.props.placeholder}",
                 },
             }
         }
