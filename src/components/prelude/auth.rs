@@ -61,7 +61,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
     // Start UI
-    global_css! {"
+    global_css! ("
         .auth {
             display: flex;
             justify-content: center;
@@ -88,7 +88,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 }
             }
         }
-    "}
+    ");
 
     let new_account = move |_| match multipass
         .read()

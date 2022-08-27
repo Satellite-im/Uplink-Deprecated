@@ -32,7 +32,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
     });
 
-    global_css! {"
+    global_css! ("
         .friends {
             display: inline-flex;
             flex-direction: column;
@@ -47,7 +47,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    "}
+    ");
 
     cx.render(rsx!{
         Popup {
@@ -84,7 +84,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         IconInput {
                             placeholder: "Warp#a3fdc6..".to_string(),
                             icon: Shape::UserAdd,
-                            oninput: move |evt: FormEvent| remote_friend.set(&evt.value.clone()),
+                            oninput: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
                         }
                         IconButton {
                             icon: Shape::Plus,
