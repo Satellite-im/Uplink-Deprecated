@@ -16,10 +16,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     cx.render(rsx!{
         div {
             "Compose",
-            Write {
-                submit: move |_| {},
-                upload: move |_| {},
-            }
+            // Write {
+            //     submit: move |_| {},
+            //     upload: move |_| {},
+            // }
         }
     })
 }

@@ -1,6 +1,6 @@
 use std::sync::{Arc, RwLock};
 
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::FormEvent};
 use dioxus_heroicons::{Icon, outline::Shape};
 use sir::global_css;
 use warp::{tesseract::Tesseract, multipass::MultiPass};
@@ -18,6 +18,10 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let error = use_state(&cx, || "");
+    let remote_friend = use_state(&cx, || "");
+
+
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let tess = cx.props.tesseract.clone();
     let dp = DEFAULT_PATH.read().clone();
@@ -47,7 +51,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx!{
         Popup {
-            onclick: move |_| cx.props.onclick.call(()),
+            onclick: |_| cx.props.onclick.call(()),
             children: cx.render(rsx!(
                 div {
                     class: "friends",
@@ -80,11 +84,24 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         IconInput {
                             placeholder: "Warp#a3fdc6..".to_string(),
                             icon: Shape::UserAdd,
-                            oninput: move | _ | {},
+                            oninput: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
                         }
                         IconButton {
                             icon: Shape::Plus,
-                            onclick:  move | _ | {},
+                            onclick: move |_| {
+                                match multipass
+                                    .read()
+                                    .clone()
+                                    .unwrap()
+                                    .write()
+                                    .create_identity(Some("test"), None)
+                                {
+                                    Ok(_) => {
+                                        use_router(&cx).push_route("/main", None, None);
+                                    }
+                                    Err(_) => error.set("Something went wrong.".into()),
+                                };
+                            },
                         }
                     },
                     label {
