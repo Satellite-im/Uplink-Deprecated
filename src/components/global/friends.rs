@@ -27,26 +27,19 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {    
+    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+    let multipass = use_atom_ref(&cx, MULTIPASS);
+    let mp = multipass.read().clone().unwrap().clone();
+
+
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
-    
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let tess = cx.props.tesseract.clone();
-    let dp = DEFAULT_PATH.read().clone();
-
-    let mp = multipass
-        .read()
-        .clone()
-        .unwrap()
-        .read();
-
-    let friends = match mp.list_friends() {
+    let friends = match mp.read().list_friends() {
         Ok(f) => f,
         Err(_) => vec![],
     };
-    let requests = match mp.list_incoming_request() {
+    let requests = match mp.read().list_incoming_request() {
         Ok(f) => f,
         Err(_) => vec![],
     };
