@@ -12,13 +12,12 @@ pub mod write;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
-
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             "Compose",
             Write {
-                 submit: move |_| {},
-                 upload: move |_| {},
+                 onsubmit: move |_| {},
+                 onupload: move |_| {},
             }
         }
     })
