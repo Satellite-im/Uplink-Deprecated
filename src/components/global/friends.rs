@@ -36,42 +36,19 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let tess = cx.props.tesseract.clone();
     let dp = DEFAULT_PATH.read().clone();
 
-    let mp = use_future(&cx, (&tess,), |(tess,)| async move {
-        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production(dp), tess, None)
-            .await
-            .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
-    });
+    let mp = multipass
+        .read()
+        .clone()
+        .unwrap()
+        .read();
 
-    let requests = match mp.value() {
-        Some(m) => {
-            match multipass
-                .read()
-                .clone()
-                .unwrap()
-                .write()
-                .list_incoming_request()
-            {
-                Ok(requests) => requests,
-                Err(_) => vec![],
-            }
-        },
-        None => vec![]
+    let friends = match mp.list_friends() {
+        Ok(f) => f,
+        Err(_) => vec![],
     };
-
-    let friends = match mp.value() {
-        Some(m) => {
-            match multipass
-                .read()
-                .clone()
-                .unwrap()
-                .write()
-                .list_friends()
-            {
-                Ok(requests) => requests,
-                Err(_) => vec![],
-            }
-        },
-        None => vec![]
+    let requests = match mp.list_incoming_request() {
+        Ok(f) => f,
+        Err(_) => vec![],
     };
 
     global_css! {"
