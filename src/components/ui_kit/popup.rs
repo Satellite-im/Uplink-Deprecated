@@ -54,6 +54,9 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 transition: all 0.2s;
                 background: var(--theme-foreground);
 
+                &.full {
+                    height: calc(100% - 21px);
+                }
                 &.hidden {
                     height: 0px;
                     padding: 0;
@@ -102,7 +105,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     "}
 
     let full_class = match full.get() {
-        true => "popup popup_full",
+        true => "popup full",
         false => "popup",
     };
 
