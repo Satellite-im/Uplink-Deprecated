@@ -78,14 +78,13 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 text: "Add Someone".to_string(),
                 on_pressed: move |_| show_friends.set(true),
             },
-            show_friends.then(|| rsx!{
-                Friends {
-                    title: "Friends".to_string(),
-                    icon: Shape::Users,
-                    tesseract: cx.props.tesseract.clone(),
-                    onclick: move |_| show_friends.set(false),
-                }
-            }),
+            Friends {
+                title: "Friends".to_string(),
+                show: *show_friends.clone(),
+                icon: Shape::Users,
+                tesseract: cx.props.tesseract.clone(),
+                onclick: move |_| show_friends.set(false),
+            }
             Nav {
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);

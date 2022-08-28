@@ -8,15 +8,18 @@ use crate::components::ui_kit::icon_button::IconButton;
 pub struct Props<'a> {
     children: Element<'a>,
     on_dismiss: EventHandler<'a, ()>,
+    hidden: bool,
 }
 
 #[allow(non_snake_case)]
 pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let full = use_state(&cx, || false);
+    let modal = use_state(&cx, || false);
 
     global_css! {"
         .popup-mask {
             -webkit-backdrop-filter: blur(3px);
+            transition: blur 0.2s;
             background: var(--theme-semi-transparent);
             position: absolute;
             top: 0;
@@ -24,23 +27,38 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             bottom: 0;
             left: 0;
             z-index: 90;
-            
+
+            &.as-modal {
+                position: fixed;
+                
+            }
+
+            &.hidden {
+                -webkit-backdrop-filter: none;
+                background: transparent;
+                pointer-events: none;
+            }
+
             .popup {
                 align-self: center;
-                min-height: 150px;
                 border-radius: 8px 8px 0 0;
                 position: absolute;
+                overflow: show;
                 left: 5px;
                 right: 5px;
                 bottom: 0;
-                max-height: 200px;
                 padding: 1rem;
                 display: flex;
                 flex-direction: column;
-                transition-property: min-height;
-                transition-duration: 0.2s;
-                background: var(--theme-modal);
+                height: 300px;
+                transition: all 0.2s;
+                background: var(--theme-foreground);
 
+                &.hidden {
+                    height: 0px;
+                    padding: 0;
+                    overflow: hidden;
+                }
                 .controls {
                     position: absolute;
                     top: 0;
@@ -80,11 +98,6 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 }
             }
-            .popup_full {
-                transition: max-height 0.2s ease;
-                max-height: 90%;
-                min-height: 50%;
-            }
         }
     "}
 
@@ -93,12 +106,22 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         false => "popup",
     };
 
+    let hidden_class = match cx.props.hidden.clone() {
+        true => "hidden",
+        false => "show" 
+    };
+
+    let as_modal = match *modal.clone() {
+        true => "as-modal",
+        false => "",
+    };
+
     cx.render(rsx!(
         div {
-            class: "popup-mask",
+            class: "popup-mask {hidden_class} {as_modal}",
             onclick: move |_| cx.props.on_dismiss.call(()),
             div {
-                class: "{full_class}",
+                class: "{full_class} {hidden_class}",
                 button {
                     class: "handle",
                     // TODO: This handle should be able to be "grabbed" and "pulled" up or down to expand or close the opup
@@ -115,12 +138,13 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     div {
                         class: "controls",
                         IconButton {
-                            on_pressed: move |_| {},
-                            // TODO: This button should "pop" the "popup" out into a floating centered modal.
-                            // TODO: Less important, it should have some kind of animation tied to this
-                            // Disabled pending impl
-                            disabled: true,
-                            icon: Shape::ArrowsExpand,
+                            on_pressed: move |_| {
+                                modal.set(!modal.clone());
+                            },
+                            icon: match *modal.clone() {
+                                true => Shape::Minus,
+                                false => Shape::ArrowsExpand
+                            }
                         },
                     },
                     cx.props.children.as_ref()

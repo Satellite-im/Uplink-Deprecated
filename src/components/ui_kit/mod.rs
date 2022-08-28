@@ -27,6 +27,10 @@ pub fn build_style_tag() -> String {
                 padding: 0;
             }}
 
+            .popup .input {{
+                background: var(--theme-foreground-dark);
+            }}
+
             .toast-single {{
                 background-color: var(--theme-primary) !important;
                 border: none !important;

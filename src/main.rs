@@ -63,7 +63,7 @@ fn App(cx: Scope<State>) -> Element {
                 "{styles}"
             },
             dioxus_toast::ToastFrame {
-                manager: toast
+                manager: toast,
             }
             AppStyle {},
             Router {

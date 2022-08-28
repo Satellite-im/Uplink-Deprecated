@@ -16,6 +16,7 @@ pub struct Theme {
     pub background_light: String,
 
     pub foreground: String,
+    pub foreground_dark: String,
 
     pub text: String,
     pub text_muted: String,
@@ -50,6 +51,7 @@ impl Default for Theme {
             background_light: String::from("#1A1E2E"), 
 
             foreground: String::from("#232838"),
+            foreground_dark: String::from("#1a1e2a"),
             
             text: String::from("#EEF0F2"),
             text_muted: String::from("#6F748A"),
@@ -93,6 +95,7 @@ impl Theme {
                 --theme-semi-transparent: {};
                 --theme-modal: {};
                 --theme-foreground: {};
+                --theme-foreground-dark: {};
             }}",
             &self.primary,
             &self.primary_dark,
@@ -114,6 +117,7 @@ impl Theme {
             &self.semi_transparent,
             &self.modal,
             &self.foreground,
+            &self.foreground_dark,
         );
         root
     }

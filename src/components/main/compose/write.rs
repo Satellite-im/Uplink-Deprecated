@@ -46,7 +46,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 box-sizing: border-box;
                 border: 1px solid transparent;
                 border-radius: 20px;
-                transition: .2s;
+                transition: height .2s, border .2s;
                 // TODO: Need help making this prettier, textareas suck
                 padding: 0.75rem 1rem 0 1rem;
                 margin: 0 1rem;

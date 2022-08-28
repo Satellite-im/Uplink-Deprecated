@@ -68,6 +68,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             align-items: center;
             text-align: center;
             height: 80%;
+            width: 100%;
 
             .container {
                 min-width: 300px;

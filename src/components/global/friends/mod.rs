@@ -7,21 +7,23 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{ToastInfo, Position};
 use sir::global_css;
 
-use warp::{multipass::MultiPass, tesseract::Tesseract, crypto::DID};
-use warp_mp_ipfs::config::MpIpfsConfig;
+use warp::{tesseract::Tesseract, crypto::DID};
 
 use crate::{
-    components::ui_kit::{
+    components::{ui_kit::{
         button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup,
-    },
-    DEFAULT_PATH, MULTIPASS, TOAST_MANAGER,
+    }, global::friends::request::FriendRequest},
+    MULTIPASS, TOAST_MANAGER,
 };
+
+pub mod request;
 
 #[derive(Props)]
 pub struct Props<'a> {
     tesseract: Tesseract,
     icon: Shape,
     title: String,
+    show: bool,
     onclick: EventHandler<'a, ()>,
 }
 
@@ -35,14 +37,17 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
-    let friends = match mp.read().list_friends() {
+    let friends = use_state(&cx, || vec![]);
+    friends.set(match mp.read().list_friends() {
         Ok(f) => f,
         Err(_) => vec![],
-    };
-    let requests = match mp.read().list_incoming_request() {
+    });
+
+    let requests = use_state(&cx, || vec![]);
+    requests.set(match mp.read().list_incoming_request() {
         Ok(f) => f,
         Err(_) => vec![],
-    };
+    });
 
     global_css! {"
         .friends {
@@ -64,6 +69,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         Popup {
             on_dismiss: |_| cx.props.onclick.call(()),
+            hidden: !cx.props.show,
             children: cx.render(rsx!(
                 div {
                     class: "friends",
@@ -185,7 +191,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                 remote_friend.set("".into());
                                                 add_error.set(match e {
                                                     warp::error::Error::CannotSendFriendRequest => "Couldn't send friend request.",
-                                                    warp::error::Error::FriendRequestExist => "You've already sent this request.",
+                                                    warp::error::Error::FriendRequestExist => "Request already pending.",
                                                     warp::error::Error::CannotSendSelfFriendRequest => "You cannot add yourself as a friend.",
                                                     _ => "Something went wrong."
                                                 })
@@ -203,9 +209,11 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 "Incoming Requests"
                             },
                             div {
-                                requests.iter().map(|_request| rsx!(
-                                    div {
-                                        "request"
+                                requests.iter().map(|request| rsx!(
+                                    FriendRequest {
+                                        request: request.clone(),
+                                        on_accept: move |_| {},
+                                        on_deny: move |_| {}
                                     }
                                 )),
                             }
