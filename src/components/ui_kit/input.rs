@@ -9,7 +9,7 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     placeholder: String,
-    oninput: EventHandler<'a, FormEvent>
+    on_change: EventHandler<'a, FormEvent>
 }
 
 pub fn css() -> String {"
@@ -41,7 +41,7 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             input {
                 class: "input",
                 placeholder: "{cx.props.placeholder}",
-                oninput: move |evt| cx.props.oninput.call(evt),
+                oninput: move |evt| cx.props.on_change.call(evt),
             }
         }
     )

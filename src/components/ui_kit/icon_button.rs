@@ -12,7 +12,7 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     icon: Shape,
-    onclick: EventHandler<'a, MouseEvent>,
+    on_pressed: EventHandler<'a, MouseEvent>,
     #[props(optional)]
     large: Option<bool>,
     #[props(optional)]
@@ -67,7 +67,7 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             style: "max-width: 40px; display: inline-block;",
             button {
                 class: "{class}",
-                onclick: move |evt| cx.props.onclick.call(evt),
+                onclick: move |evt| cx.props.on_pressed.call(evt),
                 disabled: "{disabled}",
                 Icon {
                     icon: cx.props.icon,

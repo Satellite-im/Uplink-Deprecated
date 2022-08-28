@@ -58,7 +58,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
             }
             IconButton {
                 icon: Shape::Plus,
-                onclick: move |_| {},
+                on_pressed: move |_| {},
             }
         }
     })

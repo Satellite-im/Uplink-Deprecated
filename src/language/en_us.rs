@@ -3,6 +3,7 @@ use super::Language;
 pub fn make() -> Language {
     Language {
         create_pin: "Create a Pin".to_string(),
+        enter_pin: "Enter Pin".to_string(),
         enter_your_pin: "Enter pin to unlock your account.".to_string(),
         choose_a_pin: "Choose a 4-6 diget pin to secure your account.".to_string(),
         invalid_pin: "Invalid or incorrect pin supplied.".to_string(),

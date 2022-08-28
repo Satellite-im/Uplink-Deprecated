@@ -13,7 +13,7 @@ pub enum NavEvent {
 
 #[derive(Props)]
 pub struct Props<'a> {
-    onclick: EventHandler<'a, NavEvent>,
+    on_pressed: EventHandler<'a, NavEvent>,
 }
 
 #[allow(non_snake_case)]
@@ -45,28 +45,28 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         div {
             class: "nav",
             IconButton {
-                onclick: move |_| {
-                    let _ = &cx.props.onclick.call(NavEvent::Home);
+                on_pressed: move |_| {
+                    let _ = &cx.props.on_pressed.call(NavEvent::Home);
                 },
                 icon: Shape::Home
             },
             IconButton {
-                onclick: move |_| {
-                    let _ = &cx.props.onclick.call(NavEvent::Files);
+                on_pressed: move |_| {
+                    let _ = &cx.props.on_pressed.call(NavEvent::Files);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::Folder
             },
             IconButton {
-                onclick: move |_| {
-                    let _ = &cx.props.onclick.call(NavEvent::Friends);
+                on_pressed: move |_| {
+                    let _ = &cx.props.on_pressed.call(NavEvent::Friends);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::Users
             },
             IconButton {
-                onclick: move |_| {
-                    let _ = &cx.props.onclick.call(NavEvent::Profile);
+                on_pressed: move |_| {
+                    let _ = &cx.props.on_pressed.call(NavEvent::Profile);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::UserCircle

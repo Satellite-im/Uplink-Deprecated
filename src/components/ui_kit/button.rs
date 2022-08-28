@@ -11,7 +11,7 @@ pub enum State {
 
 #[derive(Props)]
 pub struct Props<'a> {
-    onclick: EventHandler<'a, MouseEvent>,
+    on_pressed: EventHandler<'a, MouseEvent>,
     #[props(optional)]
     /// Text to be displayed within the button
     text: Option<String>,
@@ -131,7 +131,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             div {
                 button {
                     class: "{class}",
-                    onclick: move |evt| cx.props.onclick.call(evt),
+                    onclick: move |evt| cx.props.on_pressed.call(evt),
                     disabled: "{disabled}",
                     Icon {
                         icon: icon,
@@ -147,7 +147,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 button {
                     class: "{class}",
                     disabled: "{disabled}",
-                    onclick: move |evt| cx.props.onclick.call(evt),
+                    onclick: move |evt| cx.props.on_pressed.call(evt),
                     "{text}"
                 }
             }

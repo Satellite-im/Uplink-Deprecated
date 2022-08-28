@@ -60,7 +60,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     class: "labeled",
                     IconButton {
                         icon: Shape::Plus,
-                        onclick: move |_| {},
+                        on_pressed: move |_| {},
                     },
                     span {
                         "New Chat"
@@ -76,7 +76,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             Button {
                 icon: Shape::UserAdd,
                 text: "Add Someone".to_string(),
-                onclick: move |_| show_friends.set(true),
+                on_pressed: move |_| show_friends.set(true),
             },
             show_friends.then(|| rsx!{
                 Friends {
@@ -87,16 +87,19 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 }
             }),
             Nav {
-                onclick: move | e: NavEvent | {
+                on_pressed: move | e: NavEvent | {
+                    show_friends.set(false);
+
                     match e {
                         NavEvent::Home => {
-                            show_friends.set(false);
                         },
-                        NavEvent::Files => {},
+                        NavEvent::Files => {
+                        },
                         NavEvent::Friends => {
                             show_friends.set(true);
                         },
-                        NavEvent::Profile => todo!(),
+                        NavEvent::Profile => {
+                        },
                     }
                 }
             }

@@ -93,7 +93,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
             div {
                 class: "container",
                 h2 {
-                    "{l.create_pin}",
+                    (tesseract_available).then(|| l.enter_pin.clone()),
+                    (!tesseract_available).then(|| l.create_pin.clone()),
                 },
                 label {
                     (tesseract_available).then(|| l.enter_your_pin.clone()),
@@ -118,7 +119,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     } else {
                                         Shape::X
                                     }
-                                    onclick: move |_| {
+                                    on_pressed: move |_| {
                                         let mut tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
@@ -182,13 +183,13 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     icon: Shape::User,
                     disabled: true,
                     state: icon_button::State::Secondary,
-                    onclick: move |_| {},
+                    on_pressed: move |_| {},
                 },
                 IconButton {
                     icon: Shape::GlobeAlt,
                     disabled: true,
                     state: icon_button::State::Secondary,
-                    onclick: move |_| {},
+                    on_pressed: move |_| {},
                 },
             }
         },

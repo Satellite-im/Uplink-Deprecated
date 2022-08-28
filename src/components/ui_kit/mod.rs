@@ -27,6 +27,12 @@ pub fn build_style_tag() -> String {
                 padding: 0;
             }}
 
+            .toast-single {{
+                background-color: var(--theme-primary) !important;
+                border: none !important;
+                color: var(--theme-text-bright) !important; 
+                font-family: 'Space Mono', monospace !important;
+            }}
             svg {{
                 fill: transparent;
                 stroke: var(--theme-text);
@@ -41,6 +47,7 @@ pub fn build_style_tag() -> String {
                 color: var(--theme-red);
                 opacity: 1;
                 transition: 0.2s;
+                font-size: 10pt;
             }}
             h1, h2, h3, h4, h5, h6 {{
                 font-family: 'Space Mono', monospace;

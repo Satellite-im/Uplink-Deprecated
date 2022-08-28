@@ -1,9 +1,11 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::FormData, core::UiEvent};
 
 // Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
-pub struct Props {
-    active: bool
+#[derive(Props)]
+pub struct Props<'a> {
+    active: bool,
+    // TODO: we should insted just return a bool with the switche's binary state
+    on_change: EventHandler<'a, UiEvent<FormData>>,
 }
 
 pub fn css() -> String {"
@@ -62,13 +64,14 @@ pub fn css() -> String {"
     ".to_string()}
 
 #[allow(non_snake_case)]
-pub fn Switch(cx: Scope<Props>) -> Element {
+pub fn Switch<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(rsx!{
         label {
             class: "switch",
             input {
                 "type": "checkbox",
-                checked: "{cx.props.active}"
+                checked: "{cx.props.active}",
+                oninput: move |evt| cx.props.on_change.call(evt)
             },
             span {
                 class: "slider",

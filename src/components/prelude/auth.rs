@@ -123,7 +123,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             class: "full-width",
                             Input {
                                 placeholder: "Choose a username..".to_string(),
-                                oninput: move | evt: FormEvent | {
+                                on_change: move | evt: FormEvent | {
                                     username.set(evt.value.clone());
                                 },
                             },
@@ -136,7 +136,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     true => button::State::Primary,
                                     false => button::State::Secondary,
                                 },
-                                onclick: new_account,
+                                on_pressed: new_account,
                             }
                         }
                     }

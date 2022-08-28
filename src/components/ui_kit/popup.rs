@@ -1,10 +1,13 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use sir::global_css;
+
+use crate::components::ui_kit::icon_button::IconButton;
 
 #[derive(Props)]
 pub struct Props<'a> {
     children: Element<'a>,
-    onclick: EventHandler<'a, ()>,
+    on_dismiss: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
@@ -34,9 +37,20 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 padding: 1rem;
                 display: flex;
                 flex-direction: column;
-                transition: height 2s ease 0s;
+                transition-property: min-height;
+                transition-duration: 0.2s;
                 background: var(--theme-modal);
 
+                .controls {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    
+                    .button {
+                        background: transparent;
+                        color: var(--theme-muted);
+                    }
+                }
 
                 .handle {
                     content: '';
@@ -82,11 +96,12 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx!(
         div {
             class: "popup-mask",
-            onclick: move |_| cx.props.onclick.call(()),
+            onclick: move |_| cx.props.on_dismiss.call(()),
             div {
                 class: "{full_class}",
                 button {
                     class: "handle",
+                    // TODO: This handle should be able to be "grabbed" and "pulled" up or down to expand or close the opup
                     onclick: move |evt| {
                         evt.cancel_bubble();
                         full.set(!full.get());
@@ -95,6 +110,18 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 div {
                     onclick: move |evt| {
                         evt.cancel_bubble();
+                        full.set(true);
+                    },
+                    div {
+                        class: "controls",
+                        IconButton {
+                            on_pressed: move |_| {},
+                            // TODO: This button should "pop" the "popup" out into a floating centered modal.
+                            // TODO: Less important, it should have some kind of animation tied to this
+                            // Disabled pending impl
+                            disabled: true,
+                            icon: Shape::ArrowsExpand,
+                        },
                     },
                     cx.props.children.as_ref()
                 }

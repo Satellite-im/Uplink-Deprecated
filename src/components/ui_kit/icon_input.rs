@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, events::FormEvent};
+use dioxus::{prelude::*, events::{FormEvent, KeyCode}};
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
@@ -10,7 +10,9 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     icon: Shape,
-    oninput: EventHandler<'a, FormEvent>,
+    value: String,
+    on_change: EventHandler<'a, FormEvent>,
+    on_enter: EventHandler<'a, ()>,
     placeholder: String,
 }
 
@@ -45,7 +47,13 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 input {
                     class: "input",
                     placeholder: "{cx.props.placeholder}",
-                    oninput: move |e| cx.props.oninput.call(e)
+                    oninput: move |e| cx.props.on_change.call(e),
+                    value: "{cx.props.value}",
+                    onkeyup: move |evt| {
+                        if evt.key_code == KeyCode::Enter {
+                            cx.props.on_enter.call(())
+                        }
+                    }
                 },
             }
         }
