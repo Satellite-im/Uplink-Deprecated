@@ -55,7 +55,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 background: var(--theme-foreground);
 
                 &.full {
-                    height: calc(100% - 21px);
+                    height: calc(fit-content - 2rem - 24px);
                 }
                 &.hidden {
                     height: 0px;
