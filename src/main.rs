@@ -36,6 +36,8 @@ static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::f
 struct Opt {
     #[clap(long)]
     path: Option<PathBuf>,
+    #[clap(long)]
+    title: Option<String>,
 }
 
 fn main() {
@@ -58,7 +60,10 @@ fn main() {
 
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
-            w.with_title("Warp by Satellite")
+            w.with_title(match opt.title { 
+                    Some(title) => title,
+                    None => "Warp GUI".to_string(),
+                })
                 .with_resizable(true)
                 .with_inner_size(LogicalSize::new(900.0, 600.0))
         })
