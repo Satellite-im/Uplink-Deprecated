@@ -13,14 +13,13 @@ use warp::crypto::DID;
 
 use crate::{
     components::{
-        global::friends::{request::FriendRequest, friend::Friend},
+        global::friends::request::FriendRequest,
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
     MULTIPASS, TOAST_MANAGER,
 };
 
 pub mod request;
-pub mod friend;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -312,17 +311,11 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "Your Friends"
                     },
                     div {
-                        friends.iter().map(|name_or_id| {
-                            let did = match DID::try_from(name_or_id.to_string()) {
-                                Ok(did) => did,
-                                Err(_) => DID::default(),
-                            };
-                            rsx!(
-                                Friend {
-                                    friend: did,
-                                }
-                            )
-                        })
+                        friends.iter().map(|user| rsx!(
+                            div {
+                                "{user}"
+                            }
+                        )),
                     }
                 }
             ))

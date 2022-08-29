@@ -10,7 +10,7 @@ use crate::{
 
 #[derive(PartialEq, Props)]
 pub struct Props {
-    friend: DID
+    friend: String
 }
 
 #[allow(non_snake_case)]
@@ -18,9 +18,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
-    let did = &cx.props.friend;
+    let friend = cx.props.friend.clone();
 
-    let user = match mp.read().get_identity(did.clone().into()) {
+    let user = match mp.read().get_identity(friend.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
@@ -28,7 +28,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let username = user
         .first()
         .map(|i| i.username())
-        .unwrap_or_else(|| "".to_string());
+        .unwrap_or_else(|| "");
 
     let show_skeleton = username.is_empty();
 
@@ -78,6 +78,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )} else {rsx!(
                 div {
                     class: "pfp"
+                    
                 },
             )}
             div {
