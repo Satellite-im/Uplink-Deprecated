@@ -4,7 +4,10 @@ use sir::global_css;
 
 use warp::multipass::identity::{FriendRequest, Identity};
 
-use crate::{MULTIPASS, components::ui_kit::icon_button::{IconButton, self}};
+use crate::{
+    components::ui_kit::icon_button::{self, IconButton},
+    MULTIPASS,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -14,17 +17,17 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {    
+pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
     let did = cx.props.request.from();
     let user = match mp.read().get_identity(did.into()) {
-        Ok(f) => f.clone(),
-        Err(_) => Identity::default(),
+        Ok(f) => f,
+        Err(_) => vec![],
     };
 
-    let username = user.username();
+    let username = "";//user.username();
 
     global_css! {"
         .request {

@@ -1,9 +1,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use clap::Parser;
 use dioxus::desktop::tao::dpi::LogicalSize;
-use dioxus_toast::ToastManager;
 use dioxus::prelude::*;
+use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
@@ -13,7 +14,7 @@ use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{auth, unlock};
-use crate::components::{ui_kit, main};
+use crate::components::{main, ui_kit};
 
 pub mod components;
 pub mod language;
@@ -30,7 +31,20 @@ static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
 static RAYGUN: AtomRef<Option<Arc<RwLock<Box<dyn RayGun>>>>> = |_| None;
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.cache")));
 
+#[derive(Debug, Parser)]
+#[clap(name = "")]
+struct Opt {
+    #[clap(long)]
+    path: Option<PathBuf>,
+}
+
 fn main() {
+    let opt = Opt::parse();
+
+    if let Some(path) = opt.path {
+        *DEFAULT_PATH.write() = path;
+    }
+
     let tesseract = match Tesseract::from_file(DEFAULT_PATH.read().join(".keystore")) {
         Ok(tess) => tess,
         Err(_) => {
@@ -44,8 +58,7 @@ fn main() {
 
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
-            w
-                .with_title("Warp by Satellite")
+            w.with_title("Warp by Satellite")
                 .with_resizable(true)
                 .with_inner_size(LogicalSize::new(900.0, 600.0))
         })
@@ -57,20 +70,18 @@ fn App(cx: Scope<State>) -> Element {
     // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
-    cx.render(rsx! (
-        rsx!{
-            style {
-                "{styles}"
-            },
-            dioxus_toast::ToastFrame {
-                manager: toast,
-            }
-            AppStyle {},
-            Router {
-                Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
-                Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },
-                Route { to: "/main", main::Main { tesseract: cx.props.tesseract.clone() } },
-            }
+    cx.render(rsx!(rsx! {
+        style {
+            "{styles}"
+        },
+        dioxus_toast::ToastFrame {
+            manager: toast,
         }
-    ))
+        AppStyle {},
+        Router {
+            Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+            Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },
+            Route { to: "/main", main::Main { tesseract: cx.props.tesseract.clone() } },
+        }
+    }))
 }
