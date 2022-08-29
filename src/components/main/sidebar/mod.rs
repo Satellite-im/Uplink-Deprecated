@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use warp::tesseract::Tesseract;
 
-use crate::components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder}, main::sidebar::nav::{Nav, NavEvent}};
+use crate::components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}};
 
 pub mod nav;
 
@@ -27,7 +27,9 @@ pub fn Sidebar(cx: Scope) -> Element {
                 flex-direction: column;
                 border-right: 1px solid var(--theme-borders);
                 
-
+                .extension-renderer {
+                    margin-top: 1rem;
+                }
                 .favorites {
                     display: inline-flex;
 
@@ -52,6 +54,13 @@ pub fn Sidebar(cx: Scope) -> Element {
     cx.render(rsx!{
         div {
             class: "sidebar",
+            IconInput {
+                icon: Shape::Search,
+                placeholder: "Search".to_string(),
+                value: "".to_string(),
+                on_change: move |_| {},
+                on_enter: move |_| {},
+            },
             ExtensionPlaceholder {},
             label {
                 "Favorites"

@@ -78,7 +78,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )} else {rsx!(
                 div {
                     class: "pfp"
-                    
                 },
             )}
             div {
