@@ -13,4 +13,5 @@ Cargo.lock
 
 # Satellite
 .cache
+
 .temp

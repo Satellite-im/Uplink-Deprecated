@@ -20,6 +20,7 @@ pub struct Theme {
 
     pub text: String,
     pub text_muted: String,
+    pub text_darker: String,
     pub text_bright: String,
 
     pub placeholder: String,
@@ -55,6 +56,7 @@ impl Default for Theme {
             
             text: String::from("#EEF0F2"),
             text_muted: String::from("#6F748A"),
+            text_darker: String::from("#595d6f"),
             text_bright: String::from("#EEEFFF"),
             placeholder: String::from("#6F748A"),
             
@@ -88,6 +90,7 @@ impl Theme {
                 --theme-background-light: {};
                 --theme-text: {};
                 --theme-text-muted: {};
+                --theme-text-darker: {};
                 --theme-text-bright: {};
                 --theme-placeholder: {};
                 --theme-borders: {};
@@ -110,6 +113,7 @@ impl Theme {
             &self.background_light,
             &self.text,
             &self.text_muted,
+            &self.text_darker,
             &self.text_bright,
             &self.placeholder,
             &self.borders,

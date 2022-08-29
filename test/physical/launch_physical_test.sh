@@ -1,5 +1,4 @@
 #!/bin/sh
-cd ../../
 # Build a debug bin
 cargo build
 # Create temporary locations for the binaries

@@ -51,11 +51,12 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 display: flex;
                 flex-direction: column;
                 height: 300px;
-                transition: all 0.2s;
+                transition: height 0.2s;
                 background: var(--theme-foreground);
+                margin-top: 50px;
 
                 &.full {
-                    height: calc(fit-content - 2rem - 24px);
+                    height: max-content;
                 }
                 &.hidden {
                     height: 0px;

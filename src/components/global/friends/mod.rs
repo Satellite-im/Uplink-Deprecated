@@ -67,6 +67,12 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         Err(_) => vec![],
     });
 
+    let outgoing = use_state(&cx, Vec::new);
+    outgoing.set(match mp.read().list_outgoing_request() {
+        Ok(f) => f,
+        Err(_) => vec![],
+    });
+
     global_css! {"
         .friends {
             display: inline-flex;
@@ -230,8 +236,46 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 requests.iter().map(|request| rsx!(
                                     FriendRequest {
                                         request: request.clone(),
+                                        on_accept: move |_| {
+                                            match mp
+                                                .read()
+                                                .clone()
+                                                .unwrap()
+                                                .write()
+                                                .accept_request(&request.from()) 
+                                            {
+                                                Ok(_) => {
+                                                    println!("Accepted");
+                                                },
+                                                Err(_) => {
+                                                    // TODO: Catch this and display it
+                                                    println!("Error");
+                                                },
+                                            }
+                                        },
+                                        on_deny: move |_| {
+
+                                        },
+                                        deny_only: false,
+                                    }
+                                )),
+                            }
+                        )
+                    } else {
+                        rsx!(span {})
+                    },
+                    if outgoing.len() > 0 {
+                        rsx!(
+                            label {
+                                "Outgoing Requests"
+                            },
+                            div {
+                                outgoing.iter().map(|request| rsx!(
+                                    FriendRequest {
+                                        request: request.clone(),
+                                        on_deny: move |_| {},
                                         on_accept: move |_| {},
-                                        on_deny: move |_| {}
+                                        deny_only: true,
                                     }
                                 )),
                             }

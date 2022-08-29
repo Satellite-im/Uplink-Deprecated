@@ -10,6 +10,7 @@ pub mod pin;
 pub mod loader;
 pub mod photo_picker;
 pub mod popup;
+pub mod skeletons;
 
 pub fn build_style_tag() -> String {
     format!(
