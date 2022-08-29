@@ -69,7 +69,7 @@ fn main() {
         c.with_window(|w| {
             w.with_title(DEFAULT_WINDOW_NAME.read().clone())
             .with_resizable(true)
-            .with_inner_size(LogicalSize::new(900.0, 600.0))
+            .with_inner_size(LogicalSize::new(1200.0, 800.0))
         })
     });
 }

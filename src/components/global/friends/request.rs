@@ -115,7 +115,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             icon: Shape::X,
                             state: icon_button::State::Secondary,
                             on_pressed: move |_| {
-                                cx.props.on_accept.call(());
+                                cx.props.on_deny.call(());
                             }
                         }
                     )}
@@ -140,7 +140,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 icon: Shape::Check,
                                 state: icon_button::State::Primary,
                                 on_pressed: move |_| {
-                                    cx.props.on_deny.call(());
+                                    cx.props.on_accept.call(());
                                 }
                             }
                         }

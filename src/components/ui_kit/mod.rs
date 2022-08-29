@@ -11,6 +11,8 @@ pub mod loader;
 pub mod photo_picker;
 pub mod popup;
 pub mod skeletons;
+pub mod extension_placeholder;
+pub mod small_extension_placeholder;
 
 pub fn build_style_tag() -> String {
     format!(

@@ -13,13 +13,14 @@ use warp::crypto::DID;
 
 use crate::{
     components::{
-        global::friends::request::FriendRequest,
+        global::friends::{request::FriendRequest, friend::Friend},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
     MULTIPASS, TOAST_MANAGER,
 };
 
 pub mod request;
+pub mod friend;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -237,16 +238,14 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     FriendRequest {
                                         request: request.clone(),
                                         on_accept: move |_| {
-                                            match mp
+                                            match multipass
                                                 .read()
                                                 .clone()
                                                 .unwrap()
                                                 .write()
                                                 .accept_request(&request.from()) 
                                             {
-                                                Ok(_) => {
-                                                    println!("Accepted");
-                                                },
+                                                Ok(_) => {},
                                                 Err(_) => {
                                                     // TODO: Catch this and display it
                                                     println!("Error");
@@ -254,7 +253,19 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             }
                                         },
                                         on_deny: move |_| {
-
+                                            match multipass
+                                                .read()
+                                                .clone()
+                                                .unwrap()
+                                                .write()
+                                                .deny_request(&request.from())
+                                            {
+                                                Ok(_) => {},
+                                                Err(_) => {
+                                                    // TODO: Catch this and display it
+                                                    println!("Error");
+                                                },
+                                            }
                                         },
                                         deny_only: false,
                                     }
@@ -273,7 +284,21 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 outgoing.iter().map(|request| rsx!(
                                     FriendRequest {
                                         request: request.clone(),
-                                        on_deny: move |_| {},
+                                        on_deny:  move |_| {
+                                            match multipass
+                                                .read()
+                                                .clone()
+                                                .unwrap()
+                                                .write()
+                                                .close_request(&request.to())
+                                            {
+                                                Ok(_) => {},
+                                                Err(_) => {
+                                                    // TODO: Catch this and display it
+                                                    println!("Error");
+                                                },
+                                            }
+                                        },
                                         on_accept: move |_| {},
                                         deny_only: true,
                                     }
@@ -287,11 +312,17 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "Your Friends"
                     },
                     div {
-                        friends.iter().map(|name_or_id| rsx!(
-                            div {
-                                "{name_or_id}"
-                            }
-                        )),
+                        friends.iter().map(|name_or_id| {
+                            let did = match DID::try_from(name_or_id.to_string()) {
+                                Ok(did) => did,
+                                Err(_) => DID::default(),
+                            };
+                            rsx!(
+                                Friend {
+                                    friend: did,
+                                }
+                            )
+                        })
                     }
                 }
             ))

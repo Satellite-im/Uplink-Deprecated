@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use crate::components::ui_kit::icon_button::{IconButton, self};
+use crate::components::ui_kit::{icon_button::{IconButton, self}, small_extension_placeholder::SmallExtensionPlaceholder};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -36,6 +36,10 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             flex-direction: row;
             padding: 1rem;
             align-items: end;
+
+            .extension-holder {
+                margin-right: 1rem;
+            }
 
             .input {
                 flex: 1;
@@ -75,7 +79,11 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             script {
                 dangerous_inner_html: "{script}"
-            }
+            },
+            div {
+                class: "extension-holder",
+                SmallExtensionPlaceholder {}
+            },
             IconButton {
                 icon: Shape::ArrowRight,
                 state: icon_button::State::Secondary,
