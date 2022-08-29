@@ -12,7 +12,7 @@ pub struct Props {
 }
 
 #[allow(non_snake_case)]
-pub fn Main(cx: Scope<Props>) -> Element {
+pub fn Main(cx: Scope) -> Element {
     // Start UI
     global_css! {"
     .main {
@@ -27,12 +27,8 @@ pub fn Main(cx: Scope<Props>) -> Element {
     cx.render(rsx!{
         div {
             class: "main",
-            Sidebar {
-                tesseract: cx.props.tesseract.clone(),
-            },
-            Compose {
-                tesseract: cx.props.tesseract.clone()
-            },
+            Sidebar {},
+            Compose {},
         }
     })
 }

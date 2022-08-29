@@ -9,7 +9,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
 use sir::global_css;
 
-use warp::{crypto::DID, tesseract::Tesseract};
+use warp::crypto::DID;
 
 use crate::{
     components::{
@@ -23,7 +23,6 @@ pub mod request;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    tesseract: Tesseract,
     icon: Shape,
     title: String,
     show: bool,
@@ -164,7 +163,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     ..ToastInfo::simple("Friend request sent!")
                                                 };
                                                 let _id = toast.write().popup(single_toast);
-                                                add_error.set("".into());
+                                                add_error.set("");
                                                 remote_friend.set("".into());
                                             }
                                             Err(e) => {
@@ -178,7 +177,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             },
                                         };
                                     },
-                                    Err(_) => add_error.set("Invalid friend code.".into()),
+                                    Err(_) => add_error.set("Invalid friend code."),
                                 }
                             }
                         }
@@ -217,7 +216,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             },
                                         };
                                     },
-                                    Err(_) => add_error.set("Invalid friend code.".into()),
+                                    Err(_) => add_error.set("Invalid friend code."),
                                 }
                             },
                         }

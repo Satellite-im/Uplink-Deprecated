@@ -13,7 +13,7 @@ pub struct Props {
 }
 
 #[allow(non_snake_case)]
-pub fn Sidebar(cx: Scope<Props>) -> Element {
+pub fn Sidebar(cx: Scope) -> Element {
     let show_friends = use_state(&cx, || false);
 
     global_css! {"
@@ -82,7 +82,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 title: "Friends".to_string(),
                 show: *show_friends.clone(),
                 icon: Shape::Users,
-                tesseract: cx.props.tesseract.clone(),
                 onclick: move |_| show_friends.set(false),
             }
             Nav {

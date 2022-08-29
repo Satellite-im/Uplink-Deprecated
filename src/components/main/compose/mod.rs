@@ -12,7 +12,7 @@ pub struct Props {
 pub mod write;
 
 #[allow(non_snake_case)]
-pub fn Compose(cx: Scope<Props>) -> Element {
+pub fn Compose(cx: Scope) -> Element {
     global_css! ("
         .compose {
             display: inline-flex;

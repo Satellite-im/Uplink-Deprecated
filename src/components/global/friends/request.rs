@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use warp::multipass::identity::{FriendRequest, Identity};
+use warp::multipass::identity::FriendRequest;
 
 use crate::{
     components::ui_kit::icon_button::{self, IconButton},
@@ -27,7 +27,10 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         Err(_) => vec![],
     };
 
-    let username = user.first().map(|i| i.username()).unwrap_or_else(||did.to_string());
+    let username = user
+        .first()
+        .map(|i| i.username())
+        .unwrap_or_else(|| did.to_string());
 
     global_css! {"
         .request {
