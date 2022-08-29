@@ -1,18 +1,21 @@
-use std::{sync::{Arc, RwLock}, vec};
-
 use copypasta::{ClipboardContext, ClipboardProvider};
 
-use dioxus::{events::{FormEvent, MouseData}, prelude::*, core::UiEvent};
+use dioxus::{
+    core::UiEvent,
+    events::{FormEvent, MouseData},
+    prelude::*,
+};
 use dioxus_heroicons::{outline::Shape, Icon};
-use dioxus_toast::{ToastInfo, Position};
+use dioxus_toast::{Position, ToastInfo};
 use sir::global_css;
 
-use warp::{tesseract::Tesseract, crypto::DID};
+use warp::{crypto::DID, tesseract::Tesseract};
 
 use crate::{
-    components::{ui_kit::{
-        button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup,
-    }, global::friends::request::FriendRequest},
+    components::{
+        global::friends::request::FriendRequest,
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
+    },
     MULTIPASS, TOAST_MANAGER,
 };
 
@@ -28,22 +31,38 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {    
+pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
-
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
-    let friends = use_state(&cx, || vec![]);
+    let friends = use_state(&cx, Vec::new);
     friends.set(match mp.read().list_friends() {
-        Ok(f) => f,
+        Ok(f) => f
+            .iter()
+            .map(|friend| {
+                match multipass
+                    .read()
+                    .clone()
+                    .unwrap()
+                    .read()
+                    .get_identity(friend.clone().into())
+                {
+                    Ok(idents) => idents
+                        .first()
+                        .map(|i| i.username())
+                        .unwrap_or_else(|| friend.to_string()),
+                    Err(_) => friend.to_string(),
+                }
+            })
+            .collect::<Vec<_>>(),
         Err(_) => vec![],
     });
 
-    let requests = use_state(&cx, || vec![]);
+    let requests = use_state(&cx, Vec::new);
     requests.set(match mp.read().list_incoming_request() {
         Ok(f) => f,
         Err(_) => vec![],
@@ -225,9 +244,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "Your Friends"
                     },
                     div {
-                        friends.iter().map(|_request| rsx!(
+                        friends.iter().map(|name_or_id| rsx!(
                             div {
-                                "friend"
+                                "{name_or_id}"
                             }
                         )),
                     }
