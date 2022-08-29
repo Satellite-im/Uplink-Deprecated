@@ -22,12 +22,12 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let mp = multipass.read().clone().unwrap().clone();
 
     let did = cx.props.request.from();
-    let user = match mp.read().get_identity(did.into()) {
+    let user = match mp.read().get_identity(did.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
 
-    let username = "";//user.username();
+    let username = user.first().map(|i| i.username()).unwrap_or_else(||did.to_string());
 
     global_css! {"
         .request {
