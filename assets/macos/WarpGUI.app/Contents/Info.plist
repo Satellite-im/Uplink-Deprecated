@@ -7,11 +7,11 @@
   <key>CFBundleExecutable</key>
   <string>warp_gui</string>
   <key>CFBundleIdentifier</key>
-  <string>io.warp_gui</string>
+  <string>im.satellite.warpgui</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>WarpGUI</string>
+  <string>warp_gui</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
