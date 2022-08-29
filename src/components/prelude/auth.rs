@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dioxus::{events::FormEvent, prelude::*};
+use dioxus::{desktop::use_window, events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use warp::{multipass::MultiPass, sync::RwLock, tesseract::Tesseract};
@@ -13,7 +13,7 @@ use crate::{
         loader::Loader,
         photo_picker::PhotoPicker,
     },
-    DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN,
+    DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN, WINDOW_SUFFIX_NAME,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -24,6 +24,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
+    let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let username = use_state(&cx, || String::from(""));
@@ -46,7 +47,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             *multipass.write() = Some(val.clone());
 
             match val.read().get_own_identity() {
-                Ok(_) => {
+                Ok(i) => {
+                    window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
                     use_router(&cx).push_route("/main", None, None);
                     false
                 }
@@ -61,7 +63,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
     // Start UI
-    global_css! ("
+    global_css!(
+        "
         .auth {
             display: flex;
             justify-content: center;
@@ -89,16 +92,18 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 }
             }
         }
-    ");
+    "
+    );
 
     let new_account = move |_| match multipass
         .read()
         .clone()
         .unwrap()
         .write()
-        .create_identity(Some(username), None)
+        .create_identity(Some(username.as_str()), None)
     {
         Ok(_) => {
+            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
             use_router(&cx).push_route("/main", None, None);
         }
         Err(_) => error.set("".into()),

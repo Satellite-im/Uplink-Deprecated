@@ -30,6 +30,9 @@ static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages:
 static MULTIPASS: AtomRef<Option<Arc<RwLock<Box<dyn MultiPass>>>>> = |_| None;
 static RAYGUN: AtomRef<Option<Arc<RwLock<Box<dyn RayGun>>>>> = |_| None;
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.cache")));
+pub const WINDOW_SUFFIX_NAME: &'static str = "Warp GUI";
+static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
+    Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 
 #[derive(Debug, Parser)]
 #[clap(name = "")]
@@ -47,6 +50,10 @@ fn main() {
         *DEFAULT_PATH.write() = path;
     }
 
+    if let Some(title) = opt.title {
+        *DEFAULT_WINDOW_NAME.write() = title;
+    }
+
     let tesseract = match Tesseract::from_file(DEFAULT_PATH.read().join(".keystore")) {
         Ok(tess) => tess,
         Err(_) => {
@@ -60,18 +67,16 @@ fn main() {
 
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
-            w.with_title(match opt.title { 
-                    Some(title) => title,
-                    None => "Warp GUI".to_string(),
-                })
-                .with_resizable(true)
-                .with_inner_size(LogicalSize::new(900.0, 600.0))
+            w.with_title(DEFAULT_WINDOW_NAME.read().clone())
+            .with_resizable(true)
+            .with_inner_size(LogicalSize::new(900.0, 600.0))
         })
     });
 }
 
 #[allow(non_snake_case)]
 fn App(cx: Scope<State>) -> Element {
+    
     // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -86,7 +91,7 @@ fn App(cx: Scope<State>) -> Element {
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },
-            Route { to: "/main", main::Main { tesseract: cx.props.tesseract.clone() } },
+            Route { to: "/main", main::Main { } },
         }
     }))
 }
