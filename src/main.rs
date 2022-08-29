@@ -19,6 +19,7 @@ use crate::components::{main, ui_kit};
 pub mod components;
 pub mod language;
 pub mod themes;
+pub mod extensions;
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -80,7 +81,7 @@ fn App(cx: Scope<State>) -> Element {
     // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
-    cx.render(rsx!(rsx! {
+    cx.render(rsx!(
         style {
             "{styles}"
         },
@@ -93,5 +94,5 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },
             Route { to: "/main", main::Main { } },
         }
-    }))
+    ))
 }
