@@ -63,6 +63,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         }
     ");
+
+    let txt = text.clone();
     
     cx.render(rsx!{
         div {
@@ -85,7 +87,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 },
                 placeholder: "Say something..",
-                "{text}"
+                "{txt}"
             },
             script {
                 dangerous_inner_html: "{script}"

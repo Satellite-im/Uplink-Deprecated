@@ -9,7 +9,6 @@ use warp_mp_ipfs::config::MpIpfsConfig;
 use crate::{
     components::ui_kit::{
         button::{self, Button},
-        input::Input,
         loader::Loader,
         photo_picker::PhotoPicker, icon_input::IconInput,
     },

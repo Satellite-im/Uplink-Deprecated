@@ -5,7 +5,7 @@ use sir::global_css;
 use warp::{crypto::DID};
 
 use crate::{
-    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::{IconButton, self}},
+    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::IconButton},
     MULTIPASS, STATE, state::Actions,
 };
 

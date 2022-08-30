@@ -25,7 +25,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 border-radius: 4px;
                 cursor: pointer;
                 margin-bottom: 0.5rem;
-                
+
                 &:hover,
                 &.active {
                     background: var(--theme-background-light);
@@ -103,6 +103,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx!{
         div {
             class: "chat {active}",
+            onclick: move |_| cx.props.on_pressed.call(()),
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(

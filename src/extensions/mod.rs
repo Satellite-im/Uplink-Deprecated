@@ -7,7 +7,7 @@ pub enum ExtensionType {
     SidebarWidget,
     ChatbarIcon,
 }
-
+#[allow(dead_code)]
 pub struct ExtensionMeta {
     name: String,
     author: String,

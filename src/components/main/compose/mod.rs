@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{tesseract::Tesseract, crypto::DID};
+use warp::crypto::DID;
 
 use crate::{components::main::compose::{write::Write, topbar::TopBar}, STATE};
 

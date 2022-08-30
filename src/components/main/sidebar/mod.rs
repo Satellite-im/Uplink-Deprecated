@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
-use warp::tesseract::Tesseract;
+use warp::{tesseract::Tesseract, crypto::DID};
 
-use crate::{components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}}, STATE};
+use crate::{components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}}, STATE, state::Actions};
 
 pub mod nav;
 pub mod chat;
@@ -88,12 +88,17 @@ pub fn Sidebar(cx: Scope) -> Element {
             if has_chats {
                 rsx!(
                     div {
-                        state.read().chats.iter().map(|did| rsx!(
-                            chat::Chat {
-                                did: did.clone(),
-                                on_pressed: move |_| {}
-                            }
-                        ))
+                        state.read().chats.iter().rev().map(|did| {
+                            let owned_did = did.clone();
+                            rsx!(
+                                chat::Chat {
+                                    did: owned_did.clone(),
+                                    on_pressed: move |_| {
+                                        state.write().dispatch(Actions::ChatWith(owned_did.clone())).save();
+                                    }
+                                }
+                            )
+                        })
                     }
                 )
             } else {
