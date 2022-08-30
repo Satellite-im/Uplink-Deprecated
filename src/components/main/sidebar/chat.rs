@@ -2,7 +2,10 @@ use dioxus::prelude::*;
 use sir::global_css;
 use warp::crypto::DID;
 
-use crate::{components::ui_kit::skeletons::{pfp::PFPSkeleton, inline::InlineSkeleton}, MULTIPASS, STATE};
+use crate::{
+    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    MULTIPASS, STATE,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -96,11 +99,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             } else {
                 "none"
             }
-        },
+        }
         None => "",
     };
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "chat {active}",
             onclick: move |_| cx.props.on_pressed.call(()),

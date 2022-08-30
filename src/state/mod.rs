@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use warp::crypto::DID;
 
 use self::mutations::Mutations;
@@ -8,7 +8,7 @@ pub mod mutations;
 const STORAGE_LOCATION: &str = "./.cache/.warpgui.state.json";
 
 pub enum Actions {
-    ChatWith(DID)
+    ChatWith(DID),
 }
 
 #[derive(Serialize, Deserialize, Default)]
@@ -28,10 +28,10 @@ impl PersistedState {
     pub fn save(&self) {
         let bytes = serde_json::to_vec(self.into());
         match bytes {
-            Ok(b) => { 
+            Ok(b) => {
                 let _ = std::fs::write(STORAGE_LOCATION, &b);
-            },
-            Err(_) => {},
+            }
+            Err(_) => {}
         }
     }
 
@@ -39,6 +39,9 @@ impl PersistedState {
         match action {
             Actions::ChatWith(did) => Mutations::chat_with(self, did),
         };
-        PersistedState { chats: self.chats.clone(), chat: self.chat.clone(), }
+        PersistedState {
+            chats: self.chats.clone(),
+            chat: self.chat.clone(),
+        }
     }
 }

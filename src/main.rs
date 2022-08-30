@@ -18,10 +18,10 @@ use crate::components::prelude::{auth, unlock};
 use crate::components::{main, ui_kit};
 
 pub mod components;
-pub mod language;
-pub mod themes;
 pub mod extensions;
+pub mod language;
 mod state;
+pub mod themes;
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -72,15 +72,14 @@ fn main() {
     dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
             w.with_title(DEFAULT_WINDOW_NAME.read().clone())
-            .with_resizable(true)
-            .with_inner_size(LogicalSize::new(1200.0, 800.0))
+                .with_resizable(true)
+                .with_inner_size(LogicalSize::new(1200.0, 800.0))
         })
     });
 }
 
 #[allow(non_snake_case)]
 fn App(cx: Scope<State>) -> Element {
-    
     // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);

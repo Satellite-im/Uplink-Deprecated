@@ -1,5 +1,5 @@
-use dioxus::{prelude::*, events::MouseEvent};
-use dioxus_heroicons::{Icon, outline::Shape};
+use dioxus::{events::MouseEvent, prelude::*};
+use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
 pub enum State {
@@ -20,10 +20,11 @@ pub struct Props<'a> {
     #[props(optional)]
     text: Option<String>,
     #[props(optional)]
-    disabled: Option<bool>
+    disabled: Option<bool>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .icon-button {
         user-select: none;
         min-width: 40px;
@@ -39,11 +40,17 @@ pub fn css() -> String {"
         height: 52px;
         border-radius: 26px;
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let disabled = if cx.props.disabled.is_some() { true } else { false };
+    let disabled = if cx.props.disabled.is_some() {
+        true
+    } else {
+        false
+    };
 
     let mut class = String::from("");
     class += match cx.props.large {
@@ -51,18 +58,16 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => "button icon-button ",
     };
     class += match cx.props.state.as_ref() {
-        Some(state) => {
-            match state {
-                State::Success => "button-success ",
-                State::Danger => "button-danger ",
-                State::Secondary => "button-secondary",
-                _ => " "
-            }
+        Some(state) => match state {
+            State::Success => "button-success ",
+            State::Danger => "button-danger ",
+            State::Secondary => "button-secondary",
+            _ => " ",
         },
         None => "",
     };
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             style: "max-width: 40px; display: inline-block;",
             button {

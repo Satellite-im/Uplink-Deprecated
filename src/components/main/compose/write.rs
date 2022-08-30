@@ -1,8 +1,11 @@
-use dioxus::{prelude::*, events::KeyCode};
+use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use crate::components::ui_kit::{icon_button::{IconButton, self}, small_extension_placeholder::SmallExtensionPlaceholder};
+use crate::components::ui_kit::{
+    icon_button::{self, IconButton},
+    small_extension_placeholder::SmallExtensionPlaceholder,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -27,10 +30,12 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 });
                 element.removeAttribute('data-autoresize');
             });
-        })()".to_string()
+        })()"
+            .to_string(),
     );
 
-    global_css! ("
+    global_css!(
+        "
         .write {
             flex: 1;
             display: inline-flex;
@@ -62,11 +67,12 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 border: 1px solid var(--theme-primary);
             }
         }
-    ");
+    "
+    );
 
     let txt = text.clone();
-    
-    cx.render(rsx!{
+
+    cx.render(rsx! {
         div {
             class: "write",
             IconButton {

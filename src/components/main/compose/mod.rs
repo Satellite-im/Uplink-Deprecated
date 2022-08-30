@@ -2,19 +2,23 @@ use dioxus::prelude::*;
 use sir::global_css;
 use warp::crypto::DID;
 
-use crate::{components::main::compose::{write::Write, topbar::TopBar}, STATE};
+use crate::{
+    components::main::compose::{topbar::TopBar, write::Write},
+    STATE,
+};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
     did: DID,
 }
 
-pub mod write;
 pub mod topbar;
+pub mod write;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
-    global_css! ("
+    global_css!(
+        "
         .compose {
             display: inline-flex;
             flex-direction: column;
@@ -40,12 +44,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 display: inline-flex;
             }
         }
-    ");
+    "
+    );
 
     let state = use_atom_ref(&cx, STATE);
 
     let blur = state.read().chat.is_none();
-    
+
     cx.render(rsx! {
         div {
             class: "compose",

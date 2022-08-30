@@ -1,10 +1,10 @@
-use crate::{main::sidebar::Sidebar, components::{main::compose::Compose}, STATE};
+use crate::{components::main::compose::Compose, main::sidebar::Sidebar, STATE};
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{tesseract::Tesseract, crypto::DID};
+use warp::{crypto::DID, tesseract::Tesseract};
 
-pub mod sidebar;
 pub mod compose;
+pub mod sidebar;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -30,7 +30,7 @@ pub fn Main(cx: Scope) -> Element {
     }
     "}
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "main",
             Sidebar {},

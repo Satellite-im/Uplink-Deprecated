@@ -9,8 +9,9 @@ use warp_mp_ipfs::config::MpIpfsConfig;
 use crate::{
     components::ui_kit::{
         button::{self, Button},
+        icon_input::IconInput,
         loader::Loader,
-        photo_picker::PhotoPicker, icon_input::IconInput,
+        photo_picker::PhotoPicker,
     },
     DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN, WINDOW_SUFFIX_NAME,
 };

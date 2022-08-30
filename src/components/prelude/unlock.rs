@@ -38,7 +38,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
 
     // Start UI
 
-    global_css! ("
+    global_css!(
+        "
         .unlock {
             display: flex;
             justify-content: center;
@@ -85,7 +86,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
             }
 
         }
-    ");
+    "
+    );
 
     cx.render(rsx! {
         div {

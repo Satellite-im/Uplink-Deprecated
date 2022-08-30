@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, events::{FormEvent}};
+use dioxus::{events::FormEvent, prelude::*};
 
 #[derive(PartialEq)]
 pub enum State {
@@ -9,10 +9,11 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     placeholder: String,
-    on_change: EventHandler<'a, FormEvent>
+    on_change: EventHandler<'a, FormEvent>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .input {
         min-width: 100px;
         width: 100%;
@@ -33,16 +34,17 @@ pub fn css() -> String {"
         border: 1px solid var(--theme-primary);
         margin: 1px;
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    cx.render(rsx!{
-            input {
-                class: "input",
-                placeholder: "{cx.props.placeholder}",
-                oninput: move |evt| cx.props.on_change.call(evt),
-            }
+    cx.render(rsx! {
+        input {
+            class: "input",
+            placeholder: "{cx.props.placeholder}",
+            oninput: move |evt| cx.props.on_change.call(evt),
         }
-    )
+    })
 }

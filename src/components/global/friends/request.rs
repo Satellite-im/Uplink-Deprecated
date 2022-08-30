@@ -5,7 +5,10 @@ use sir::global_css;
 use warp::multipass::identity::FriendRequest;
 
 use crate::{
-    components::ui_kit::{icon_button::{self, IconButton}, skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}},
+    components::ui_kit::{
+        icon_button::{self, IconButton},
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    },
     MULTIPASS,
 };
 
@@ -86,7 +89,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             )} else {rsx!(
                 div {
                     class: "pfp"
-                    
+
                 },
             )}
             div {

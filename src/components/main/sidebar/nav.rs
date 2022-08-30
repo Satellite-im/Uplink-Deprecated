@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use crate::components::{ui_kit::{icon_button::{IconButton, self}}};
+use crate::components::ui_kit::icon_button::{self, IconButton};
 
 pub enum NavEvent {
     Home,
@@ -41,7 +41,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         }
     "}
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "nav",
             IconButton {

@@ -1,5 +1,5 @@
-use dioxus::{prelude::*, events::MouseEvent};
-use dioxus_heroicons::{Icon, outline::Shape};
+use dioxus::{events::MouseEvent, prelude::*};
+use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
 pub enum State {
@@ -22,10 +22,11 @@ pub struct Props<'a> {
     #[props(optional)]
     state: Option<State>,
     #[props(optional)]
-    disabled: Option<bool>
+    disabled: Option<bool>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .button {
         user-select: none;
         cursor: pointer;
@@ -94,8 +95,9 @@ pub fn css() -> String {"
     .button-danger:active {
         background-color: var(--theme-red);
     }
-    ".to_string()}
-
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
@@ -115,19 +117,17 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => "button ",
     };
     class += match cx.props.state.as_ref() {
-        Some(state) => {
-            match state {
-                State::Success => "button-success ",
-                State::Danger => "button-danger ",
-                State::Secondary => "button-secondary ",
-                _ => " "
-            }
+        Some(state) => match state {
+            State::Success => "button-success ",
+            State::Danger => "button-danger ",
+            State::Secondary => "button-secondary ",
+            _ => " ",
         },
         None => "",
     };
 
     cx.render(match cx.props.icon {
-        Some(icon ) => rsx!{
+        Some(icon) => rsx! {
             div {
                 button {
                     class: "{class}",
@@ -142,7 +142,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 }
             }
         },
-        None => rsx!{
+        None => rsx! {
             div {
                 button {
                     class: "{class}",

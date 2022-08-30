@@ -1,18 +1,18 @@
 use crate::themes::Theme;
 
 pub mod button;
+pub mod extension_placeholder;
 pub mod icon_button;
-pub mod tooltip;
-pub mod switch;
-pub mod input;
 pub mod icon_input;
-pub mod pin;
+pub mod input;
 pub mod loader;
 pub mod photo_picker;
+pub mod pin;
 pub mod popup;
 pub mod skeletons;
-pub mod extension_placeholder;
 pub mod small_extension_placeholder;
+pub mod switch;
+pub mod tooltip;
 
 pub fn build_style_tag() -> String {
     format!(

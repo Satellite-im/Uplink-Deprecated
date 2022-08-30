@@ -2,7 +2,6 @@ mod stickers;
 
 use dioxus::prelude::{Element, Scope};
 
-
 pub enum ExtensionType {
     SidebarWidget,
     ChatbarIcon,
@@ -17,7 +16,12 @@ pub struct ExtensionMeta {
 
 impl Default for ExtensionMeta {
     fn default() -> Self {
-        Self { name: Default::default(), author: Default::default(), description: Default::default(), location: ExtensionType::SidebarWidget }
+        Self {
+            name: Default::default(),
+            author: Default::default(),
+            description: Default::default(),
+            location: ExtensionType::SidebarWidget,
+        }
     }
 }
 

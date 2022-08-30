@@ -1,2 +1,2 @@
-pub mod unlock;
 pub mod auth;
+pub mod unlock;

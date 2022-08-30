@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 use sir::global_css;
 
-
 #[allow(non_snake_case)]
 pub fn SmallExtensionPlaceholder(cx: Scope) -> Element {
-    global_css!("
+    global_css!(
+        "
         .mini-extension-renderer {
             width: calc(40px - 1rem);
             height: calc(40px - 1rem);
@@ -27,9 +27,10 @@ pub fn SmallExtensionPlaceholder(cx: Scope) -> Element {
             }
 
         }
-    ");
+    "
+    );
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "mini-extension-renderer",
             button {

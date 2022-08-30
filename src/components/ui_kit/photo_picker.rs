@@ -5,10 +5,11 @@ use crate::components::ui_kit::icon_button::IconButton;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
-    text: Option<String>
+    text: Option<String>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .photo-picker {
         width: 100px;
         height: 100px;
@@ -42,7 +43,9 @@ pub fn css() -> String {"
     .photo-picker .icon-button svg {
         padding-top: 2px;
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn PhotoPicker(cx: Scope<Props>) -> Element {

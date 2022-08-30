@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 
 #[derive(PartialEq)]
 pub enum State {
-    Secondary
+    Secondary,
 }
 
 #[derive(PartialEq)]
@@ -28,7 +28,8 @@ pub struct Props {
     arrow_position: Option<ArrowPosition>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .tooltip {
         user-select: none;
         height: 35px;
@@ -144,7 +145,9 @@ pub fn css() -> String {"
     .tooltip-arrow-top-left.tooltip-secondary::after {
         border-color: transparent transparent var(--theme-secondary) transparent;
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Tooltip(cx: Scope<Props>) -> Element {
@@ -155,30 +158,26 @@ pub fn Tooltip(cx: Scope<Props>) -> Element {
 
     let mut class = String::from("");
     class += match &cx.props.state {
-        Some(s) => {
-            match s {
-                State::Secondary => "tooltip tooltip-secondary ",
-            }
+        Some(s) => match s {
+            State::Secondary => "tooltip tooltip-secondary ",
         },
         None => "tooltip ",
     };
     class += match cx.props.arrow_position.as_ref() {
-        Some(position ) => {
-            match position {
-                ArrowPosition::TopLeft => "tooltip-arrow-top-left ",
-                ArrowPosition::Top => "tooltip-arrow-top ",
-                ArrowPosition::TopRight => "tooltip-arrow-top-right ",
-                ArrowPosition::Left => "tooltip-arrow-left ",
-                ArrowPosition::Right => "tooltip-arrow-right ",
-                ArrowPosition::BottomLeft => "tooltip-arrow-bottom-left ",
-                ArrowPosition::Bottom => "tooltip-arrow-bottom ",
-                ArrowPosition::BottomRight => "tooltip-arrow-bottom-right ",
-            }
+        Some(position) => match position {
+            ArrowPosition::TopLeft => "tooltip-arrow-top-left ",
+            ArrowPosition::Top => "tooltip-arrow-top ",
+            ArrowPosition::TopRight => "tooltip-arrow-top-right ",
+            ArrowPosition::Left => "tooltip-arrow-left ",
+            ArrowPosition::Right => "tooltip-arrow-right ",
+            ArrowPosition::BottomLeft => "tooltip-arrow-bottom-left ",
+            ArrowPosition::Bottom => "tooltip-arrow-bottom ",
+            ArrowPosition::BottomRight => "tooltip-arrow-bottom-right ",
         },
         None => "tooltip-arrow-bottom",
     };
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             button {
                 class: "{class}",

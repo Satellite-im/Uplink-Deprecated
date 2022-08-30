@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, events::FormData, core::UiEvent};
+use dioxus::{core::UiEvent, events::FormData, prelude::*};
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props)]
@@ -8,7 +8,8 @@ pub struct Props<'a> {
     on_change: EventHandler<'a, UiEvent<FormData>>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .switch {
         position: relative;
         display: inline-block;
@@ -61,11 +62,13 @@ pub fn css() -> String {"
     input:checked + .slider:before {
         transform: translateX(16px);
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Switch<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    cx.render(rsx!{
+    cx.render(rsx! {
         label {
             class: "switch",
             input {

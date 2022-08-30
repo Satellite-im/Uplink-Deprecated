@@ -2,7 +2,10 @@ use dioxus::prelude::*;
 use sir::global_css;
 use warp::crypto::DID;
 
-use crate::{MULTIPASS, components::ui_kit::skeletons::{pfp::PFPSkeleton, inline::InlineSkeleton}};
+use crate::{
+    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    MULTIPASS,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -11,8 +14,9 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {    
-    global_css! ("
+pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    global_css!(
+        "
         .topbar {
             height: 40px;
             display: inline-flex;
@@ -49,7 +53,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
             
         }
-    ");
+    "
+    );
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
@@ -76,8 +81,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     };
 
     let show_skeleton = username.is_empty();
-    
-    cx.render(rsx!{
+
+    cx.render(rsx! {
         div {
             class: "topbar",
             if show_skeleton {rsx!(
@@ -92,7 +97,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 div {
                     class: "top-row",
                     if show_skeleton{rsx!(
-                        InlineSkeleton {} 
+                        InlineSkeleton {}
                     )} else {rsx!(
                         h3 {
                             "{username}"
@@ -100,7 +105,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     )}
                 },
                 if show_skeleton{rsx!(
-                    InlineSkeleton {} 
+                    InlineSkeleton {}
                 )} else {rsx!(
                     span {
                         "{status}"

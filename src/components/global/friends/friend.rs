@@ -2,11 +2,15 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use warp::{crypto::DID};
+use warp::crypto::DID;
 
 use crate::{
-    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::IconButton},
-    MULTIPASS, STATE, state::Actions,
+    components::ui_kit::{
+        icon_button::IconButton,
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    },
+    state::Actions,
+    MULTIPASS, STATE,
 };
 
 #[derive(Props)]
@@ -81,7 +85,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )} else {rsx!(
                 div {
                     class: "pfp"
-                    
                 },
             )},
             div {

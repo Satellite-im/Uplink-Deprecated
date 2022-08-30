@@ -112,7 +112,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let hidden_class = match cx.props.hidden.clone() {
         true => "hidden",
-        false => "show" 
+        false => "show",
     };
 
     let as_modal = match *modal.clone() {

@@ -1,4 +1,7 @@
-use dioxus::{prelude::*, events::{FormEvent, KeyCode}};
+use dioxus::{
+    events::{FormEvent, KeyCode},
+    prelude::*,
+};
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
@@ -16,8 +19,8 @@ pub struct Props<'a> {
     placeholder: String,
 }
 
-
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .icon-input {
         position: relative;
     }
@@ -34,28 +37,29 @@ pub fn css() -> String {"
     }
     .icon-input:has(> input:focus) svg {
         stroke: var(--theme-primary) !important;
-    }".to_string()}
+    }"
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    cx.render(rsx!{
-            div {
-                class: "icon-input",
-                Icon {
-                    icon: cx.props.icon,
-                },
-                input {
-                    class: "input",
-                    placeholder: "{cx.props.placeholder}",
-                    oninput: move |e| cx.props.on_change.call(e),
-                    value: "{cx.props.value}",
-                    onkeyup: move |evt| {
-                        if evt.key_code == KeyCode::Enter {
-                            cx.props.on_enter.call(())
-                        }
+    cx.render(rsx! {
+        div {
+            class: "icon-input",
+            Icon {
+                icon: cx.props.icon,
+            },
+            input {
+                class: "input",
+                placeholder: "{cx.props.placeholder}",
+                oninput: move |e| cx.props.on_change.call(e),
+                value: "{cx.props.value}",
+                onkeyup: move |evt| {
+                    if evt.key_code == KeyCode::Enter {
+                        cx.props.on_enter.call(())
                     }
-                },
-            }
+                }
+            },
         }
-    )
+    })
 }

@@ -2,10 +2,11 @@ use dioxus::prelude::*;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
-    text: Option<String>
+    text: Option<String>,
 }
 
-pub fn css() -> String {"
+pub fn css() -> String {
+    "
     .bar {
         float: left;
         width: 15px;
@@ -41,7 +42,9 @@ pub fn css() -> String {"
             width: 25px;
         }
     }
-    ".to_string()}
+    "
+    .to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Loader(cx: Scope<Props>) -> Element {

@@ -34,10 +34,10 @@ pub struct Theme {
 // When dealing with colors and backgrounds we should only use values provided within the Themes
 impl Default for Theme {
     fn default() -> Self {
-        Self { 
-            primary: String::from("#205FFA"), 
-            primary_dark: String::from("#1e59ec"), 
-            primary_light: String::from("#2563fa"), 
+        Self {
+            primary: String::from("#205FFA"),
+            primary_dark: String::from("#1e59ec"),
+            primary_light: String::from("#2563fa"),
 
             secondary: String::from("#2B2B3B"),
             secondary_light: String::from("#2f2f40"),
@@ -47,20 +47,20 @@ impl Default for Theme {
             red: String::from("#F93854"),
             light_red: String::from("#fa4662"),
 
-            background: String::from("#0e0d17"), 
-            background_dark: String::from("#0e0d17"), 
-            background_light: String::from("#1A1E2E"), 
+            background: String::from("#0e0d17"),
+            background_dark: String::from("#0e0d17"),
+            background_light: String::from("#1A1E2E"),
 
             foreground: String::from("#232838"),
             foreground_dark: String::from("#1a1e2a"),
-            
+
             text: String::from("#EEF0F2"),
             text_muted: String::from("#6F748A"),
             text_darker: String::from("#A8AABE"),
             text_bright: String::from("#EEEFFF"),
             placeholder: String::from("#6F748A"),
-            
-            borders: String::from("#232838"), 
+
+            borders: String::from("#232838"),
             highlight: String::from("#2b2843"),
             semi_transparent: String::from("rgba(14, 13, 23, 0.2)"),
             modal: String::from("#1A1E2E"),

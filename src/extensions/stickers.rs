@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use sir::global_css;
 
-use super::{Extension, ExtensionType, ExtensionMeta};
+use super::{Extension, ExtensionMeta, ExtensionType};
 
 pub struct StickersExtension;
 
@@ -16,12 +16,14 @@ impl Extension for StickersExtension {
     }
 
     fn render(cx: Scope) -> dioxus::prelude::Element {
-        global_css!("
+        global_css!(
+            "
             .ext-stickers {
                 background-color: var(--theme-primary);
             }
-        ");
-        cx.render(rsx!{
+        "
+        );
+        cx.render(rsx! {
             div {
                 class: "ext-stickers",
             }

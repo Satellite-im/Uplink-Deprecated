@@ -9,7 +9,8 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn PFPSkeleton(cx: Scope<Props>) -> Element {
-    global_css!("
+    global_css!(
+        "
         @keyframes skeleton-loading {
             0% {
             background-color: var(--theme-text-muted);
@@ -25,9 +26,10 @@ pub fn PFPSkeleton(cx: Scope<Props>) -> Element {
             border-radius: 20px;
             animation: skeleton-loading 1s linear infinite alternate;
         }
-    ");
+    "
+    );
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "pfp-skeleton",
         }

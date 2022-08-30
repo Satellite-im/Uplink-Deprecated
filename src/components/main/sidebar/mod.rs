@@ -1,12 +1,23 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
-use warp::{tesseract::Tesseract, crypto::DID};
+use warp::{crypto::DID, tesseract::Tesseract};
 
-use crate::{components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}}, STATE, state::Actions};
+use crate::{
+    components::{
+        global::friends::Friends,
+        main::sidebar::nav::{Nav, NavEvent},
+        ui_kit::{
+            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            icon_input::IconInput,
+        },
+    },
+    state::Actions,
+    STATE,
+};
 
-pub mod nav;
 pub mod chat;
+pub mod nav;
 
 #[derive(PartialEq, Props)]
 pub struct Props {

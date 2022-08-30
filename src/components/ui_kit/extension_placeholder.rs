@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 use sir::global_css;
 
-
 #[allow(non_snake_case)]
 pub fn ExtensionPlaceholder(cx: Scope) -> Element {
-    global_css!("
+    global_css!(
+        "
         .extension-renderer {
             width: calc(100% - 1rem);
             display: inline-flex;
@@ -27,9 +27,10 @@ pub fn ExtensionPlaceholder(cx: Scope) -> Element {
             }
 
         }
-    ");
+    "
+    );
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "extension-renderer",
             "Sidebar Ext. Frame",

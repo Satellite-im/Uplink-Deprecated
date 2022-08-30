@@ -1,14 +1,12 @@
 use dioxus::prelude::*;
 use sir::global_css;
 
-
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
 pub struct Props {
     pin: Vec<u8>,
     error: bool,
 }
-
 
 #[allow(non_snake_case)]
 pub fn Pin(cx: Scope<Props>) -> Element {
@@ -90,7 +88,7 @@ pub fn Pin(cx: Scope<Props>) -> Element {
             active_or_error
         } else {
             "inactive"
-        }
+        },
     );
 
     cx.render(if cx.props.pin.len() <= 4 {
@@ -130,9 +128,9 @@ pub fn Pin(cx: Scope<Props>) -> Element {
                 span {
                     class: "{classes.4}"
                 }
-                
+
             }
-        } 
+        }
     } else {
         rsx! {
             div {
