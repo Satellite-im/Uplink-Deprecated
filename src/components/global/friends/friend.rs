@@ -108,7 +108,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         IconButton {
                             icon: Shape::ChatAlt,
                             on_pressed: move |_| {
-                                state.write().dispatch(Actions::ChatWith(cx.props.friend.clone()));
+                                state.write().dispatch(Actions::ChatWith(cx.props.friend.clone())).save();
                                 cx.props.on_chat.call(());
                             }
                         }
