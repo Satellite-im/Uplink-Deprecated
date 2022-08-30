@@ -26,7 +26,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             right: 0;
             bottom: 0;
             left: 0;
-            z-index: 90;
+            z-index: 100;
 
             &.as-modal {
                 position: fixed;
@@ -103,7 +103,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    "}
+    "};
 
     let full_class = match full.get() {
         true => "popup full",

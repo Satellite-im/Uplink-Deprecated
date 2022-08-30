@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::KeyCode};
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
@@ -6,13 +6,14 @@ use crate::components::ui_kit::{icon_button::{IconButton, self}, small_extension
 
 #[derive(Props)]
 pub struct Props<'a> {
-    onsubmit: EventHandler<'a, ()>,
+    on_submit: EventHandler<'a, String>,
     // keypress: EventHandler<'a, ()>,
-    onupload: EventHandler<'a, ()>,
+    on_upload: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let text = use_state(&cx, || "".to_string());
     let script = use_state(&cx, String::new);
     // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
     script.set(
@@ -69,13 +70,22 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
-                    let _ = &cx.props.onupload.call(());
+                    let _ = &cx.props.on_upload.call(());
                 },
             },
             textarea {
                 class: "input resizeable-textarea",
-                
+                oninput: |e| {
+                    text.set(e.value.clone());
+                },
+                onkeypress: |evt| {
+                    if evt.key_code == KeyCode::Enter {
+                        cx.props.on_submit.call(text.to_string());
+                        text.set(String::from(""));
+                    }
+                },
                 placeholder: "Say something..",
+                "{text}"
             },
             script {
                 dangerous_inner_html: "{script}"
@@ -88,7 +98,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 icon: Shape::ArrowRight,
                 state: icon_button::State::Secondary,
                 on_pressed: move |_| {
-                    let _ = &cx.props.onsubmit.call(());
+                    let _ = &cx.props.on_submit.call(text.to_string());
+                    text.set(String::from(""));
                 },
             },
         },
