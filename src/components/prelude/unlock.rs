@@ -144,17 +144,27 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     class: "invis-input",
                     value: "{pin}",
                     autofocus: "true",
-                    onkeyup: move |evt| {
+                    oninput: move |evt| {
                         error.set(String::from(""));
+
                         // If the pin entered is longer than the allowed limit, ignore it.
-                        let mut new_pin = pin.clone().to_string();
                         if pin.len() < 6 {
-                            new_pin.push_str(evt.key.as_ref());
-                            pin.set(new_pin.to_string());
+                            pin.set(evt.value.to_string());
                         }
 
+                        // If tesseract exists, we can try to unlock as we type to save time
+                        // We can ignore the error though since we're doing this without the users command
+                        if evt.value.len() >= 4 && tesseract_available {
+                            let mut tesseract = cx.props.tesseract.clone();
+                            match tesseract.unlock(evt.value.as_ref()) {
+                                Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                Err(_) => {},
+                            }
+                        }
+                    },
+                    onkeyup: move |evt| {
                         if evt.key_code == KeyCode::Enter {
-                            if new_pin.len() < 4 && !tesseract_available {
+                            if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {
                                 let mut tesseract = cx.props.tesseract.clone();
@@ -162,16 +172,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     Ok(_) => use_router(&cx).push_route("/auth", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),
                                 }
-                            }
-                        }
-
-                        // If tesseract exists, we can try to unlock as we type to save time
-                        // We can ignore the error though since we're doing this without the users command
-                        if new_pin.len() >= 4 && tesseract_available {
-                            let mut tesseract = cx.props.tesseract.clone();
-                            match tesseract.unlock(new_pin.as_bytes()) {
-                                Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                Err(_) => {},
                             }
                         }
                     },
