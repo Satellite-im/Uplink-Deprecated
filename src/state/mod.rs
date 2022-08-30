@@ -5,28 +5,22 @@ use self::mutations::Mutations;
 
 pub mod mutations;
 
-const STORAGE_LOCATION: &str = "./.warpgui.state.json";
+const STORAGE_LOCATION: &str = "./.cache/.warpgui.state.json";
 
 pub enum Actions {
     ChatWith(DID)
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct PersistedState {
     pub chats: Vec<DID>,
 }
 
 impl PersistedState {
     pub fn load_or_inital() -> Self {
-        let bytes = std::fs::read(STORAGE_LOCATION);
-        match bytes {
-            Ok(b) => { 
-                match serde_json::from_slice::<PersistedState>(&b) {
-                    Ok(s) => s,
-                    Err(_) => Self::inital(),
-                }
-            },
-            Err(_) => Self::inital(),
+        match std::fs::read(STORAGE_LOCATION) {
+            Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
+            Err(_) => Default::default(),
         }
     }
 
@@ -39,13 +33,6 @@ impl PersistedState {
             Err(_) => {},
         }
     }
-
-    pub fn inital() -> Self {
-        PersistedState {
-            chats: vec![]
-        }
-    }
-
 
     pub fn dispatch(&mut self, action: Actions) -> Self {
         match action {
