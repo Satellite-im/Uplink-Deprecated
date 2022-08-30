@@ -15,3 +15,5 @@ Cargo.lock
 .cache
 
 .temp
+
+.warpgui.state.json

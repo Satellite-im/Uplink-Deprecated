@@ -28,7 +28,6 @@ impl PersistedState {
             },
             Err(_) => Self::inital(),
         }
-        
     }
 
     pub fn save(&self) {
