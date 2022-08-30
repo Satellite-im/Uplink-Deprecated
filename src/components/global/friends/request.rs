@@ -66,7 +66,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                 h3 {
                     margin: 0;
-                    font-size: 13px;
+                    font-size: 13pt;
                 }
             }
 

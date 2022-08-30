@@ -69,6 +69,13 @@ pub fn build_style_tag() -> String {
                 margin-bottom: 0;
             }}
 
+            p {{
+                margin: 0;
+                font-size: 11px;
+                color: var(--theme-text);
+                font-family: 'Poppins', sans-serif;
+
+            }}
             h1 {{
                 font-size: 18px;
             }}

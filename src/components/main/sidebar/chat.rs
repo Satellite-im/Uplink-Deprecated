@@ -58,7 +58,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         flex-direction: row;
                         h3 {
                             margin: 0;
-                            font-size: 13px;
+                            font-size: 13pt;
                         }
                         .timestamp {
                             flex: 1;

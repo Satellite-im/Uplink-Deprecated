@@ -17,10 +17,11 @@ pub fn css() -> String {
     .load .bar {
         animation: loadingJ 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
     }
-    .load p {
+    .load span {
         color: var(--theme-placeholder);
         animation: loadingK 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
         font-family: 'Space Mono', monospace;
+        font-size: 12pt;
     }
     @keyframes loadingK {
         0%,
@@ -51,8 +52,7 @@ pub fn Loader(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "load",
-            p {
-                class: "",
+            span {
                 cx.props.text.clone()
             },
             div {

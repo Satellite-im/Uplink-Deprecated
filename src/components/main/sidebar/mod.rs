@@ -1,11 +1,10 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
-use warp::{crypto::DID, tesseract::Tesseract};
 
 use crate::{
     components::{
-        global::friends::Friends,
+        global::{friends::Friends, profile::Profile},
         main::sidebar::nav::{Nav, NavEvent},
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
@@ -19,14 +18,10 @@ use crate::{
 pub mod chat;
 pub mod nav;
 
-#[derive(PartialEq, Props)]
-pub struct Props {
-    tesseract: Tesseract,
-}
-
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope) -> Element {
     let show_friends = use_state(&cx, || false);
+    let show_profile = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
 
     let has_chats = !state.read().chats.clone().is_empty();
@@ -129,7 +124,11 @@ pub fn Sidebar(cx: Scope) -> Element {
                 show: *show_friends.clone(),
                 icon: Shape::Users,
                 on_hide: move |_| show_friends.set(false),
-            }
+            },
+            Profile {
+                show: *show_profile.clone(),
+                on_hide: move |_| show_profile.set(false),
+            },
             Nav {
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);
@@ -143,6 +142,7 @@ pub fn Sidebar(cx: Scope) -> Element {
                             show_friends.set(true);
                         },
                         NavEvent::Profile => {
+                            show_profile.set(true);
                         },
                     }
                 }

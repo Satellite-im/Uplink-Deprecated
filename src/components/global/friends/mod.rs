@@ -78,6 +78,8 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .friends {
             display: inline-flex;
             flex-direction: column;
+            padding: 1rem;
+
 
             .add {
                 display: inline-flex;
