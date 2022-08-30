@@ -22,9 +22,7 @@ impl PersistedState {
         match bytes {
             Ok(b) => { 
                 match serde_json::from_slice::<PersistedState>(&b) {
-                    Ok(s) => {
-                       s.chats
-                    },
+                    Ok(s) => s,
                     Err(_) => Self::inital(),
                 }
             },
