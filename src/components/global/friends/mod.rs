@@ -13,20 +13,21 @@ use warp::crypto::DID;
 
 use crate::{
     components::{
-        global::friends::request::FriendRequest,
+        global::friends::{request::FriendRequest, friend::Friend},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
     MULTIPASS, TOAST_MANAGER,
 };
 
 pub mod request;
+pub mod friend;
 
 #[derive(Props)]
 pub struct Props<'a> {
     icon: Shape,
     title: String,
     show: bool,
-    onclick: EventHandler<'a, ()>,
+    on_hide: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
@@ -52,9 +53,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 {
                     Ok(idents) => idents
                         .first()
-                        .map(|i| i.username())
-                        .unwrap_or_else(|| friend.to_string()),
-                    Err(_) => friend.to_string(),
+                        .map(|i| i.did_key())
+                        .unwrap_or_else(|| DID::default()),
+                    Err(_) => DID::default(),
                 }
             })
             .collect::<Vec<_>>(),
@@ -92,7 +93,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         Popup {
-            on_dismiss: |_| cx.props.onclick.call(()),
+            on_dismiss: |_| cx.props.on_hide.call(()),
             hidden: !cx.props.show,
             children: cx.render(rsx!(
                 div {
@@ -312,8 +313,11 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                     div {
                         friends.iter().map(|user| rsx!(
-                            div {
-                                "{user}"
+                            Friend {
+                                friend: user.clone(),
+                                on_chat: move |_| {
+                                    cx.props.on_hide.call(());
+                                }
                             }
                         )),
                     }

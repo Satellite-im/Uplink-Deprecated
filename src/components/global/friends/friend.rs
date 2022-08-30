@@ -1,20 +1,23 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
 use warp::{crypto::DID};
 
 use crate::{
-    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}},
-    MULTIPASS,
+    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::{IconButton, self}},
+    MULTIPASS, STATE, state::Actions,
 };
 
-#[derive(PartialEq, Props)]
-pub struct Props {
-    friend: String
+#[derive(Props)]
+pub struct Props<'a> {
+    friend: DID,
+    on_chat: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    let state = use_atom_ref(&cx, STATE);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
@@ -28,7 +31,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let username = user
         .first()
         .map(|i| i.username())
-        .unwrap_or_else(|| "");
+        .unwrap_or_else(|| "".to_string());
 
     let show_skeleton = username.is_empty();
 
@@ -80,7 +83,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     class: "pfp"
                     
                 },
-            )}
+            )},
             div {
                 class: "who",
                 if show_skeleton {rsx!(
@@ -90,6 +93,27 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         "{username}"
                     }
                 )}
+            },
+            div {
+                class: "request-controls",
+                div {
+                    class: "control-wrap",
+                    if show_skeleton {rsx!(
+                        IconButton {
+                            icon: Shape::ChatAlt,
+                            disabled: true,
+                            on_pressed: move |_| {}
+                        }
+                    )} else {rsx!(
+                        IconButton {
+                            icon: Shape::ChatAlt,
+                            on_pressed: move |_| {
+                                state.write().dispatch(Actions::ChatWith(cx.props.friend.clone()));
+                                cx.props.on_chat.call(());
+                            }
+                        }
+                    )}
+                }
             }
         }
     })

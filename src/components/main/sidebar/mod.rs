@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use warp::tesseract::Tesseract;
 
-use crate::components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}};
+use crate::{components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}}, STATE};
 
 pub mod nav;
 
@@ -15,6 +15,9 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope) -> Element {
     let show_friends = use_state(&cx, || false);
+    let state = use_atom_ref(&cx, STATE);
+
+    let has_chats = !state.read().chats.clone().is_empty();
 
     global_css! {"
         .main {
@@ -77,23 +80,33 @@ pub fn Sidebar(cx: Scope) -> Element {
                         "New Chat"
                     }
                 },
-            }
+            },
             label {
                 "Chats"
             },
-            p {
-                "No active chats, yet.."
-            },
-            Button {
-                icon: Shape::UserAdd,
-                text: "Add Someone".to_string(),
-                on_pressed: move |_| show_friends.set(true),
+            if has_chats {
+                rsx!(
+                    span {
+                        "woop"
+                    }
+                )
+            } else {
+                rsx!(
+                    p {
+                        "No active chats, yet.."
+                    },
+                    Button {
+                        icon: Shape::Plus,
+                        text: "Start One".to_string(),
+                        on_pressed: move |_| show_friends.set(true),
+                    },
+                )
             },
             Friends {
                 title: "Friends".to_string(),
                 show: *show_friends.clone(),
                 icon: Shape::Users,
-                onclick: move |_| show_friends.set(false),
+                on_hide: move |_| show_friends.set(false),
             }
             Nav {
                 on_pressed: move | e: NavEvent | {

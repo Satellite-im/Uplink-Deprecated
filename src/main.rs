@@ -8,6 +8,8 @@ use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
+use state::PersistedState;
+use warp::crypto::DID;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
@@ -20,6 +22,7 @@ pub mod components;
 pub mod language;
 pub mod themes;
 pub mod extensions;
+mod state;
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -34,6 +37,7 @@ static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::f
 pub const WINDOW_SUFFIX_NAME: &'static str = "Warp GUI";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
+static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
 
 #[derive(Debug, Parser)]
 #[clap(name = "")]
