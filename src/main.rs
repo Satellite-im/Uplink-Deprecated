@@ -4,18 +4,19 @@ use std::sync::Arc;
 use clap::Parser;
 use dioxus::desktop::tao::dpi::LogicalSize;
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
-use warp::crypto::DID;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
 use crate::components::prelude::{auth, unlock};
+use crate::components::ui_kit::icon_button::IconButton;
 use crate::components::{main, ui_kit};
 
 pub mod components;

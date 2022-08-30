@@ -56,7 +56,7 @@ impl Default for Theme {
             
             text: String::from("#EEF0F2"),
             text_muted: String::from("#6F748A"),
-            text_darker: String::from("#595d6f"),
+            text_darker: String::from("#A8AABE"),
             text_bright: String::from("#EEEFFF"),
             placeholder: String::from("#6F748A"),
             

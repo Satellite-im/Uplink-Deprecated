@@ -1,18 +1,19 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::tesseract::Tesseract;
+use warp::{tesseract::Tesseract, crypto::DID};
 
-use crate::components::main::compose::write::Write;
+use crate::components::main::compose::{write::Write, topbar::TopBar};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
-    tesseract: Tesseract,
+    did: DID,
 }
 
 pub mod write;
+pub mod topbar;
 
 #[allow(non_snake_case)]
-pub fn Compose(cx: Scope) -> Element {
+pub fn Compose(cx: Scope<Props>) -> Element {
     global_css! ("
         .compose {
             display: inline-flex;
@@ -32,6 +33,10 @@ pub fn Compose(cx: Scope) -> Element {
     cx.render(rsx! {
         div {
             class: "compose",
+            TopBar {
+                did: cx.props.did.clone(),
+                on_call: move |_| {},
+            },
             div {
                 class: "messages-container",
             },

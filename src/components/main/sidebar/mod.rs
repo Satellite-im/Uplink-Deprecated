@@ -6,6 +6,7 @@ use warp::tesseract::Tesseract;
 use crate::{components::{global::friends::Friends, ui_kit::{icon_button::IconButton, button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput}, main::sidebar::nav::{Nav, NavEvent}}, STATE};
 
 pub mod nav;
+pub mod chat;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -23,7 +24,7 @@ pub fn Sidebar(cx: Scope) -> Element {
         .main {
             .sidebar {
                 height: calc(100% - 2rem);
-                min-width: 300px;
+                width: 300px;
                 position: relative;
                 padding: 1rem;
                 display: inline-flex;
@@ -86,8 +87,13 @@ pub fn Sidebar(cx: Scope) -> Element {
             },
             if has_chats {
                 rsx!(
-                    span {
-                        "woop"
+                    div {
+                        state.read().chats.iter().map(|did| rsx!(
+                            chat::Chat {
+                                did: did.clone(),
+                                on_pressed: move |_| {}
+                            }
+                        ))
                     }
                 )
             } else {

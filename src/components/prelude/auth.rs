@@ -11,7 +11,7 @@ use crate::{
         button::{self, Button},
         input::Input,
         loader::Loader,
-        photo_picker::PhotoPicker,
+        photo_picker::PhotoPicker, icon_input::IconInput,
     },
     DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN, WINDOW_SUFFIX_NAME,
 };
@@ -109,6 +109,20 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         Err(_) => error.set("".into()),
     };
 
+    let new_account_2 = move |_| match multipass
+        .read()
+        .clone()
+        .unwrap()
+        .write()
+        .create_identity(Some(username.as_str()), None)
+    {
+        Ok(_) => {
+            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+            use_router(&cx).push_route("/main", None, None);
+        }
+        Err(_) => error.set("".into()),
+    };
+
     cx.render(rsx! {
         div {
             class: "auth",
@@ -127,11 +141,14 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         div { class: "m-bottom" },
                         div {
                             class: "full-width",
-                            Input {
+                            IconInput {
+                                icon: Shape::Identification,
+                                value: username.clone().to_string(),
                                 placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
                                     username.set(evt.value.clone());
                                 },
+                                on_enter: new_account_2,
                             },
                             div { class: "m-bottom-sm" },
                             Button {

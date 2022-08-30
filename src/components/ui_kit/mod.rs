@@ -30,6 +30,14 @@ pub fn build_style_tag() -> String {
                 padding: 0;
             }}
 
+            .pre-alpha {{
+                width: 100%;
+                background-color: var(--theme-primary);
+                font-size: 10px;
+                padding: 0.5 auto;
+                text-align: center;
+
+            }}
             .popup .input {{
                 background: var(--theme-foreground-dark);
             }}

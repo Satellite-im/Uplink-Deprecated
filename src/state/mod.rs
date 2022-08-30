@@ -13,6 +13,7 @@ pub enum Actions {
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct PersistedState {
+    pub chat: Option<DID>,
     pub chats: Vec<DID>,
 }
 
@@ -38,6 +39,6 @@ impl PersistedState {
         match action {
             Actions::ChatWith(did) => Mutations::chat_with(self, did),
         };
-        PersistedState { chats: self.chats.clone() }
+        PersistedState { chats: self.chats.clone(), chat: self.chat.clone(), }
     }
 }

@@ -1,7 +1,7 @@
-use crate::{main::sidebar::Sidebar, components::{main::compose::Compose}};
+use crate::{main::sidebar::Sidebar, components::{main::compose::Compose}, STATE};
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{tesseract::Tesseract};
+use warp::{tesseract::Tesseract, crypto::DID};
 
 pub mod sidebar;
 pub mod compose;
@@ -13,6 +13,12 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope) -> Element {
+    let state = use_atom_ref(&cx, STATE);
+    let did = match state.read().chat.clone() {
+        Some(d) => d,
+        None => DID::default(),
+    };
+
     // Start UI
     global_css! {"
     .main {
@@ -28,7 +34,9 @@ pub fn Main(cx: Scope) -> Element {
         div {
             class: "main",
             Sidebar {},
-            Compose {},
+            Compose {
+                did: did
+            },
         }
     })
 }
