@@ -18,7 +18,7 @@ pub struct PersistedState {
 
 impl PersistedState {
     pub fn load_or_inital() -> Self {
-        let bytes = std::fs::read("/path/to/state");
+        let bytes = std::fs::read(STORAGE_LOCATION);
         match bytes {
             Ok(b) => { 
                 match serde_json::from_slice::<PersistedState>(&b) {
