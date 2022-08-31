@@ -114,6 +114,9 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     )} else {rsx!(
                         h3 {
                             "{username}"
+                        },
+                        p {
+                            "{cx.props.conversation.id}"
                         }
                     )}
                 },
