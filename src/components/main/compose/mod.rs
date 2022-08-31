@@ -4,7 +4,7 @@ use warp::crypto::DID;
 
 use crate::{
     components::main::compose::{topbar::TopBar, write::Write},
-    STATE, RAYGUN,
+    RAYGUN, STATE,
 };
 
 #[derive(PartialEq, Props)]
@@ -81,12 +81,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     on_submit: move |message| {
                         println!("Send message: {}", message);
                         text.set(String::from(""));
-                        match rg
-                            .read()
-                            .send_message()
-                        {
+                        // match rg
+                        //     .write()
+                        //     .send_message()
+                        // {
 
-                        }
+                        // }
                     },
                     on_upload: move |_| {}
                 }

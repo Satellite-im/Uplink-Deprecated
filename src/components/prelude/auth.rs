@@ -3,8 +3,9 @@ use std::sync::Arc;
 use dioxus::{desktop::use_window, events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
-use warp::{multipass::MultiPass, sync::RwLock, tesseract::Tesseract};
+use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
+use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};
 
 use crate::{
     components::ui_kit::{
@@ -32,14 +33,17 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let error = use_state(&cx, || String::from(""));
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
-    let _raygun = use_atom_ref(&cx, RAYGUN);
+    let raygun = use_atom_ref(&cx, RAYGUN);
     let tess = cx.props.tesseract.clone();
-    let dp = DEFAULT_PATH.read().clone();
 
     let mp = use_future(&cx, (&tess,), |(tess,)| async move {
-        warp_mp_ipfs::ipfs_identity_persistent(MpIpfsConfig::production(dp), tess, None)
-            .await
-            .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
+        warp_mp_ipfs::ipfs_identity_persistent(
+            MpIpfsConfig::production(DEFAULT_PATH.read().clone()),
+            tess,
+            None,
+        )
+        .await
+        .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
     });
 
     let account_fetch_status = match mp.value() {
@@ -48,9 +52,29 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
             match val.read().get_own_identity() {
                 Ok(i) => {
-                    window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/main", None, None);
-                    false
+                    let mp = val.clone();
+                    let rg = use_future(&cx, (), |()| async move {
+                        warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+                            Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
+                            mp,
+                            None,
+                        )
+                        .await
+                        .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
+                    });
+                    match rg.value() {
+                        Some(Ok(rg)) => {
+                            *raygun.write() = Some(rg.clone());
+                            window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
+                            use_router(&cx).push_route("/main", None, None);
+                            false
+                        }
+                        Some(Err(_)) => {
+                            //Note: Maybe want to return an error?
+                            true
+                        }
+                        None => true,
+                    }
                 }
                 Err(_) => true,
             }
@@ -103,8 +127,29 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         .create_identity(Some(username.as_str()), None)
     {
         Ok(_) => {
-            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+            let mp = multipass.read().clone().unwrap().clone();
+            let rg = use_future(&cx, (), |()| async move {
+                warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+                    Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
+                    mp,
+                    None,
+                )
+                .await
+                .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
+            });
+
+            match rg.value() {
+                Some(Ok(rg)) => {
+                    *raygun.write() = Some(rg.clone());
+                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                    use_router(&cx).push_route("/main", None, None);
+                }
+                Some(Err(_)) => {
+                    //Note: Maybe want to return an error?
+                    error.set("".into())
+                }
+                None => error.set("".into()),
+            }
         }
         Err(_) => error.set("".into()),
     };
@@ -117,8 +162,29 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         .create_identity(Some(username.as_str()), None)
     {
         Ok(_) => {
-            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+            let mp = multipass.read().clone().unwrap().clone();
+            let rg = use_future(&cx, (), |()| async move {
+                warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+                    Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
+                    mp,
+                    None,
+                )
+                .await
+                .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
+            });
+
+            match rg.value() {
+                Some(Ok(rg)) => {
+                    *raygun.write() = Some(rg.clone());
+                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                    use_router(&cx).push_route("/main", None, None);
+                }
+                Some(Err(_)) => {
+                    //Note: Maybe want to return an error?
+                    error.set("".into())
+                }
+                None => error.set("".into()),
+            }
         }
         Err(_) => error.set("".into()),
     };

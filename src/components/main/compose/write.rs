@@ -16,7 +16,6 @@ pub struct Props<'a> {
     on_upload: EventHandler<'a, ()>,
 }
 
-
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let script = use_state(&cx, String::new);
@@ -97,7 +96,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     text.set(e.value.clone());
                 },
                 onkeypress: move |evt| {
-                    if evt.key_code == KeyCode::Enter && !evt.shift_key {                        
+                    if evt.key_code == KeyCode::Enter && !evt.shift_key {
                         cx.props.on_submit.call(text.to_string());
                         text.set(String::from(""));
                     }
