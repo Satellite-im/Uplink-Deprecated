@@ -31,12 +31,21 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             &.as-modal {
                 position: fixed;
                 
+                .popup {
+                    height: calc(100% - 4rem);
+                    margin: 2rem;
+                    border-radius: 8px;
+                    .handle {
+                        display: none;
+                    }
+                }
             }
 
             &.hidden {
                 -webkit-backdrop-filter: none;
                 background: transparent;
                 pointer-events: none;
+                position: absolute;
             }
 
             .popup {
@@ -55,7 +64,14 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 margin-top: 50px;
 
                 &.full {
+                    // TODO: Only do this if max-content is larger than 50%
                     min-height: max-content;
+                    &.hidden {
+                        height: 0px;
+                        padding: 0;
+                        overflow: hidden;
+                        min-height: unset;
+                    }
                 }
                 &.hidden {
                     height: 0px;

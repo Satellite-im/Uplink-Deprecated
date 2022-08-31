@@ -37,6 +37,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             display: inline-flex;
             flex-direction: column;
             padding: 1rem;
+            width: calc(100% - 2rem);
 
             .add {
                 display: inline-flex;
