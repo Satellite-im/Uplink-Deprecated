@@ -28,6 +28,12 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     event.target.style.height = 'auto';
                     event.target.style.height = event.target.scrollHeight + offset + 'px';
                 });
+
+                element.addEventListener('keyup', function(event) {
+                    if (event.keyCode === 13) {
+                        element.target.innerHTML = '';
+                    }
+                });
                 element.removeAttribute('data-autoresize');
             });
         })()"
@@ -77,7 +83,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     let _ = &cx.props.on_upload.call(());
                 },
             }
-            input {
+            textarea {
                 class: "input resizeable-textarea",
                 oninput:|e| {
                     text.set(e.value.as_ref());
