@@ -347,29 +347,32 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         }
                                     }
                                     
-                                    match exist {
-                                        Some(_) => {
-                                            println!("exist");
-                                        }, //?
+                                    println!("Chat exist {:?}", exist.is_some());
+                                    let convo = match exist {
+                                        Some(c) => c,
                                         None => {
                                             let response = use_future(&cx, (), |_| async move {
                                                 rg.write().create_conversation(&did).await
                                             });
-                                                    
+
                                             let conversation = Conversation {
                                                 id: match response.value() {
                                                     Some(Ok(v)) => *v,
+                                                    // TODO: we can't actually add the conversation this way because 
+                                                    // if the resolve doesn't finish instantly, it will always use the default Uuid.
+                                                    // this would be fine if it ever resolved here again, but it doesn't seem to.
                                                     Some(Err(_)) => Uuid::default(),
                                                     None => Uuid::default(),
                                                 },
                                                 recipients: [my_did, user.clone()]
                                             };
-                                                
-                                            state.write().dispatch(Actions::ChatWith(conversation)).save();
-                                        }
-                                    }
 
-                                    
+                                            conversation
+                                        }
+                                    };
+
+                                    state.write().dispatch(Actions::ChatWith(convo)).save();
+
                                     cx.props.on_hide.call(());
                                 }
                             }
