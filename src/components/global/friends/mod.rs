@@ -338,28 +338,38 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         Err(_) => DID::default(),
                                     };
 
+                                    let mut exist = None;
+
                                     for chat in state.read().chats.iter() {
                                         if chat.recipients.contains(&my_did) && chat.recipients.contains(&user) {
-                                            state.write().dispatch(Actions::ChatWith(chat.clone())).save();// save?
-                                            cx.props.on_hide.call(());
+                                            exist = Some(chat.clone());
                                             break;
                                         }
                                     }
-             
-                                    let response = use_future(&cx, (), |_| async move {
-                                        rg.write().create_conversation(&did).await
-                                    });
-                                            
-                                    let conversation = Conversation {
-                                        id: match response.value() {
-                                            Some(Ok(v)) => v.clone(),
-                                            Some(Err(_)) => Uuid::default(),
-                                            None => Uuid::default(),
-                                        },
-                                        recipients: [my_did, user.clone()]
-                                    };
-                                        
-                                    state.write().dispatch(Actions::ChatWith(conversation)).save();
+                                    
+                                    match exist {
+                                        Some(_) => {
+                                            println!("exist");
+                                        }, //?
+                                        None => {
+                                            let response = use_future(&cx, (), |_| async move {
+                                                rg.write().create_conversation(&did).await
+                                            });
+                                                    
+                                            let conversation = Conversation {
+                                                id: match response.value() {
+                                                    Some(Ok(v)) => *v,
+                                                    Some(Err(_)) => Uuid::default(),
+                                                    None => Uuid::default(),
+                                                },
+                                                recipients: [my_did, user.clone()]
+                                            };
+                                                
+                                            state.write().dispatch(Actions::ChatWith(conversation)).save();
+                                        }
+                                    }
+
+                                    
                                     cx.props.on_hide.call(());
                                 }
                             }
