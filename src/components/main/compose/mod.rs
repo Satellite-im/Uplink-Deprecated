@@ -4,7 +4,7 @@ use warp::crypto::DID;
 
 use crate::{
     components::main::compose::{topbar::TopBar, write::Write},
-    STATE,
+    STATE, RAYGUN,
 };
 
 #[derive(PartialEq, Props)]
@@ -51,6 +51,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
+    let state = use_atom_ref(&cx, STATE);
+    let raygun = use_atom_ref(&cx, RAYGUN);
+    let rg = raygun.read().clone().unwrap().clone();
 
     cx.render(rsx! {
         div {
@@ -78,6 +81,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     on_submit: move |message| {
                         println!("Send message: {}", message);
                         text.set(String::from(""));
+                        match rg
+                            .read()
+                            .send_message()
+                        {
+
+                        }
                     },
                     on_upload: move |_| {}
                 }
