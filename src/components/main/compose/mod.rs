@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
 use sir::global_css;
+use warp::raygun::Conversation;
 
 use crate::{
     components::main::compose::{topbar::TopBar, write::Write},
-    RAYGUN, STATE, state::Conversation,
+    RAYGUN, STATE
 };
 
 #[derive(PartialEq, Props)]

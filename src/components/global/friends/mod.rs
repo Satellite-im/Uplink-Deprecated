@@ -17,7 +17,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER, RAYGUN, state::{Conversation, Actions}, STATE,
+    MULTIPASS, TOAST_MANAGER, RAYGUN, STATE,
 };
 
 pub mod friend;
@@ -322,57 +322,6 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             Friend {
                                 friend: user.clone(),
                                 on_chat: move |_| {
-                                    let did = user.clone();
-                                    let rg = raygun.read().clone().unwrap().clone();
-                                    
-                                    let my_did = match multipass
-                                        .read()
-                                        .clone()
-                                        .unwrap()
-                                        .write()
-                                        .get_own_identity()
-                                    {
-                                        Ok(ident) => {
-                                            ident.did_key()
-                                        }
-                                        Err(_) => DID::default(),
-                                    };
-
-                                    let mut exist = None;
-
-                                    for chat in state.read().chats.iter() {
-                                        if chat.recipients.contains(&my_did) && chat.recipients.contains(&user) {
-                                            exist = Some(chat.clone());
-                                            break;
-                                        }
-                                    }
-                                    
-                                    println!("Chat exist {:?}", exist.is_some());
-                                    let convo = match exist {
-                                        Some(c) => c,
-                                        None => {
-                                            let response = use_future(&cx, (), |_| async move {
-                                                rg.write().create_conversation(&did).await
-                                            });
-
-                                            let conversation = Conversation {
-                                                id: match response.value() {
-                                                    Some(Ok(v)) => *v,
-                                                    // TODO: we can't actually add the conversation this way because 
-                                                    // if the resolve doesn't finish instantly, it will always use the default Uuid.
-                                                    // this would be fine if it ever resolved here again, but it doesn't seem to.
-                                                    Some(Err(_)) => Uuid::default(),
-                                                    None => Uuid::default(),
-                                                },
-                                                recipients: [my_did, user.clone()]
-                                            };
-
-                                            conversation
-                                        }
-                                    };
-
-                                    state.write().dispatch(Actions::ChatWith(convo)).save();
-
                                     cx.props.on_hide.call(());
                                 }
                             }

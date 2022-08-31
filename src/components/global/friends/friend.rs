@@ -2,15 +2,16 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use warp::crypto::DID;
+use uuid::Uuid;
+use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     components::ui_kit::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    state::Actions,
-    MULTIPASS, STATE,
+    state::{Actions},
+    MULTIPASS, STATE, RAYGUN,
 };
 
 #[derive(Props)]
@@ -22,14 +23,49 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
-    let mp = multipass.read().clone().unwrap().clone();
+    let raygun = use_atom_ref(&cx, RAYGUN);
 
+    let mp = multipass.read().clone().unwrap().clone();
+    let rg = raygun.read().clone().unwrap().clone();
+
+    let my_did = match multipass
+        .read()
+        .clone()
+        .unwrap()
+        .write()
+        .get_own_identity()
+    {
+        Ok(ident) => {
+            ident.did_key()
+        }
+        Err(_) => DID::default(),
+    };
+    
     let friend = cx.props.friend.clone();
 
     let user = match mp.read().get_identity(friend.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
+
+    let conversation_response = use_future(&cx, (), |_| async move {
+        rg.write().create_conversation(&friend).await
+    });
+
+    let conversation = match conversation_response.value() {
+        Some(Ok(v)) => v.clone(),
+        // TODO: we can't actually add the conversation this way because 
+        // if the resolve doesn't finish instantly, it will always use the default Uuid.
+        // this would be fine if it ever resolved here again, but it doesn't seem to.
+        Some(Err(Error::ConversationExist { conversation })) => {
+            conversation.clone()
+        },
+        Some(Err(_)) => {
+            Conversation::default()
+        },
+        None => Conversation::default(),
+    };
+
 
     let username = user
         .first()
@@ -110,6 +146,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         IconButton {
                             icon: Shape::ChatAlt,
                             on_pressed: move |_| {
+                                
                                 cx.props.on_chat.call(());
                             }
                         }

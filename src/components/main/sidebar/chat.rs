@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::crypto::DID;
+use warp::raygun::Conversation;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::Conversation,
     MULTIPASS, STATE,
 };
 
@@ -92,7 +91,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let user = cx
         .props
         .conversation
-        .recipients
+        .recipients()
         .iter()
         .filter(|did| ident.did_key().ne(did))
         .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
@@ -107,7 +106,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let show_skeleton = username.is_empty();
     let active = match state.read().chat.clone() {
         Some(active_chat) => {
-            if active_chat.id == cx.props.conversation.id {
+            if active_chat.id() == cx.props.conversation.id() {
                 "active"
             } else {
                 "none"

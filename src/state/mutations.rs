@@ -1,4 +1,6 @@
-use super::{PersistedState, Conversation};
+use warp::raygun::Conversation;
+
+use super::PersistedState;
 
 pub struct Mutations;
 impl Mutations {
@@ -9,8 +11,8 @@ impl Mutations {
         for (i, chat) in state.chats.clone().iter().enumerate() {
             
             let mut recipients_equal = true;
-            for recipient in chat.recipients.clone() {
-                if !c.recipients.contains(&recipient) {
+            for recipient in chat.recipients().clone() {
+                if !c.recipients().contains(&recipient) {
                     recipients_equal = false;
                     break;
                 }

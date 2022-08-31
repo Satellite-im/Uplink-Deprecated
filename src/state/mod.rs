@@ -1,18 +1,12 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use warp::crypto::DID;
+use warp::{crypto::DID, raygun::Conversation};
 
 use crate::DEFAULT_PATH;
 
 use self::mutations::Mutations;
 
 pub mod mutations;
-
-#[derive(Clone, Serialize, Deserialize, Default, PartialEq)]
-pub struct Conversation {
-    pub id: Uuid,
-    pub recipients: [DID; 2],
-}
 
 pub enum Actions {
     ChatWith(Conversation),

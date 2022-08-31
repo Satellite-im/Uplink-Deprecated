@@ -1,10 +1,9 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::crypto::DID;
+use warp::raygun::Conversation;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::Conversation,
     MULTIPASS,
 };
 
@@ -68,7 +67,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let chatting_with = cx
         .props
         .conversation
-        .recipients
+        .recipients()
         .iter()
         .filter(|did| ident.did_key().ne(did))
         .last()
@@ -95,6 +94,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
+    let convo_id = cx.props.conversation.id();
+
     cx.render(rsx! {
         div {
             class: "topbar",
@@ -116,7 +117,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             "{username}"
                         },
                         p {
-                            "{cx.props.conversation.id}"
+                            "{convo_id}"
                         }
                     )}
                 },
