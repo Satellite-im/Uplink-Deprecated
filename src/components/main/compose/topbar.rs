@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{crypto::DID, raygun::Conversation};
+use uuid::Uuid;
+use warp::{raygun::Conversation, crypto::DID};
 
 use crate::{
-    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS,
+    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, MULTIPASS,
 };
 
 #[derive(Props)]
@@ -56,48 +56,31 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     "
     );
 
+    // Load Multipass & Raygun's Atom Ref
     let multipass = use_atom_ref(&cx, MULTIPASS);
+
+    // Read their values from locks
     let mp = multipass.read().clone().unwrap().clone();
 
-    let ident = mp
-        .read()
-        .get_own_identity()
-        .expect("Unexpected error <temp>");
+    let conversation_id = cx.props.conversation.id();
 
-    let recipients = cx.props.conversation.recipients();
-
-    let chatting_with = recipients
-        .iter()
-        .filter(|did| ident.did_key().ne(did))
-        .last();
-
-    let remote_did = match chatting_with {
+    // TODO: Make this more dynamic to include multiple PFPs and usernames.
+    // Consider code in this todo temporary and only supportive of 2 way convos
+    let display_did = match cx.props.conversation.recipients().last() {
         Some(d) => d.clone(),
         None => DID::default(),
     };
-
-    let user = match mp.read().get_identity(remote_did.into()) {
+    let display_user = match mp.read().get_identity(display_did.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
-
-    let username = user
+    let display_username = display_user
         .first()
         .map(|i| i.username())
         .unwrap_or_else(|| "".to_string());
+    // TODO-END
 
-    let status = match user
-        .first()
-        .map(|i| i.status_message())
-        .unwrap_or_else(|| None)
-    {
-        Some(s) => s,
-        None => String::from(""),
-    };
-
-    let show_skeleton = username.is_empty();
-
-    let convo_id = cx.props.conversation.id();
+    let show_skeleton = conversation_id == Uuid::default();
 
     cx.render(rsx! {
         div {
@@ -117,10 +100,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         InlineSkeleton {}
                     )} else {rsx!(
                         h3 {
-                            "{username}"
-                        },
-                        p {
-                            "{convo_id}"
+                            "{display_username}"
                         }
                     )}
                 },
@@ -128,7 +108,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     InlineSkeleton {}
                 )} else {rsx!(
                     span {
-                        "{status}"
+                        "{conversation_id}"
                     }
                 )}
             }

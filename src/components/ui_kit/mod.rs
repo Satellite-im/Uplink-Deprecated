@@ -71,7 +71,7 @@ pub fn build_style_tag() -> String {
 
             p {{
                 margin: 0;
-                font-size: 11px;
+                font-size: 11pt;
                 color: var(--theme-text);
                 font-family: 'Poppins', sans-serif;
 

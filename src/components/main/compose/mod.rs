@@ -4,7 +4,7 @@ use warp::raygun::Conversation;
 
 use crate::{
     components::main::compose::{topbar::TopBar, write::Write},
-    RAYGUN, STATE
+    STATE, RAYGUN
 };
 
 #[derive(PartialEq, Props)]
@@ -14,6 +14,7 @@ pub struct Props {
 
 pub mod topbar;
 pub mod write;
+pub mod messages;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
@@ -48,12 +49,16 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     );
 
     let state = use_atom_ref(&cx, STATE);
+    let conversation_id = cx.props.conversation.id();
+
+    // Load Multipass & Raygun's Atom Ref
+    let raygun = use_atom_ref(&cx, RAYGUN);
+
+    // Read their values from locks
+    let rg = raygun.read().clone().unwrap().clone();
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
-    let state = use_atom_ref(&cx, STATE);
-    let raygun = use_atom_ref(&cx, RAYGUN);
-    let rg = raygun.read().clone().unwrap().clone();
 
     cx.render(rsx! {
         div {
@@ -79,14 +84,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 class: "writer-container",
                 Write {
                     on_submit: move |message| {
-                        println!("Send message: {}", message);
                         text.set(String::from(""));
-                        // match rg
-                        //     .write()
-                        //     .send_message()
-                        // {
-
-                        // }
+                        let send_message = use_future(&cx, (), |_| async move {
+                            rg
+                                .write()
+                                .send_message()
+                        });
                     },
                     on_upload: move |_| {}
                 }

@@ -10,8 +10,7 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    state::{Actions},
-    MULTIPASS, STATE, RAYGUN,
+    MULTIPASS, RAYGUN, state::Actions, STATE,
 };
 
 #[derive(Props)]
@@ -22,25 +21,17 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    let state = use_atom_ref(&cx, STATE);
+
+    // Load Multipass & Raygun's Atom Ref
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let raygun = use_atom_ref(&cx, RAYGUN);
 
+    // Read their values from locks
     let mp = multipass.read().clone().unwrap().clone();
     let rg = raygun.read().clone().unwrap().clone();
 
-    let my_did = match multipass
-        .read()
-        .clone()
-        .unwrap()
-        .write()
-        .get_own_identity()
-    {
-        Ok(ident) => {
-            ident.did_key()
-        }
-        Err(_) => DID::default(),
-    };
-    
+    // Determine our friends DID
     let friend = cx.props.friend.clone();
 
     let user = match mp.read().get_identity(friend.clone().into()) {
@@ -66,13 +57,12 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => Conversation::default(),
     };
 
-
     let username = user
         .first()
         .map(|i| i.username())
         .unwrap_or_else(|| "".to_string());
 
-    let show_skeleton = username.is_empty();
+    let show_skeleton = username.is_empty() || conversation.id() == Uuid::default();
 
     global_css! {"
         .request {
@@ -146,7 +136,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         IconButton {
                             icon: Shape::ChatAlt,
                             on_pressed: move |_| {
-                                
+                                state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
                                 cx.props.on_chat.call(());
                             }
                         }

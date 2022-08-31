@@ -1,18 +1,15 @@
-use std::rc::Rc;
-
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
-use crate::components::ui_kit::{
+use crate::{components::ui_kit::{
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
-};
+}};
 
 #[derive(Props)]
 pub struct Props<'a> {
     on_submit: EventHandler<'a, String>,
-    // keypress: EventHandler<'a, ()>,
     on_upload: EventHandler<'a, ()>,
 }
 
@@ -41,7 +38,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         })()"
             .to_string(),
     );
-
+    
     global_css!(
         "
         .write {

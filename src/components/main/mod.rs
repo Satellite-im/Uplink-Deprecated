@@ -1,10 +1,7 @@
-use std::sync::Arc;
-
-use crate::{components::main::compose::Compose, main::sidebar::Sidebar, MULTIPASS, RAYGUN, STATE, DEFAULT_PATH};
+use crate::{components::main::compose::Compose, main::sidebar::Sidebar, STATE};
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{crypto::DID, raygun::{RayGun, Conversation}, sync::RwLock, tesseract::Tesseract};
-use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};
+use warp::{raygun::Conversation, tesseract::Tesseract};
 
 pub mod compose;
 pub mod sidebar;
@@ -17,7 +14,6 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let multipass = use_atom_ref(&cx, MULTIPASS);
 
     let conversation = match state.read().chat.clone() {
         Some(c) => c,

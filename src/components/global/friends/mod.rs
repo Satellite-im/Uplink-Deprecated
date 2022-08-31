@@ -9,15 +9,14 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
 use sir::global_css;
 
-use uuid::Uuid;
-use warp::{crypto::DID, raygun::RayGun};
+use warp::crypto::DID;
 
 use crate::{
     components::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER, RAYGUN, STATE,
+    MULTIPASS, TOAST_MANAGER
 };
 
 pub mod friend;
@@ -33,12 +32,9 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
-    let raygun = use_atom_ref(&cx, RAYGUN);
     let mp = multipass.read().clone().unwrap().clone();
-    let rg = raygun.read().clone().unwrap().clone();
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);

@@ -79,7 +79,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     "}
 
     let multipass = use_atom_ref(&cx, MULTIPASS);
-    let mp = multipass.read().clone().unwrap().clone();
 
     let mp = multipass.read().clone().unwrap().clone();
 

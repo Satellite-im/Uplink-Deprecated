@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use warp::{crypto::DID, raygun::Conversation};
+use warp::raygun::Conversation;
 
 use crate::DEFAULT_PATH;
 
@@ -29,8 +28,7 @@ impl PersistedState {
     pub fn save(&self) {
         if let Ok(bytes) = serde_json::to_vec(self) {
             if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".warpgui.state.json"), &bytes)
-            {
-            }
+            {}
         }
     }
 

@@ -3,8 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 
 use crate::{
-    components::ui_kit::{popup::Popup, icon_button::IconButton, button::Button},
-    MULTIPASS, TOAST_MANAGER,
+    components::ui_kit::{popup::Popup, button::Button},
 };
 
 #[derive(Props)]
@@ -15,10 +14,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let mp = multipass.read().clone().unwrap().clone();
-
     global_css! {"
         .profile {
             display: inline-flex;
