@@ -60,6 +60,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
 
+    let text_as_vec = text.to_string()
+        .split("\n")
+        .filter(|&s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect::<Vec<_>>();
+
     cx.render(rsx! {
         div {
             class: "compose",
@@ -88,7 +94,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         let send_message = use_future(&cx, (), |_| async move {
                             rg
                                 .write()
-                                .send_message()
+                                .send(conversation_id, None, text_as_vec.clone())
                         });
                     },
                     on_upload: move |_| {}
