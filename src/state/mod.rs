@@ -2,11 +2,11 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::crypto::DID;
 
+use crate::DEFAULT_PATH;
+
 use self::mutations::Mutations;
 
 pub mod mutations;
-
-const STORAGE_LOCATION: &str = "./.cache/.warpgui.state.json";
 
 #[derive(Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct Conversation {
@@ -26,19 +26,17 @@ pub struct PersistedState {
 
 impl PersistedState {
     pub fn load_or_inital() -> Self {
-        match std::fs::read(STORAGE_LOCATION) {
+        match std::fs::read(DEFAULT_PATH.read().join(".warpgui.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => Default::default(),
         }
     }
 
     pub fn save(&self) {
-        let bytes = serde_json::to_vec(self.into());
-        match bytes {
-            Ok(b) => {
-                let _ = std::fs::write(STORAGE_LOCATION, &b);
+        if let Ok(bytes) = serde_json::to_vec(self) {
+            if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".warpgui.state.json"), &bytes)
+            {
             }
-            Err(_) => {}
         }
     }
 
