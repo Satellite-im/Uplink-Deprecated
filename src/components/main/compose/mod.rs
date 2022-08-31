@@ -50,6 +50,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
 
     let blur = state.read().chat.is_none();
+    let text = use_state(&cx, || String::from(""));
 
     cx.render(rsx! {
         div {
@@ -76,8 +77,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 Write {
                     on_submit: move |message| {
                         println!("Send message: {}", message);
+                        text.set(String::from(""));
                     },
-                    on_upload: move |_| {},
+                    on_upload: move |_| {}
                 }
             }
         }
