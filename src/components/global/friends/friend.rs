@@ -21,7 +21,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 

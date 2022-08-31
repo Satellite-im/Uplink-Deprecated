@@ -10,7 +10,7 @@ use dioxus_toast::{Position, ToastInfo};
 use sir::global_css;
 
 use uuid::Uuid;
-use warp::crypto::DID;
+use warp::{crypto::DID, raygun::RayGun};
 
 use crate::{
     components::{
@@ -324,9 +324,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 on_chat: move |_| {
                                     let did = user.clone();
                                     let rg = raygun.read().clone().unwrap().clone();
-                                    let response = use_future(&cx, (), |_| async move {
-                                        rg.write().create_conversation(&did).await
-                                    });
+                                    
                                     let my_did = match multipass
                                         .read()
                                         .clone()
@@ -339,14 +337,26 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         }
                                         Err(_) => DID::default(),
                                     };
-                                    let conversation = Conversation {
-                                        id: match response.value() {
-                                            Some(Ok(v)) => v.clone(),
-                                            Some(Err(_)) => Uuid::default(),
-                                            None => Uuid::default(),
-                                        },
-                                        recipients: [my_did, user.clone()]
+
+                                    let conversation = for chat in state.read().chats.clone() {
+                                        if chat.recipients.contains(&my_did) && chat.recipients.contains(&user) {
+                                            break chat;
+                                        } else {
+                                            let response = use_future(&cx, (), |_| async move {
+                                                rg.write().create_conversation(&did).await
+                                            });
+                                            
+                                            Conversation {
+                                                id: match response.value() {
+                                                    Some(Ok(v)) => v.clone(),
+                                                    Some(Err(_)) => Uuid::default(),
+                                                    None => Uuid::default(),
+                                                },
+                                                recipients: [my_did, user.clone()]
+                                            }
+                                        }
                                     };
+                                    
                                     state.write().dispatch(Actions::ChatWith(conversation)).save();
                                     cx.props.on_hide.call(());
                                 }
