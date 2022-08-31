@@ -60,11 +60,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
 
-    let text_as_vec = text.to_string()
-        .split("\n")
-        .filter(|&s| !s.is_empty())
-        .map(|s| s.to_string())
-        .collect::<Vec<_>>();
 
     cx.render(rsx! {
         div {
@@ -89,12 +84,23 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             div {
                 class: "writer-container",
                 Write {
-                    on_submit: move |message| {
+                    on_submit: move |message: String| {
                         text.set(String::from(""));
+                        let rg = rg.clone();
+
+                        let text_as_vec = message
+                            .to_string()
+                            .split("\n")
+                            .filter(|&s| !s.is_empty())
+                            .map(|s| s.to_string())
+                            .collect::<Vec<_>>();
+                        let text_as_vec = text_as_vec.clone();
+                        // TODO: We need to wire this message up to display differently
+                        // until we confim wether it was successfully sent or failed
                         let send_message = use_future(&cx, (), |_| async move {
                             rg
                                 .write()
-                                .send(conversation_id, None, text_as_vec.clone())
+                                .send(conversation_id, None, text_as_vec.clone()).await
                         });
                     },
                     on_upload: move |_| {}

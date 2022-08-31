@@ -55,7 +55,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 margin-top: 50px;
 
                 &.full {
-                    height: max-content;
+                    min-height: max-content;
                 }
                 &.hidden {
                     height: 0px;
