@@ -16,7 +16,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let text = use_state(&cx, || "");
+    let text = use_state(&cx, String::new);
     let script = use_state(&cx, String::new);
     // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
     script.set(
@@ -34,7 +34,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             .to_string(),
     );
 
-    global_css!("
+    global_css!(
+        "
         .write {
             flex: 1;
             display: inline-flex;
@@ -80,14 +81,14 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             input {
                 class: "input resizeable-textarea",
                 oninput:|e| {
-                    text.set(e.value.as_ref());
+                    text.set(e.value.clone());
                 },
                 value: "{text}",
                 onkeypress: move |evt| {
                     if evt.key_code == KeyCode::Enter {
                         evt.cancel_bubble();
                         cx.props.on_submit.call(text.to_string());
-                        text.set("");
+                        text.set(String::new());
                     }
                 },
                 placeholder: "Say something..."
@@ -104,7 +105,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 state: icon_button::State::Secondary,
                 on_pressed: move |_| {
                     let _ = &cx.props.on_submit.call(text.to_string());
-                    text.set("");
+                    text.set(String::new());
                 },
             }
         }
