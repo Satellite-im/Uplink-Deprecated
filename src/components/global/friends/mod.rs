@@ -16,7 +16,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER,
+    MULTIPASS, TOAST_MANAGER, RAYGUN, state::Conversation,
 };
 
 pub mod friend;
@@ -34,7 +34,9 @@ pub struct Props<'a> {
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
+    let raygun = use_atom_ref(&cx, RAYGUN);
     let mp = multipass.read().clone().unwrap().clone();
+    let rg = raygun.read().clone().unwrap().clone();
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
@@ -318,6 +320,27 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             Friend {
                                 friend: user.clone(),
                                 on_chat: move |_| {
+                                    let did = user.clone();
+                                    let response = use_future(&cx, (), |_| async move {
+                                        rg.read().create_conversation(&did).await
+                                    });
+                                    let my_did = match multipass
+                                        .read()
+                                        .clone()
+                                        .unwrap()
+                                        .write()
+                                        .get_own_identity()
+                                    {
+                                        Ok(ident) => {
+                                            ident.did_key()
+                                        }
+                                        Err(_) => DID::default(),
+                                    };
+                                    // TODO: store conversation ID for tracking, 
+                                    let conversation = Conversation {
+                                        id: user.clone(),
+                                        recipients: [my_did, user.clone()]
+                                    };
                                     cx.props.on_hide.call(());
                                 }
                             }

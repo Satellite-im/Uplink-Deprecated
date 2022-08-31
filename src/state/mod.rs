@@ -7,6 +7,11 @@ pub mod mutations;
 
 const STORAGE_LOCATION: &str = "./.cache/.warpgui.state.json";
 
+pub struct Conversation {
+    pub id: DID,
+    pub recipients: [DID; 2],
+}
+
 pub enum Actions {
     ChatWith(DID),
 }
