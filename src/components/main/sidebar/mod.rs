@@ -98,7 +98,7 @@ pub fn Sidebar(cx: Scope) -> Element {
                             let conversation = conv.clone();
                             rsx!(
                                 chat::Chat {
-                                    conversation: conversation,
+                                    conversation: conversation.clone(),
                                     on_pressed: move |_| {
                                         state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
                                     }

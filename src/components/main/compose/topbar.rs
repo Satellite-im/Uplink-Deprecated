@@ -4,7 +4,8 @@ use warp::crypto::DID;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS, state::Conversation,
+    state::Conversation,
+    MULTIPASS,
 };
 
 #[derive(Props)]
@@ -59,10 +60,19 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
-    let chatting_with = match cx.props.conversation.clone().recipients.last() {
-        Some(d) => d,
-        None => &DID::default(),
-    };
+    let ident = mp
+        .read()
+        .get_own_identity()
+        .expect("Unexpected error <temp>");
+
+    let chatting_with = cx
+        .props
+        .conversation
+        .recipients
+        .iter()
+        .filter(|did| ident.did_key().ne(did))
+        .last()
+        .expect("blah");
 
     let user = match mp.read().get_identity(chatting_with.clone().into()) {
         Ok(f) => f,

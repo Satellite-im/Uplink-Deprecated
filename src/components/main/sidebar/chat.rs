@@ -4,7 +4,8 @@ use warp::crypto::DID;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS, STATE, state::Conversation,
+    state::Conversation,
+    MULTIPASS, STATE,
 };
 
 #[derive(Props)]
@@ -81,17 +82,23 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
+    let mp = multipass.read().clone().unwrap().clone();
 
-    let chatting_with = match cx.props.conversation.clone().recipients.last() {
-        Some(d) => d,
-        None => &DID::default(),
-    };
+    let ident = mp
+        .read()
+        .get_own_identity()
+        .expect("Unexpected error <temp>");
 
-    let user = match mp.read().get_identity(chatting_with.clone().into()) {
-        Ok(f) => f,
-        Err(_) => vec![],
-    };
-
+    let user = cx
+        .props
+        .conversation
+        .recipients
+        .iter()
+        .filter(|did| ident.did_key().ne(did))
+        .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        .last()
+        .expect("blah");
+        
     let username = user
         .first()
         .map(|i| i.username())
