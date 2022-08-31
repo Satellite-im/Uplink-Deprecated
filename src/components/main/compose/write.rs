@@ -16,7 +16,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let text = use_state(&cx, || "".to_string());
+    let text = use_state(&cx, || "");
     let script = use_state(&cx, String::new);
     // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
     script.set(
@@ -34,8 +34,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             .to_string(),
     );
 
-    global_css!(
-        "
+    global_css!("
         .write {
             flex: 1;
             display: inline-flex;
@@ -70,45 +69,44 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     "
     );
 
-
     cx.render(rsx! {
-        div {
-            class: "write",
+        div { class: "write",
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
                     let _ = &cx.props.on_upload.call(());
                 },
-            },
-            textarea {
+            }
+            input {
                 class: "input resizeable-textarea",
-                oninput: |e| {
-                    text.set(e.value.clone());
+                oninput:|e| {
+                    text.set(e.value.as_ref());
                 },
-                onkeypress: |evt| {
+                value: "{text}",
+                onkeypress: move |evt| {
                     if evt.key_code == KeyCode::Enter {
+                        evt.cancel_bubble();
                         cx.props.on_submit.call(text.to_string());
-                        text.set(String::from(""));
+                        text.set("");
                     }
                 },
-                placeholder: "Say something..",
-                "{text}"
-            },
+                placeholder: "Say something..."
+            }
             script {
                 dangerous_inner_html: "{script}"
-            },
+            }
             div {
                 class: "extension-holder",
                 SmallExtensionPlaceholder {}
-            },
+            }
             IconButton {
                 icon: Shape::ArrowRight,
                 state: icon_button::State::Secondary,
                 on_pressed: move |_| {
                     let _ = &cx.props.on_submit.call(text.to_string());
-                    text.set(String::from(""));
+                    text.set("");
                 },
-            },
-        },
+            }
+        }
     })
 }
