@@ -321,8 +321,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 friend: user.clone(),
                                 on_chat: move |_| {
                                     let did = user.clone();
+                                    let rg = raygun.read().clone().unwrap().clone();
                                     let response = use_future(&cx, (), |_| async move {
-                                        rg.read().create_conversation(&did).await
+                                        rg.write().create_conversation(&did).await
                                     });
                                     let my_did = match multipass
                                         .read()
