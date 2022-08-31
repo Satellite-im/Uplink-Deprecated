@@ -89,12 +89,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         let rg = rg.clone();
 
                         let text_as_vec = message
-                            .to_string()
                             .split("\n")
                             .filter(|&s| !s.is_empty())
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
-                        let text_as_vec = text_as_vec.clone();
+
                         // TODO: We need to wire this message up to display differently
                         // until we confim wether it was successfully sent or failed
                         let send_message = use_future(&cx, (), |_| async move {
@@ -102,6 +101,16 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 .write()
                                 .send(conversation_id, None, text_as_vec.clone()).await
                         });
+
+
+                        match send_message.value() {
+                            Some(Ok(_)) => {},
+                            Some(Err(_e)) => {
+                                println!("{_e}");
+                            },
+                            None => {}
+                        };
+                        send_message.restart();
                     },
                     on_upload: move |_| {}
                 }
