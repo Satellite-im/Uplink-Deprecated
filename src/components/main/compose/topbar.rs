@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::{raygun::Conversation, crypto::DID};
+use warp::{crypto::DID, raygun::Conversation};
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
@@ -64,20 +64,19 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .get_own_identity()
         .expect("Unexpected error <temp>");
 
-    let chatting_with = cx
-        .props
-        .conversation
-        .recipients()
+    let recipients = cx.props.conversation.recipients();
+
+    let chatting_with = recipients
         .iter()
         .filter(|did| ident.did_key().ne(did))
         .last();
 
     let remote_did = match chatting_with {
-        Some(d) => d,
-        None => &DID::default(),
+        Some(d) => d.clone(),
+        None => DID::default(),
     };
 
-    let user = match mp.read().get_identity(remote_did.clone().into()) {
+    let user = match mp.read().get_identity(remote_did.into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
