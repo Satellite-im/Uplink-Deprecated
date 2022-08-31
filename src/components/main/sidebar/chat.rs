@@ -4,7 +4,7 @@ use warp::raygun::Conversation;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS, STATE,
+    MULTIPASS, STATE, LANGUAGE,
 };
 
 #[derive(Props)]
@@ -15,8 +15,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
-
     global_css! {"
         .sidebar {
             .chat {
@@ -78,6 +76,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         }
     "}
 
+    let state = use_atom_ref(&cx, STATE);
+    let l = use_atom_ref(&cx, LANGUAGE).read();
+
     let multipass = use_atom_ref(&cx, MULTIPASS);
 
     let mp = multipass.read().clone().unwrap().clone();
@@ -95,7 +96,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .filter(|did| ident.did_key().ne(did))
         .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
         .last()
-        .expect("blah");
+        .expect("User doesn't exist, chatbar.rs user definition");
         
     let username = user
         .first()
@@ -142,7 +143,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        "It's quiet... click here to start a convorsation with Jane Doe."
+                        "{l.chat_placeholder}"
                     }
                 )}
             },

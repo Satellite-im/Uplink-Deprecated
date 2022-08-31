@@ -87,7 +87,8 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                 h3 {
                     margin: 0;
-                    font-size: 13pt;
+                    font-size: 12pt;
+                    max-width: 100%;
                 }
             }
 

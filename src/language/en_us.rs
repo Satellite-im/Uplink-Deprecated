@@ -12,5 +12,15 @@ pub fn make() -> Language {
         create_account: "Create Account".to_string(),
         create_account_desc:
             "It's free and fast, just tell us what you'd like your username to be.".to_string(),
+        choose_username: "Choose username".to_string(),
+        chatbar_placeholder: "Say something...".to_string(),
+        chat_placeholder: "It's quiet... click here to start this convorsation.".to_string(),
+        copy_friend_code: "Copy Your Friend Code".to_string(),
+        copy_code: "Copy Code".to_string(),
+        copied_code: "Friend code copied!".to_string(),
+        add_someone: "Add Someone".to_string(),
+        add_placeholder: "Warp#a3fdc6..".to_string(),
+        request_sent: "Friend request sent!".to_string(),
+        invalid_code: "Invalid friend code supplied".to_string(),
     }
 }

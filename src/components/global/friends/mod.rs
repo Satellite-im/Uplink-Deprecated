@@ -16,7 +16,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER
+    MULTIPASS, TOAST_MANAGER, LANGUAGE
 };
 
 pub mod friend;
@@ -32,9 +32,28 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    global_css! {"
+        .friends {
+            display: inline-flex;
+            flex-direction: column;
+            padding: 1rem;
+
+            .add {
+                display: inline-flex;
+                flex-direction: row;
+
+                .icon-input {
+                    width: 100%;
+                    margin-right: 1rem;
+                }
+            }
+        }
+    "};
+
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
+    let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
@@ -73,25 +92,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         Ok(f) => f,
         Err(_) => vec![],
     });
-
-    global_css! {"
-        .friends {
-            display: inline-flex;
-            flex-direction: column;
-            padding: 1rem;
-
-
-            .add {
-                display: inline-flex;
-                flex-direction: row;
-
-                .icon-input {
-                    width: 100%;
-                    margin-right: 1rem;
-                }
-            }
-        }
-    "};
+    
 
     cx.render(rsx! {
         Popup {
@@ -109,12 +110,12 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "{cx.props.title}",
                     },
                     label {
-                        "Copy Your Friend Code",
+                        "{l.copy_friend_code}",
                     },
                     div {
                         class: "add",
                         Button {
-                            text: "Copy Code".to_string(),
+                            text: l.copy_code.to_string(),
                             icon: Shape::ClipboardCopy,
                             on_pressed: move |e: UiEvent<MouseData>| {
                                 e.cancel_bubble();
@@ -142,7 +143,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     label {
-                        "Add Someone",
+                        "{l.add_someone}",
                     },
                     span {
                         class: "error_text",
@@ -151,7 +152,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     div {
                         class: "add",
                         IconInput {
-                            placeholder: "Warp#a3fdc6..".to_string(),
+                            placeholder: l.add_placeholder.clone(),
                             icon: Shape::UserAdd,
                             value: remote_friend.to_string(),
                             on_change: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
@@ -169,7 +170,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             Ok(_) => {
                                                 let single_toast = ToastInfo {
                                                     position: Position::TopRight,
-                                                    ..ToastInfo::simple("Friend request sent!")
+                                                    ..ToastInfo::simple(l.request_sent.clone().as_ref())
                                                 };
                                                 let _id = toast.write().popup(single_toast);
                                                 add_error.set("");

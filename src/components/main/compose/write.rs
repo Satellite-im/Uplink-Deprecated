@@ -5,7 +5,7 @@ use sir::global_css;
 use crate::{components::ui_kit::{
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
-}};
+}, LANGUAGE};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -78,6 +78,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     );
 
     let text = use_state(&cx, || String::from(""));
+    let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {
         div { class: "write",
@@ -98,7 +99,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         text.set(String::from(""));
                     }
                 },
-                placeholder: "Say something..."
+                placeholder: "{l.chatbar_placeholder}"
             }
             script {
                 dangerous_inner_html: "{script}"

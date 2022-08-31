@@ -3,7 +3,7 @@ use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
-    components::main::compose::{topbar::TopBar, write::Write},
+    components::main::compose::{topbar::TopBar, write::Write, messages::Messages},
     STATE, RAYGUN
 };
 
@@ -80,6 +80,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             },
             div {
                 class: "messages-container",
+                Messages {
+                    conversation: cx.props.conversation.clone(),
+                }
             },
             div {
                 class: "writer-container",
