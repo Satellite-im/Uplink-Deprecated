@@ -4,12 +4,12 @@ use warp::crypto::DID;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS,
+    MULTIPASS, state::Conversation,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
-    did: DID,
+    conversation: Conversation,
     on_call: EventHandler<'a, ()>,
 }
 
@@ -59,9 +59,12 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
-    let usr = cx.props.did.clone();
+    let chatting_with = match cx.props.conversation.clone().recipients.last() {
+        Some(d) => d,
+        None => &DID::default(),
+    };
 
-    let user = match mp.read().get_identity(usr.clone().into()) {
+    let user = match mp.read().get_identity(chatting_with.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };

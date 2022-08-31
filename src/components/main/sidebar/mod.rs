@@ -94,13 +94,13 @@ pub fn Sidebar(cx: Scope) -> Element {
             if has_chats {
                 rsx!(
                     div {
-                        state.read().chats.iter().rev().map(|did| {
-                            let owned_did = did.clone();
+                        state.read().chats.iter().rev().map(|conv| {
+                            let conversation = conv.clone();
                             rsx!(
                                 chat::Chat {
-                                    did: owned_did.clone(),
+                                    conversation: conversation,
                                     on_pressed: move |_| {
-                                        state.write().dispatch(Actions::ChatWith(owned_did.clone())).save();
+                                        state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
                                     }
                                 }
                             )

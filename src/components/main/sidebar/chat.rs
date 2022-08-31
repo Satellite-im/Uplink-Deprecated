@@ -4,12 +4,12 @@ use warp::crypto::DID;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS, STATE,
+    MULTIPASS, STATE, state::Conversation,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
-    did: DID,
+    conversation: Conversation,
     on_pressed: EventHandler<'a, ()>,
 }
 
@@ -81,7 +81,13 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
 
-    let user = match mp.read().get_identity(cx.props.did.clone().into()) {
+
+    let chatting_with = match cx.props.conversation.clone().recipients.last() {
+        Some(d) => d,
+        None => &DID::default(),
+    };
+
+    let user = match mp.read().get_identity(chatting_with.clone().into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
@@ -94,7 +100,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let show_skeleton = username.is_empty();
     let active = match state.read().chat.clone() {
         Some(active_chat) => {
-            if active_chat == cx.props.did {
+            if active_chat.id == cx.props.conversation.id {
                 "active"
             } else {
                 "none"

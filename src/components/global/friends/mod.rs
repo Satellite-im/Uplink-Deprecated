@@ -9,6 +9,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
 use sir::global_css;
 
+use uuid::Uuid;
 use warp::crypto::DID;
 
 use crate::{
@@ -16,7 +17,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER, RAYGUN, state::Conversation,
+    MULTIPASS, TOAST_MANAGER, RAYGUN, state::{Conversation, Actions}, STATE,
 };
 
 pub mod friend;
@@ -32,6 +33,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let state = use_atom_ref(&cx, STATE);
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let raygun = use_atom_ref(&cx, RAYGUN);
@@ -337,11 +339,15 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         }
                                         Err(_) => DID::default(),
                                     };
-                                    // TODO: store conversation ID for tracking, 
                                     let conversation = Conversation {
-                                        id: user.clone(),
+                                        id: match response.value() {
+                                            Some(Ok(v)) => v.clone(),
+                                            Some(Err(_)) => Uuid::default(),
+                                            None => Uuid::default(),
+                                        },
                                         recipients: [my_did, user.clone()]
                                     };
+                                    state.write().dispatch(Actions::ChatWith(conversation)).save();
                                     cx.props.on_hide.call(());
                                 }
                             }

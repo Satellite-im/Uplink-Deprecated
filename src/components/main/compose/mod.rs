@@ -1,15 +1,14 @@
 use dioxus::prelude::*;
 use sir::global_css;
-use warp::crypto::DID;
 
 use crate::{
     components::main::compose::{topbar::TopBar, write::Write},
-    RAYGUN, STATE,
+    RAYGUN, STATE, state::Conversation,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
-    did: DID,
+    conversation: Conversation,
 }
 
 pub mod topbar;
@@ -67,7 +66,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             } else {
                 rsx!(
                     TopBar {
-                        did: cx.props.did.clone(),
+                        conversation: cx.props.conversation.clone(),
                         on_call: move |_| {},
                     }
                 )

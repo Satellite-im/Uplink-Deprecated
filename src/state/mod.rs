@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 use warp::crypto::DID;
 
 use self::mutations::Mutations;
@@ -7,19 +8,20 @@ pub mod mutations;
 
 const STORAGE_LOCATION: &str = "./.cache/.warpgui.state.json";
 
+#[derive(Clone, Serialize, Deserialize, Default, PartialEq)]
 pub struct Conversation {
-    pub id: DID,
+    pub id: Uuid,
     pub recipients: [DID; 2],
 }
 
 pub enum Actions {
-    ChatWith(DID),
+    ChatWith(Conversation),
 }
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct PersistedState {
-    pub chat: Option<DID>,
-    pub chats: Vec<DID>,
+    pub chat: Option<Conversation>,
+    pub chats: Vec<Conversation>,
 }
 
 impl PersistedState {
@@ -42,7 +44,7 @@ impl PersistedState {
 
     pub fn dispatch(&mut self, action: Actions) -> Self {
         match action {
-            Actions::ChatWith(did) => Mutations::chat_with(self, did),
+            Actions::ChatWith(conversation) => Mutations::chat_with(self, conversation),
         };
         PersistedState {
             chats: self.chats.clone(),

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{components::main::compose::Compose, main::sidebar::Sidebar, MULTIPASS, RAYGUN, STATE, DEFAULT_PATH};
+use crate::{components::main::compose::Compose, main::sidebar::Sidebar, MULTIPASS, RAYGUN, STATE, DEFAULT_PATH, state::Conversation};
 use dioxus::prelude::*;
 use sir::global_css;
 use warp::{crypto::DID, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
@@ -19,9 +19,9 @@ pub fn Main(cx: Scope) -> Element {
     let state = use_atom_ref(&cx, STATE);
     let multipass = use_atom_ref(&cx, MULTIPASS);
 
-    let did = match state.read().chat.clone() {
-        Some(d) => d,
-        None => DID::default(),
+    let conversation = match state.read().chat.clone() {
+        Some(c) => c,
+        None => Conversation::default(),
     };
 
     // Start UI
@@ -40,7 +40,7 @@ pub fn Main(cx: Scope) -> Element {
             class: "main",
             Sidebar {},
             Compose {
-                did: did
+                conversation: conversation
             },
         }
     })
