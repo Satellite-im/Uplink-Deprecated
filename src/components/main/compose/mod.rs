@@ -3,8 +3,8 @@ use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
-    components::main::compose::{topbar::TopBar, write::Write, messages::Messages},
-    STATE, RAYGUN
+    components::main::compose::{messages::Messages, topbar::TopBar, write::Write},
+    RAYGUN, STATE,
 };
 
 #[derive(PartialEq, Props)]
@@ -12,9 +12,9 @@ pub struct Props {
     conversation: Conversation,
 }
 
+pub mod messages;
 pub mod topbar;
 pub mod write;
-pub mod messages;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
@@ -60,7 +60,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
 
-
     cx.render(rsx! {
         div {
             class: "compose",
@@ -99,21 +98,19 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
                         // TODO: We need to wire this message up to display differently
                         // until we confim wether it was successfully sent or failed
-                        let send_message = use_future(&cx, (), |_| async move {
-                            rg
+                        let send_message = warp::async_block_in_place_uncheck(rg
                                 .write()
-                                .send(conversation_id, None, text_as_vec.clone()).await
-                        });
+                                .send(conversation_id, None, text_as_vec.clone()));
 
 
-                        match send_message.value() {
-                            Some(Ok(_)) => {},
-                            Some(Err(_e)) => {
+                        match send_message {
+                            Ok(_) => {
+                                println!("sent");
+                            },
+                            Err(_e) => {
                                 println!("{_e}");
                             },
-                            None => {}
                         };
-                        send_message.restart();
                     },
                     on_upload: move |_| {}
                 }

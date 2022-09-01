@@ -10,7 +10,8 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    MULTIPASS, RAYGUN, state::Actions, STATE,
+    state::Actions,
+    MULTIPASS, RAYGUN, STATE,
 };
 
 #[derive(Props)]
@@ -39,22 +40,22 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         Err(_) => vec![],
     };
 
-    let conversation_response = use_future(&cx, (), |_| async move {
-        rg.write().create_conversation(&friend).await
+    tokio::task::spawn_blocking(move || {
+        std::thread::sleep(std::time::Duration::from_millis(120));
     });
 
-    let conversation = match conversation_response.value() {
-        Some(Ok(v)) => v.clone(),
-        // TODO: we can't actually add the conversation this way because 
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
+    let conversation_response =
+        warp::async_block_in_place_uncheck(rg.write().create_conversation(&friend));
+
+    let conversation = match conversation_response {
+        Ok(v) => v.clone(),
+        // TODO: we can't actually add the conversation this way because
         // if the resolve doesn't finish instantly, it will always use the default Uuid.
         // this would be fine if it ever resolved here again, but it doesn't seem to.
-        Some(Err(Error::ConversationExist { conversation })) => {
-            conversation.clone()
-        },
-        Some(Err(_)) => {
-            Conversation::default()
-        },
-        None => Conversation::default(),
+        Err(Error::ConversationExist { conversation }) => conversation.clone(),
+        Err(_) => Conversation::default(),
     };
 
     let username = user

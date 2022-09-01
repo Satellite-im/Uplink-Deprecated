@@ -210,7 +210,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             IconInput {
                                 icon: Shape::Identification,
                                 value: username.clone().to_string(),
-                                placeholder: l.choose_username.clone(),
+                                placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
                                     username.set(evt.value.clone());
                                 },
@@ -219,7 +219,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             div { class: "m-bottom-sm" },
                             Button {
                                 icon: Shape::Check,
-                                text: l.create_account.clone(),
+                                text: "Create Account".to_string(),
                                 disabled: !valid_username,
                                 state: match valid_username {
                                     true => button::State::Primary,
