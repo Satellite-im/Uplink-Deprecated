@@ -3,7 +3,7 @@ use sir::global_css;
 use uuid::Uuid;
 use warp::{raygun::{Conversation, MessageOptions}, crypto::DID};
 
-use crate::{RAYGUN, components::main::compose::msg::Msg, MULTIPASS, STATE};
+use crate::{RAYGUN, components::main::compose::msg::Msg, MULTIPASS};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -15,9 +15,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     global_css!("
         .messages {
             display: inline-flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
             width: calc(100% - 2rem);
             padding: 0 1rem;
+            height: 100%;
+            overflow-y: scroll;
         }
     ");
 
@@ -39,12 +41,14 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             .await
     });
 
+    
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
+            let mut prev_sender = "".to_string();
             rsx! {
                 div {
                     class: "messages",
-                    list.iter().map(|message|{
+                    list.iter().rev().peekable().map(|message|{
                         let ident = match mp
                             .read()
                             .get_own_identity()
@@ -53,11 +57,23 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 Err(_) => DID::default(),
                             };
                         
-                        let remote = ident.to_string() != message.clone().sender().to_string();
+                        
+                        let msg_sender = message.clone().sender().to_string();
+                        let i = ident.to_string();
+                        let remote = i != msg_sender;
+                        let last = prev_sender != msg_sender;
+                        let middle = prev_sender == msg_sender;
+                        let first = false;
+
+                        prev_sender = message.clone().sender().to_string();
+
                         rsx!(
                             Msg {
                                 message: message.clone(),
                                 remote: remote,
+                                last: last,
+                                first: first,
+                                middle: middle,
                             }
                         )
                     })

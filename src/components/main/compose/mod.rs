@@ -39,8 +39,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             }
             .messages-container {
                 flex: 1;
-                overflow-y: scroll;
-                overflow-x: hidden;
+                overflow: hidden;
+                position: relative;
             }
             
             .writer-container {
