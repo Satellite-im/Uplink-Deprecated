@@ -40,10 +40,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         Err(_) => vec![],
     };
 
-    tokio::task::spawn_blocking(move || {
-        std::thread::sleep(std::time::Duration::from_millis(120));
-    });
-
     std::thread::sleep(std::time::Duration::from_millis(100));
 
     let conversation_response =
