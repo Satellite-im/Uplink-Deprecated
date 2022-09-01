@@ -20,6 +20,6 @@ clap = {version = "3.2", features = ["derive"]}
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
 
-warp = { git = "https://github.com/Satellite-im/Warp", branch = "WARP-153" }
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "WARP-153" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "WARP-153" }
+warp = { git = "https://github.com/Satellite-im/Warp" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
