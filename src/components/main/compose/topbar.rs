@@ -1,10 +1,11 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use uuid::Uuid;
 use warp::{raygun::Conversation, crypto::DID};
 
 use crate::{
-    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, MULTIPASS,
+    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::IconButton}, MULTIPASS,
 };
 
 #[derive(Props)]
@@ -111,6 +112,15 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "{conversation_id}"
                     }
                 )}
+            },
+            div {
+                class: "controls",
+                IconButton {
+                    icon: Shape::Phone,
+                    on_pressed: move |_| {
+                        cx.props.on_call.call(());
+                    },
+                }
             }
         },
     })

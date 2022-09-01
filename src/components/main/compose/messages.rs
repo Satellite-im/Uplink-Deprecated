@@ -5,7 +5,7 @@ use sir::global_css;
 use uuid::Uuid;
 use warp::raygun::{Conversation, MessageOptions};
 
-use crate::RAYGUN;
+use crate::{RAYGUN, STATE};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -23,6 +23,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     "
     );
 
+    let state = use_atom_ref(&cx, STATE);
+
     let conversation_id = cx.props.conversation.id();
 
     let _show_skeleton = conversation_id == Uuid::default();
@@ -32,6 +34,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
+
 
     let messages = use_future(&cx, (), |_| async move {
         rg.write()

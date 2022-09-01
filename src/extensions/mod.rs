@@ -1,20 +1,19 @@
-mod stickers;
-
 use dioxus::prelude::{Element, Scope};
 
 pub enum ExtensionType {
     SidebarWidget,
     ChatbarIcon,
 }
+
 #[allow(dead_code)]
-pub struct ExtensionMeta {
+pub struct Extension {
     name: String,
     author: String,
     description: String,
     location: ExtensionType,
 }
 
-impl Default for ExtensionMeta {
+impl Default for Extension {
     fn default() -> Self {
         Self {
             name: Default::default(),
@@ -25,7 +24,7 @@ impl Default for ExtensionMeta {
     }
 }
 
-pub trait Extension {
-    fn info(&self) -> ExtensionMeta;
+pub trait BasicExtension {
+    fn info(&self) -> Extension;
     fn render(cx: Scope) -> Element;
 }

@@ -82,6 +82,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     position: absolute;
                     top: 0;
                     right: 0;
+                    z-index: 1;
                     
                     .button {
                         background: transparent;
