@@ -17,11 +17,11 @@ pub fn Main(cx: Scope) -> Element {
 
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
-
+    let st = state.clone();
     cx.spawn(async move {
         if let Ok(list) = rg.write().list_conversations().await {
-            if !list.is_empty() && state.read().chats != list {
-                state.write().chats = list;
+            if !list.is_empty() && st.read().chats != list {
+                st.write().chats = list;
             }
         }
     });

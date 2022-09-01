@@ -35,7 +35,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
 
-
     let messages = use_future(&cx, (), |_| async move {
         rg.write()
             .get_messages(conversation_id, MessageOptions::default())
