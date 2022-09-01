@@ -7,7 +7,7 @@ use warp::{crypto::DID, raygun::Conversation};
 use crate::{
     components::ui_kit::{
         icon_button::IconButton,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, activity_indicator::ActivityIndicator,
     },
     MULTIPASS,
 };
@@ -51,9 +51,17 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 }
 
-                span {
-                    font-size: 12px;
+                .user-info-inline {
+                    display: inline-flex;
+                    align-items: center;
+                }
+
+                .did {
+                    font-size: 10px;
                     color: var(--theme-text-darker);
+                    margin-left: 1rem;
+                    padding-top: 4px;
+                    align-self: center;
                 }
             }
             
@@ -112,8 +120,15 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 if show_skeleton{rsx!(
                     InlineSkeleton {}
                 )} else {rsx!(
-                    span {
-                        "{conversation_id}"
+                    div {
+                        class: "user-info-inline",
+                        ActivityIndicator {
+                            inline: true,
+                        },
+                        p {
+                            class: "did",
+                            "({conversation_id})"
+                        }
                     }
                 )}
             },

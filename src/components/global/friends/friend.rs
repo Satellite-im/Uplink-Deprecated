@@ -8,7 +8,7 @@ use warp::{crypto::DID, error::Error, raygun::Conversation};
 use crate::{
     components::ui_kit::{
         icon_button::IconButton,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, activity_indicator::ActivityIndicator,
     },
     state::Actions,
     MULTIPASS, RAYGUN, STATE,
@@ -104,6 +104,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 )} else {rsx!(
                     h3 {
                         "{username}"
+                    },
+                    ActivityIndicator {
+                        inline: true,
                     }
                 )}
             },

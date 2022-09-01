@@ -214,7 +214,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         "Location"
                                     },
                                     p {
-                                        "Somewhere, USA"
+                                        "Unknown"
                                     }
                                 },
                                 div {
