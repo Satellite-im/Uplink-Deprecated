@@ -20,6 +20,10 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             display: inline-flex;
             flex-direction: column;
             width: 100%;
+
+            .small-did {
+                font-size: 8pt;
+            }
             
             .background {
                 height: 140px;
@@ -132,6 +136,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             my_identity.set_status_message(Some(status.to_string()));
         }
     };
+
+    let did = my_identity.did_key();
     
     cx.render(rsx! {
         Popup {
@@ -236,6 +242,14 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 p {
                                     "No about message set yet...",
                                 }
+                            },
+                            hr {},
+                            label {
+                                "Development",
+                            },
+                            p {
+                                class: "small-did",
+                                "{did}"
                             }
                         }
                     }
