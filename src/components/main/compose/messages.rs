@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 use sir::global_css;
 use uuid::Uuid;
-use warp::raygun::{Conversation, MessageOptions};
+use warp::{raygun::{Conversation, MessageOptions}, crypto::DID};
 
-use crate::RAYGUN;
+use crate::{RAYGUN, components::main::compose::msg::Msg, MULTIPASS, STATE};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -12,24 +12,26 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
-    global_css!(
-        "
+    global_css!("
         .messages {
-            background: red;
-            
+            display: inline-flex;
+            flex-direction: column;
+            width: calc(100% - 2rem);
+            padding: 0 1rem;
         }
-    "
-    );
+    ");
 
     let conversation_id = cx.props.conversation.id();
 
     let _show_skeleton = conversation_id == Uuid::default();
 
     // Load Multipass & Raygun's Atom Ref
+    let multipass = use_atom_ref(&cx, MULTIPASS);
     let raygun = use_atom_ref(&cx, RAYGUN);
 
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
+    let mp = multipass.read().clone().unwrap().clone();
 
     let messages = use_future(&cx, (), |_| async move {
         rg.write()
@@ -42,11 +44,20 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             rsx! {
                 div {
                     class: "messages",
-                    list.iter().map(|message| message.value().join("\n")).map(|message|{
+                    list.iter().map(|message|{
+                        let ident = match mp
+                            .read()
+                            .get_own_identity()
+                            {
+                                Ok(id) => id.did_key(),
+                                Err(_) => DID::default(),
+                            };
+                        
+                        let remote = ident.to_string() != message.clone().sender().to_string();
                         rsx!(
-                            div {
-                                class: "message",
-                                "{message}"
+                            Msg {
+                                message: message.clone(),
+                                remote: remote,
                             }
                         )
                     })

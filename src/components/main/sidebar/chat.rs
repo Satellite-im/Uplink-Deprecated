@@ -4,7 +4,7 @@ use warp::raygun::Conversation;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    MULTIPASS, STATE, LANGUAGE,
+    LANGUAGE, MULTIPASS, STATE,
 };
 
 #[derive(Props)]
@@ -88,22 +88,20 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .get_own_identity()
         .expect("Unexpected error <temp>");
 
-    let user = cx
+    let username = cx
         .props
         .conversation
         .recipients()
         .iter()
         .filter(|did| ident.did_key().ne(did))
         .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
-        .last()
-        .expect("User doesn't exist, chatbar.rs user definition");
-        
-    let username = user
-        .first()
+        .flatten()
         .map(|i| i.username())
-        .unwrap_or_else(|| "".to_string());
+        .last()
+        .unwrap_or_default();
 
     let show_skeleton = username.is_empty();
+    
     let active = match state.read().chat.clone() {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {

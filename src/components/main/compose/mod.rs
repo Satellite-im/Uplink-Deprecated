@@ -15,6 +15,7 @@ pub struct Props {
 pub mod messages;
 pub mod topbar;
 pub mod write;
+pub mod msg;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
@@ -38,6 +39,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             }
             .messages-container {
                 flex: 1;
+                overflow-y: scroll;
+                overflow-x: hidden;
             }
             
             .writer-container {
@@ -91,7 +94,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         let rg = rg.clone();
 
                         let text_as_vec = message
-                            .split("\n")
+                            .split('\n')
                             .filter(|&s| !s.is_empty())
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
@@ -100,7 +103,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         // until we confim wether it was successfully sent or failed
                         let send_message = warp::async_block_in_place_uncheck(rg
                                 .write()
-                                .send(conversation_id, None, text_as_vec.clone()));
+                                .send(conversation_id, None, text_as_vec));
 
 
                         match send_message {

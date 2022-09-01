@@ -2,10 +2,14 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use uuid::Uuid;
-use warp::{raygun::Conversation, crypto::DID};
+use warp::{crypto::DID, raygun::Conversation};
 
 use crate::{
-    components::ui_kit::{skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, icon_button::IconButton}, MULTIPASS,
+    components::ui_kit::{
+        icon_button::IconButton,
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    },
+    MULTIPASS,
 };
 
 #[derive(Props)]

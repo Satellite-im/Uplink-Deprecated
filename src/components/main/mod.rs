@@ -1,4 +1,6 @@
-use crate::{components::main::compose::Compose, main::sidebar::Sidebar, STATE, RAYGUN, state::PersistedState};
+use std::time::Duration;
+
+use crate::{components::main::compose::Compose, main::sidebar::Sidebar, RAYGUN, STATE};
 use dioxus::prelude::*;
 use sir::global_css;
 use warp::raygun::Conversation;
@@ -20,15 +22,13 @@ pub fn Main(cx: Scope) -> Element {
     
     let st = state.clone();
     cx.spawn(async move {
-        if let Ok(list) = rg.read().list_conversations().await {
-            if !list.is_empty() && st.read().chats != list {
-                // TODO: move this to mutation
-                let chat = st.read().chat.clone();
-                *st.write() = PersistedState {
-                    chats: list.clone(),
-                    chat,
-                };
+        loop {
+            if let Ok(list) = rg.read().list_conversations().await {
+                if !list.is_empty() && st.read().chats != list {
+                    st.write().chats = list;
+                }
             }
+            tokio::time::sleep(Duration::from_millis(50)).await;
         }
     });
 
