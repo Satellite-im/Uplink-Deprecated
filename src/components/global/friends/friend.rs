@@ -63,7 +63,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 background: var(--theme-text-muted);
             }
             
-
             .who {
                 flex: 1;
                 heigth: 40px;
@@ -72,7 +71,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                 h3 {
                     margin: 0;
-                    font-size: 12pt;
+                    font-size: 11pt;
                     max-width: 100%;
                 }
             }

@@ -60,7 +60,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 flex-direction: column;
                 height: 50%;
                 transition: height 0.2s;
-                background: var(--theme-foreground);
+                background: var(--theme-background-light);
                 margin-top: 50px;
 
                 &.full {

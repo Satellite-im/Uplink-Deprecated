@@ -13,6 +13,7 @@ pub mod skeletons;
 pub mod small_extension_placeholder;
 pub mod switch;
 pub mod tooltip;
+pub mod badge;
 
 pub fn build_style_tag() -> String {
     format!(
@@ -29,6 +30,12 @@ pub fn build_style_tag() -> String {
                 margin: 0;
                 padding: 0;
             }}
+        
+            hr {{
+                border: none;
+                border-bottom: 1px solid var(--theme-borders);
+                margin: 1rem 0;
+            }}
 
             .pre-alpha {{
                 width: 100%;
@@ -39,7 +46,7 @@ pub fn build_style_tag() -> String {
 
             }}
             .popup .input {{
-                background: var(--theme-foreground-dark);
+                background: var(--theme-background);
             }}
 
             .toast-single {{

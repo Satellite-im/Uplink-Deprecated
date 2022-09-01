@@ -22,6 +22,10 @@ pub fn Msg(cx: Scope<Props>) -> Element {
             margin: 0.25rem 0;
             position: relative;
 
+            &:hover {
+                cursor: pointer;
+            }
+
             &.last {
                 margin-bottom: 1rem;
 
@@ -66,6 +70,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                 right: calc(40px + 1rem);
                 font-size: 10px;
                 color: var(--theme-text-muted);
+                width: max-content;
             }
             
             &.remote {

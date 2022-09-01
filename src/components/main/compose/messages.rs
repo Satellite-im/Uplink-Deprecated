@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use uuid::Uuid;
 use warp::{raygun::{Conversation, MessageOptions}, crypto::DID};
 
-use crate::{RAYGUN, components::main::compose::msg::Msg, MULTIPASS};
+use crate::{RAYGUN, components::{main::compose::msg::Msg, ui_kit::button::Button}, MULTIPASS};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -20,6 +21,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             padding: 0 1rem;
             height: 100%;
             overflow-y: scroll;
+            position: relative;
+
         }
     ");
 
@@ -41,7 +44,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             .await
     });
 
-    
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
             let mut prev_sender = "".to_string();
