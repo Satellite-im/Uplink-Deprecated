@@ -91,7 +91,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         let rg = rg.clone();
 
                         let text_as_vec = message
-                            .split("\n")
+                            .split('\n')
                             .filter(|&s| !s.is_empty())
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
@@ -100,7 +100,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         // until we confim wether it was successfully sent or failed
                         let send_message = warp::async_block_in_place_uncheck(rg
                                 .write()
-                                .send(conversation_id, None, text_as_vec.clone()));
+                                .send(conversation_id, None, text_as_vec));
 
 
                         match send_message {

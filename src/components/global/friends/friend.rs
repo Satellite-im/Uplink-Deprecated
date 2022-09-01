@@ -35,31 +35,19 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // Determine our friends DID
     let friend = cx.props.friend.clone();
 
-    let user = match mp.read().get_identity(friend.clone().into()) {
+    let user = match mp.read().get_identity(friend.into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };
 
-    std::thread::sleep(std::time::Duration::from_millis(100));
-
-    let conversation_response =
-        warp::async_block_in_place_uncheck(rg.write().create_conversation(&friend));
-
-    let conversation = match conversation_response {
-        Ok(v) => v.clone(),
-        // TODO: we can't actually add the conversation this way because
-        // if the resolve doesn't finish instantly, it will always use the default Uuid.
-        // this would be fine if it ever resolved here again, but it doesn't seem to.
-        Err(Error::ConversationExist { conversation }) => conversation.clone(),
-        Err(_) => Conversation::default(),
-    };
+    // std::thread::sleep(std::time::Duration::from_millis(100));
 
     let username = user
         .first()
         .map(|i| i.username())
         .unwrap_or_else(|| "".to_string());
 
-    let show_skeleton = username.is_empty() || conversation.id() == Uuid::default();
+    let show_skeleton = username.is_empty();
 
     global_css! {"
         .request {
@@ -134,7 +122,21 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         IconButton {
                             icon: Shape::ChatAlt,
                             on_pressed: move |_| {
-                                state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                let rg = rg.clone();
+                                let friend = cx.props.friend.clone();
+                                let conversation_response = warp::async_block_in_place_uncheck(
+                                    rg.write().create_conversation(&friend)
+                                );
+
+                                let conversation = match conversation_response {
+                                    Ok(v) => v,
+                                    // TODO: we can't actually add the conversation this way because
+                                    // if the resolve doesn't finish instantly, it will always use the default Uuid.
+                                    // this would be fine if it ever resolved here again, but it doesn't seem to.
+                                    Err(Error::ConversationExist { conversation }) => conversation,
+                                    Err(_) => Conversation::default(),
+                                };
+                                state.write().dispatch(Actions::ChatWith(conversation)).save();
                                 cx.props.on_chat.call(());
                             }
                         }
