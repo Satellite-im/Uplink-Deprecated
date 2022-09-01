@@ -1,11 +1,9 @@
-use std::time::Duration;
-
 use dioxus::prelude::*;
 use sir::global_css;
 use uuid::Uuid;
 use warp::raygun::{Conversation, MessageOptions};
 
-use crate::{RAYGUN, STATE};
+use crate::RAYGUN;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -22,8 +20,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         }
     "
     );
-
-    let state = use_atom_ref(&cx, STATE);
 
     let conversation_id = cx.props.conversation.id();
 

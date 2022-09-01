@@ -1,4 +1,4 @@
-use crate::{components::main::compose::Compose, main::sidebar::Sidebar, STATE, RAYGUN};
+use crate::{components::main::compose::Compose, main::sidebar::Sidebar, STATE, RAYGUN, state::PersistedState};
 use dioxus::prelude::*;
 use sir::global_css;
 use warp::raygun::Conversation;
@@ -17,11 +17,17 @@ pub fn Main(cx: Scope) -> Element {
 
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
+    
     let st = state.clone();
     cx.spawn(async move {
-        if let Ok(list) = rg.write().list_conversations().await {
+        if let Ok(list) = rg.read().list_conversations().await {
             if !list.is_empty() && st.read().chats != list {
-                st.write().chats = list;
+                // TODO: move this to mutation
+                let chat = st.read().chat.clone();
+                *st.write() = PersistedState {
+                    chats: list.clone(),
+                    chat,
+                };
             }
         }
     });
