@@ -1,13 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use uuid::Uuid;
 use warp::{crypto::DID, raygun::Conversation};
 
 use crate::{
     components::ui_kit::{
+        activity_indicator::ActivityIndicator,
         icon_button::IconButton,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, activity_indicator::ActivityIndicator,
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     MULTIPASS,
 };
@@ -20,55 +20,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    global_css!(
-        "
-        .topbar {
-            height: 40px;
-            display: inline-flex;
-            flex-direction: row;
-            padding: 1rem;
-
-            .pfp {
-                height: 40px;
-                width: 40px;
-                border-radius: 20px;
-                background: var(--theme-text-muted);
-            }
-            .who {
-                flex: 1;
-                heigth: 40px;
-                text-align: left;
-                padding: 0 1rem;
-                display: inline-flex;
-                flex-direction: column;
-
-                .top-row {
-                    display: inline-flex;
-                    flex-direction: row;
-                    h3 {
-                        margin: 0;
-                        font-size: 13pt;
-                    }
-                }
-
-                .user-info-inline {
-                    display: inline-flex;
-                    align-items: center;
-                }
-
-                .did {
-                    font-size: 10px;
-                    color: var(--theme-text-darker);
-                    margin-left: 1rem;
-                    padding-top: 4px;
-                    align-self: center;
-                }
-            }
-            
-        }
-    "
-    );
-
     // Load Multipass & Raygun's Atom Ref
     let multipass = use_atom_ref(&cx, MULTIPASS);
 

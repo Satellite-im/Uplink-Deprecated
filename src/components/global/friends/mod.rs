@@ -7,7 +7,6 @@ use dioxus::{
 };
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
-use sir::global_css;
 
 use warp::crypto::DID;
 
@@ -16,7 +15,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    MULTIPASS, TOAST_MANAGER, LANGUAGE
+    LANGUAGE, MULTIPASS, TOAST_MANAGER,
 };
 
 pub mod friend;
@@ -32,25 +31,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    global_css! {"
-        .friends {
-            display: inline-flex;
-            flex-direction: column;
-            padding: 1rem;
-            width: calc(100% - 2rem);
-
-            .add {
-                display: inline-flex;
-                flex-direction: row;
-
-                .icon-input {
-                    width: 100%;
-                    margin-right: 1rem;
-                }
-            }
-        }
-    "};
-
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let multipass = use_atom_ref(&cx, MULTIPASS);
     let mp = multipass.read().clone().unwrap().clone();
@@ -93,7 +73,6 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         Ok(f) => f,
         Err(_) => vec![],
     });
-    
 
     cx.render(rsx! {
         Popup {

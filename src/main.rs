@@ -1,3 +1,4 @@
+use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -83,9 +84,19 @@ fn App(cx: Scope<State>) -> Element {
     // Loads the styles for all of our UIKit elements.
     let styles = ui_kit::build_style_tag();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
+
+    let css = fs::read_to_string("src/.styles.css");
+    let css_string = match css {
+        Ok(c) => c,
+        Err(_) => String::from(""),
+    };
+
     cx.render(rsx!(
         style {
             "{styles}"
+        },
+        style {
+            "{css_string}"
         },
         dioxus_toast::ToastFrame {
             manager: toast,

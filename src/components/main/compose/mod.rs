@@ -4,7 +4,10 @@ use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
-    components::{main::compose::{messages::Messages, topbar::TopBar, write::Write}, ui_kit::button::Button},
+    components::{
+        main::compose::{messages::Messages, topbar::TopBar, write::Write},
+        ui_kit::button::Button,
+    },
     RAYGUN, STATE,
 };
 
@@ -14,57 +17,17 @@ pub struct Props {
 }
 
 pub mod messages;
+pub mod msg;
 pub mod topbar;
 pub mod write;
-pub mod msg;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
-    global_css!("
-        .compose {
-            display: inline-flex;
-            flex-direction: column;
-            flex: 1;
-            position: relative;
-
-            .blurmask {
-                -webkit-backdrop-filter: blur(3px);
-                background: var(--theme-semi-transparent);
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-                z-index: 90;
-            }
-            .messages-container {
-                flex: 1;
-                overflow: hidden;
-                position: relative;
-            }
-            
-            .writer-container {
-                width: 100%;
-                display: inline-flex;
-            }
-
-            .alpha-warning {
-                font-size: 10pt;
-                display: inline-flex;
-                flex-direction: row;
-                justify-content: space-evenly;
-                align-content: center;
-                align-items: center;
-                padding: 0.5rem 0.5rem;
-                border-top: 1px solid var(--theme-borders);
-                border-bottom: 1px solid var(--theme-borders);
-
-                .button {
-                    height: 30px;
-                }
-            }
-        }
-    ");
+    global_css!(
+        "
+        
+    "
+    );
 
     let state = use_atom_ref(&cx, STATE);
     let conversation_id = cx.props.conversation.id();

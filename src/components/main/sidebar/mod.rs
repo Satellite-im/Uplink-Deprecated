@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 
 use crate::{
     components::{
@@ -26,42 +25,6 @@ pub fn Sidebar(cx: Scope) -> Element {
 
     let has_chats = !state.read().chats.clone().is_empty();
 
-    global_css! {"
-        .main {
-            .sidebar {
-                height: calc(100% - 2rem);
-                width: 300px;
-                min-width: 300px;
-                position: relative;
-                padding: 1rem;
-                display: inline-flex;
-                flex-direction: column;
-                border-right: 1px solid var(--theme-borders);
-                
-                .extension-renderer {
-                    margin-top: 1rem;
-                }
-                .favorites {
-                    display: inline-flex;
-
-                    .labeled {
-                        position: relative;
-                        padding: 0.75rem;
-                        margin-bottom: 10px;
-                        span {
-                            position: absolute;
-                            font-size: 9pt;
-                            color: var(--theme-text-muted);
-                            bottom: -10px;
-                            left: 0;
-                            right: 0;
-                            text-align: center;
-                        }
-                    }
-                }
-            }
-        }
-    "}
     cx.render(rsx!{
         div {
             class: "sidebar",

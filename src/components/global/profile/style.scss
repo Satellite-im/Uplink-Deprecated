@@ -1,0 +1,67 @@
+/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+
+.profile {
+    display: inline-flex;
+    flex-direction: column;
+    width: 100%;
+
+    .small-did {
+        font-size: 8pt;
+    }
+
+    .background {
+        height: 140px;
+        width: 100%;
+        background: var(--theme-text-muted);
+        margin-bottom: 40px;
+        position: relative;
+        border-radius: 8px 8px 0 0;
+
+        .profile-photo {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            bottom: -41px;
+            left: calc(50% - 41px);
+            border-radius: 80px;
+            background: var(--theme-text-muted);
+            border: 2px solid var(--theme-foreground);
+        }
+    }
+
+    .profile-body {
+        width: 100%;
+
+        .status {
+            margin-bottom: 1rem;
+            color: var(--theme-text-muted);
+        }
+
+        .change-status {
+            padding: 1rem;
+        }
+
+        .button {
+            margin-bottom: 1rem;
+        }
+
+        .meta {
+            width: 100%;
+            display: inline-flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            .badges,
+            .location,
+            .friend-count {
+                width: 33.33%;
+            }
+        }
+
+        .about {
+            p {
+                color: var(--theme-text-muted);
+            }
+        }
+    }
+}

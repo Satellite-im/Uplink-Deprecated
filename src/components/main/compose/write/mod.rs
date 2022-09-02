@@ -1,6 +1,5 @@
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 
 use crate::{
     components::ui_kit::{
@@ -40,44 +39,6 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             });
         })()"
             .to_string(),
-    );
-
-    global_css!(
-        "
-        .write {
-            flex: 1;
-            display: inline-flex;
-            flex-direction: row;
-            padding: 1rem;
-            align-items: end;
-
-            .extension-holder {
-                margin-right: 1rem;
-            }
-
-            .input {
-                flex: 1;
-                min-height: 40px;
-                color: var(--theme-text);
-                border-radius: 4px;
-                border: none;
-                box-sizing: border-box;
-                border: 1px solid transparent;
-                border-radius: 20px;
-                transition: height .2s, border .2s;
-                // TODO: Need help making this prettier, textareas suck
-                padding: 0.75rem 1rem 0 1rem;
-                margin: 0 1rem;
-                word-wrap: break-word;
-                word-break: break-all;
-                resize: none;
-            }
-            .input:focus {
-                outline: none;
-                border: 1px solid var(--theme-primary);
-            }
-        }
-    "
     );
 
     let text = use_state(&cx, || String::from(""));

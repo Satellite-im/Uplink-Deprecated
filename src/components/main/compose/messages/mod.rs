@@ -1,10 +1,11 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use uuid::Uuid;
-use warp::{raygun::{Conversation, MessageOptions}, crypto::DID};
+use warp::{
+    crypto::DID,
+    raygun::{Conversation, MessageOptions},
+};
 
-use crate::{RAYGUN, components::{main::compose::msg::Msg, ui_kit::button::Button}, MULTIPASS};
+use crate::{components::main::compose::msg::Msg, MULTIPASS, RAYGUN};
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -13,19 +14,6 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
-    global_css!("
-        .messages {
-            display: inline-flex;
-            flex-direction: column-reverse;
-            width: calc(100% - 2rem);
-            padding: 0 1rem;
-            height: 100%;
-            overflow-y: scroll;
-            position: relative;
-
-        }
-    ");
-
     let conversation_id = cx.props.conversation.id();
 
     let _show_skeleton = conversation_id == Uuid::default();
@@ -58,8 +46,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 Ok(id) => id.did_key(),
                                 Err(_) => DID::default(),
                             };
-                        
-                        
+
+
                         let msg_sender = message.clone().sender().to_string();
                         let i = ident.to_string();
                         let remote = i != msg_sender;

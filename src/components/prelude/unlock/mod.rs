@@ -1,6 +1,6 @@
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use sir::{css, global_css};
+use sir::css;
 use warp::tesseract::Tesseract;
 
 use crate::{
@@ -35,59 +35,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let valid_pin = pin.len() >= 4;
 
     let tesseract_available = cx.props.tesseract.exist("keypair");
-
-    // Start UI
-
-    global_css!(
-        "
-        .unlock {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            height: 80%;
-
-            .container {
-                max-width: 350px;position: relative;
-                .invis-input {
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    z-index: 2;
-                    cursor: default;
-                    opacity: 0;
-                    font-size: 0;
-                }
-                .confirm-button {
-                    position: absolute;
-                    right: -80px;
-                    bottom: -12px;
-                    z-index: 3;
-                }
-            }
-
-            .login-actions {
-                position: fixed;
-                bottom: 2rem;
-                right: 2rem;
-                left: 2rem;
-                max-height: 40px;
-                display: inline-block;
-                text-align: right;
-                z-index: 3;
-                div {
-                    padding: 0.2rem 0.6rem;
-                    &:last-of-type {
-                        padding-right: 0;
-                    }
-                }
-            }
-
-        }
-    "
-    );
 
     cx.render(rsx! {
         div {

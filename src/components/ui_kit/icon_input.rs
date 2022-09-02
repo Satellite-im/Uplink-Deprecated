@@ -19,28 +19,6 @@ pub struct Props<'a> {
     placeholder: String,
 }
 
-pub fn css() -> String {
-    "
-    .icon-input {
-        position: relative;
-    }
-    .icon-input .input {
-        padding-left: 40px;
-    }
-    .icon-input svg {
-        position: absolute;
-        z-index: 2;
-        stroke: var(--theme-placeholder);
-        top: 11px;
-        left: 10px;
-        fill: transparent;
-    }
-    .icon-input:has(> input:focus) svg {
-        stroke: var(--theme-primary) !important;
-    }"
-    .to_string()
-}
-
 #[allow(non_snake_case)]
 pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(rsx! {

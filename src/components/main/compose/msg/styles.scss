@@ -1,0 +1,95 @@
+/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+
+.message {
+    width: max-content;
+    display: inline-flex;
+    align-self: flex-end;
+    margin: 0.25rem 0;
+    position: relative;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    &.last {
+        margin-bottom: 1rem;
+
+    }
+
+    .pfp {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        background: var(--theme-text-muted);
+    }
+
+    .pfp-void {
+        height: 40px;
+        width: 40px;
+    }
+
+    .value {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border-radius: 16px 16px 4px 16px;
+        background-color: var(--theme-primary);
+        margin-right: 1rem;
+        margin-left: 0;
+
+        &.first {
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        &.middle {
+            border-radius: 16px 4px 4px 16px;
+        }
+
+        &.last {
+            border-radius: 16px 4px 16px 16px;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin: 0;
+            word-break: break-word;
+        }
+    }
+
+    .timestamp {
+        position: absolute;
+        bottom: -0.5rem;
+        right: calc(40px + 1rem);
+        font-size: var(--text-small);
+        color: var(--theme-text-muted);
+        width: max-content;
+    }
+
+    &.remote {
+        align-self: flex-start;
+
+        .value {
+            background: var(--theme-foreground-dark);
+            border-radius: 16px 16px 16px 4px;
+            margin-left: 1rem;
+            margin-right: 0;
+
+            &.first {
+                border-radius: 16px 16px 16px 4px;
+            }
+
+            &.middle {
+                border-radius: 4px 16px 16px 4px;
+            }
+
+            &.last {
+                border-radius: 4px 16px 16px 16px;
+            }
+        }
+
+        .timestamp {
+            left: calc(40px + 1rem);
+            right: unset;
+            text-align: right;
+        }
+    }
+}

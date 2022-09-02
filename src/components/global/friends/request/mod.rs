@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 
 use warp::multipass::identity::FriendRequest;
 
@@ -42,44 +41,6 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_else(|| "".to_string());
 
     let show_skeleton = username.is_empty();
-
-    global_css! {"
-        .request {
-            display: inline-flex;
-            flex-direction: row;
-            align-items: center;
-            width: 100%;
-
-            .pfp {
-                height: 40px;
-                width: 40px;
-                border-radius: 20px;
-                background: var(--theme-text-muted);
-            }
-            
-
-            .who {
-                flex: 1;
-                heigth: 40px;
-                text-align: left;
-                padding: 0 1rem;
-
-                h3 {
-                    margin: 0;
-                    font-size: 13pt;
-                }
-            }
-
-            .request-controls {
-                height: 40px;
-                display: inline-flex;
-
-                .control-wrap {
-                    margin-left: 1rem;
-                }
-            }
-        }
-    "};
 
     cx.render(rsx! {
         div {
