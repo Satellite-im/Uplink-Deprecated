@@ -114,7 +114,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         text: "Save Status".to_string(),
                                         icon: Shape::Check,
                                         on_pressed: move |_| {
-                                            // TODO: Make this work
+                                            // TODO: Pending Voice & Video
                                             // set_status.call()
                                         }
                                     },

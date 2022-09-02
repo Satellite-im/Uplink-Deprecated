@@ -13,6 +13,7 @@ pub fn Main(cx: Scope) -> Element {
 
     // TODO:: We should probably write some kind of watcher here for new messages on all conversations
     // so we can create notifications
+
     // Load Multipass & Raygun's Atom Ref
     let raygun = use_atom_ref(&cx, RAYGUN);
 

@@ -14,6 +14,7 @@ pub struct Props<'a> {
 pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let full = use_state(&cx, || false);
     let modal = use_state(&cx, || false);
+    let show_children = use_state(&cx, || true);
 
     let full_class = match full.get() {
         true => "popup full",
@@ -38,7 +39,12 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "{full_class} {hidden_class}",
                 button {
                     class: "handle",
-                    // TODO: This handle should be able to be "grabbed" and "pulled" up or down to expand or close the opup
+                    // TODO:
+                    // ID:
+                    // Title: Allow draging of popup handle to resize
+                    // Reporter: Matt Wisniewski
+                    // Desc:
+                    // We should be able to click and drag the popup and snap the popup to different sizes.
                     onclick: move |evt| {
                         evt.cancel_bubble();
                         full.set(!full.get());
@@ -61,7 +67,25 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                         },
                     },
-                    cx.props.children.as_ref()
+                    // TODO:
+                    // ID:
+                    // Title: Popup renders content forever
+                    // Reporter: Matt Wisniewski
+                    // Desc:
+                    // We currently render the children even when the popup is hidden off screen.
+                    // We are animating this popup so we need to make sure it's off screen before
+                    // we "de-render" thse children, realistically this probably involves a 0.2ms delay
+                    // followed by changing the children to render conditionally.
+                    // Maybe something like...
+                    // cx.spawn({
+                    //     async move {
+                    //         loop {
+                    //             wait_ms(200).await;
+                    //             show_children.set(false);
+                    //         }
+                    //     }
+                    // })
+                    show_children.then(|| rsx!(cx.props.children.as_ref()))
                 }
             }
         }

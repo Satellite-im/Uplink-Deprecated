@@ -6,6 +6,11 @@
     padding: 1rem;
     width: calc(100% - 2rem);
 
+    .friend,
+    .request {
+        margin-bottom: 1rem;
+    }
+
     .add {
         display: inline-flex;
         flex-direction: row;

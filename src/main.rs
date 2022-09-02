@@ -1,4 +1,3 @@
-use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
 
@@ -16,8 +15,8 @@ use warp::raygun::RayGun;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
 
+use crate::components::main;
 use crate::components::prelude::{auth, unlock};
-use crate::components::{main, ui_kit};
 
 pub mod components;
 pub mod extensions;

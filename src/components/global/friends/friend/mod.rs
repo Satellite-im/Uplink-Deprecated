@@ -93,9 +93,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                 let conversation = match conversation_response {
                                     Ok(v) => v,
-                                    // TODO: we can't actually add the conversation this way because
-                                    // if the resolve doesn't finish instantly, it will always use the default Uuid.
-                                    // this would be fine if it ever resolved here again, but it doesn't seem to.
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),
                                 };
