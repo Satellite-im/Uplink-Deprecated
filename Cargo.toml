@@ -16,10 +16,10 @@ anyhow = "1.0"
 once_cell = "1.13"
 copypasta = "0.8.1"
 dioxus-toast = "0.1.5"
-clap = {version = "3.2", features = ["derive"]}
+clap = { version = "3.2", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
 
-warp = { git = "https://github.com/Satellite-im/Warp" }
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
