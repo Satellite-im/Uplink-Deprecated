@@ -1,1 +1,17 @@
 # WarpGUI
+
+# Prerequisites
+
+You'll need to install `rust` and have `cmake` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac.
+
+# Running
+
+To run the app in dev mode simply run `cargo run`
+
+# Local Testing
+
+To spawn multiple instances of the app exectue the test script `test/physical/launch_physical_test.sh`. This will spawn two named windows with local cache files in a `.temp` directory.
+
+# Resetting Data
+
+It's often nessiary to reset your account for development, to do so just delete any `.temp` and `.cache` files within this project.
