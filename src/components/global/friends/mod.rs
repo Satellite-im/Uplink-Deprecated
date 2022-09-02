@@ -211,86 +211,78 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         }
                     },
-                    if requests.len() > 0 {
-                        rsx!(
-                            label {
-                                "Incoming Requests"
-                            },
-                            div {
-                                requests.iter().map(|request| rsx!(
-                                    FriendRequest {
-                                        request: request.clone(),
-                                        on_accept: move |_| {
-                                            match multipass
-                                                .read()
-                                                .clone()
-                                                .unwrap()
-                                                .write()
-                                                .accept_request(&request.from())
-                                            {
-                                                Ok(_) => {},
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        on_deny: move |_| {
-                                            match multipass
-                                                .read()
-                                                .clone()
-                                                .unwrap()
-                                                .write()
-                                                .deny_request(&request.from())
-                                            {
-                                                Ok(_) => {},
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        deny_only: false,
-                                    }
-                                )),
-                            }
-                        )
-                    } else {
-                        rsx!(span {})
-                    },
-                    if outgoing.len() > 0 {
-                        rsx!(
-                            label {
-                                "Outgoing Requests"
-                            },
-                            div {
-                                outgoing.iter().map(|request| rsx!(
-                                    FriendRequest {
-                                        request: request.clone(),
-                                        on_deny:  move |_| {
-                                            match multipass
-                                                .read()
-                                                .clone()
-                                                .unwrap()
-                                                .write()
-                                                .close_request(&request.to())
-                                            {
-                                                Ok(_) => {},
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        on_accept: move |_| {},
-                                        deny_only: true,
-                                    }
-                                )),
-                            }
-                        )
-                    } else {
-                        rsx!(span {})
-                    },
+                    (requests.len() > 0).then(|| rsx!(
+                        label {
+                            "Incoming Requests"
+                        },
+                        div {
+                            requests.iter().map(|request| rsx!(
+                                FriendRequest {
+                                    request: request.clone(),
+                                    on_accept: move |_| {
+                                        match multipass
+                                            .read()
+                                            .clone()
+                                            .unwrap()
+                                            .write()
+                                            .accept_request(&request.from())
+                                        {
+                                            Ok(_) => {},
+                                            Err(_) => {
+                                                // TODO: Catch this and display it
+                                                println!("Error");
+                                            },
+                                        }
+                                    },
+                                    on_deny: move |_| {
+                                        match multipass
+                                            .read()
+                                            .clone()
+                                            .unwrap()
+                                            .write()
+                                            .deny_request(&request.from())
+                                        {
+                                            Ok(_) => {},
+                                            Err(_) => {
+                                                // TODO: Catch this and display it
+                                                println!("Error");
+                                            },
+                                        }
+                                    },
+                                    deny_only: false,
+                                }
+                            )),
+                        }
+                    )),
+                    (outgoing.len() > 0).then(|| rsx!(
+                        label {
+                            "Outgoing Requests"
+                        },
+                        div {
+                            outgoing.iter().map(|request| rsx!(
+                                FriendRequest {
+                                    request: request.clone(),
+                                    on_deny:  move |_| {
+                                        match multipass
+                                            .read()
+                                            .clone()
+                                            .unwrap()
+                                            .write()
+                                            .close_request(&request.to())
+                                        {
+                                            Ok(_) => {},
+                                            Err(_) => {
+                                                // TODO: Catch this and display it
+                                                println!("Error");
+                                            },
+                                        }
+                                    },
+                                    on_accept: move |_| {},
+                                    deny_only: true,
+                                }
+                            )),
+                        }
+                    )),
                     label {
                         "Your Friends"
                     },

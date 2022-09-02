@@ -10,6 +10,7 @@ use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
+use themes::Theme;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
@@ -82,21 +83,15 @@ fn main() {
 #[allow(non_snake_case)]
 fn App(cx: Scope<State>) -> Element {
     // Loads the styles for all of our UIKit elements.
-    let styles = ui_kit::build_style_tag();
+    let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
-    let css = fs::read_to_string("src/.styles.css");
-    let css_string = match css {
-        Ok(c) => c,
-        Err(_) => String::from(""),
-    };
+    let css = include_str!(".styles.css");
 
     cx.render(rsx!(
         style {
-            "{styles}"
-        },
-        style {
-            "{css_string}"
+            "{theme_colors}",
+            "{css}"
         },
         dioxus_toast::ToastFrame {
             manager: toast,

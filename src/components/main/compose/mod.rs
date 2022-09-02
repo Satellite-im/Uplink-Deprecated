@@ -59,7 +59,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     }
                 )
             },
-            if **show_warning {rsx!(
+            (**show_warning).then(|| rsx!(
                 div {
                     class: "alpha-warning",
                     "Please remember this is pre-release software and bugs, crashes and restarts are expected.",
@@ -71,7 +71,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         text: "I Understand.".to_string(),
                     }
                 },
-            )} else { rsx!(div {})}
+            ))
             div {
                 class: "messages-container",
                 Messages {

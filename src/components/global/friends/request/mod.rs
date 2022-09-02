@@ -50,7 +50,6 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             )} else {rsx!(
                 div {
                     class: "pfp"
-
                 },
             )}
             div {
@@ -84,9 +83,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     )}
                 }
-                if cx.props.deny_only {rsx!(
-                    span {}
-                )} else {
+                (!cx.props.deny_only).then(|| rsx!{
                     if show_skeleton {rsx!(
                         div {
                             class: "control-wrap",
@@ -109,7 +106,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                         }
                     )}
-                }
+                })
             }
         }
     })
