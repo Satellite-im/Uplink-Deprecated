@@ -31,6 +31,7 @@ pub fn Sidebar(cx: Scope) -> Element {
             .sidebar {
                 height: calc(100% - 2rem);
                 width: 300px;
+                min-width: 300px;
                 position: relative;
                 padding: 1rem;
                 display: inline-flex;

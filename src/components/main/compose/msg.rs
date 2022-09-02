@@ -1,7 +1,7 @@
+use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use sir::global_css;
 use warp::raygun::Message;
-use chrono_humanize::HumanTime;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -14,7 +14,8 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Msg(cx: Scope<Props>) -> Element {
-    global_css!("
+    global_css!(
+        "
         .message {
             width: max-content;
             display: inline-flex;
@@ -61,6 +62,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                 p {
                     font-size: 12px;
                     margin: 0;
+                    word-break: break-word;
                 }
             }
 
@@ -97,7 +99,8 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                 }
             }
         }
-    ");
+    "
+    );
 
     let value = cx.props.message.clone().value().join("\n");
     let timestamp = cx.props.message.clone().date();
