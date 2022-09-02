@@ -1,5 +1,7 @@
 use crate::themes::Theme;
 
+pub mod activity_indicator;
+pub mod badge;
 pub mod button;
 pub mod extension_placeholder;
 pub mod icon_button;
@@ -13,8 +15,6 @@ pub mod skeletons;
 pub mod small_extension_placeholder;
 pub mod switch;
 pub mod tooltip;
-pub mod badge;
-pub mod activity_indicator;
 
 pub fn build_style_tag() -> String {
     format!(
@@ -113,28 +113,10 @@ pub fn build_style_tag() -> String {
 
             }}
 
-            {button}
-            {icon_button}
-            {icon_input}
-            {tooltip}
-            {switch}
-            {input}
-            {loader}
-            {photo_picker}
-
             ::placeholder {{
                 color: var(--theme-placeholder);
             }}
         ",
         theme_colors = Theme::load_or_default().rosetta(),
-
-        button = button::css(),
-        icon_button = icon_button::css(),
-        icon_input = icon_input::css(),
-        input = input::css(),
-        switch = switch::css(),
-        loader = loader::css(),
-        tooltip = tooltip::css(),
-        photo_picker = photo_picker::css(),
     )
 }

@@ -1,3 +1,5 @@
+/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+
 .request {
     display: inline-flex;
     flex-direction: row;
@@ -19,8 +21,6 @@
 
         h3 {
             margin: 0;
-            font-size: 11pt;
-            max-width: 100%;
         }
     }
 
@@ -30,23 +30,6 @@
 
         .control-wrap {
             margin-left: 1rem;
-        }
-    }
-}
-
-.friends {
-    display: inline-flex;
-    flex-direction: column;
-    padding: 1rem;
-    width: calc(100% - 2rem);
-
-    .add {
-        display: inline-flex;
-        flex-direction: row;
-
-        .icon-input {
-            width: 100%;
-            margin-right: 1rem;
         }
     }
 }

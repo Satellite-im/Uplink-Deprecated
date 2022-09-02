@@ -23,27 +23,6 @@ pub struct Props<'a> {
     disabled: Option<bool>,
 }
 
-pub fn css() -> String {
-    "
-    .icon-button {
-        user-select: none;
-        min-width: 40px;
-        padding: 0;
-    }
-    .icon-button svg {
-        margin-bottom: 0;
-        margin-right: 0;
-        fill: transparent;
-    }
-    .icon-button-lg {
-        min-width: 52px;
-        height: 52px;
-        border-radius: 26px;
-    }
-    "
-    .to_string()
-}
-
 #[allow(non_snake_case)]
 pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let disabled = if cx.props.disabled.is_some() {

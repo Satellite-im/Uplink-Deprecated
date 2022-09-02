@@ -23,3 +23,7 @@ chrono-humanize = "0.2.2"
 warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
 warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-ipfs-minor-change-2" }
+
+[build-dependencies]
+glob = "0.3.0"
+rsass = "0.25.2"

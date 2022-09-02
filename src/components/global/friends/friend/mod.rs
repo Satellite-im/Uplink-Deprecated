@@ -1,14 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 
-use uuid::Uuid;
 use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     components::ui_kit::{
+        activity_indicator::ActivityIndicator,
         icon_button::IconButton,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton}, activity_indicator::ActivityIndicator,
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::Actions,
     MULTIPASS, RAYGUN, STATE,
@@ -49,47 +48,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    global_css! {"
-        .request {
-            display: inline-flex;
-            flex-direction: row;
-            align-items: center;
-            width: 100%;
-
-            .pfp {
-                height: 40px;
-                width: 40px;
-                border-radius: 20px;
-                background: var(--theme-text-muted);
-            }
-            
-            .who {
-                flex: 1;
-                heigth: 40px;
-                text-align: left;
-                padding: 0 1rem;
-
-                h3 {
-                    margin: 0;
-                    font-size: 11pt;
-                    max-width: 100%;
-                }
-            }
-
-            .request-controls {
-                height: 40px;
-                display: inline-flex;
-
-                .control-wrap {
-                    margin-left: 1rem;
-                }
-            }
-        }
-    "};
-
     cx.render(rsx! {
         div {
-            class: "request",
+            class: "friend",
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(

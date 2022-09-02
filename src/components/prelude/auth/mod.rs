@@ -2,7 +2,6 @@ use std::sync::Arc;
 
 use dioxus::{desktop::use_window, events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};
@@ -85,39 +84,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
         None => false,
     };
-
-    // Start UI
-    global_css!(
-        "
-        .auth {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            height: 80%;
-            width: 100%;
-
-            .container {
-                min-width: 300px;
-                max-width: 720px;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-
-                .full-width {
-                    .input {
-                        width: 100%;
-                    }
-                    .button {
-                        width: 100%;
-                    }
-                }
-            }
-        }
-    "
-    );
 
     let new_account = move |_| match multipass
         .read()

@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
@@ -15,67 +14,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    global_css! {"
-        .sidebar {
-            .chat {
-                display: inline-flex;
-                flex-direction: row;
-                width: calc(100%);
-                padding: 0.5rem;
-                margin-left: -0.5rem;
-                border-radius: 4px;
-                cursor: pointer;
-                margin-bottom: 0.5rem;
-
-                &:hover,
-                &.active {
-                    background: var(--theme-background-light);
-                }
-
-                .inline-skeleton {
-                    margin-bottom: 0.5rem;
-                }
-
-                .pfp {
-                    height: 40px;
-                    width: 40px;
-                    border-radius: 20px;
-                    background: var(--theme-text-muted);
-                }
-                
-                .who {
-                    flex: 1;
-                    heigth: 40px;
-                    text-align: left;
-                    padding: 0 1rem;
-                    display: inline-flex;
-                    flex-direction: column;
-
-                    .top-row {
-                        display: inline-flex;
-                        flex-direction: row;
-                        h3 {
-                            margin: 0;
-                            font-size: 13pt;
-                        }
-                        .timestamp {
-                            flex: 1;
-                            text-align: right;
-                            color: var(--theme-text-muted);
-                        }
-                    }
-
-                    span {
-                        font-size: 12px;
-                        color: var(--theme-text-darker);
-                    }
-                }
-
-                
-            }
-        }
-    "}
-
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
@@ -101,7 +39,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     let show_skeleton = username.is_empty();
-    
+
     let active = match state.read().chat.clone() {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {

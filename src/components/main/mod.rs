@@ -19,7 +19,7 @@ pub fn Main(cx: Scope) -> Element {
 
     // Read their values from locks
     let rg = raygun.read().clone().unwrap().clone();
-    
+
     let st = state.clone();
     cx.spawn(async move {
         loop {
@@ -36,17 +36,6 @@ pub fn Main(cx: Scope) -> Element {
         Some(c) => c,
         None => Conversation::default(),
     };
-
-    // Start UI
-    global_css! {"
-    .main {
-        display: flex;
-        text-align: center;
-        width: 100%;
-        height: 100%;
-        flex-direction: row;
-    }
-    "}
 
     cx.render(rsx! {
         div {
