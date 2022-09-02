@@ -2,7 +2,6 @@ use std::time::Duration;
 
 use crate::{components::main::compose::Compose, main::sidebar::Sidebar, RAYGUN, STATE};
 use dioxus::prelude::*;
-use sir::global_css;
 use warp::raygun::Conversation;
 
 pub mod compose;
