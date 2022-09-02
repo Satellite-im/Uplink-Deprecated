@@ -83,10 +83,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let mp = multipass.read().clone().unwrap().clone();
 
-    let ident = mp
-        .read()
-        .get_own_identity()
-        .expect("Unexpected error <temp>");
+    let ident = mp.read().get_own_identity().unwrap_or_default();
 
     let username = cx
         .props
@@ -101,7 +98,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     let show_skeleton = username.is_empty();
-    
+
     let active = match state.read().chat.clone() {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {
