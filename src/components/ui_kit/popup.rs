@@ -22,7 +22,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         false => "popup",
     };
 
-    let hidden_class = match cx.props.hidden.clone() {
+    let hidden_class = match cx.props.hidden {
         true => "hidden",
         false => "show",
     };
@@ -34,7 +34,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     // TODO: find out how to make things not animate when the page first loads.
     // we basically need to skip the first render only
-    let class = match cx.props.hidden.clone() {
+    let class = match cx.props.hidden {
         true => match first_render.get() {
             true => "",
             false => "animate__animated animate__slideOutDown",

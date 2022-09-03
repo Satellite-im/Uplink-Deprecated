@@ -3,11 +3,12 @@ use warp::raygun::Conversation;
 
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    LANGUAGE, MULTIPASS, STATE,
+    LANGUAGE, STATE, Account,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
     conversation: Conversation,
     on_pressed: EventHandler<'a, ()>,
 }
@@ -17,9 +18,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
-    let multipass = use_atom_ref(&cx, MULTIPASS);
+    let multipass = cx.props.account.clone();
 
-    let mp = multipass.read().clone().unwrap().clone();
+    let mp = multipass.clone();
 
     let ident = mp
         .read()

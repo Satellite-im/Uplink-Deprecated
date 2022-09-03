@@ -8,7 +8,7 @@ use crate::components::ui_kit::{
     icon_input::IconInput,
 };
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     message: Message,
     remote: bool,

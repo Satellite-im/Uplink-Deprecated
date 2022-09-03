@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum State {
     Secondary,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Copy, Clone)]
 pub enum ArrowPosition {
     TopLeft,
     Top,
@@ -18,7 +18,7 @@ pub enum ArrowPosition {
 }
 
 // Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     #[props(optional)]
     text: Option<String>,

@@ -11,14 +11,20 @@ use crate::{
         },
     },
     state::Actions,
-    STATE,
+    Account, Messaging, STATE,
 };
 
 pub mod chat;
 pub mod nav;
 
+#[derive(Props, PartialEq)]
+pub struct Props {
+    account: Account,
+    messaging: Messaging,
+}
+
 #[allow(non_snake_case)]
-pub fn Sidebar(cx: Scope) -> Element {
+pub fn Sidebar(cx: Scope<Props>) -> Element {
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
@@ -62,6 +68,7 @@ pub fn Sidebar(cx: Scope) -> Element {
                             let conversation = conv.clone();
                             rsx!(
                                 chat::Chat {
+                                    account: cx.props.account.clone(),
                                     conversation: conversation.clone(),
                                     on_pressed: move |_| {
                                         state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
@@ -84,12 +91,15 @@ pub fn Sidebar(cx: Scope) -> Element {
                 )
             },
             Friends {
+                account: cx.props.account.clone(),
+                messaging: cx.props.messaging.clone(),
                 title: "Friends".to_string(),
                 show: *show_friends.clone(),
                 icon: Shape::Users,
                 on_hide: move |_| show_friends.set(false),
             },
             Profile {
+                account: cx.props.account.clone(),
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
