@@ -12,6 +12,10 @@
     --padding-small: 1rem;
 }
 
+.animate__animated {
+    --animate-duration: 0.15s;
+}
+
 body,
 html {
     background: var(--theme-background);
@@ -578,9 +582,9 @@ input:checked+.slider:before {
         display: flex;
         flex-direction: column;
         height: 50%;
-        transition: height 0.2s;
         background: var(--theme-background-light);
         margin-top: 50px;
+        transform: translate3d(0, 110%, 0);
 
         &.full {
             // TODO: Only do this if max-content is larger than 50%
@@ -592,12 +596,6 @@ input:checked+.slider:before {
                 overflow: hidden;
                 min-height: unset;
             }
-        }
-
-        &.hidden {
-            height: 0px;
-            padding: 0;
-            overflow: hidden;
         }
 
         .controls {

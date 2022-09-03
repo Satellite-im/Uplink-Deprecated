@@ -61,7 +61,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             },
             (**show_warning).then(|| rsx!(
                 div {
-                    class: "alpha-warning",
+                    class: "alpha-warning animate__animated animate__slideInDown",
                     "Please remember this is pre-release software and bugs, crashes and restarts are expected.",
                     Button {
                         on_pressed: move |_| {

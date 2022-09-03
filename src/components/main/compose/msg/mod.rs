@@ -6,7 +6,6 @@ use warp::raygun::Message;
 use crate::components::ui_kit::{
     icon_button::{self, IconButton},
     icon_input::IconInput,
-    input::Input,
 };
 
 #[derive(PartialEq, Props)]
@@ -56,7 +55,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                         popout.set(false);
                     },
                     div {
-                        class: "message-wrap",
+                        class: "message-wrap animate__animated animate__zoomIn",
                         div {
                             class: "user-message",
                             onclick: move |e| {
@@ -142,16 +141,12 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                         },
                     )
                 }
-                if cx.props.last {
-                    rsx!(
-                        div {
-                            class: "timestamp",
-                            "{ht}"
-                        }
-                    )
-                } else {
-                    rsx!( div {} )
-                }
+                cx.props.last.then(|| rsx!(
+                    div {
+                        class: "timestamp",
+                        "{ht}"
+                    }
+                ))
             }
         }
     ))

@@ -12,6 +12,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let first_render = use_state(&cx, || true);
     let full = use_state(&cx, || false);
     let modal = use_state(&cx, || false);
     let show_children = use_state(&cx, || true);
@@ -31,12 +32,25 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         false => "",
     };
 
-    cx.render(rsx!(
+    // TODO: find out how to make things not animate when the page first loads.
+    // we basically need to skip the first render only
+    let class = match cx.props.hidden.clone() {
+        true => match first_render.get() {
+            true => "",
+            false => "animate__animated animate__slideOutDown",
+        },
+        false => match first_render.get() {
+            true => "",
+            false => "animate__animated animate__slideInUp",
+        },
+    };
+
+    let render = cx.render(rsx!(
         div {
             class: "popup-mask {hidden_class} {as_modal}",
             onclick: move |_| cx.props.on_dismiss.call(()),
             div {
-                class: "{full_class} {hidden_class}",
+                class: "{full_class} {hidden_class} {class}",
                 button {
                     class: "handle",
                     // TODO:
@@ -89,5 +103,11 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    ))
+    ));
+
+    if !cx.props.hidden {
+        first_render.set(false);
+    }
+
+    render
 }
