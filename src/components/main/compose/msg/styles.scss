@@ -40,6 +40,9 @@
             background-color: var(--theme-primary);
             margin-right: 1rem;
             margin-left: 0;
+            text-align: right;
+            display: inline-flex;
+            align-items: center;
 
             &.first {
                 border-radius: 16px 16px 4px 16px;
@@ -71,6 +74,7 @@
 
         &.remote {
             align-self: flex-start;
+            text-align: left;
 
             .value {
                 background: var(--theme-foreground-dark);
@@ -100,17 +104,19 @@
     }
 
     .popout-mask {
-        position: absolute;
+        position: fixed;
         top: 0;
-        left: 0;
+        left: 330px;
         right: 0;
         bottom: 0;
         z-index: 2;
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
+        transition: blur 0.2s;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        overflow: hidden;
 
         .message-wrap {
             display: inline-flex;
@@ -124,6 +130,7 @@
                 display: inline-flex;
                 flex-direction: row;
                 align-items: center;
+                justify-content: space-between;
                 margin-bottom: var(--padding-small);
 
                 .icon-input {
@@ -138,7 +145,9 @@
 
 
             .value {
-                border-radius: 16px 16px 16px 4px;
+                border-radius: 16px 16px 16px 4px !important;
+                max-width: 250px;
+                text-align: left;
             }
 
             .pfp {

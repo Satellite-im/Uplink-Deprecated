@@ -48,7 +48,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! (
         div {
-            class: "wrapper",
+            class: "wrapper {remote}",
             (popout).then(|| rsx!(
                 div {
                     class: "popout-mask {remote2}",
