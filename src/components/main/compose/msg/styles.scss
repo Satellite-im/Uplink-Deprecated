@@ -10,15 +10,10 @@
         width: max-content;
         display: inline-flex;
         align-self: flex-end;
-        margin: 0.25rem 0;
+        margin: 0.08rem 0;
 
         &:hover {
             cursor: pointer;
-        }
-
-        &.last {
-            margin-bottom: 1rem;
-
         }
 
         .pfp {
@@ -44,9 +39,6 @@
             display: inline-flex;
             align-items: center;
 
-
-            animation: zoomInUp;
-
             &.first {
                 border-radius: 16px 16px 4px 16px;
             }
@@ -58,6 +50,10 @@
             &.last {
                 border-radius: 16px 4px 16px 16px;
                 margin-bottom: 1rem;
+
+                p {
+                    padding: 0.2rem;
+                }
             }
 
             p {
@@ -68,7 +64,7 @@
 
         .timestamp {
             position: absolute;
-            bottom: -0.5rem;
+            bottom: -0.25rem;
             right: calc(40px + 1rem);
             font-size: var(--text-small);
             color: var(--theme-text-muted);

@@ -45,6 +45,13 @@ pub fn Msg(cx: Scope<Props>) -> Element {
     };
     let last2 = last.clone();
 
+    let hover = use_state(&cx, || false);
+
+    let hover_class = match hover.get() {
+        true => "animate_animated animate__pulse",
+        false => "not-hovered",
+    };
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -97,7 +104,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                 }
             )),
             div {
-                class: "message {remote}",
+                class: "message {remote} {hover_class}",
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
@@ -114,6 +121,12 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             onclick: |_| {
                                 popout.set(true);
                             },
+                            onmouseover: |_| {
+                                hover.set(true);
+                            },
+                            onmouseout: |_| {
+                                hover.set(false);
+                            },
                             p {
                                 "{value}"
                             }
@@ -125,6 +138,12 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             class: "value {first} {middle} {last}",
                             onclick: |_| {
                                 popout.set(true);
+                            },
+                            onmouseover: |_| {
+                                hover.set(true);
+                            },
+                            onmouseout: |_| {
+                                hover.set(false);
                             },
                             p {
                                 "{value}"
