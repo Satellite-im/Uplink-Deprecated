@@ -55,7 +55,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, || "".to_string());
-    let disabled = status.len() <= 0;
+    let disabled = status.len() == 0;
 
     let set_status = move |_: _| {
         let mp = mp.clone();

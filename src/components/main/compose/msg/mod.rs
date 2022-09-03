@@ -28,22 +28,21 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         true => "remote",
         false => "local",
     };
-    let remote2 = remote.clone();
+
     let first = match cx.props.first {
         true => "first",
         false => "",
     };
-    let first2 = first.clone();
+
     let middle = match cx.props.middle {
         true => "middle",
         false => "",
     };
-    let middle2 = middle.clone();
+
     let last = match cx.props.last {
         true => "last",
         false => "",
     };
-    let last2 = last.clone();
 
     let hover = use_state(&cx, || false);
 
@@ -62,7 +61,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
             class: "wrapper {remote}",
             (popout).then(|| rsx!(
                 div {
-                    class: "popout-mask {remote2}",
+                    class: "popout-mask {remote}",
                     onclick: move |_| {
                         popout.set(false);
                     },
@@ -77,7 +76,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                                 class: "pfp",
                             },
                             div {
-                                class: "value popout {first2} {middle2} {last2}",
+                                class: "value popout {first} {middle} {last}",
                                 p {
                                     "{value2}"
                                 },
