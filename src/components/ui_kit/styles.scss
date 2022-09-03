@@ -822,3 +822,17 @@ input:checked+.slider:before {
         width: 25px;
     }
 }
+
+@keyframes pulse {
+    from {
+        transform: translate3d(100%, 0, 0), scale3d(1, 1, 1);
+    }
+
+    50% {
+        transform: translate3d(0, 0, 0), scale3d(1.05, 1.05, 1.05);
+    }
+
+    to {
+        transform: translate3d(0, 0, 0), scale3d(1, 1, 1);
+    }
+}

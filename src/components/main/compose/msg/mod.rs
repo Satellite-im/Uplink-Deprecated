@@ -52,6 +52,11 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         false => "not-hovered",
     };
 
+    let slide_class = match cx.props.remote {
+        true => "message-wrap animate__animated animate__pulse animate__slideInLeft",
+        false => "message-wrap animate__animated animate__pulse animate__slideInRight",
+    };
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -62,7 +67,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                         popout.set(false);
                     },
                     div {
-                        class: "message-wrap animate__animated animate__zoomIn",
+                        class: "message-wrap {slide_class}",
                         div {
                             class: "user-message",
                             onclick: move |e| {

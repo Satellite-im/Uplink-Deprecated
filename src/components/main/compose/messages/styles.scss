@@ -8,4 +8,7 @@
     height: 100%;
     overflow-y: scroll;
     position: relative;
+    min-width: 300px;
+    max-width: calc(100vw - 330px - 2rem);
+    overflow-x: hidden;
 }

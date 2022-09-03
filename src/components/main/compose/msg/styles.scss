@@ -7,7 +7,6 @@
 
     .message,
     .wrapper {
-        width: max-content;
         display: inline-flex;
         align-self: flex-end;
         margin: 0.08rem 0;
@@ -38,6 +37,7 @@
             text-align: right;
             display: inline-flex;
             align-items: center;
+            max-width: max-content;
 
             &.first {
                 border-radius: 16px 16px 4px 16px;
@@ -146,6 +146,7 @@
             .value {
                 border-radius: 16px 16px 16px 4px !important;
                 max-width: 250px;
+                word-break: break-all;
                 text-align: left;
             }
 
