@@ -92,7 +92,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             .collect::<Vec<_>>();
 
                         // TODO: We need to wire this message up to display differently
-                        // until we confim wether it was successfully sent or failed
+                        // until we confim whether it was successfully sent or failed
                         let _send_message = warp::async_block_in_place_uncheck(rg
                                 .write()
                                 .send(conversation_id, None, text_as_vec));
