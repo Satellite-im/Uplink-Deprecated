@@ -21,7 +21,7 @@ pub struct UnlockProps {
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
 
 
-    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l = LANGUAGE.read();
     let l2 = l.clone();
 
     let pin = use_state(&cx, || String::from(""));

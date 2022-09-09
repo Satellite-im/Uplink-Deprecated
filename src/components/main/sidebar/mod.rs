@@ -10,8 +10,8 @@ use crate::{
             icon_input::IconInput,
         },
     },
-    state::Actions,
-    Account, Messaging, STATE,
+    state::{Actions, PersistedState},
+    Account, Messaging,
 };
 
 pub mod chat;
@@ -19,6 +19,7 @@ pub mod nav;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
+    state: PersistedState,
     account: Account,
     messaging: Messaging,
 }
@@ -27,9 +28,8 @@ pub struct Props {
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let state = use_atom_ref(&cx, STATE);
 
-    let has_chats = !state.read().chats.clone().is_empty();
+    let has_chats = !cx.props.state.chats.read().is_empty();
 
     cx.render(rsx!{
         div {
@@ -64,14 +64,16 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             if has_chats {
                 rsx!(
                     div {
-                        state.read().chats.iter().rev().map(|conv| {
+                        cx.props.state.chats.read().clone().iter().rev().map(|conv| {
                             let conversation = conv.clone();
+                            let state = cx.props.state.clone();
                             rsx!(
                                 chat::Chat {
+                                    state: cx.props.state.clone(),
                                     account: cx.props.account.clone(),
                                     conversation: conversation.clone(),
                                     on_pressed: move |_| {
-                                        state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                        state.dispatch(Actions::ChatWith(conversation.clone())).save();
                                     }
                                 }
                             )
@@ -91,6 +93,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 )
             },
             Friends {
+                state: cx.props.state.clone(),
                 account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone(),
                 title: "Friends".to_string(),

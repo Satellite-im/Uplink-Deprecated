@@ -30,9 +30,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let messages = use_future(&cx, (), |_| async move {
         rg.write()
-            .get_messages(conversation_id, MessageOptions::default())
+            .get_messages(conversation_id, MessageOptions::default().set_range(0..64))
             .await
     });
+
+    let ident = mp
+        .read()
+        .get_own_identity()
+        .map(|id| id.did_key())
+        .unwrap_or_default();
 
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
@@ -40,15 +46,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             rsx! {
                 div {
                     class: "messages",
-                    list.iter().rev().peekable().map(|message|{
-                        let ident = match mp
-                            .read()
-                            .get_own_identity()
-                            {
-                                Ok(id) => id.did_key(),
-                                Err(_) => DID::default(),
-                            };
-
+                    list.iter().rev().peekable().map(|message| {
 
                         let msg_sender = message.sender().to_string();
                         let i = ident.to_string();

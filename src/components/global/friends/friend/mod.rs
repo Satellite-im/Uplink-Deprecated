@@ -9,22 +9,21 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    state::Actions,
-    Account, Messaging, STATE,
+    state::{Actions, PersistedState},
+    Account, Messaging,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
     messaging: Messaging,
+    state: PersistedState,
     friend: DID,
     on_chat: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
-
     // Load Multipass & Raygun's Atom Ref
     let multipass = cx.props.account.clone();
     let raygun = cx.props.messaging.clone();
@@ -98,7 +97,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),
                                 };
-                                state.write().dispatch(Actions::ChatWith(conversation)).save();
+                                cx.props.state.dispatch(Actions::ChatWith(conversation)).save();
                                 cx.props.on_chat.call(());
                             }
                         }

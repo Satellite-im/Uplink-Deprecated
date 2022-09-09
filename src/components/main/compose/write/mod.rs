@@ -42,7 +42,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     );
 
     let text = use_state(&cx, || String::from(""));
-    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l = LANGUAGE.read();
 
     cx.render(rsx! {
         div { class: "write",

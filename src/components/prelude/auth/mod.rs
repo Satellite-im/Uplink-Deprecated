@@ -22,7 +22,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
-    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l = LANGUAGE.read();
 
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;

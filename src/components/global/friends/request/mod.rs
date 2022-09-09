@@ -30,7 +30,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.props.request.from()
     };
 
-    let user = match mp.read().get_identity(did.clone().into()) {
+    let user = match mp.read().get_identity(did.into()) {
         Ok(f) => f,
         Err(_) => vec![],
     };

@@ -6,9 +6,9 @@ pub struct Mutations;
 impl Mutations {
     pub fn chat_with(state: &mut PersistedState, conversation: Conversation) {
         let c = conversation.clone();
-        let mut chats = state.chats.clone();
+        let chats = state.chats.clone();
 
-        for (i, chat) in state.chats.clone().iter().enumerate() {
+        for (i, chat) in state.chats.read().clone().iter().enumerate() {
             
             let mut recipients_equal = true;
             for recipient in chat.recipients().clone() {
@@ -19,11 +19,11 @@ impl Mutations {
             }
 
             if recipients_equal {
-                chats.remove(i);
+                chats.write().remove(i);
             }
         }
-        chats.push(conversation.clone());
+        chats.write().push(conversation.clone());
         state.chats = chats;
-        state.chat = Some(conversation.clone());
+        *state.chat.write() = Some(conversation.clone());
     }
 }

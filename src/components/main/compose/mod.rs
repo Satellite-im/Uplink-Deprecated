@@ -8,11 +8,12 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::button::Button,
     },
-    Account, Messaging, STATE,
+    Account, Messaging, state::PersistedState,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
+    state: PersistedState,
     account: Account,
     messaging: Messaging,
     conversation: Conversation,
@@ -31,7 +32,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     "
     );
 
-    let state = use_atom_ref(&cx, STATE);
+    let state = cx.props.state.clone();
+
     let conversation_id = cx.props.conversation.id();
 
     // Load Multipass & Raygun's Atom Ref
@@ -40,7 +42,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     // Read their values from locks
     let rg = raygun.clone();
 
-    let blur = state.read().chat.is_none();
+    let blur = state.chat.read().is_none();
     let text = use_state(&cx, || String::from(""));
     let show_warning = use_state(&cx, || true);
 

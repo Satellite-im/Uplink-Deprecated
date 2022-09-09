@@ -29,15 +29,19 @@ mod state;
 pub mod themes;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
-static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.cache")));
-pub const WINDOW_SUFFIX_NAME: &'static str = "Warp GUI";
+static LANGUAGE: Lazy<RwLock<Language>> =
+    Lazy::new(|| RwLock::new(Language::by_locale(AvailableLanguages::EnUS)));
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| {
+    let home_dir = dirs::home_dir().unwrap_or_default(); 
+    RwLock::new(home_dir.join(".warp_cache"))
+});
+pub const WINDOW_SUFFIX_NAME: &str = "Warp GUI";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
 
 #[derive(PartialEq, Props)]
 pub struct State {
+    state: PersistedState,
     tesseract: Tesseract,
     account: Account,
     messaging: Messaging,
@@ -78,9 +82,11 @@ fn main() {
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
     )) {
-        Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
+        Ok((i, c)) => (Account(i), Messaging(c)),
         Err(_e) => todo!(),
     };
+
+    let state = PersistedState::load_or_inital();
 
     dioxus::desktop::launch_with_props(
         App,
@@ -88,6 +94,7 @@ fn main() {
             tesseract,
             account,
             messaging,
+            state,
         },
         |c| {
             c.with_window(|w| {
@@ -159,7 +166,7 @@ fn App(cx: Scope<State>) -> Element {
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
+            Route { to: "/main", main::Main { state: cx.props.state.clone(), account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
 }
