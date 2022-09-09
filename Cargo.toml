@@ -20,8 +20,8 @@ anyhow = "1.0"
 once_cell = "1.13"
 copypasta = "0.8.1"
 #dioxus-toast = { git = "https://github.com/mrxiaozhuox/dioxus-toast" }
-dioxus-toast = { path = "./dioxus-toast"}
-dioxus-heroicons = { path = "./dioxus-heroicons"}
+dioxus-toast = { path = "./dioxus-toast-local"}
+dioxus-heroicons = { path = "./dioxus-heroicons-local"}
 clap = { version = "3.2", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
