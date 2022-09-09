@@ -1,0 +1,17 @@
+[package]
+name = "gen"
+version = "0.1.0"
+authors = ["Dave Rolsky <autarch@urth.org>"]
+description = "The generator for the dioxus-heroicons code"
+repository = "https://github.com/houseabsolute/dioxus-heroicons"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+edition = "2018"
+
+[dependencies]
+clap = { version = "~3", features = ["derive"] }
+heck = "~0.4"
+itertools = "~0.10"
+scraper = "~0.12"
+walkdir = "~2"
+

@@ -1,0 +1,19 @@
+[package]
+name = "dioxus-heroicons"
+version = "0.1.4"
+authors = ["Dave Rolsky <autarch@urth.org>"]
+description = "Dioxus components for heroicons (https://heroicons.com/)"
+repository = "https://github.com/houseabsolute/dioxus-heroicons"
+readme = "README.md"
+license = "Apache-2.0 OR MIT"
+edition = "2018"
+
+[dependencies]
+dioxus = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3", features = ["dioxus-html"] }
+dioxus-html = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3", optional = true  }
+
+[workspace]
+members = ["gen"]
+
+[workspace.metadata.release]
+allow-branch = ["master"]
