@@ -1,10 +1,11 @@
-use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
-
 use clap::Parser;
-use dioxus::desktop::tao::dpi::LogicalSize;
+
+use dioxus_desktop::tao::dpi::LogicalSize;
 use dioxus::prelude::*;
+use fermi::prelude::*;
+use dioxus_router::{Route, Router};
 use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
@@ -70,7 +71,7 @@ fn main() {
         }
     };
 
-    dioxus::desktop::launch_with_props(App, State { tesseract }, |c| {
+    dioxus_desktop::launch_with_props(App, State { tesseract }, |c| {
         c.with_window(|w| {
             w.with_title(DEFAULT_WINDOW_NAME.read().clone())
                 .with_resizable(true)

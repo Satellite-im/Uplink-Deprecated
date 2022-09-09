@@ -3,7 +3,7 @@ use std::time::Duration;
 use crate::{components::main::compose::Compose, main::sidebar::Sidebar, RAYGUN, STATE};
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
-
+use fermi::prelude::*;
 pub mod compose;
 pub mod sidebar;
 

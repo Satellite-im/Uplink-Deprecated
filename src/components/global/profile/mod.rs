@@ -1,7 +1,7 @@
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::{crypto::DID, multipass::identity::Identity};
-
+use fermi::prelude::*;
 use crate::{
     components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
     MULTIPASS,

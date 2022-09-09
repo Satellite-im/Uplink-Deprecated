@@ -1,7 +1,10 @@
-use dioxus::{events::KeyCode, prelude::*};
+use dioxus::{prelude::*};
+use dioxus_html::input_data::keyboard_types::Code;
 use dioxus_heroicons::outline::Shape;
 use sir::css;
 use warp::tesseract::Tesseract;
+use dioxus_router::use_router;
+use fermi::prelude::*;
 
 use crate::{
     components::ui_kit::{
@@ -112,7 +115,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         }
                     },
                     onkeyup: move |evt| {
-                        if evt.key_code == KeyCode::Enter {
+                        if evt.code() == Code::Enter {
                             if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {

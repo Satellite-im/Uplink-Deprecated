@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use uuid::Uuid;
 use warp::{crypto::DID, raygun::Conversation};
-
+use fermi::prelude::*;
 use crate::{
     components::ui_kit::{
         activity_indicator::ActivityIndicator,

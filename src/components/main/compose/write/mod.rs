@@ -1,6 +1,7 @@
-use dioxus::{events::KeyCode, prelude::*};
+use dioxus::{prelude::*};
+use dioxus_html::input_data::keyboard_types::Code;
 use dioxus_heroicons::outline::Shape;
-
+use fermi::prelude::*;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
@@ -58,7 +59,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     text.set(e.value.clone());
                 },
                 onkeypress: move |evt| {
-                    if evt.key_code == KeyCode::Enter && !evt.shift_key {
+                    if evt.code() == Code::Enter  {
                         cx.props.on_submit.call(text.to_string());
                         text.set(String::from(""));
                     }
