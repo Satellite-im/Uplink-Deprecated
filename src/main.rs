@@ -95,10 +95,10 @@ fn App(cx: Scope<State>) -> Element {
         style {
             "{css}"
         },
-        dioxus_toast::ToastFrame {
+        /*dioxus_toast::ToastFrame {
             manager: toast,
-        }
-        AppStyle {},
+        }*/
+        //AppStyle {},
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/auth", auth::Auth { tesseract: cx.props.tesseract.clone() } },

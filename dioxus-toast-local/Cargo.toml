@@ -17,9 +17,9 @@ web = ["gloo-timers", "dioxus-web"]
 
 [dependencies]
 chrono = { version = "0.4.19", features = ["wasmbind"] }
-dioxus = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3", optional = true  }
-dioxus-web = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3", optional = true  }
-fermi = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
+dioxus = { git = "https://github.com/DioxusLabs/dioxus" }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master", optional = true  }
+dioxus-web = { git = "https://github.com/DioxusLabs/dioxus", branch = "master", optional = true  }
+fermi = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 tokio = { version = "1.17.0", features = ["time"], optional = true }
 gloo-timers = { version = "0.2.3", features = ["futures"], optional = true }

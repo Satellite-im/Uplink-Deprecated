@@ -1,5 +1,5 @@
-use dioxus::{prelude::*};
-use dioxus_html::input_data::keyboard_types::Code;
+use dioxus::{prelude::*, html::KeyCode};
+
 use dioxus_heroicons::outline::Shape;
 use fermi::prelude::*;
 use crate::{
@@ -59,7 +59,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     text.set(e.value.clone());
                 },
                 onkeypress: move |evt| {
-                    if evt.code() == Code::Enter  {
+                    if evt.key_code == KeyCode::Enter  {
                         cx.props.on_submit.call(text.to_string());
                         text.set(String::from(""));
                     }

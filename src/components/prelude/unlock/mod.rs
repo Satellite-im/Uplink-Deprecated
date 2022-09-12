@@ -1,15 +1,15 @@
-use dioxus::{prelude::*};
-use dioxus_html::input_data::keyboard_types::Code;
+use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::css;
 use warp::tesseract::Tesseract;
-use dioxus_router::use_router;
 use fermi::prelude::*;
+use dioxus_router::use_router;
+use dioxus_core::prelude::*;
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        pin::Pin,
+        pin::Pin, input,
     },
     DEFAULT_PATH, LANGUAGE,
 };
@@ -115,7 +115,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         }
                     },
                     onkeyup: move |evt| {
-                        if evt.code() == Code::Enter {
+                        if evt.key_code == KeyCode::Enter {
                             if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {

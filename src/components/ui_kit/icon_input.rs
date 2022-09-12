@@ -1,8 +1,7 @@
 use dioxus::{
     events::{FormEvent},
-    prelude::*
+    prelude::*, html::KeyCode
 };
-use dioxus_html::input_data::keyboard_types::Code;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]
@@ -34,7 +33,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 oninput: move |e| cx.props.on_change.call(e),
                 value: "{cx.props.value}",
                 onkeyup: move |evt| {
-                    if evt.code() == Code::Enter {
+                    if evt.key_code == KeyCode::Enter {
                         cx.props.on_enter.call(())
                     }
                 }

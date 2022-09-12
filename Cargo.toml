@@ -7,11 +7,14 @@ resolver = "2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
-dioxus-router = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
-dioxus-html = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
-fermi = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3"  }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", rev = "d734dc5b460d3a7007413cb494e139e7b08cf7b3" }
+dioxus = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
+#dioxus = { version = "0.2.4" }
+dioxus-router = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
+dioxus-html = {version = "0.2.1"}
+#{ git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
+fermi = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master"}
+dioxus-core = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 sir = { git = "https://gitlab.com/dawn_app/sir", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
