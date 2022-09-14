@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use clap::Parser;
 
+use dioxus_desktop::{Config, WindowBuilder};
 use dioxus_desktop::tao::dpi::LogicalSize;
 use dioxus::prelude::*;
 use fermi::prelude::*;
@@ -70,14 +71,14 @@ fn main() {
             tess
         }
     };
-
-    dioxus_desktop::launch_with_props(App, State { tesseract }, |c| {
-        c.with_window(|w| {
-            w.with_title(DEFAULT_WINDOW_NAME.read().clone())
+    
+    dioxus_desktop::launch_with_props(App, State { tesseract }, 
+        Config::default().with_window(
+            WindowBuilder::default().with_title(DEFAULT_WINDOW_NAME.read().clone())
                 .with_resizable(true)
                 .with_inner_size(LogicalSize::new(1200.0, 730.0))
-        })
-    });
+        )
+    );
 }
 
 #[allow(non_snake_case)]
