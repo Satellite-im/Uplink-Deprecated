@@ -15,3 +15,5 @@ Cargo.lock
 .cache
 
 .temp
+
+src/.styles.css
