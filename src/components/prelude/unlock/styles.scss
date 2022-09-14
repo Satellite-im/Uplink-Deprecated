@@ -12,13 +12,8 @@
         .invis-input {
             bottom: 0;
             cursor: default;
-            font-size: 0;
-            left: 0;
             opacity: 0;
-            position: fixed;
-            right: 0;
-            top: 0;
-            z-index: 2;
+            // font-size: 0; This breaks windows inputs
         }
 
         .confirm-button {
