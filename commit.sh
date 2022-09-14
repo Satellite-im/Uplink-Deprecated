@@ -10,4 +10,4 @@ SUMMARY=$(gum input --value "$TYPE$SCOPE: " --placeholder "Summary of this chang
 DESCRIPTION=$(gum write --placeholder "Details of this change (CTRL+D to finish)")
 
 # Commit these changes
-gum confirm "Commit changes?" && git commit -S -m "$SUMMARY" -m "$DESCRIPTION"
+gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
