@@ -1,13 +1,13 @@
 /* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
 
 .nav {
-    display: inline-flex;
-    flex-direction: row;
+    display        : inline-flex;
+    flex-direction : row;
     justify-content: space-evenly;
-    position: absolute;
-    bottom: 1rem;
-    left: 0;
-    right: 0;
+    position       : absolute;
+    bottom         : 1rem;
+    left           : 0;
+    right          : 0;
 
     .button {
         svg {
