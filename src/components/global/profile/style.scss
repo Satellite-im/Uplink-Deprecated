@@ -1,4 +1,4 @@
-/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .profile {
     display: inline-flex;
@@ -10,22 +10,23 @@
     }
 
     .background {
-        height: 140px;
-        width: 100%;
         background: var(--theme-text-muted);
+        border-radius: 8px 8px 0 0;
+        height: 140px;
         margin-bottom: 40px;
         position: relative;
-        border-radius: 8px 8px 0 0;
+        width: 100%;
 
         .profile-photo {
-            width: 80px;
-            height: 80px;
-            position: absolute;
-            bottom: -41px;
-            left: calc(50% - 41px);
-            border-radius: 80px;
             background: var(--theme-text-muted);
             border: 2px solid var(--theme-foreground);
+            border-radius: 80px;
+            bottom: -41px;
+            height: 80px;
+            left: calc(50% - 41px);
+            position: absolute;
+            width: 80px;
+
         }
     }
 
@@ -33,8 +34,8 @@
         width: 100%;
 
         .status {
-            margin-bottom: 1rem;
             color: var(--theme-text-muted);
+            margin-bottom: 1rem;
         }
 
         .change-status {
@@ -46,10 +47,10 @@
         }
 
         .meta {
-            width: 100%;
             display: inline-flex;
             flex-direction: row;
             justify-content: space-between;
+            width: 100%;
 
             .badges,
             .location,

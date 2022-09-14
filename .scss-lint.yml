@@ -13,3 +13,5 @@ linters:
     enabled: true
   Shorthand:
     enabled: false
+  FinalNewline:
+    enabled: false

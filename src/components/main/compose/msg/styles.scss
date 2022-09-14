@@ -63,11 +63,11 @@
     }
 
     .timestamp {
-      position: absolute;
       bottom: -.25rem;
-      right: calc(40px + 1rem);
-      font-size: var(--text-small);
       color: var(--theme-text-muted);
+      font-size: var(--text-small);
+      position: absolute;
+      right: calc(40px + 1rem);
       width: max-content;
     }
 
@@ -103,19 +103,19 @@
   }
 
   .popout-mask {
-    position: fixed;
-    top: 0;
-    left: 330px;
-    right: 0;
+    align-items: center;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     bottom: 0;
-    z-index: 2;
     display: inline-flex;
     justify-content: center;
-    align-items: center;
-    transition: blur .2s;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    left: 330px;
     overflow: hidden;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: blur .2s;
+    z-index: 2;
 
     .message-wrap {
       display: inline-flex;
@@ -126,9 +126,9 @@
 
       .controls,
       .user-message {
+        align-items: center;
         display: inline-flex;
         flex-direction: row;
-        align-items: center;
         justify-content: space-between;
         margin-bottom: var(--padding-small);
 

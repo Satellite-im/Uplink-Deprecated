@@ -1,28 +1,28 @@
-/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .topbar {
-    height        : 40px;
-    display       : inline-flex;
+    display: inline-flex;
     flex-direction: row;
-    padding       : 1rem;
+    height: 40px;
+    padding: 1rem;
 
     .pfp {
-        height       : 40px;
-        width        : 40px;
+        background: var(--theme-text-muted);
         border-radius: 20px;
-        background   : var(--theme-text-muted);
+        height: 40px;
+        width: 40px;
     }
 
     .who {
-        flex          : 1;
-        height        : 40px;
-        text-align    : left;
-        padding       : 0 1rem;
-        display       : inline-flex;
+        display: inline-flex;
+        flex: 1;
         flex-direction: column;
+        height: 40px;
+        padding: 0 1rem;
+        text-align: left;
 
         .top-row {
-            display       : inline-flex;
+            display: inline-flex;
             flex-direction: row;
 
             h3 {
@@ -31,16 +31,16 @@
         }
 
         .user-info-inline {
-            display    : inline-flex;
             align-items: center;
+            display: inline-flex;
         }
 
         .did {
-            font-size  : var(--text-small);
-            color      : var(--theme-text-darker);
+            align-self: center;
+            color: var(--theme-text-darker);
+            font-size: var(--text-small);
             margin-left: 1rem;
             padding-top: 4px;
-            align-self : center;
         }
     }
 }
