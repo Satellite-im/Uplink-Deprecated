@@ -53,6 +53,8 @@ struct Opt {
 }
 
 fn main() {
+    if fdlimit::raise_fd_limit().is_none() {}
+
     let opt = Opt::parse();
 
     if let Some(path) = opt.path {
