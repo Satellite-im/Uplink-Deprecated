@@ -32,7 +32,7 @@ static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: Lazy<RwLock<Language>> =
     Lazy::new(|| RwLock::new(Language::by_locale(AvailableLanguages::EnUS)));
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| {
-    let home_dir = dirs::home_dir().unwrap_or_default(); 
+    let home_dir = dirs::home_dir().unwrap_or_default();
     RwLock::new(home_dir.join(".warp_cache"))
 });
 pub const WINDOW_SUFFIX_NAME: &str = "Warp GUI";
@@ -57,6 +57,8 @@ struct Opt {
 }
 
 fn main() {
+    if fdlimit::raise_fd_limit().is_none() {}
+
     let opt = Opt::parse();
 
     if let Some(path) = opt.path {
