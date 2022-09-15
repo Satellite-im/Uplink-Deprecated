@@ -8,11 +8,10 @@ resolver = "2"
 
 [dependencies]
 dioxus = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-#dioxus = { version = "0.2.4" }
 dioxus-router = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-html = {version = "0.2.1"}
+dioxus-html = { version = "0.2.1" }
 fermi = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master"}
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 dioxus-core = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 sir = { git = "https://github.com/Satellite-im/sir", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
