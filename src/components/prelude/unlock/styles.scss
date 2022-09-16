@@ -1,18 +1,22 @@
 .unlock {
     align-items: center;
     display: flex;
-    height: 80%;
+    height: 100%;
     justify-content: center;
     text-align: center;
 
     .container {
         max-width: 350px;
-        position: relative;
 
         .invis-input {
             bottom: 0;
             cursor: default;
+            left: 0;
             opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 1000;
             // font-size: 0; This breaks windows inputs
         }
 

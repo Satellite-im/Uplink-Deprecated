@@ -1,6 +1,6 @@
 use dioxus::{
-    events::{FormEvent, KeyCode},
-    prelude::*,
+    events::{FormEvent},
+    prelude::*, html::KeyCode
 };
 use dioxus_heroicons::{outline::Shape, Icon};
 

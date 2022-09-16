@@ -1,10 +1,13 @@
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
-
 use clap::Parser;
-use dioxus::desktop::tao::dpi::LogicalSize;
+
+use dioxus_desktop::{Config, WindowBuilder};
+use dioxus_desktop::tao::dpi::LogicalSize;
 use dioxus::prelude::*;
+use fermi::prelude::*;
+use dioxus_router::{Route, Router};
 use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
@@ -84,20 +87,20 @@ fn main() {
         Err(_e) => todo!(),
     };
 
-    dioxus::desktop::launch_with_props(
+    dioxus_desktop::launch_with_props(
         App,
         State {
             tesseract,
             account,
             messaging,
         },
-        |c| {
-            c.with_window(|w| {
-                w.with_title(DEFAULT_WINDOW_NAME.read().clone())
+        
+            Config::default().with_window(
+                WindowBuilder::default().with_title(DEFAULT_WINDOW_NAME.read().clone())
                     .with_resizable(true)
                     .with_inner_size(LogicalSize::new(1200.0, 730.0))
-            })
-        },
+            )
+        ,
     );
 }
 
@@ -149,7 +152,7 @@ fn App(cx: Scope<State>) -> Element {
                     href=\"https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css\"
                 />
             ",
-        }
+        },
         style {
             "{theme_colors}",
             "{css}"
