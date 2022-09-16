@@ -76,6 +76,13 @@ fn main() {
         }
     };
 
+    let file_appender = warp::logging::tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
+    let (non_blocking, _guard) = warp::logging::tracing_appender::non_blocking(file_appender);
+    warp::logging::tracing_subscriber::fmt()
+        .with_writer(non_blocking)
+        .with_env_filter(warp::logging::tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+
     let (account, messaging) = match warp::async_block_in_place_uncheck(initialization(
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
