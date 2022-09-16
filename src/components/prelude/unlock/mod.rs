@@ -22,8 +22,7 @@ pub struct UnlockProps {
 
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
-    //TODO: Display an error instead of panicing
-    std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
+
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();

@@ -3,12 +3,12 @@ use dioxus_heroicons::outline::Shape;
 use warp::{crypto::DID, multipass::identity::Identity};
 use fermi::prelude::*;
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
-    MULTIPASS,
+    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup}, Account,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
     show: bool,
     on_hide: EventHandler<'a, ()>,
 }
@@ -16,10 +16,10 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Load Multipass & Raygun's Atom Ref
-    let multipass = use_atom_ref(&cx, MULTIPASS);
+    let multipass = cx.props.account.clone();
 
     // Read their values from locks
-    let mp = multipass.read().clone().unwrap().clone();
+    let mp = multipass.clone();
 
     let my_identity = match mp.read().get_own_identity() {
         Ok(me) => me,
@@ -34,9 +34,6 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             .iter()
             .map(|friend| {
                 match multipass
-                    .read()
-                    .clone()
-                    .unwrap()
                     .read()
                     .get_identity(friend.clone().into())
                 {
@@ -55,7 +52,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, || "".to_string());
-    let disabled = status.len() <= 0;
+    let disabled = status.len() == 0;
 
     let set_status = move |_: _| {
         let mp = mp.clone();
@@ -114,7 +111,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         text: "Save Status".to_string(),
                                         icon: Shape::Check,
                                         on_pressed: move |_| {
-                                            // TODO: Make this work
+                                            // TODO: Pending Voice & Video
                                             // set_status.call()
                                         }
                                     },

@@ -12,15 +12,17 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let first_render = use_state(&cx, || true);
     let full = use_state(&cx, || false);
     let modal = use_state(&cx, || false);
+    let show_children = use_state(&cx, || true);
 
     let full_class = match full.get() {
         true => "popup full",
         false => "popup",
     };
 
-    let hidden_class = match cx.props.hidden.clone() {
+    let hidden_class = match cx.props.hidden {
         true => "hidden",
         false => "show",
     };
@@ -30,15 +32,33 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         false => "",
     };
 
-    cx.render(rsx!(
+    // TODO: find out how to make things not animate when the page first loads.
+    // we basically need to skip the first render only
+    let class = match cx.props.hidden {
+        true => match first_render.get() {
+            true => "",
+            false => "animate__animated animate__slideOutDown",
+        },
+        false => match first_render.get() {
+            true => "",
+            false => "animate__animated animate__slideInUp",
+        },
+    };
+
+    let render = cx.render(rsx!(
         div {
             class: "popup-mask {hidden_class} {as_modal}",
             onclick: move |_| cx.props.on_dismiss.call(()),
             div {
-                class: "{full_class} {hidden_class}",
+                class: "{full_class} {hidden_class} {class}",
                 button {
                     class: "handle",
-                    // TODO: This handle should be able to be "grabbed" and "pulled" up or down to expand or close the opup
+                    // TODO:
+                    // ID:
+                    // Title: Allow draging of popup handle to resize
+                    // Reporter: Matt Wisniewski
+                    // Desc:
+                    // We should be able to click and drag the popup and snap the popup to different sizes.
                     onclick: move |evt| {
                         evt.cancel_bubble();
                         full.set(!full.get());
@@ -61,9 +81,33 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                         },
                     },
-                    cx.props.children.as_ref()
+                    // TODO:
+                    // ID:
+                    // Title: Popup renders content forever
+                    // Reporter: Matt Wisniewski
+                    // Desc:
+                    // We currently render the children even when the popup is hidden off screen.
+                    // We are animating this popup so we need to make sure it's off screen before
+                    // we "de-render" thse children, realistically this probably involves a 0.2ms delay
+                    // followed by changing the children to render conditionally.
+                    // Maybe something like...
+                    // cx.spawn({
+                    //     async move {
+                    //         loop {
+                    //             wait_ms(200).await;
+                    //             show_children.set(false);
+                    //         }
+                    //     }
+                    // })
+                    show_children.then(|| rsx!(cx.props.children.as_ref()))
                 }
             }
         }
-    ))
+    ));
+
+    if !cx.props.hidden {
+        first_render.set(false);
+    }
+
+    render
 }

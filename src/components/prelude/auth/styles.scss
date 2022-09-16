@@ -1,21 +1,21 @@
-/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .auth {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
+    display: flex;
     height: 80%;
+    justify-content: center;
+    text-align: center;
     width: 100%;
 
     .container {
-        min-width: 300px;
-        max-width: 720px;
-        position: relative;
-        display: flex;
         align-items: center;
-        justify-content: center;
+        display: flex;
         flex-direction: column;
+        justify-content: center;
+        max-width: 720px;
+        min-width: 300px;
+        position: relative;
 
         .full-width {
             .input {

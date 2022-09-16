@@ -1,46 +1,41 @@
 .unlock {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    text-align: center;
+    display: flex;
     height: 80%;
+    justify-content: center;
+    text-align: center;
 
     .container {
         max-width: 350px;
         position: relative;
 
         .invis-input {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
             bottom: 0;
-            z-index: 2;
             cursor: default;
             opacity: 0;
-            font-size: 0;
+            // font-size: 0; This breaks windows inputs
         }
 
         .confirm-button {
+            bottom: -12px;
             position: absolute;
             right: -80px;
-            bottom: -12px;
             z-index: 3;
         }
     }
 
     .login-actions {
-        position: fixed;
         bottom: 2rem;
-        right: 2rem;
+        display: inline-block;
         left: 2rem;
         max-height: 40px;
-        display: inline-block;
+        position: fixed;
+        right: 2rem;
         text-align: right;
         z-index: 3;
 
         div {
-            padding: 0.2rem 0.6rem;
+            padding: .2rem .6rem;
 
             &:last-of-type {
                 padding-right: 0;

@@ -8,11 +8,13 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::button::Button,
     },
-    RAYGUN, STATE,
+    Account, Messaging, STATE,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
+    account: Account,
+    messaging: Messaging,
     conversation: Conversation,
 }
 
@@ -33,10 +35,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
 
     // Load Multipass & Raygun's Atom Ref
-    let raygun = use_atom_ref(&cx, RAYGUN);
+    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
-    let rg = raygun.read().clone().unwrap().clone();
+    let rg = raygun.clone();
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
@@ -54,14 +56,15 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             } else {
                 rsx!(
                     TopBar {
+                        account: cx.props.account.clone(),
                         conversation: cx.props.conversation.clone(),
                         on_call: move |_| {},
                     }
                 )
             },
-            if **show_warning {rsx!(
+            (**show_warning).then(|| rsx!(
                 div {
-                    class: "alpha-warning",
+                    class: "alpha-warning animate__animated animate__slideInDown",
                     "Please remember this is pre-release software and bugs, crashes and restarts are expected.",
                     Button {
                         on_pressed: move |_| {
@@ -71,10 +74,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         text: "I Understand.".to_string(),
                     }
                 },
-            )} else { rsx!(div {})}
+            ))
             div {
                 class: "messages-container",
                 Messages {
+                    account: cx.props.account.clone(),
+                    messaging: cx.props.messaging.clone(),
                     conversation: cx.props.conversation.clone(),
                 }
             },
@@ -92,7 +97,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             .collect::<Vec<_>>();
 
                         // TODO: We need to wire this message up to display differently
-                        // until we confim wether it was successfully sent or failed
+                        // until we confim whether it was successfully sent or failed
                         let _send_message = warp::async_block_in_place_uncheck(rg
                                 .write()
                                 .send(conversation_id, None, text_as_vec));

@@ -1,20 +1,20 @@
-/* Styles are globally scoped, please use unique names and nested selectors to avoid conflicts. */
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .compose {
     display: inline-flex;
-    flex-direction: column;
     flex: 1;
+    flex-direction: column;
     position: relative;
 
     .blurmask {
-        backdrop-filter: blur(3px);
         -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
         background: var(--theme-semi-transparent);
-        position: absolute;
-        top: 0;
-        right: 0;
         bottom: 0;
         left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
         z-index: 90;
     }
 
@@ -25,19 +25,19 @@
     }
 
     .writer-container {
-        width: 100%;
         display: inline-flex;
+        width: 100%;
     }
 
     .alpha-warning {
+        align-content: center;
+        align-items: center;
+        border-bottom: 1px solid var(--theme-borders);
+        border-top: 1px solid var(--theme-borders);
         display: inline-flex;
         flex-direction: row;
         justify-content: space-evenly;
-        align-content: center;
-        align-items: center;
-        padding: 0.5rem 0.5rem;
-        border-top: 1px solid var(--theme-borders);
-        border-bottom: 1px solid var(--theme-borders);
+        padding: .5rem .5rem;
 
         .button {
             height: 30px;

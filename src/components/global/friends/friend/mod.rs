@@ -10,11 +10,13 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::Actions,
-    MULTIPASS, RAYGUN, STATE,
+    Account, Messaging, STATE,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
+    messaging: Messaging,
     friend: DID,
     on_chat: EventHandler<'a, ()>,
 }
@@ -24,12 +26,12 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
     // Load Multipass & Raygun's Atom Ref
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let raygun = use_atom_ref(&cx, RAYGUN);
+    let multipass = cx.props.account.clone();
+    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
-    let mp = multipass.read().clone().unwrap().clone();
-    let rg = raygun.read().clone().unwrap().clone();
+    let mp = multipass.clone();
+    let rg = raygun.clone();
 
     // Determine our friends DID
     let friend = cx.props.friend.clone();
@@ -93,9 +95,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                 let conversation = match conversation_response {
                                     Ok(v) => v,
-                                    // TODO: we can't actually add the conversation this way because
-                                    // if the resolve doesn't finish instantly, it will always use the default Uuid.
-                                    // this would be fine if it ever resolved here again, but it doesn't seem to.
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),
                                 };
