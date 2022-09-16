@@ -8,12 +8,12 @@ use crate::{
         activity_indicator::ActivityIndicator,
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
-    MULTIPASS,
+    }, Account,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
     conversation: Conversation,
     on_call: EventHandler<'a, ()>,
 }
@@ -21,10 +21,10 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Load Multipass & Raygun's Atom Ref
-    let multipass = use_atom_ref(&cx, MULTIPASS);
+    let multipass = cx.props.account.clone();
 
     // Read their values from locks
-    let mp = multipass.read().clone().unwrap().clone();
+    let mp = multipass.clone();
 
     let conversation_id = cx.props.conversation.id();
 

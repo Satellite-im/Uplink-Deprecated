@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use sir::global_css;
 
 #[allow(non_snake_case)]
 pub fn Badge(cx: Scope) -> Element {

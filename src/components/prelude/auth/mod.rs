@@ -1,10 +1,6 @@
-use std::sync::Arc;
 
 use dioxus::{desktop::use_window, events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
-use warp_mp_ipfs::config::MpIpfsConfig;
-use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};
 
 use crate::{
     components::ui_kit::{
@@ -13,14 +9,15 @@ use crate::{
         loader::Loader,
         photo_picker::PhotoPicker,
     },
-    DEFAULT_PATH, LANGUAGE, MULTIPASS, RAYGUN, WINDOW_SUFFIX_NAME,
+    LANGUAGE, WINDOW_SUFFIX_NAME, Account,
 };
 
 // Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
+#[derive(Props, PartialEq)]
 pub struct Props {
-    tesseract: Tesseract,
+    account: Account,
 }
+
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
@@ -31,126 +28,30 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, || String::from(""));
 
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let raygun = use_atom_ref(&cx, RAYGUN);
-    let tess = cx.props.tesseract.clone();
+    let multipass = cx.props.account.clone();
 
-    let mp = use_future(&cx, (&tess,), |(tess,)| async move {
-        warp_mp_ipfs::ipfs_identity_persistent(
-            MpIpfsConfig::production(DEFAULT_PATH.read().clone()),
-            tess,
-            None,
-        )
-        .await
-        .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))
-    });
-
-    let account_fetch_status = match mp.value() {
-        Some(Ok(val)) => {
-            *multipass.write() = Some(val.clone());
-
-            match val.read().get_own_identity() {
-                Ok(i) => {
-                    let mp = val.clone();
-                    let rg = use_future(&cx, (), |()| async move {
-                        warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-                            Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
-                            mp,
-                            None,
-                        )
-                        .await
-                        .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
-                    });
-                    match rg.value() {
-                        Some(Ok(rg)) => {
-                            *raygun.write() = Some(rg.clone());
-                            window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
-                            use_router(&cx).push_route("/main", None, None);
-                            false
-                        }
-                        Some(Err(_)) => {
-                            //Note: Maybe want to return an error?
-                            true
-                        }
-                        None => true,
-                    }
-                }
-                Err(_) => true,
-            }
-        }
-        Some(Err(_)) => {
-            // TODO: Make an error page and reroute there
+    let account_fetch_status = match multipass.read().get_own_identity() {
+        Ok(i) => {
+            window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
+            use_router(&cx).push_route("/main", None, None);
             false
         }
-        None => false,
+        Err(_) => true,
     };
-
-    let new_account = move |_| match multipass
-        .read()
-        .clone()
-        .unwrap()
-        .write()
-        .create_identity(Some(username.as_str()), None)
-    {
+    let mp = multipass.clone();
+    let new_account = move |_| match mp.write().create_identity(Some(username.as_str()), None) {
         Ok(_) => {
-            let mp = multipass.read().clone().unwrap().clone();
-            let rg = use_future(&cx, (), |()| async move {
-                warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-                    Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
-                    mp,
-                    None,
-                )
-                .await
-                .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
-            });
-
-            match rg.value() {
-                Some(Ok(rg)) => {
-                    *raygun.write() = Some(rg.clone());
-                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/main", None, None);
-                }
-                Some(Err(_)) => {
-                    //Note: Maybe want to return an error?
-                    error.set("".into())
-                }
-                None => error.set("".into()),
-            }
+            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+            use_router(&cx).push_route("/main", None, None);
         }
         Err(_) => error.set("".into()),
     };
 
-    let new_account_2 = move |_| match multipass
-        .read()
-        .clone()
-        .unwrap()
-        .write()
-        .create_identity(Some(username.as_str()), None)
-    {
+    let mp2 = multipass.clone();
+    let new_account_2 = move |_| match mp2.write().create_identity(Some(username.as_str()), None) {
         Ok(_) => {
-            let mp = multipass.read().clone().unwrap().clone();
-            let rg = use_future(&cx, (), |()| async move {
-                warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-                    Some(RgIpfsConfig::production(DEFAULT_PATH.read().clone())),
-                    mp,
-                    None,
-                )
-                .await
-                .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))
-            });
-
-            match rg.value() {
-                Some(Ok(rg)) => {
-                    *raygun.write() = Some(rg.clone());
-                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/main", None, None);
-                }
-                Some(Err(_)) => {
-                    //Note: Maybe want to return an error?
-                    error.set("".into())
-                }
-                None => error.set("".into()),
-            }
+            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+            use_router(&cx).push_route("/main", None, None);
         }
         Err(_) => error.set("".into()),
     };

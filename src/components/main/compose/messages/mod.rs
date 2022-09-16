@@ -5,10 +5,12 @@ use warp::{
     raygun::{Conversation, MessageOptions},
 };
 
-use crate::{components::main::compose::msg::Msg, MULTIPASS, RAYGUN};
+use crate::{components::main::compose::msg::Msg, Account, Messaging};
 
-#[derive(PartialEq, Props)]
+#[derive(Props, PartialEq)]
 pub struct Props {
+    account: Account,
+    messaging: Messaging,
     conversation: Conversation,
 }
 
@@ -19,12 +21,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let _show_skeleton = conversation_id == Uuid::default();
 
     // Load Multipass & Raygun's Atom Ref
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let raygun = use_atom_ref(&cx, RAYGUN);
+    let multipass = cx.props.account.clone();
+    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
-    let rg = raygun.read().clone().unwrap().clone();
-    let mp = multipass.read().clone().unwrap().clone();
+    let rg = raygun.clone();
+    let mp = multipass.clone();
 
     let messages = use_future(&cx, (), |_| async move {
         rg.write()
@@ -48,14 +50,14 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             };
 
 
-                        let msg_sender = message.clone().sender().to_string();
+                        let msg_sender = message.sender().to_string();
                         let i = ident.to_string();
                         let remote = i != msg_sender;
                         let last = prev_sender != msg_sender;
                         let middle = prev_sender == msg_sender;
                         let first = false;
 
-                        prev_sender = message.clone().sender().to_string();
+                        prev_sender = message.sender().to_string();
 
                         rsx!(
                             Msg {

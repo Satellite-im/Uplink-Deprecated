@@ -8,11 +8,13 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::button::Button,
     },
-    RAYGUN, STATE,
+    Account, Messaging, STATE,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
+    account: Account,
+    messaging: Messaging,
     conversation: Conversation,
 }
 
@@ -33,10 +35,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
 
     // Load Multipass & Raygun's Atom Ref
-    let raygun = use_atom_ref(&cx, RAYGUN);
+    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
-    let rg = raygun.read().clone().unwrap().clone();
+    let rg = raygun.clone();
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
@@ -54,6 +56,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             } else {
                 rsx!(
                     TopBar {
+                        account: cx.props.account.clone(),
                         conversation: cx.props.conversation.clone(),
                         on_call: move |_| {},
                     }
@@ -75,6 +78,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             div {
                 class: "messages-container",
                 Messages {
+                    account: cx.props.account.clone(),
+                    messaging: cx.props.messaging.clone(),
                     conversation: cx.props.conversation.clone(),
                 }
             },

@@ -15,7 +15,7 @@ use crate::{
         global::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    LANGUAGE, MULTIPASS, TOAST_MANAGER,
+    Account, Messaging, LANGUAGE, TOAST_MANAGER,
 };
 
 pub mod friend;
@@ -23,6 +23,8 @@ pub mod request;
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
+    messaging: Messaging,
     icon: Shape,
     title: String,
     show: bool,
@@ -32,8 +34,8 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let mp = multipass.read().clone().unwrap().clone();
+    let multipass = cx.props.account.clone();
+    let mp = multipass.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let add_error = use_state(&cx, || "");
@@ -43,21 +45,15 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     friends.set(match mp.read().list_friends() {
         Ok(f) => f
             .iter()
-            .map(|friend| {
-                match multipass
-                    .read()
-                    .clone()
-                    .unwrap()
-                    .read()
-                    .get_identity(friend.clone().into())
-                {
+            .map(
+                |friend| match multipass.read().get_identity(friend.clone().into()) {
                     Ok(idents) => idents
                         .first()
                         .map(|i| i.did_key())
                         .unwrap_or_else(|| DID::default()),
                     Err(_) => DID::default(),
-                }
-            })
+                },
+            )
             .collect::<Vec<_>>(),
         Err(_) => vec![],
     });
@@ -101,11 +97,8 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 e.cancel_bubble();
 
                                 let mut ctx = ClipboardContext::new().unwrap();
-                                let contents = match multipass
+                                let contents = match mp
                                         .read()
-                                        .clone()
-                                        .unwrap()
-                                        .write()
                                         .get_own_identity()
                                     {
                                         Ok(ident) => {
@@ -140,10 +133,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 let did = DID::try_from(remote_friend.clone().to_string());
                                 match did {
                                     Ok(d) => {
-                                        match multipass
-                                            .read()
-                                            .clone()
-                                            .unwrap()
+                                        match cx.props.account.clone()
                                             .write()
                                             .send_request(&d)
                                         {
@@ -179,10 +169,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 let did = DID::try_from(remote_friend.clone().to_string());
                                 match did {
                                     Ok(d) => {
-                                        match multipass
-                                            .read()
-                                            .clone()
-                                            .unwrap()
+                                        match cx.props.account.clone()
                                             .write()
                                             .send_request(&d)
                                         {
@@ -218,12 +205,10 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div {
                             requests.iter().map(|request| rsx!(
                                 FriendRequest {
+                                    account: cx.props.account.clone(),
                                     request: request.clone(),
                                     on_accept: move |_| {
-                                        match multipass
-                                            .read()
-                                            .clone()
-                                            .unwrap()
+                                        match cx.props.account.clone()
                                             .write()
                                             .accept_request(&request.from())
                                         {
@@ -235,10 +220,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         }
                                     },
                                     on_deny: move |_| {
-                                        match multipass
-                                            .read()
-                                            .clone()
-                                            .unwrap()
+                                        match cx.props.account.clone()
                                             .write()
                                             .deny_request(&request.from())
                                         {
@@ -261,12 +243,10 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div {
                             outgoing.iter().map(|request| rsx!(
                                 FriendRequest {
+                                    account: cx.props.account.clone(),
                                     request: request.clone(),
                                     on_deny:  move |_| {
-                                        match multipass
-                                            .read()
-                                            .clone()
-                                            .unwrap()
+                                        match cx.props.account.clone()
                                             .write()
                                             .close_request(&request.to())
                                         {
@@ -289,6 +269,8 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     div {
                         friends.iter().map(|user| rsx!(
                             Friend {
+                                account: cx.props.account.clone(),
+                                messaging: cx.props.messaging.clone(),
                                 friend: user.clone(),
                                 on_chat: move |_| {
                                     cx.props.on_hide.call(());

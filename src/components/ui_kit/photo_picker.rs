@@ -3,7 +3,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 
 use crate::components::ui_kit::icon_button::IconButton;
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     text: Option<String>,
 }

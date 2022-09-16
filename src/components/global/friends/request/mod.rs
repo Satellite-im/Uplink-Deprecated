@@ -7,12 +7,12 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
-    MULTIPASS,
+    }, Account,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
+    account: Account,
     request: FriendRequest,
     deny_only: bool,
     on_deny: EventHandler<'a, ()>,
@@ -21,8 +21,8 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let multipass = use_atom_ref(&cx, MULTIPASS);
-    let mp = multipass.read().clone().unwrap().clone();
+    let multipass = cx.props.account.clone();
+    let mp = multipass.clone();
 
     let did = if cx.props.deny_only {
         cx.props.request.to()
