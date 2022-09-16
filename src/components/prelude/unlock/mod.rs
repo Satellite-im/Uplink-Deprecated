@@ -1,15 +1,15 @@
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
+use dioxus_router::use_router;
+use fermi::prelude::*;
 use sir::css;
 use warp::tesseract::Tesseract;
-use fermi::prelude::*;
-use dioxus_router::use_router;
-use dioxus_core::prelude::*;
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        pin::Pin, input,
+        input,
+        pin::Pin,
     },
     DEFAULT_PATH, LANGUAGE,
 };
@@ -22,8 +22,6 @@ pub struct UnlockProps {
 
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
-
-
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
 
