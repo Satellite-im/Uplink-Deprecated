@@ -112,11 +112,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!(
-                                div {
-                                    class: "pfp",
-                                },
-                            )
+                            rsx!( div { class: "pfp" } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
@@ -154,11 +150,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             }
                         },
                         if cx.props.last {
-                            rsx!(
-                                div {
-                                    class: "pfp",
-                                },
-                            )
+                            rsx!( div { class: "pfp" } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
