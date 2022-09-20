@@ -32,6 +32,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
     let account_fetch_status = match multipass.read().get_own_identity() {
         Ok(i) => {
+            println!("Identity DID: {}", i.did_key());
             window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
             use_router(&cx).push_route("/main", None, None);
             false

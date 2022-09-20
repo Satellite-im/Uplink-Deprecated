@@ -76,7 +76,10 @@ fn main() {
         }
     };
 
-    let file_appender = warp::logging::tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
+    let file_appender = warp::logging::tracing_appender::rolling::hourly(
+        DEFAULT_PATH.read().join("logs"),
+        "warp-gui.log",
+    );
     let (non_blocking, _guard) = warp::logging::tracing_appender::non_blocking(file_appender);
     warp::logging::tracing_subscriber::fmt()
         .with_writer(non_blocking)
@@ -118,13 +121,21 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let account = warp_mp_ipfs::ipfs_identity_persistent(
-        MpIpfsConfig::production(path.clone()),
-        tesseract,
-        None,
-    )
-    .await
-    .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
+    let mut config = MpIpfsConfig::production(&path);
+    config.ipfs_setting.mdns.enable = false;
+    config.bootstrap = vec![
+        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B"
+            .parse()
+            .unwrap(),
+    ];
+
+    config.ipfs_setting.relay_client.relay_address = vec![
+        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B/p2p-circuit".parse().unwrap(),
+    ];
+
+    let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
+        .await
+        .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
     let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(path)),
