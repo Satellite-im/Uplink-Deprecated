@@ -8,6 +8,8 @@ use warp::raygun::Conversation;
 use fermi::prelude::*;
 pub mod compose;
 pub mod sidebar;
+pub mod friends;
+pub mod profile;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {

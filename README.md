@@ -2,7 +2,9 @@
 
 # Prerequisites
 
-You'll need to install `rust` and have `cmake` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac.
+You'll need to install `rust` and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. 
+
+If you do not have protobuf installed you can install it using homebrew: `brew install protobuf`
 
 # Running
 

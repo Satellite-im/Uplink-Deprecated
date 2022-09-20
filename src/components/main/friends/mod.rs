@@ -12,7 +12,7 @@ use warp::crypto::DID;
 
 use crate::{
     components::{
-        global::friends::{friend::Friend, request::FriendRequest},
+        main::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
     Account, Messaging, LANGUAGE, TOAST_MANAGER,

@@ -4,7 +4,7 @@ use fermi::prelude::*;
 
 use crate::{
     components::{
-        global::{friends::Friends, profile::Profile},
+        main::{friends::Friends, profile::Profile},
         main::sidebar::nav::{Nav, NavEvent},
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
