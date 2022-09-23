@@ -10,7 +10,7 @@ resolver = "2"
 fdlimit = "0.2"
 dioxus = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 dioxus-router = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-html = { version = "0.2.1" }
+dioxus-html = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 fermi = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
 dioxus-core = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
