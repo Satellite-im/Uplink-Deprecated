@@ -1,7 +1,6 @@
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use dioxus_router::use_router;
-use fermi::prelude::*;
+use dioxus::router::use_router;
 use sir::css;
 use warp::tesseract::Tesseract;
 

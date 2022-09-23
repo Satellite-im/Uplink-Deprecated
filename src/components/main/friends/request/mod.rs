@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use fermi::prelude::*;
+
 use warp::multipass::identity::FriendRequest;
 
 use crate::{

@@ -4,7 +4,6 @@ use warp::{
     crypto::DID,
     raygun::{Conversation, MessageOptions},
 };
-use fermi::prelude::*;
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 
 #[derive(Props, PartialEq)]

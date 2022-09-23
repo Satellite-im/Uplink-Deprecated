@@ -5,7 +5,6 @@ use crate::{
 };
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
-use fermi::prelude::*;
 pub mod compose;
 pub mod sidebar;
 pub mod friends;

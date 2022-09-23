@@ -1,9 +1,8 @@
 
 use dioxus::{events::FormEvent, prelude::*};
-use dioxus_desktop::use_window;
+use dioxus::desktop::use_window;
 use dioxus_heroicons::outline::Shape;
-use fermi::prelude::*;
-use dioxus_router::use_router;
+use dioxus::router::use_router;
 use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};

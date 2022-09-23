@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use sir::global_css;
 use warp::raygun::Conversation;
-use fermi::prelude::*;
+
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
