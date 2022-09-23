@@ -113,17 +113,7 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let mut config = MpIpfsConfig::production(&path);
-    config.ipfs_setting.mdns.enable = false;
-    config.bootstrap = vec![
-        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B"
-            .parse()
-            .unwrap(),
-    ];
-
-    config.ipfs_setting.relay_client.relay_address = vec![
-        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B/p2p-circuit".parse().unwrap(),
-    ];
+    let mut config = MpIpfsConfig::production(&path, true);
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
