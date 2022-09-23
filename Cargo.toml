@@ -21,16 +21,18 @@ serde_json = { version = "1.0" }
 anyhow = "1.0"
 once_cell = "1.13"
 copypasta = "0.8.1"
-dioxus-toast = { git = "https://github.com/Satellite-im/dioxus-toast", features = ["desktop"] }
+dioxus-toast = { git = "https://github.com/Satellite-im/dioxus-toast", features = [
+    "desktop",
+] }
 #dioxus-toast = { version = "0.1.5"}
 dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
 clap = { version = "3.2", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
 
-warp = { git = "https://github.com/Satellite-im/Warp" }
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "20bd86cebff8bb0b4d055255d7f84b3cd68b3755" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "20bd86cebff8bb0b4d055255d7f84b3cd68b3755" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "20bd86cebff8bb0b4d055255d7f84b3cd68b3755" }
 
 
 [build-dependencies]
