@@ -3,8 +3,8 @@ use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use dioxus::{prelude::*, desktop::tao::dpi::LogicalSize};
 use dioxus::router::{Route, Router};
+use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
@@ -50,6 +50,8 @@ struct Opt {
     path: Option<PathBuf>,
     #[clap(long)]
     title: Option<String>,
+    #[clap(long)]
+    experimental_node: bool,
 }
 
 fn main() {
@@ -79,6 +81,7 @@ fn main() {
     let (account, messaging) = match warp::async_block_in_place_uncheck(initialization(
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
+        opt.experimental_node
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
@@ -104,6 +107,7 @@ fn main() {
 async fn initialization(
     path: PathBuf,
     tesseract: Tesseract,
+    experimental: bool,
 ) -> Result<
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
@@ -111,17 +115,7 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let mut config = MpIpfsConfig::production(&path);
-    config.ipfs_setting.mdns.enable = false;
-    config.bootstrap = vec![
-        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B"
-            .parse()
-            .unwrap(),
-    ];
-
-    config.ipfs_setting.relay_client.relay_address = vec![
-        "/ip4/67.205.175.147/tcp/5000/p2p/12D3KooWDC7igsZ9Yaheip77ejALmjG6AZm2auuVmMDj1AkC2o7B/p2p-circuit".parse().unwrap(),
-    ];
+    let config = MpIpfsConfig::production(&path, experimental);
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
