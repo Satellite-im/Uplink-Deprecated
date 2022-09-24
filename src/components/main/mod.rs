@@ -20,14 +20,8 @@ pub struct Prop {
 pub fn Main(cx: Scope<Prop>) -> Element {
     let state = use_atom_ref(&cx, STATE);
 
-    // TODO:: We should probably write some kind of watcher here for new messages on all conversations
-    // so we can create notifications
-
-    // Load Multipass & Raygun's Atom Ref
-    let raygun = cx.props.messaging.clone();
-
     // Read their values from locks
-    let rg = raygun;
+    let rg = cx.props.messaging.clone();
 
     let st = state.clone();
     cx.spawn(async move {

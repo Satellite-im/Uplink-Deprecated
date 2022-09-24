@@ -1,8 +1,6 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
-use uuid::Uuid;
 use warp::{
-    crypto::DID,
     raygun::{Conversation, MessageOptions},
 };
 
@@ -24,10 +22,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let messages = use_future(&cx, (), |_| async move {
-        rg.write()
+        rg.read()
             .get_messages(conversation_id, MessageOptions::default())
             .await
     });
+
+    //Note: We will just unwrap for now though we need to
+    //      handle the error properly if there is ever one when
+    //      getting own identity
+    let ident = mp.read().get_own_identity().unwrap();
 
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
@@ -35,18 +38,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             rsx! {
                 div {
                     class: "messages",
-                    list.iter().rev().peekable().map(|message|{
-                        let ident = match mp
-                            .read()
-                            .get_own_identity()
-                            {
-                                Ok(id) => id.did_key(),
-                                Err(_) => DID::default(),
-                            };
-
-
+                    list.iter().rev().map(|message|{
                         let msg_sender = message.sender().to_string();
-                        let i = ident.to_string();
+                        let i = ident.did_key().to_string();
                         let remote = i != msg_sender;
                         let last = prev_sender != msg_sender;
                         let middle = prev_sender == msg_sender;

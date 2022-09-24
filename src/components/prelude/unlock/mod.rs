@@ -103,9 +103,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         // We can ignore the error though since we're doing this without the users command
                         if evt.value.len() >= 4 && tesseract_available {
                             let mut tesseract = cx.props.tesseract.clone();
-                            match tesseract.unlock(evt.value.as_ref()) {
-                                Ok(_) => use_router(&cx).push_route("/auth", None, None),
-                                Err(_) => {},
+                            if tesseract.unlock(evt.value.as_ref()).is_ok() {
+                                use_router(&cx).push_route("/auth", None, None)
                             }
                         }
                     },
