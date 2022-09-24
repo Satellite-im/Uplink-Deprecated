@@ -1,5 +1,3 @@
-use crate::themes::Theme;
-
 pub mod activity_indicator;
 pub mod badge;
 pub mod button;
