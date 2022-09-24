@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::{crypto::DID, error::Error, raygun::Conversation};
+use warp::{crypto::DID, error::Error, multipass::identity::Identity, raygun::Conversation};
 
 use crate::{
     components::ui_kit::{
@@ -24,28 +24,20 @@ pub struct Props<'a> {
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
-    // Load Multipass & Raygun's Atom Ref
-    let multipass = cx.props.account.clone();
-    let raygun = cx.props.messaging.clone();
-
-    // Read their values from locks
-    let mp = multipass.clone();
-    let rg = raygun.clone();
+    let mp = cx.props.account.clone();
+    let rg = cx.props.messaging.clone();
 
     // Determine our friends DID
     let friend = cx.props.friend.clone();
 
-    let user = match mp.read().get_identity(friend.into()) {
-        Ok(f) => f,
-        Err(_) => vec![],
-    };
+    let user = mp.read().get_identity(friend.into()).unwrap_or_default();
 
     // std::thread::sleep(std::time::Duration::from_millis(100));
 
     let username = user
         .first()
-        .map(|i| i.username())
-        .unwrap_or_else(|| "".to_string());
+        .map(Identity::username)
+        .unwrap_or_else(String::new);
 
     let show_skeleton = username.is_empty();
 

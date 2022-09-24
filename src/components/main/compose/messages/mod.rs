@@ -1,10 +1,10 @@
+use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
 use uuid::Uuid;
 use warp::{
     crypto::DID,
     raygun::{Conversation, MessageOptions},
 };
-use crate::{components::main::compose::msg::Msg, Account, Messaging};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -17,15 +17,11 @@ pub struct Props {
 pub fn Messages(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
 
-    let _show_skeleton = conversation_id == Uuid::default();
-
-    // Load Multipass & Raygun's Atom Ref
-    let multipass = cx.props.account.clone();
-    let raygun = cx.props.messaging.clone();
+    // let _show_skeleton = conversation_id == Uuid::default();
 
     // Read their values from locks
-    let rg = raygun.clone();
-    let mp = multipass.clone();
+    let rg = cx.props.messaging.clone();
+    let mp = cx.props.account.clone();
 
     let messages = use_future(&cx, (), |_| async move {
         rg.write()

@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use warp::multipass::identity::FriendRequest;
+use warp::multipass::identity::{FriendRequest, Identity};
 
 use crate::{
     components::ui_kit::{
@@ -21,8 +21,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let multipass = cx.props.account.clone();
-    let mp = multipass.clone();
+    let mp = cx.props.account.clone();
 
     let did = if cx.props.deny_only {
         cx.props.request.to()
@@ -30,15 +29,12 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.props.request.from()
     };
 
-    let user = match mp.read().get_identity(did.clone().into()) {
-        Ok(f) => f,
-        Err(_) => vec![],
-    };
+    let user = mp.read().get_identity(did.into()).unwrap_or_default();
 
     let username = user
         .first()
-        .map(|i| i.username())
-        .unwrap_or_else(|| "".to_string());
+        .map(Identity::username)
+        .unwrap_or_else(String::new);
 
     let show_skeleton = username.is_empty();
 

@@ -1,14 +1,15 @@
-use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
-use uuid::Uuid;
-use warp::{crypto::DID, raygun::Conversation};
 use crate::{
     components::ui_kit::{
         activity_indicator::ActivityIndicator,
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    }, Account,
+    },
+    Account,
 };
+use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use uuid::Uuid;
+use warp::{crypto::DID, multipass::identity::Identity, raygun::Conversation};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -19,28 +20,27 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    // Load Multipass & Raygun's Atom Ref
-    let multipass = cx.props.account.clone();
-
     // Read their values from locks
-    let mp = multipass.clone();
+    let mp = cx.props.account.clone();
 
     let conversation_id = cx.props.conversation.id();
 
     // TODO: Make this more dynamic to include multiple PFPs and usernames.
     // Consider code in this todo temporary and only supportive of 2 way convos
-    let display_did = match cx.props.conversation.recipients().last() {
-        Some(d) => d.clone(),
+    let display_did = match cx.props.conversation.recipients().last().cloned() {
+        Some(d) => d,
         None => DID::default(),
     };
-    let display_user = match mp.read().get_identity(display_did.clone().into()) {
-        Ok(f) => f,
-        Err(_) => vec![],
-    };
+
+    let display_user = mp
+        .read()
+        .get_identity(display_did.into())
+        .unwrap_or_default();
+
     let display_username = display_user
         .first()
-        .map(|i| i.username())
-        .unwrap_or_else(|| "".to_string());
+        .map(Identity::username)
+        .unwrap_or_else(String::new);
     // TODO-END
 
     let show_skeleton = conversation_id == Uuid::default();

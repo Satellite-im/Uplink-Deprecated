@@ -28,24 +28,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let username = my_identity.username();
     let badges = my_identity.available_badges();
     let friends = use_state(&cx, Vec::new);
-    friends.set(match mp.read().list_friends() {
-        Ok(f) => f
-            .iter()
-            .map(|friend| {
-                match multipass
-                    .read()
-                    .get_identity(friend.clone().into())
-                {
-                    Ok(idents) => idents
-                        .first()
-                        .map(|i| i.did_key())
-                        .unwrap_or_else(|| DID::default()),
-                    Err(_) => DID::default(),
-                }
-            })
-            .collect::<Vec<_>>(),
-        Err(_) => vec![],
-    });
+    friends.set(mp.read().list_friends().unwrap_or_default());
 
     let friend_count = friends.clone().len();
 
@@ -57,6 +40,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         let mp = mp.clone();
         if !disabled {
             edit.set(false);
+            //TODO: Change to using `MultiPass::update_identity`
             let mut my_identity = match mp.write().get_own_identity() {
                 Ok(me) => me,
                 Err(_) => Identity::default(),
