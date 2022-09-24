@@ -7,7 +7,7 @@ use dioxus::{
 };
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
-use fermi::prelude::*;
+
 use warp::crypto::DID;
 
 use crate::{

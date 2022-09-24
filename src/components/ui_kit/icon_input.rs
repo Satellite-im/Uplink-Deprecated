@@ -1,7 +1,8 @@
 use dioxus::{
     events::{FormEvent},
-    prelude::*, html::KeyCode
+    prelude::*,
 };
+use dioxus_html::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(PartialEq)]

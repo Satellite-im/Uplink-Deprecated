@@ -8,24 +8,17 @@ resolver = "2"
 
 [dependencies]
 fdlimit = "0.2"
-dioxus = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-router = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-html = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-fermi = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-dioxus-core = { git = "https://github.com/DioxusLabs/dioxus", branch = "master" }
-sir = { git = "https://github.com/Satellite-im/sir", features = ["dioxus"] }
+dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
+dioxus-html = "0.2.1"
+sir = { version = "0.2.2", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 anyhow = "1.0"
 once_cell = "1.13"
 copypasta = "0.8.1"
-dioxus-toast = { git = "https://github.com/Satellite-im/dioxus-toast", features = [
-    "desktop",
-] }
-#dioxus-toast = { version = "0.1.5"}
-dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
+dioxus-heroicons = "0.1.4"
+dioxus-toast = { version = "0.1.5"}
 clap = { version = "3.2", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"

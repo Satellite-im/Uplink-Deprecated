@@ -1,7 +1,6 @@
-use dioxus::{prelude::*, html::KeyCode};
-
+use dioxus::{prelude::*};
+use dioxus_html::KeyCode;
 use dioxus_heroicons::outline::Shape;
-use fermi::prelude::*;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},

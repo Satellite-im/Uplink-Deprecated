@@ -3,12 +3,9 @@ use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use dioxus::prelude::*;
-use dioxus_desktop::tao::dpi::LogicalSize;
-use dioxus_desktop::{Config, WindowBuilder};
-use dioxus_router::{Route, Router};
+use dioxus::{prelude::*, desktop::tao::dpi::LogicalSize};
+use dioxus::router::{Route, Router};
 use dioxus_toast::ToastManager;
-use fermi::prelude::*;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
@@ -87,19 +84,20 @@ fn main() {
         Err(_e) => todo!(),
     };
 
-    dioxus_desktop::launch_with_props(
+    dioxus::desktop::launch_with_props(
         App,
         State {
             tesseract,
             account,
             messaging,
         },
-        Config::default().with_window(
-            WindowBuilder::default()
-                .with_title(DEFAULT_WINDOW_NAME.read().clone())
-                .with_resizable(true)
-                .with_inner_size(LogicalSize::new(1200.0, 730.0)),
-        ),
+        |c| {
+            c.with_window(|w| {
+                w.with_title(DEFAULT_WINDOW_NAME.read().clone())
+                    .with_resizable(true)
+                    .with_inner_size(LogicalSize::new(1200.0, 730.0))
+            })
+        },
     );
 }
 

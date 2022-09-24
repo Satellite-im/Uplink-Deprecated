@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
-use fermi::prelude::*;
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     LANGUAGE, STATE, Account,

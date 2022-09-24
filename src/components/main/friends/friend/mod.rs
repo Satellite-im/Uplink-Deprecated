@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use fermi::prelude::*;
 use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
