@@ -3,10 +3,6 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus::desktop::use_window;
 use dioxus_heroicons::outline::Shape;
 use dioxus::router::use_router;
-use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
-use warp_mp_ipfs::config::MpIpfsConfig;
-use warp_rg_ipfs::{config::RgIpfsConfig, Persistent};
-
 
 use crate::{
     components::ui_kit::{

@@ -1,16 +1,15 @@
+use dioxus::router::use_router;
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use dioxus::router::use_router;
 use sir::css;
 use warp::tesseract::Tesseract;
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        input,
         pin::Pin,
     },
-    DEFAULT_PATH, LANGUAGE,
+    LANGUAGE,
 };
 
 // Remember: owned props must implement PartialEq!
