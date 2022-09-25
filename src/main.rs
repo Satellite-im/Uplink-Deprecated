@@ -1,8 +1,8 @@
 use clap::Parser;
-use tracing_subscriber::EnvFilter;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
+use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -56,12 +56,6 @@ struct Opt {
 }
 
 fn main() {
-    let file_appender = tracing_appender::rolling::hourly("./", "warp-gui.log");
-    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-    tracing_subscriber::fmt()
-        .with_writer(non_blocking)
-        .with_env_filter(EnvFilter::from_default_env())
-        .init();
     if fdlimit::raise_fd_limit().is_none() {}
 
     let opt = Opt::parse();
@@ -69,6 +63,13 @@ fn main() {
     if let Some(path) = opt.path {
         *DEFAULT_PATH.write() = path;
     }
+
+    let file_appender = tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+    tracing_subscriber::fmt()
+        .with_writer(non_blocking)
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
 
     if let Some(title) = opt.title {
         *DEFAULT_WINDOW_NAME.write() = title;
