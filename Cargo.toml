@@ -8,6 +8,16 @@ resolver = "2"
 
 [dependencies]
 fdlimit = "0.2"
+
+tracing = { default-features = false, features = ["log"], version = "0.1" }
+tracing-futures = { default-features = false, features = [
+    "std-future",
+    "std",
+    "futures-03",
+], version = "0.2" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
 dioxus-html = "0.2.1"
 sir = { version = "0.2.2", features = ["dioxus"] }
@@ -31,3 +41,13 @@ warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
 [build-dependencies]
 glob = "0.3.0"
 rsass = "0.26.0"
+
+[package.metadata.bundle]
+name = "WarpGUI"
+identifier = "im.satellite.warpgui"
+version = "0.1.0"
+copyright = "Copyright (c) Satellite.IM Inc."
+category = "Communication"
+short_description = ""
+long_description = """
+"""
