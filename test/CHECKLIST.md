@@ -1,4 +1,4 @@
-# # WarpGUI Testing
+## WarpGUI Testing
 The following is a step-by-step list you should follow to ensure functionality when physically or automatically testing WarpGUI.
 
 Please keep in mind when testing that some times things can "work" i.e. meet the guidelines of a requirement but cause un-desired visual effects or jarring movements, delay, and disposition of the cursor. We want the application to feel refined, in most cases when the UI looks ugly it means we should go back to the drawing board on some feature because modern machines are fast enough to not have these bugs. Indications of jumping UI's or the mouse cursor jumping around when editing text with postprocessing like real time markdown effects means the way we're doing that processing is slow, or un-tidy, not that it's so advanced that a computer or browser can't handle it. Remember we're building for everyone here and the average user want's something that's easy on the eyes as much as it is functional. Check that even if your physical tests "passed" they also still look nice and don't make sacrifices elsewhere.
