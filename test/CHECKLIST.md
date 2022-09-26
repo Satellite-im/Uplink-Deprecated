@@ -70,6 +70,9 @@ Tests marked with `[NYI] Not Yet Implemented` do not need to pass yet.
 7. **NYI** (pending extension support) Should display any widgets next to the chatbar.
 8. Should allow modification of text without any stuttering, delay, or disposition of the cursor during rapid typing. (Basically we want to be able to be slamming out messages fast without any UI delay or ugly effects that make the app feel un-refined. It should feel nice to use the app.)
 
+## File-Sharing
+1. **NYE**
+
 ## Messaging
 1. Should display messages between two or more people.
     1. Should display single and multi-line text messages which display matching the mock-ups.
@@ -83,3 +86,17 @@ Tests marked with `[NYI] Not Yet Implemented` do not need to pass yet.
     6. Should update whenever we compose a new message in the conversation.
     7. **NYE** Should show messages in a different state when we've sent the message, but are still waiting for the recipient to get it. (This doesn't nessisarily mean they read it, just that their system has the message and is ready for them to see it.)
     8. Should change when moving to a new conversation smoothly and cleanly without visual issues when rendering or jarring effects.
+
+## Profile
+1. **NYE**
+
+## Sidebar
+1. Should display navbar at bottom of the sidebar.
+    1. Home button is just an indicator right now and does not do anything.
+    2. **NYE** Should be able to click files to open files browser view.
+    3. Should open friends popup when user icon is clicked.
+    4. Should open profile popup when user with circle icon is clicked. (Partially implemented.)
+    5. **NYE** New chat button under favorites should display the quick chat popup.
+    6. **NYE** Most frequently used chats should show up under the favorites tab. Note that this should be based off message quantity in addition to frequency recently, not just the most recent chats.
+    7. **NYE** (pending extension support) Sidebar widgets should display.
+    8. **NYE** Should display search results when query is entered into search bar.
