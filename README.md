@@ -11,10 +11,10 @@ If you do not have protobuf installed you can install it using homebrew: `brew i
 To run the app in dev mode simply run `cargo run`. 
 
 The executable has a few command line options that might come in handy:
- - `--path` which changes the folder used for storage, currently it's .cache but later it will go somewher else
+ - `--path` which changes the folder used for storage, currently it's .cache but later it will go somewhere else
  - `--title` which comes in handy if you have more than one window open
 
-From cargo you might run  `cargo run -- --title "User 1" --path .user1 ` and on some operating systmes you can run with different options in two seperate terminals 
+From cargo you might run  `cargo run -- --title "User 1" --path .user1 ` and on some operating systems you can run with different options in two separate terminals 
 but you can also run something like this (depending on OS) on that second terminal `.\target\debug\warp_gui.exe --path .user2 --title "User 2"` (note you don't need the extra `--`).
 
 # Local Testing
