@@ -14,6 +14,8 @@ To run the app in dev mode simply run `cargo run`
 
 To spawn multiple instances of the app execute the test script `test/physical/launch_physical_test.sh`. This will spawn two named windows with local cache files in a `.temp` directory.
 
+Please also read through the [Physical Testing Checklist](https://github.com/Satellite-im/WarpGUI/blob/dev/test/CHECKLIST.md) and ensure functionality before submitting a PR.
+
 # Resetting Data
 
 It's often necessary to reset your account for development, to do so just delete any `.temp` and `.cache` files within this project.
