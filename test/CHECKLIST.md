@@ -1,6 +1,8 @@
 # # WarpGUI Testing
 The following is a step-by-step list you should follow to ensure functionality when physically or automatically testing WarpGUI.
 
+Please keep in mind when testing that some times things can "work" i.e. meet the guidelines of a requirement but cause un-desired visual effects or jarring movements, delay, and disposition of the cursor. We want the application to feel refined, in most cases when the UI looks ugly it means we should go back to the drawing board on some feature because modern machines are fast enough to not have these bugs. Indications of jumping UI's or the mouse cursor jumping around when editing text with postprocessing like real time markdown effects means the way we're doing that processing is slow, or un-tidy, not that it's so advanced that a computer or browser can't handle it. Remember we're building for everyone here and the average user want's something that's easy on the eyes as much as it is functional. Check that even if your physical tests "passed" they also still look nice and don't make sacrifices elsewhere.
+
 Tests marked with `[NYI] Not Yet Implemented` do not need to pass yet. 
 
 ## Compilation
@@ -9,7 +11,7 @@ Tests marked with `[NYI] Not Yet Implemented` do not need to pass yet.
 
 ## Onboarding
 1. Create Pin
-	1.  Should be able to enter any alpha numeric key to input a new character into the pin.
+	1. Should be able to enter any alpha numeric key to input a new character into the pin.
 	2. Should not be able to use modifier keys and spacebar to enter pin.
 	3. Should be able to backspace characters from the pin.
 		1.  Should delete a character from the pin when pressing the `backspace / delete` key.
@@ -65,4 +67,19 @@ Tests marked with `[NYI] Not Yet Implemented` do not need to pass yet.
 4. Should be able to send message by hitting either return or the send button.
 5. Should clear the input when message is sent.
 6. Should show placeholder text when the input is empty.
+7. **NYI** (pending extension support) Should display any widgets next to the chatbar.
+8. Should allow modification of text without any stuttering, delay, or disposition of the cursor during rapid typing. (Basically we want to be able to be slamming out messages fast without any UI delay or ugly effects that make the app feel un-refined. It should feel nice to use the app.)
 
+## Messaging
+1. Should display messages between two or more people.
+    1. Should display single and multi-line text messages which display matching the mock-ups.
+    2. Should be clickable to make a message reply.
+        1. Should be able to see message pop up and type multi-line replies to a message.
+        2. **NYE** (pending extension support) Should allow us to reply to messages with emoji's.
+        3. **NYE** (pending extension support) Should display any chatbar widgets.
+    3. Should properly group messages and display timestamps and profile pictures according to the mock ups.
+    4. **NYI** Should allow us to click profile pictures to open the users profile in a modal.
+    5. Should automatically scroll to the bottom of the message box any time we get a new message in the conversation.
+    6. Should update whenever we compose a new message in the conversation.
+    7. **NYE** Should show messages in a different state when we've sent the message, but are still waiting for the recipient to get it. (This doesn't nessisarily mean they read it, just that their system has the message and is ready for them to see it.)
+    8. Should change when moving to a new conversation smoothly and cleanly without visual issues when rendering or jarring effects.
