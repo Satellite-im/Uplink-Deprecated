@@ -25,8 +25,9 @@ use crate::components::prelude::{auth, unlock};
 pub mod components;
 pub mod extensions;
 pub mod language;
-mod state;
 pub mod themes;
+
+mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
