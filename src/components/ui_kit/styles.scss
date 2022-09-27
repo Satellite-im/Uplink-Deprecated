@@ -145,6 +145,14 @@ label {
     background: var(--theme-text-muted);
     border-radius: 6px;
     margin-right: 0.5rem;
+
+    &.online {
+      background-color: var(--theme-green);
+    }
+  
+    &.offline {
+      background-color: var(--theme-text-muted);
+    }
   }
 }
 
@@ -742,6 +750,8 @@ input:checked+.slider:before {
 .photo-picker .icon-button svg {
   padding-top: 2px;
 }
+
+
 
 // Animations
 
