@@ -27,10 +27,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let disabled = match cx.props.disabled {
-        Some(b) => b,
-        None => false,
-    };
+    let disabled = cx.props.disabled.unwrap_or(false);
 
     let text = match cx.props.text.clone() {
         Some(t) => t,

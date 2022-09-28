@@ -25,11 +25,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let disabled = if cx.props.disabled.is_some() {
-        true
-    } else {
-        false
-    };
+    let disabled = cx.props.disabled.unwrap_or(false);
 
     let mut class = String::from("");
     class += match cx.props.large {
