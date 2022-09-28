@@ -9,7 +9,7 @@ jobs:
       - name: Move issue to 'Backlog' column if body has a mark 'issue:todo'
         uses: fojia/action-move-issues-to-column@master
         with:
-          project: 'WarpGUI'
+          project: 'Warp GUI (Uplink Desktop)'
           column: 'Backlog'
           owner: 'Satellite-im'
           type: 'org'
