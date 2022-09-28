@@ -9,7 +9,7 @@ use crate::{
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use uuid::Uuid;
-use warp::{crypto::DID, multipass::identity::Identity, raygun::Conversation};
+use warp::{multipass::identity::Identity, raygun::Conversation};
 
 #[derive(Props)]
 pub struct Props<'a> {
