@@ -61,6 +61,8 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     },
                     ActivityIndicator {
                         inline: true,
+                        remote_did: cx.props.friend.clone(),
+                        account: cx.props.account.clone(),
                     }
                 )}
             },
