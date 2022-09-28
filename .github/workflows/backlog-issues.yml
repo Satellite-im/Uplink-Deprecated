@@ -9,7 +9,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Move to Backlog
-        uses: kin/gh-action-move-issue-to-column@1.0
+        uses: kin/gh-action-move-issue-to-column@v1.0
         with:
           access-token: "${{ secrets.GITHUB_TOKEN }}"
           project-name: "WarpGUI"
