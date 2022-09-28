@@ -4,13 +4,14 @@ on: [issues]
 jobs:
   move-issue-backlog:
     runs-on: ubuntu-latest
-    name: Move to Backlog
+    name: Move issues to organization project column
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Move to Backlog
-        uses: kin/gh-action-move-issue-to-column@v1.0
+      - name: Move issue to 'Backlog' column if body has a mark 'issue:todo'
+        uses: fojia/action-move-issues-to-column@master
         with:
-          access-token: "${{ secrets.GITHUB_TOKEN }}"
-          project-name: "WarpGUI"
-          target-column: "Backlog"
+          project: 'Warp GUI (Uplink Desktop)'
+          column: 'Backlog'
+          owner: 'Satellite-im'
+          type: 'org'
+          github_token: ${{ secrets.WARPGUI_TOKEN}}
+          marker: 'issue:todo'
