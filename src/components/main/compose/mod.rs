@@ -34,11 +34,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
     let conversation_id = cx.props.conversation.id();
 
-    // Load Multipass & Raygun's Atom Ref
-    let raygun = cx.props.messaging.clone();
-
     // Read their values from locks
-    let rg = raygun.clone();
+    let rg = cx.props.messaging.clone();
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));

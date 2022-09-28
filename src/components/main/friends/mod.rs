@@ -34,41 +34,20 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
-    let multipass = cx.props.account.clone();
-    let mp = multipass.clone();
+    let mp = cx.props.account.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
     let friends = use_state(&cx, Vec::new);
-    friends.set(match mp.read().list_friends() {
-        Ok(f) => f
-            .iter()
-            .map(
-                |friend| match multipass.read().get_identity(friend.clone().into()) {
-                    Ok(idents) => idents
-                        .first()
-                        .map(|i| i.did_key())
-                        .unwrap_or_else(|| DID::default()),
-                    Err(_) => DID::default(),
-                },
-            )
-            .collect::<Vec<_>>(),
-        Err(_) => vec![],
-    });
+    friends.set(mp.read().list_friends().unwrap_or_default());
 
     let requests = use_state(&cx, Vec::new);
-    requests.set(match mp.read().list_incoming_request() {
-        Ok(f) => f,
-        Err(_) => vec![],
-    });
+    requests.set(mp.read().list_incoming_request().unwrap_or_default());
 
     let outgoing = use_state(&cx, Vec::new);
-    outgoing.set(match mp.read().list_outgoing_request() {
-        Ok(f) => f,
-        Err(_) => vec![],
-    });
+    outgoing.set(mp.read().list_outgoing_request().unwrap_or_default());
 
     cx.render(rsx! {
         Popup {
@@ -97,21 +76,18 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 e.cancel_bubble();
 
                                 let mut ctx = ClipboardContext::new().unwrap();
-                                let contents = match mp
+                                if let Ok(ident) = mp
                                         .read()
                                         .get_own_identity()
-                                    {
-                                        Ok(ident) => {
-                                            ident.did_key().to_string()
-                                        }
-                                        Err(_) => "".to_string(),
-                                    };
-                                let single_toast = ToastInfo {
-                                    position: Position::TopRight,
-                                    ..ToastInfo::simple("Copied your code!")
-                                };
-                                let _id = toast.write().popup(single_toast);
-                                ctx.set_contents(contents).unwrap();
+                                {
+                                            let single_toast = ToastInfo {
+                                                position: Position::TopRight,
+                                                ..ToastInfo::simple("Copied your code!")
+                                            };
+                                            let _id = toast.write().popup(single_toast);
+                                            ctx.set_contents(ident.did_key().to_string()).unwrap();
+                                }
+                                
                             }
                         }
                     },
@@ -179,7 +155,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     ..ToastInfo::simple("Friend request sent!")
                                                 };
                                                 let _id = toast.write().popup(single_toast);
-                                                add_error.set("".into());
+                                                add_error.set("");
                                                 remote_friend.set("".into());
                                             }
                                             Err(e) => {

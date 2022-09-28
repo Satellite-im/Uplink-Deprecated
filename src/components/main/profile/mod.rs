@@ -1,9 +1,10 @@
+use crate::{
+    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
+    Account,
+};
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use warp::{crypto::DID, multipass::identity::Identity};
-use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup}, Account,
-};
+use warp::multipass::identity::Identity;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -14,38 +15,16 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    // Load Multipass & Raygun's Atom Ref
-    let multipass = cx.props.account.clone();
 
     // Read their values from locks
-    let mp = multipass.clone();
+    let mp = cx.props.account.clone();
 
-    let my_identity = match mp.read().get_own_identity() {
-        Ok(me) => me,
-        Err(_) => Identity::default(),
-    };
-
+    let my_identity = mp.read().get_own_identity().unwrap();
+    
     let username = my_identity.username();
     let badges = my_identity.available_badges();
     let friends = use_state(&cx, Vec::new);
-    friends.set(match mp.read().list_friends() {
-        Ok(f) => f
-            .iter()
-            .map(|friend| {
-                match multipass
-                    .read()
-                    .get_identity(friend.clone().into())
-                {
-                    Ok(idents) => idents
-                        .first()
-                        .map(|i| i.did_key())
-                        .unwrap_or_else(|| DID::default()),
-                    Err(_) => DID::default(),
-                }
-            })
-            .collect::<Vec<_>>(),
-        Err(_) => vec![],
-    });
+    friends.set(mp.read().list_friends().unwrap_or_default());
 
     let friend_count = friends.clone().len();
 
@@ -57,6 +36,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         let mp = mp.clone();
         if !disabled {
             edit.set(false);
+            //TODO: Change to using `MultiPass::update_identity`
             let mut my_identity = match mp.write().get_own_identity() {
                 Ok(me) => me,
                 Err(_) => Identity::default(),

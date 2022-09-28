@@ -2,6 +2,7 @@ use clap::Parser;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
+use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -64,6 +65,13 @@ fn main() {
         *DEFAULT_PATH.write() = path;
     }
 
+    let file_appender = tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
+    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
+    tracing_subscriber::fmt()
+        .with_writer(non_blocking)
+        .with_env_filter(EnvFilter::from_default_env())
+        .init();
+
     if let Some(title) = opt.title {
         *DEFAULT_WINDOW_NAME.write() = title;
     }
@@ -82,7 +90,7 @@ fn main() {
     let (account, messaging) = match warp::async_block_in_place_uncheck(initialization(
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
-        opt.experimental_node
+        opt.experimental_node,
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
