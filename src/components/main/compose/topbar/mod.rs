@@ -34,7 +34,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let display_user = mp
         .read()
-        .get_identity(display_did.into())
+        .get_identity(display_did.clone().into())
         .unwrap_or_default();
 
     let display_username = display_user
