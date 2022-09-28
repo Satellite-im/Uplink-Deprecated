@@ -74,6 +74,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         class: "user-info-inline",
                         ActivityIndicator {
                             inline: true,
+                            remote_did: display_did.clone(),
+                            account: cx.props.account.clone(),
                         },
                         p {
                             class: "did",
