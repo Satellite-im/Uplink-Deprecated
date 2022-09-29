@@ -4,14 +4,7 @@ use crate::{
 };
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-<<<<<<< HEAD
-use warp::multipass::identity::Identity;
-=======
 use warp::{crypto::DID, multipass::identity::Identity};
-use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup}, Account, LANGUAGE,
-};
->>>>>>> 3d2b22b637db81dddc641787cd7779269b12ba2d
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -26,16 +19,11 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Read their values from locks
     let mp = cx.props.account.clone();
 
-<<<<<<< HEAD
-    let my_identity = mp.read().get_own_identity().unwrap();
-        let l = use_atom_ref(&cx, LANGUAGE).read();
-=======
     let my_identity = match mp.read().get_own_identity() {
         Ok(me) => me,
         Err(_) => Identity::default(),
     };
     let l = use_atom_ref(&cx, LANGUAGE).read();
->>>>>>> 3d2b22b637db81dddc641787cd7779269b12ba2d
     let badgesString = l.badges.to_string();
     let locationString = l.location.to_string();
     let friendString = l.friends.to_string();
