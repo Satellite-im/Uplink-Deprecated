@@ -8,7 +8,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::button::Button,
     },
-    Account, Messaging, STATE,
+    Account, Messaging, STATE, LANGUAGE,
 };
 
 #[derive(PartialEq, Props)]
@@ -30,9 +30,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
         
     "
     );
-
     let state = use_atom_ref(&cx, STATE);
     let conversation_id = cx.props.conversation.id();
+    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let warningMessage = l.prerelease_warning.to_string();
+    // Load Multipass & Raygun's Atom Ref
+    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -62,13 +65,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             (**show_warning).then(|| rsx!(
                 div {
                     class: "alpha-warning animate__animated animate__slideInDown",
-                    "Please remember this is pre-release software and bugs, crashes and restarts are expected.",
+                    "{warningMessage}",
                     Button {
                         on_pressed: move |_| {
                             show_warning.set(false);
                         },
                         icon: Shape::Check,
-                        text: "I Understand.".to_string(),
+                        text: l.user_agrees.to_string(),
                     }
                 },
             ))

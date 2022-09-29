@@ -11,7 +11,7 @@ use crate::{
         },
     },
     state::Actions,
-    Account, Messaging, STATE,
+    Account, Messaging, STATE, LANGUAGE
 };
 
 pub mod chat;
@@ -29,6 +29,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let show_profile = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
 
+    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let friendString = l.friends.to_string();
+    let favString = l.favorites.to_string();
+    let newchatdString = l.new_chat.to_string();
+    let noactivechatdString = l.no_active_chats.to_string();
+    let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
 
     cx.render(rsx!{
@@ -43,7 +49,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             },
             ExtensionPlaceholder {},
             label {
-                "Favorites"
+                "{favString}"
             },
             div {
                 class: "favorites",
@@ -54,12 +60,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         on_pressed: move |_| {},
                     },
                     span {
-                        "New Chat"
+                        "{newchatdString}"
                     }
                 },
             },
             label {
-                "Chats"
+                "{chatsdString}"
             },
             if has_chats {
                 rsx!(
@@ -81,11 +87,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             } else {
                 rsx!(
                     p {
-                        "No active chats, yet.."
+                        "{noactivechatdString}"
                     },
                     Button {
                         icon: Shape::Plus,
-                        text: "Start One".to_string(),
+                        text: l.start_one.to_string(),
                         on_pressed: move |_| show_friends.set(true),
                     },
                 )
@@ -93,7 +99,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             Friends {
                 account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone(),
-                title: "Friends".to_string(),
+                title: friendString,
                 show: *show_friends.clone(),
                 icon: Shape::Users,
                 on_hide: move |_| show_friends.set(false),
