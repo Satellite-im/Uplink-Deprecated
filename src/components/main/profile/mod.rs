@@ -2,7 +2,7 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::{crypto::DID, multipass::identity::Identity};
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup}, Account,
+    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup}, Account, LANGUAGE,
 };
 
 #[derive(Props)]
@@ -24,6 +24,13 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         Ok(me) => me,
         Err(_) => Identity::default(),
     };
+    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let badgesString = l.badges.to_string();
+    let locationString = l.location.to_string();
+    let friendString = l.friends.to_string();
+    let aboutString = l.about.to_string();
+    let noAboutString = l.no_about_message.to_string();
+    let developementString = l.developement.to_string();
 
     let username = my_identity.username();
     let badges = my_identity.available_badges();
@@ -92,7 +99,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     class: "change-status",
                                     IconInput {
                                         icon: Shape::PencilAlt,
-                                        placeholder: "Some status message..".to_string(),
+                                        placeholder: l.status_placeholder.to_string(),
                                         value: status.to_string(),
                                         on_change: move |e: FormEvent| status.set(e.value.clone()),
                                         on_enter: set_status
@@ -100,14 +107,14 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 },
                                 if disabled {rsx!(
                                     Button {
-                                        text: "Save Status".to_string(),
+                                        text: l.save_status.to_string(),
                                         icon: Shape::Check,
                                         disabled: true,
                                         on_pressed: move |_| {},
                                     },
                                 )} else {rsx!(
                                     Button {
-                                        text: "Save Status".to_string(),
+                                        text: l.save_status.to_string(),
                                         icon: Shape::Check,
                                         on_pressed: move |_| {
                                             // TODO: Pending Voice & Video
@@ -121,7 +128,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     "{status}"
                                 },
                                 Button {
-                                    text: "Edit Profile".to_string(),
+                                    text: l.edit_profile.to_string(),
                                     icon: Shape::PencilAlt,
                                     on_pressed: move |_| {
                                         edit.set(true);
@@ -133,7 +140,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 div {
                                     class: "badges",
                                     label {
-                                        "Badges"
+                                        "{badgesString}"
                                     },
                                     div {
                                         class: "container",
@@ -145,7 +152,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 div {
                                     class: "location",
                                     label {
-                                        "Location"
+                                        "{locationString}"
                                     },
                                     p {
                                         "Unknown"
@@ -154,7 +161,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 div {
                                     class: "friend-count",
                                     label {
-                                        "Friends"
+                                        "{friendString}"
                                     }
                                     p {
                                         "{friend_count}"
@@ -165,15 +172,15 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             div {
                                 class: "about",
                                 label {
-                                    "About"
+                                    "{aboutString}"
                                 },
                                 p {
-                                    "No about message set yet...",
+                                    "{noAboutString}",
                                 }
                             },
                             hr {},
                             label {
-                                "Development",
+                                "{developementString}",
                             },
                             p {
                                 class: "small-did",
