@@ -39,7 +39,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let incomingRequestsLang = {l.incoming_requests.to_string()};
     let outgoingRequestsLang = {l.outgoing_requests.to_string()};
     let yourFriendsLang = {l.your_friends.to_string()};
-    let codeCopied = l.code_copied.to_string();
+    let codeCopied = {l.code_copied.to_string()};
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
@@ -86,7 +86,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 {
                                             let single_toast = ToastInfo {
                                                 position: Position::TopRight,
-                                                ..ToastInfo::simple("Copied your code!")
+                                                ..ToastInfo::simple(&codeCopied)
                                             };
                                             let _id = toast.write().popup(single_toast);
                                             ctx.set_contents(ident.did_key().to_string()).unwrap();

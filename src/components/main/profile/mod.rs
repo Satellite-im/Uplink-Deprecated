@@ -4,7 +4,7 @@ use crate::{
 };
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use warp::{crypto::DID, multipass::identity::Identity};
+use warp::multipass::identity::Identity;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -19,10 +19,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Read their values from locks
     let mp = cx.props.account.clone();
 
-    let my_identity = match mp.read().get_own_identity() {
-        Ok(me) => me,
-        Err(_) => Identity::default(),
-    };
+    let my_identity = mp.read().get_own_identity().unwrap();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let badgesString = l.badges.to_string();
     let locationString = l.location.to_string();
