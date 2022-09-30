@@ -1,4 +1,5 @@
 use clap::Parser;
+use dioxus::desktop::tao;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -27,7 +28,19 @@ pub mod components;
 pub mod extensions;
 pub mod language;
 pub mod themes;
+pub mod utils;
 
+#[cfg(target_os = "macos")]
+use tao::platform::macos::{CustomMenuItemExtMacOS, NativeImage};
+use tao::{
+  accelerator::{Accelerator, SysMods},
+  clipboard::Clipboard,
+  event::{Event, WindowEvent},
+  event_loop::{ControlFlow, EventLoop},
+  keyboard::KeyCode,
+  menu::{MenuBar as Menu, MenuItem, MenuItemAttributes, MenuType},
+  window::WindowBuilder,
+};
 mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
@@ -59,6 +72,30 @@ struct Opt {
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
 
+    let mut main_menu = Menu::new();
+    let mut app_menu = Menu::new();
+    let mut edit_menu = Menu::new();
+
+    // add native `Copy` to `first_menu` menu
+    // in macOS native item are required to get keyboard shortcut
+    // to works correctly
+    edit_menu.add_native_item(MenuItem::Copy);
+    edit_menu.add_native_item(MenuItem::Cut);
+    edit_menu.add_native_item(MenuItem::Paste);
+    edit_menu.add_native_item(MenuItem::Undo);
+    edit_menu.add_native_item(MenuItem::Redo);
+    edit_menu.add_native_item(MenuItem::SelectAll);
+    edit_menu.add_native_item(MenuItem::ShowAll);
+    edit_menu.add_native_item(MenuItem::EnterFullScreen);
+    edit_menu.add_native_item(MenuItem::Minimize);
+    edit_menu.add_native_item(MenuItem::Zoom);
+    
+
+    app_menu.add_native_item(MenuItem::Quit);
+    app_menu.add_native_item(MenuItem::About("WarpGUI".to_string()));
+
+    main_menu.add_submenu("Warp GUI", true, app_menu);
+    main_menu.add_submenu("Edit", true, edit_menu);
     let opt = Opt::parse();
 
     if let Some(path) = opt.path {
@@ -96,6 +133,13 @@ fn main() {
         Err(_e) => todo!(),
     };
 
+
+    let window = WindowBuilder::new()
+        .with_title(DEFAULT_WINDOW_NAME.read().clone())
+        .with_resizable(true)
+        .with_inner_size(LogicalSize::new(1200.0, 730.0))
+        .with_menu(main_menu);
+
     dioxus::desktop::launch_with_props(
         App,
         State {
@@ -104,11 +148,7 @@ fn main() {
             messaging,
         },
         |c| {
-            c.with_window(|w| {
-                w.with_title(DEFAULT_WINDOW_NAME.read().clone())
-                    .with_resizable(true)
-                    .with_inner_size(LogicalSize::new(1200.0, 730.0))
-            })
+            c.with_window(|_| window.into())
         },
     );
 }

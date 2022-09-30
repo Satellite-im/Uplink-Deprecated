@@ -18,7 +18,7 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         input {
             class: "input",
             placeholder: "{cx.props.placeholder}",
-            oninput: move |evt| cx.props.on_change.call(evt),
+            oninput: |evt| cx.props.on_change.call(evt),
         }
     })
 }

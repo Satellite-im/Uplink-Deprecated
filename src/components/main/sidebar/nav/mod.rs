@@ -22,12 +22,6 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "nav",
             IconButton {
                 on_pressed: move |_| {
-                    let _ = &cx.props.on_pressed.call(NavEvent::Home);
-                },
-                icon: Shape::Home
-            },
-            IconButton {
-                on_pressed: move |_| {
                     let _ = &cx.props.on_pressed.call(NavEvent::Files);
                 },
                 state: icon_button::State::Secondary,
@@ -46,6 +40,13 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::UserCircle
+            },
+            IconButton {
+                on_pressed: move |_| {
+                   //  let _ = &cx.props.on_pressed.call(NavEvent::Profile);
+                },
+                state: icon_button::State::Secondary,
+                icon: Shape::Cog
             },
         }
     })

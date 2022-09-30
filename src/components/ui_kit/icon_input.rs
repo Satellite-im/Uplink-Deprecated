@@ -31,9 +31,9 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             input {
                 class: "input",
                 placeholder: "{cx.props.placeholder}",
-                oninput: move |e| cx.props.on_change.call(e),
+                oninput: |e| cx.props.on_change.call(e),
                 value: "{cx.props.value}",
-                onkeyup: move |evt| {
+                onkeyup: |evt| {
                     if evt.key_code == KeyCode::Enter {
                         cx.props.on_enter.call(())
                     }
