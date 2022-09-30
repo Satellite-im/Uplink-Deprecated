@@ -1,6 +1,13 @@
 [package]
 name = "warp_gui"
 version = "0.1.0"
+authors = ["everyone@satellite.im"]
+description = "GUI implementation of the Warp protocol."
+readme = "README.md"
+repository = "https://github.com/Satellite-im/WarpGUI"
+license = "Creative Commons Attribution-NonCommercial 1.0"
+license_file = "LICENSE.md"
+categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
 edition = "2021"
 resolver = "2"
 
@@ -48,7 +55,6 @@ name = "WarpGUI"
 identifier = "im.satellite.warpgui"
 version = "0.1.0"
 copyright = "Copyright (c) Satellite.IM Inc."
-category = "Communication"
-short_description = ""
-long_description = """
-"""
+categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
+short_description = "GUI implementation of the Warp protocol."
+long_description = ""

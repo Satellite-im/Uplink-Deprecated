@@ -11,7 +11,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = load_or_default();
-    
+
     cx.render(rsx! {
         div {
             id: "settings",
