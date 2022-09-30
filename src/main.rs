@@ -75,27 +75,32 @@ fn main() {
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
-
-    // add native `Copy` to `first_menu` menu
-    // in macOS native item are required to get keyboard shortcut
-    // to works correctly
-    edit_menu.add_native_item(MenuItem::Copy);
-    edit_menu.add_native_item(MenuItem::Cut);
-    edit_menu.add_native_item(MenuItem::Paste);
-    edit_menu.add_native_item(MenuItem::Undo);
-    edit_menu.add_native_item(MenuItem::Redo);
-    edit_menu.add_native_item(MenuItem::SelectAll);
-    edit_menu.add_native_item(MenuItem::ShowAll);
-    edit_menu.add_native_item(MenuItem::EnterFullScreen);
-    edit_menu.add_native_item(MenuItem::Minimize);
-    edit_menu.add_native_item(MenuItem::Zoom);
-    
+    let mut window_menu = Menu::new();
 
     app_menu.add_native_item(MenuItem::Quit);
     app_menu.add_native_item(MenuItem::About("WarpGUI".to_string()));
+    // add native shortcuts to `edit_menu` menu
+    // in macOS native item are required to get keyboard shortcut
+    // to works correctly
+    edit_menu.add_native_item(MenuItem::Undo);
+    edit_menu.add_native_item(MenuItem::Redo);
+    edit_menu.add_native_item(MenuItem::Separator);
+    edit_menu.add_native_item(MenuItem::Cut);
+    edit_menu.add_native_item(MenuItem::Copy);
+    edit_menu.add_native_item(MenuItem::Paste);
+    edit_menu.add_native_item(MenuItem::SelectAll);
+
+    window_menu.add_native_item(MenuItem::Minimize);
+    window_menu.add_native_item(MenuItem::Zoom);
+    window_menu.add_native_item(MenuItem::Separator);
+    window_menu.add_native_item(MenuItem::ShowAll);
+    window_menu.add_native_item(MenuItem::EnterFullScreen);
+    window_menu.add_native_item(MenuItem::Separator);
+    window_menu.add_native_item(MenuItem::CloseWindow);
 
     main_menu.add_submenu("Warp GUI", true, app_menu);
     main_menu.add_submenu("Edit", true, edit_menu);
+    main_menu.add_submenu("Window", true, window_menu);
     let opt = Opt::parse();
 
     if let Some(path) = opt.path {
