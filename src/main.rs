@@ -16,7 +16,7 @@ use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
-use warp_mp_ipfs::config::MpIpfsConfig;
+use warp_mp_ipfs::config::{MpIpfsConfig, Discovery};
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
@@ -124,8 +124,10 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let config = MpIpfsConfig::production(&path, experimental);
-
+    let mut config = MpIpfsConfig::production(&path, experimental);
+    config.store_setting.discovery = Discovery::Direct;
+    config.ipfs_setting.mdns.enable = false;
+    
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
