@@ -31,14 +31,8 @@ pub mod themes;
 pub mod utils;
 
 #[cfg(target_os = "macos")]
-use tao::platform::macos::{CustomMenuItemExtMacOS, NativeImage};
 use tao::{
-  accelerator::{Accelerator, SysMods},
-  clipboard::Clipboard,
-  event::{Event, WindowEvent},
-  event_loop::{ControlFlow, EventLoop},
-  keyboard::KeyCode,
-  menu::{MenuBar as Menu, MenuItem, MenuItemAttributes, MenuType},
+  menu::{MenuBar as Menu, MenuItem},
   window::WindowBuilder,
 };
 mod state;
