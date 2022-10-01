@@ -1,8 +1,7 @@
-
-use dioxus::{events::FormEvent, prelude::*};
 use dioxus::desktop::use_window;
-use dioxus_heroicons::outline::Shape;
 use dioxus::router::use_router;
+use dioxus::{events::FormEvent, prelude::*};
+use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::ui_kit::{
@@ -11,7 +10,7 @@ use crate::{
         loader::Loader,
         photo_picker::PhotoPicker,
     },
-    LANGUAGE, WINDOW_SUFFIX_NAME, Account,
+    Account, LANGUAGE, WINDOW_SUFFIX_NAME,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -19,7 +18,6 @@ use crate::{
 pub struct Props {
     account: Account,
 }
-
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
@@ -41,21 +39,41 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         Err(_) => true,
     };
     let mp = multipass.clone();
-    let new_account = move |_| match mp.write().create_identity(Some(username.as_str()), None) {
-        Ok(_) => {
-            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+    let new_account = move |_| {
+        let username = username.trim();
+        if username.is_empty() {
+            error.set("Username is required".into())
+        } else {
+            match mp.write().create_identity(Some(username), None) {
+                Ok(_) => {
+                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                    use_router(&cx).push_route("/main", None, None);
+                }
+                Err(warp::error::Error::InvalidLength { .. }) => {
+                    error.set("Username length is invalid".into())
+                }
+                Err(_) => error.set("Unexpected error has occurred".into()),
+            }
         }
-        Err(_) => error.set("".into()),
     };
 
     let mp2 = multipass.clone();
-    let new_account_2 = move |_| match mp2.write().create_identity(Some(username.as_str()), None) {
-        Ok(_) => {
-            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+    let new_account_2 = move |_| {
+        let username = username.trim();
+        if username.is_empty() {
+            error.set("Username is required".into())
+        } else {
+            match mp.write().create_identity(Some(username), None) {
+                Ok(_) => {
+                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                    use_router(&cx).push_route("/main", None, None);
+                }
+                Err(warp::error::Error::InvalidLength { .. }) => {
+                    error.set("Username length is invalid".into())
+                }
+                Err(_) => error.set("Unexpected error has occurred".into()),
+            }
         }
-        Err(_) => error.set("".into()),
     };
 
     cx.render(rsx! {
