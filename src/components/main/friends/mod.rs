@@ -104,7 +104,10 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             placeholder: l.add_placeholder.clone(),
                             icon: Shape::UserAdd,
                             value: remote_friend.to_string(),
-                            on_change: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
+                            on_change: move |evt: FormEvent| {
+                                add_error.set("");
+                                remote_friend.set(evt.value.clone())
+                            },
                             on_enter: move |_| {
                                 let did = DID::try_from(remote_friend.clone().to_string());
                                 match did {
