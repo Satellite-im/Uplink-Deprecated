@@ -192,7 +192,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             .write()
                                             .accept_request(&request.from())
                                         {
-                                            Ok(_) => {},
+                                            Ok(_) => {
+                                                add_error.set("");
+                                            },
                                             Err(_) => {
                                                 // TODO: Catch this and display it
                                                 println!("Error");
@@ -204,7 +206,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             .write()
                                             .deny_request(&request.from())
                                         {
-                                            Ok(_) => {},
+                                            Ok(_) => {
+                                                add_error.set("");
+                                            },
                                             Err(_) => {
                                                 // TODO: Catch this and display it
                                                 println!("Error");
@@ -230,7 +234,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             .write()
                                             .close_request(&request.to())
                                         {
-                                            Ok(_) => {},
+                                            Ok(_) => {
+                                                add_error.set("");
+                                            },
                                             Err(_) => {
                                                 // TODO: Catch this and display it
                                                 println!("Error");
@@ -253,6 +259,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 messaging: cx.props.messaging.clone(),
                                 friend: user.clone(),
                                 on_chat: move |_| {
+                                    add_error.set("");
                                     cx.props.on_hide.call(());
                                 }
                             }
