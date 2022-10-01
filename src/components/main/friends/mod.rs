@@ -98,17 +98,16 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     label {
                         "{l.add_someone}",
                     },
-                    span {
-                        class: "error_text",
-                        "{add_error}"
-                    },
                     div {
                         class: "add",
                         IconInput {
                             placeholder: l.add_placeholder.clone(),
                             icon: Shape::UserAdd,
                             value: remote_friend.to_string(),
-                            on_change: move |evt: FormEvent| remote_friend.set(evt.value.clone()),
+                            on_change: move |evt: FormEvent| {
+                                add_error.set("");
+                                remote_friend.set(evt.value.clone());
+                            },
                             on_enter: move |_| {
                                 let did = DID::try_from(remote_friend.clone().to_string());
                                 match did {
@@ -131,7 +130,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                 add_error.set(match e {
                                                     warp::error::Error::CannotSendFriendRequest => "{l.couldnt_send.to_string()}",
                                                     warp::error::Error::FriendRequestExist => "{l.already_sent.to_string()}",
-                                                    warp::error::Error::CannotSendSelfFriendRequest => "{l.add_self.to_string()}",
+                                                    warp::error::Error::CannotSendSelfFriendRequest => "{l.add_self}",
                                                     _ => "{l.something_went_wrong.to_string()}"
                                                 })
                                             },
@@ -156,7 +155,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             Ok(_) => {
                                                 let single_toast = ToastInfo {
                                                     position: Position::TopRight,
-                                                    ..ToastInfo::simple("{l.request_sent.to_string()}")
+                                                    ..ToastInfo::simple("{l.request_sent}")
                                                 };
                                                 let _id = toast.write().popup(single_toast);
                                                 add_error.set("");
@@ -168,15 +167,19 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     warp::error::Error::CannotSendFriendRequest => "{l.couldnt_send.to_string()}",
                                                     warp::error::Error::FriendRequestExist => "{l.already_sent.to_string()}",
                                                     warp::error::Error::CannotSendSelfFriendRequest => "{l.add_self.to_string()}",
-                                                    _ => "{l.something_went_wrong.to_string()}"
+                                                    _ => "{l.something_went_wrong}"
                                                 })
                                             },
                                         };
                                     },
-                                    Err(_) => add_error.set("{l.invalid_code.to_string()}"),
+                                    Err(_) => add_error.set("{l.invalid_code}"),
                                 }
                             },
                         }
+                    },
+                    span {
+                        class: "error_text",
+                        "{add_error}"
                     },
                     (requests.len() > 0).then(|| rsx!(
                         label {
