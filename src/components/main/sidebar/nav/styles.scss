@@ -8,6 +8,8 @@
     left: 0;
     position: absolute;
     right: 0;
+    -webkit-user-select: none; /* Safari */
+    user-select: none; /* Non-prefixed version, currently */
 
     .button {
         svg {
