@@ -3,6 +3,7 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus::desktop::use_window;
 use dioxus_heroicons::outline::Shape;
 use dioxus::router::use_router;
+use sir::css;
 
 use crate::{
     components::ui_kit::{
@@ -20,6 +21,10 @@ pub struct Props {
     account: Account,
 }
 
+fn remove_whitespace(s: &mut String) -> String {
+    s.retain(|c| !c.is_whitespace());
+    s.to_string()
+}
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
@@ -29,6 +34,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, || String::from(""));
+    let error_class = if error.is_empty() {
+        css!("opacity: 0")
+    } else {
+        "error_text"
+    };
 
     let multipass = cx.props.account.clone();
 
@@ -52,8 +62,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let mp2 = multipass.clone();
     let new_account_2 = move |_| match mp2.write().create_identity(Some(username.as_str()), None) {
         Ok(_) => {
-            window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+            println!("valid username {}", valid_username);
+            if valid_username {
+                window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                use_router(&cx).push_route("/main", None, None);
+            }
         }
         Err(_) => error.set("".into()),
     };
@@ -81,11 +94,22 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 value: username.clone().to_string(),
                                 placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
-                                    username.set(evt.value.clone());
+                                    if evt.value.len() < 26 {
+                                        username.set(remove_whitespace(&mut evt.value.to_string()));
+                                        if !error.is_empty() {
+                                            error.set("".to_string());
+                                        }
+                                    } else {
+                                        username.set(evt.value[..26].to_string());
+                                        error.set("Maximum username length reached (26)".to_string());
+                                    }
                                 },
                                 on_enter: new_account_2,
                             },
-                            div { class: "m-bottom-sm" },
+                            p {
+                                class: "{error_class}",
+                                "　{error}　"
+                            },
                             Button {
                                 icon: Shape::Check,
                                 text: "Create Account".to_string(),
