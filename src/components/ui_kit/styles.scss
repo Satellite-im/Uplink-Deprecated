@@ -545,6 +545,7 @@ input:checked+.slider:before {
 
 // Popups
 .popup-mask {
+  backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   transition: blur 0.2s;
   background: var(--theme-semi-transparent);
@@ -570,6 +571,7 @@ input:checked+.slider:before {
   }
 
   &.hidden {
+    backdrop-filter: blur(5px);
     -webkit-backdrop-filter: none;
     background: transparent;
     pointer-events: none;

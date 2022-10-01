@@ -6,7 +6,6 @@ description = "GUI implementation of the Warp protocol."
 readme = "README.md"
 repository = "https://github.com/Satellite-im/WarpGUI"
 license = "Creative Commons Attribution-NonCommercial 1.0"
-license_file = "LICENSE.md"
 categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
 edition = "2021"
 resolver = "2"
