@@ -10,6 +10,8 @@
         margin-left: -.5rem;
         padding: .5rem;
         width: calc(100%);
+        -webkit-user-select: none; /* Safari */
+        user-select: none; /* Non-prefixed version, currently */
 
         &:hover,
         &.active {
