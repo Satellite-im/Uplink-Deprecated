@@ -138,6 +138,7 @@ fn main() {
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(1200.0, 730.0));
 
+    #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
         State {
@@ -145,12 +146,18 @@ fn main() {
             account,
             messaging,
         },
-        |c| {
-            #[cfg(target_os = "macos")]
-            c.with_window(|_| window.with_menu(main_menu).into());
-            #[cfg(not(target_os = "macos"))]
-            c.with_window(|_| window)
+        |c| c.with_window(|_| window.with_menu(main_menu)),
+    );
+
+    #[cfg(not(target_os = "macos"))]
+    dioxus::desktop::launch_with_props(
+        App,
+        State {
+            tesseract,
+            account,
+            messaging,
         },
+        |c| c.with_window(|_| window),
     );
 }
 
