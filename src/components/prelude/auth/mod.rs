@@ -63,7 +63,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         if username.is_empty() {
             error.set("Username is required".into())
         } else {
-            match mp.write().create_identity(Some(username), None) {
+            match mp2.write().create_identity(Some(username), None) {
                 Ok(_) => {
                     window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
                     use_router(&cx).push_route("/main", None, None);
