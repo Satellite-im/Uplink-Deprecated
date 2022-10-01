@@ -20,11 +20,6 @@ pub struct Props {
     account: Account,
 }
 
-fn remove_whitespace(s: &mut String) -> String {
-    s.retain(|c| !c.is_whitespace());
-    s.to_string()
-}
-
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
@@ -111,7 +106,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
                                     if evt.value.len() < 26 {
-                                        username.set(remove_whitespace(&mut evt.value.to_string()));
+                                        let mut un = evt.value.clone();
+                                        crate::utils::remove_writespace(&mut un);
+                                        username.set(un);
                                         if !error.is_empty() {
                                             error.set("".to_string());
                                         }
