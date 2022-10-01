@@ -17,6 +17,8 @@
 
         .favorites {
             display: inline-flex;
+            -webkit-user-select: none; /* Safari */
+            user-select: none; /* Non-prefixed version, currently */
 
             .labeled {
                 margin-bottom: 10px;
