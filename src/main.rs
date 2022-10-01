@@ -30,11 +30,10 @@ pub mod language;
 pub mod themes;
 pub mod utils;
 
-#[cfg(target_os = "macos")]
-use tao::{
-  menu::{MenuBar as Menu, MenuItem},
-  window::WindowBuilder,
-};
+use tao::window::WindowBuilder;
+
+use tao::menu::{MenuBar as Menu, MenuItem};
+
 mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
@@ -95,13 +94,15 @@ fn main() {
     main_menu.add_submenu("Warp GUI", true, app_menu);
     main_menu.add_submenu("Edit", true, edit_menu);
     main_menu.add_submenu("Window", true, window_menu);
+
     let opt = Opt::parse();
 
     if let Some(path) = opt.path {
         *DEFAULT_PATH.write() = path;
     }
 
-    let file_appender = tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
+    let file_appender =
+        tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()
         .with_writer(non_blocking)
@@ -132,12 +133,10 @@ fn main() {
         Err(_e) => todo!(),
     };
 
-
     let window = WindowBuilder::new()
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
-        .with_inner_size(LogicalSize::new(1200.0, 730.0))
-        .with_menu(main_menu);
+        .with_inner_size(LogicalSize::new(1200.0, 730.0));
 
     dioxus::desktop::launch_with_props(
         App,
@@ -147,7 +146,10 @@ fn main() {
             messaging,
         },
         |c| {
-            c.with_window(|_| window.into())
+            #[cfg(target_os = "macos")]
+            c.with_window(|_| window.with_menu(main_menu).into());
+            #[cfg(not(target_os = "macos"))]
+            c.with_window(|_| window)
         },
     );
 }
