@@ -29,7 +29,7 @@ jobs:
       - run: rustup default stable
       - run:
           name: Make Bin
-          command: cargo build
+          command: make binary
       - run:
           name: Make DMG
           command: make dmg
@@ -44,16 +44,18 @@ jobs:
           command: zip -r dmg.zip target/release/macos/WarpGUI.DMG
       - run:
           name: Compress Artifacts (Bin)
-          command: zip -r bin.zip target/release/warp_gui
-      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          command: zip -r bin.zip target/release/macos/warp_gui
+      - store_artifacts:
           path: app.zip
-          destination: App
-      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          destination: /macos/app.zip
+      - store_artifacts:
           path: dmg.zip
-          destination: DMG
-      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          destination: /macos/dmg.zip
+      - store_artifacts:
           path: bin.zip
-          destination: Bin
+          destination: /macos/bin.zip
+      - store_artifacts:
+          path: /macos
 
 workflows:
   test_and_build:
