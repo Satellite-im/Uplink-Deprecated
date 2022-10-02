@@ -2,18 +2,41 @@ version: 2.1
 jobs:
   test_linux:
     docker:
-      - image: cimg/rust:latest
+      - image: circleci/rust@1.6.0
+    parameters:
+      version:
+        default: stable
+        description: Version of Rust to install and default to.
+        type: string
     steps:
       - checkout
+      - run:
+          command: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh\nchmod +x rustup.sh\n./rustup.sh -y\n\nsource \"$HOME\"/.cargo/env\n\nif [ \"$RUST_VERSION\" != \"stable\" ]; then\n\trustup toolchain install \"$RUST_VERSION\"\n\trustup default \"$RUST_VERSION\"\nfi\n"
+          environment:
+            RUST_VERSION: <<parameters.version>>
+          name: Install Rustup
+      - run:
+          command: echo 'source $HOME/.cargo/env' >> $BASH_ENV
+          name: Setting up Cargo environment in $BASH_ENV
       - run:
           name: Test
           command: rustup run stable cargo test
 
   build_linux:
     docker:
-      - image: cimg/rust:latest
+      - image: circleci/rust@1.6.0    
+    parameters:
+      version:
+        default: stable
+        description: Version of Rust to install and default to.
+        type: string
     steps:
       - checkout
+      - run:
+          command: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup.sh\nchmod +x rustup.sh\n./rustup.sh -y\n\nsource \"$HOME\"/.cargo/env\n\nif [ \"$RUST_VERSION\" != \"stable\" ]; then\n\trustup toolchain install \"$RUST_VERSION\"\n\trustup default \"$RUST_VERSION\"\nfi\n"
+          environment:
+            RUST_VERSION: <<parameters.version>>
+          name: Install Rustup
       - run:
           name: Build Binary
           command: rustup run stable cargo build --release
