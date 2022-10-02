@@ -16,7 +16,7 @@ jobs:
             RUST_VERSION: <<parameters.version>>
           name: Install Rustup
       - run:
-          command: echo 'source $HOME/.cargo/env' >> $BASH_ENV
+          command: echo 'source "/usr/local/cargo/env"' >> $BASH_ENV
           name: Setting up Cargo environment in $BASH_ENV
       - run:
           name: Test
