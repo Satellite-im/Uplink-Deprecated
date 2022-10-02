@@ -99,14 +99,20 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     },
                 )
             },
-            Friends {
-                account: cx.props.account.clone(),
-                messaging: cx.props.messaging.clone(),
-                title: friendString,
-                show: *show_friends.clone(),
-                icon: Shape::Users,
-                on_hide: move |_| show_friends.set(false),
-            },
+            (**show_friends).then(|| rsx!{
+                //TODO: this is a fix for now, but next milestone we should rework popups to
+                // de-render themselves after css hide animations are completed.
+                Friends {
+                    account: cx.props.account.clone(),
+                    messaging: cx.props.messaging.clone(),
+                    title: friendString,
+                    show: true,
+                    icon: Shape::Users,
+                    on_hide: move |_| {
+                        show_friends.set(false);
+                    },
+                }
+            }),
             Profile {
                 account: cx.props.account.clone(),
                 show: *show_profile.clone(),

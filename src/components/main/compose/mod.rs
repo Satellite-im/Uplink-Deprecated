@@ -25,11 +25,6 @@ pub mod write;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
-    global_css!(
-        "
-        
-    "
-    );
     let state = use_atom_ref(&cx, STATE);
     let conversation_id = cx.props.conversation.id();
     let l = use_atom_ref(&cx, LANGUAGE).read();
