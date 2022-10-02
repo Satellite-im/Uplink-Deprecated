@@ -1,13 +1,8 @@
 version: 2.1
 jobs:
-  test_linux:
-    docker:
-      - image: circleci/rust
-    parameters:
-      version:
-        default: stable
-        description: Version of Rust to install and default to.
-        type: string
+  test_ubuntu:
+    machine:
+      image: ubuntu-2004:2022.07.1
     steps:
       - checkout
       - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
@@ -16,14 +11,9 @@ jobs:
           name: Test
           command: cargo test
 
-  build_linux:
-    docker:
-      - image: circleci/rust
-    parameters:
-      version:
-        default: stable
-        description: Version of Rust to install and default to.
-        type: string
+  build_ubuntu:
+    machine:
+      image: ubuntu-2004:2022.07.1
     steps:
       - checkout
       - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
@@ -34,6 +24,11 @@ jobs:
       - run:
           name: Compress Artifacts (Bin)
           command: zip -r bin.zip target/release/warp_gui
+      - store_artifacts:
+          path: bin.zip
+          destination: /ubuntu/bin.zip
+      - store_artifacts:
+          path: /ubuntu
 
   test_macos:
     macos:
@@ -49,11 +44,6 @@ jobs:
       - run:
           name: Run Tests
           command: cargo test
-      - store_artifacts:
-          path: bin.zip
-          destination: /linux/bin.zip
-      - store_artifacts:
-          path: /linux
 
   build_macos:
     macos:
@@ -100,10 +90,10 @@ workflows:
   test_and_build:
     jobs:
       - test_macos
-      - test_linux
+      - test_ubuntu
       - build_macos:
           requires:
             - test_macos
-      - build_linux:
+      - build_ubuntu:
           requires:
-            - test_linux
+            - test_ubuntu
