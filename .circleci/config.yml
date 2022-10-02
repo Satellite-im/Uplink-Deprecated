@@ -1,6 +1,28 @@
 
 version: 2.1
+orbs:
+  rust: circleci/rust@1.6.0
 jobs:
+  test_linux:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Test
+          command: rustup run stable cargo test
+  build_linux:
+    docker:
+      - image: circleci/rust:latest
+    steps:
+      - checkout
+      - run:
+          name: Build Binary
+          command: rustup run stable cargo build --release
+      - run:
+          name: Compress Artifacts (Bin)
+          command: zip -r bin.zip target/release/warp_gui
+
   test_macos:
     macos:
       xcode: 14.0
@@ -15,6 +37,11 @@ jobs:
       - run:
           name: Run Tests
           command: cargo test
+      - store_artifacts:
+          path: bin.zip
+          destination: /linux/bin.zip
+      - store_artifacts:
+          path: /linux
 
   build_macos:
     macos:
