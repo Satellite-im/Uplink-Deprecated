@@ -9,7 +9,7 @@ use std::{
 use rsass::{compile_scss, output};
 
 #[cfg(windows)]
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut res = winres::WindowsResource::new();
     res.set("ProductName", "warp_gui");
     res.set("FileDescription", "warp_gui");
