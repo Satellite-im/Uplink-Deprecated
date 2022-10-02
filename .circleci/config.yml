@@ -1,6 +1,37 @@
-
 version: 2.1
 jobs:
+  test_ubuntu:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
+      - run: source ~/.cargo/env
+      - run: sudo apt install -y protobuf-compiler
+      - run:
+          name: Test
+          command: cargo test
+
+  build_ubuntu:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
+      - run: source ~/.cargo/env
+      - run: sudo apt install -y protobuf-compiler
+      - run:
+          name: Build Binary
+          command: cargo build --release
+      - run:
+          name: Compress Artifacts (Bin)
+          command: zip -r bin.zip target/release/warp_gui
+      - store_artifacts:
+          path: bin.zip
+          destination: /ubuntu/bin.zip
+      - store_artifacts:
+          path: /ubuntu
+
   test_macos:
     macos:
       xcode: 14.0
@@ -61,6 +92,10 @@ workflows:
   test_and_build:
     jobs:
       - test_macos
+      - test_ubuntu
       - build_macos:
           requires:
             - test_macos
+      - build_ubuntu:
+          requires:
+            - test_ubuntu

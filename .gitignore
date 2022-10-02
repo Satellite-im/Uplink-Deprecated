@@ -12,7 +12,7 @@ Cargo.lock
 
 
 # Satellite
-.cache
+.warp
 
 .temp
 

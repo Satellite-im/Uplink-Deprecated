@@ -1,6 +1,6 @@
 [package]
-name = "warp_gui"
-version = "0.1.0"
+name = "warpgui"
+version = "0.0.0-pre"
 authors = ["everyone@satellite.im"]
 description = "GUI implementation of the Warp protocol."
 readme = "README.md"
@@ -49,11 +49,30 @@ warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
 glob = "0.3.0"
 rsass = "0.26.0"
 
+[profile.release-lto]
+inherits = "release"
+lto = true
+codegen-units = 1
+
 [package.metadata.bundle]
-name = "WarpGUI"
+name = "warpgui"
 identifier = "im.satellite.warpgui"
-version = "0.1.0"
+version = "0.0.0-pre"
 copyright = "Copyright (c) Satellite.IM Inc."
 categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
 short_description = "GUI implementation of the Warp protocol."
 long_description = ""
+
+# A profile which compiles all (non-workspace) dependencies in release mode
+# but WarpGUI code in dev mode. This gives a good debugging experience for your
+# code and fast performance of other people's code. After the initial
+# build subsequent ones are as fast as dev mode builds.
+# Credit: Lapce https://github.com/lapce/lapce/blob/master/Cargo.toml#L29
+# To use this profile:
+#   cargo build --profile fastdev
+#   cargo run --profile fastdev --bin lapce
+[profile.fastdev.package."*"]
+opt-level = 3
+
+[profile.fastdev]
+inherits = "dev"
