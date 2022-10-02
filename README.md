@@ -23,11 +23,7 @@ The goal should be to build a hyper customizable application that can run anywhe
 
 ## Features
 
-* Built-in LSP ([Language Server Protocol](https://microsoft.github.io/language-server-protocol/)) support to give you intelligent code features such as: completion, diagnostics and code actions
-* Modal editing support as first class citizen (Vim-like, and toggleable)
-* Built-in remote development support inspired by [VSCode Remote Development](https://code.visualstudio.com/docs/remote/remote-overview). Enjoy the benefits of a "local" experience, and seamlessly gain the full power of a remote system.
-* Plugins can be written in programming languages that can compile to the [WASI](https://wasi.dev/) format (C, Rust, [AssemblyScript](https://www.assemblyscript.org/))
-* Built-in terminal, so you can execute commands in your workspace, without leaving Lapce.
+// TODO
 
 ## Contributing
 
@@ -35,102 +31,9 @@ Guidelines for contributing to Lapce can be found in [`CONTRIBUTING.md`](CONTRIB
 
 ## Installation
 
-### Arch Linux
-
-There is an community package that can be installed with `pacman`:
-
-```bash
-sudo pacman -Syu lapce
-```
-
-### Fedora
-```bash
-sudo dnf copr enable titaniumtown/lapce
-sudo dnf install lapce
-```
-
-### Flatpak
-
-Lapce is available as a flatpak [here](https://flathub.org/apps/details/dev.lapce.lapce)
-
-```bash
-flatpak install flathub dev.lapce.lapce
-```
-
-### Homebrew
-
-```bash
-brew install lapce
-```
-
-### Scoop
-
-```bash
-scoop install lapce
-```
-
-### winget
-
-You can find the packages [here](https://github.com/microsoft/winget-pkgs/tree/master/manifests/l/Lapce/Lapce):
-
-```bash
-winget install lapce
-```
+// TODO
 
 ## Building from source
-
-It is easy to build Lapce from source on a GNU/Linux distribution. Cargo handles the build process, all you need to do, is ensure the correct dependencies are installed.
-
-1. Install the Rust compiler and Cargo using [`rustup.rs`](https://rustup.rs/). If you already have the toolchain, ensure you are using version 1.62 or higher.
-
-2. Install dependencies for your operating system:
-
-#### Ubuntu
-```sh
-sudo apt install cmake pkg-config libfontconfig-dev libgtk-3-dev
-```
-#### Fedora
-```sh
-sudo dnf install gcc-c++ perl-FindBin perl-File-Compare gtk3-devel
-```
-
-3. Clone this repository (this command will clone to your home directory):
-```sh
-git clone https://github.com/lapce/lapce.git ~/lapce
-```
-
-4. `cd` into the repository, and run the build command with the release flag
-```sh
-cd ~/lapce
-```
-
-```sh
-cargo build --release
-```
-
-> If you use a different distribution, and are having trouble finding appropriate dependencies, let us know in an issue!
-
-Once Lapce is compiled, the executable will be available in `target/release/lapce`.
-
-## Feedback & Contact
-
-The most popular place for Lapce developers and users is on the [Discord server](https://discord.gg/n8tGJ6Rn6D).
-
-Or, join the discussion on [Reddit](https://www.reddit.com/r/lapce/) where we are just getting started.
-
-There is also a [Matrix Space](https://matrix.to/#/#lapce-editor:matrix.org), which is linked to the content from the Discord server.
-
-## License
-
-Lapce is released under the Apache License Version 2, which is an open source license. You may contribute to this project, or use the code as you please as long as you adhere to its conditions. You can find a copy of the license text here: [`LICENSE`](LICENSE).
-
-# WarpGUI
-//TODO: Test & build status badges
-
-
-Warp GUI is a basic implementation of the Warp feature set. It aims to pair nicely with Uplink, Satellite's minimal mobile application.
-
-## Prerequisites
 
 You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. Or included in standard dev tooling on respective operating systems.
 
