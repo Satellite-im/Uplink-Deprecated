@@ -44,7 +44,7 @@ jobs:
           command: zip -r dmg.zip target/release/macos/WarpGUI.DMG
       - run:
           name: Compress Artifacts (Bin)
-          command: zip -r bin.zip target/release/macos/warp_gui
+          command: zip -r bin.zip target/release/warp_gui
       - store_artifacts:
           path: app.zip
           destination: /macos/app.zip
