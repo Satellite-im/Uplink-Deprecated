@@ -89,6 +89,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     p {
                         "{noactivechatdString}"
                     },
+                    div {
+                        class: "m-bottom"
+                    },
                     Button {
                         icon: Shape::Plus,
                         text: l.start_one.to_string(),

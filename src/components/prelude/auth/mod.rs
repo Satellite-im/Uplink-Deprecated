@@ -1,5 +1,6 @@
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
+use sir::css;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
@@ -27,6 +28,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let username = use_state(&cx, || String::from(""));
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, || String::from(""));
+    let error_class = if error.is_empty() {
+        css!("opacity: 0")
+    } else {
+        "error_text"
+    };
 
     let multipass = cx.props.account.clone();
 
@@ -99,11 +105,24 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 value: username.clone().to_string(),
                                 placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
-                                    username.set(evt.value.clone());
+                                    if evt.value.len() < 26 {
+                                        let mut un = evt.value.clone();
+                                        crate::utils::remove_writespace(&mut un);
+                                        username.set(un);
+                                        if !error.is_empty() {
+                                            error.set("".to_string());
+                                        }
+                                    } else {
+                                        username.set(evt.value[..26].to_string());
+                                        error.set("Maximum username length reached (26)".to_string());
+                                    }
                                 },
                                 on_enter: new_account_2,
                             },
-                            div { class: "m-bottom-sm" },
+                            p {
+                                class: "{error_class}",
+                                "　{error}　"
+                            },
                             Button {
                                 icon: Shape::Check,
                                 text: "Create Account".to_string(),
