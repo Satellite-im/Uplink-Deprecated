@@ -1,5 +1,6 @@
 version: 2.1
 jobs:
+  #Ubuntu
   test_ubuntu:
     machine:
       image: ubuntu-2204:current
@@ -31,7 +32,15 @@ jobs:
           destination: /ubuntu/bin.zip
       - store_artifacts:
           path: /ubuntu
-
+  # Windows
+  test_windows:
+    win: circleci/windows@4.1.1
+    steps:
+      - checkout
+      - ECHO Y | Set-ExecutionPolicy Bypass -Scope Process
+      - Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+      - choco install rustup.install
+  # MacOS
   test_macos:
     macos:
       xcode: 14.0
