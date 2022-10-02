@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
       - run: source ~/.cargo/env
-      - run: apt install -y protobuf-compiler
+      - run: sudo apt install -y protobuf-compiler
       - run:
           name: Test
           command: cargo test
@@ -19,7 +19,7 @@ jobs:
       - checkout
       - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
       - run: source ~/.cargo/env
-      - run: apt install -y protobuf-compiler
+      - run: sudo apt install -y protobuf-compiler
       - run:
           name: Build Binary
           command: cargo build --release
