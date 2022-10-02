@@ -1,17 +1,17 @@
-
 version: 2.1
 jobs:
   test_linux:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:latest
     steps:
       - checkout
       - run:
           name: Test
           command: rustup run stable cargo test
+
   build_linux:
     docker:
-      - image: circleci/rust:latest
+      - image: cimg/rust:latest
     steps:
       - checkout
       - run:
