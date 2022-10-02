@@ -81,17 +81,16 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                 let mut ctx = ClipboardContext::new().unwrap();
                                 if let Ok(ident) = mp
-                                        .read()
-                                        .get_own_identity()
+                                    .read()
+                                    .get_own_identity()
                                 {
-                                            let single_toast = ToastInfo {
-                                                position: Position::TopRight,
-                                                ..ToastInfo::simple(&codeCopied)
-                                            };
-                                            let _id = toast.write().popup(single_toast);
-                                            ctx.set_contents(ident.did_key().to_string()).unwrap();
+                                    let single_toast = ToastInfo {
+                                        position: Position::TopRight,
+                                        ..ToastInfo::simple(&codeCopied)
+                                    };
+                                    let _id = toast.write().popup(single_toast);
+                                    ctx.set_contents(ident.did_key().to_string()).unwrap();
                                 }
-                                
                             }
                         }
                     },
