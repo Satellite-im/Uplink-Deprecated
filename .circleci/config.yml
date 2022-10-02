@@ -1,7 +1,5 @@
 
 version: 2.1
-orbs:
-  rust: circleci/rust@1.6.0
 jobs:
   test_linux:
     docker:
@@ -88,6 +86,10 @@ workflows:
   test_and_build:
     jobs:
       - test_macos
+      - test_linux
       - build_macos:
           requires:
             - test_macos
+      - build_linux:
+          requires:
+            - test_linux
