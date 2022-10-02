@@ -38,7 +38,7 @@ impl Default for Config {
             privacy: Privacy { satelite_sync_nodes: true, safer_file_scanning: true },
             ui: UI { theme: "default".to_string() },
             extensions: Extensions { enable: true },
-            developer: Developer { logging: false, cache_dir: ".cache".to_string() }
+            developer: Developer { logging: false, cache_dir: ".warp".to_string() }
         }
     }
 }

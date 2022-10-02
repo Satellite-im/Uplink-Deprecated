@@ -10,4 +10,4 @@ enable = false                  # Enable or disable the ability to load extensio
 
 [developer]
 logging = true                  # Enable developer logging in app.
-cache_dir = ".cache"            # Change to move to a custom cache location.
+cache_dir = ".warp"            # Change to move to a custom cache location.

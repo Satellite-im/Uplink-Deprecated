@@ -81,8 +81,8 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                 let mut clipboard = Clipboard::new().unwrap();
                                 if let Ok(ident) = mp
-                                        .read()
-                                        .get_own_identity()
+                                    .read()
+                                    .get_own_identity()
                                 {
                                     let single_toast = ToastInfo {
                                         position: Position::TopRight,

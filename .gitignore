@@ -10,7 +10,7 @@ Cargo.lock
 **/*.rs.bk
 
 # Satellite
-.cache
+.warp
 
 .temp
 
