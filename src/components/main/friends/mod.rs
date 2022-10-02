@@ -1,4 +1,4 @@
-use copypasta::{ClipboardContext, ClipboardProvider};
+use arboard::Clipboard;
 
 use dioxus::{
     core::UiEvent,
@@ -79,17 +79,17 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             on_pressed: move |e: UiEvent<MouseData>| {
                                 e.cancel_bubble();
 
-                                let mut ctx = ClipboardContext::new().unwrap();
+                                let mut clipboard = Clipboard::new().unwrap();
                                 if let Ok(ident) = mp
                                         .read()
                                         .get_own_identity()
                                 {
-                                            let single_toast = ToastInfo {
-                                                position: Position::TopRight,
-                                                ..ToastInfo::simple(&codeCopied)
-                                            };
-                                            let _id = toast.write().popup(single_toast);
-                                            ctx.set_contents(ident.did_key().to_string()).unwrap();
+                                    let single_toast = ToastInfo {
+                                        position: Position::TopRight,
+                                        ..ToastInfo::simple(&codeCopied)
+                                    };
+                                    let _id = toast.write().popup(single_toast);
+                                    clipboard.set_text(ident.did_key().to_string()).unwrap();
                                 }
                                 
                             }
