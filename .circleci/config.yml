@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build_binary:
+  test:
     docker:
       - image: 'cimg/rust:1.50.0'
     steps:
@@ -9,17 +9,29 @@ jobs:
       - run:
           name: Run Tests
           command: cargo test
+
+  build_binary:
+    docker:
+      - image: 'cimg/rust:1.50.0'
+    steps:
+      - checkout
+      - run: cargo --version
       - run:
           name: Build Bin
-          command: cargo build
+          command: cargo build --release
       - run:
-          name: Build Bundle
-          command: cargo bundle
+          name: Compress Artifacts (Bin)
+          command: zip -r bin.zip target/release/warp_gui
+      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          path: bin.zip
+          destination: Bin
+
   build_macos:
     macos:
       xcode: 14
     steps:
       - checkout
+      - run: cargo --version
       - run: brew update
       - run: brew install protobuf
       - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
@@ -32,3 +44,33 @@ jobs:
       - run:
           name: Make .app
           command: make app
+      - run:
+          name: Compress Artifacts (App)
+          command: zip -r app.zip target/release/macos/WarpGUI.app
+      - run:
+          name: Compress Artifacts (DMG)
+          command: zip -r dmg.zip target/release/macos/WarpGUI.DMG
+      - run:
+          name: Compress Artifacts (Bin)
+          command: zip -r bin.zip target/release/warp_gui
+      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          path: app.zip
+          destination: App
+      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          path: dmg.zip
+          destination: DMG
+      - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
+          path: bin.zip
+          destination: Bin
+
+
+workflows:
+  test_build:
+    jobs:
+      - test
+      - build_binary:
+        requires: # sequence the build job to run after test
+          test
+      - build_macos:
+        requires:
+          test
