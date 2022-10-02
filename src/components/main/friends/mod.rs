@@ -91,7 +91,6 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     let _id = toast.write().popup(single_toast);
                                     clipboard.set_text(ident.did_key().to_string()).unwrap();
                                 }
-                                
                             }
                         }
                     },
