@@ -8,7 +8,7 @@ This document contains some useful resources for anyone wishing to contribute to
 
 2. Ensure you run physical and automated tests before submitting a PR for review. We work really hard to have no regressions even if a new feature may be "more important".
 
-3. Review both open and closed [issues](https://github.com/satellite_im/warp_gui/issues), there may be others working on a similar feature.
+3. Review both open and closed [issues](https://github.com/ssatellite-im/WarpGUI/issues), there may be others working on a similar feature.
 
 4. Be aware that unless you explicitly state otherwise, contributions you make to this project will be under the licensing rights of the the original author's, Satellite.im's, specified license terms (to be outlined in repository).
 
