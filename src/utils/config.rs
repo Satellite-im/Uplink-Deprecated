@@ -34,7 +34,7 @@ pub struct Developer {
 
 impl Default for Config {
     fn default() -> Self {
-        Self { 
+        Self {
             privacy: Privacy { satelite_sync_nodes: true, safer_file_scanning: true },
             ui: UI { theme: "default".to_string() },
             extensions: Extensions { enable: true },

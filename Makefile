@@ -32,7 +32,6 @@ $(TARGET)-universal:
 	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --profile release-lto --target=x86_64-apple-darwin
 	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --profile release-lto --target=aarch64-apple-darwin
 	@lipo target/{x86_64,aarch64}-apple-darwin/release-lto/$(TARGET) -create -output $(APP_BINARY)
-	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s F6ZAL7ANAD $(APP_BINARY)
 
 app: $(APP_NAME)-native ## Create a WarpGUI.app
 app-universal: $(APP_NAME)-universal ## Create a universal WarpGUI.app
@@ -45,7 +44,6 @@ $(APP_NAME)-%: $(TARGET)-%
 	@echo "Created '$(APP_NAME)' in '$(APP_DIR)'"
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Info.plist
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/warpgui.icns
-	/usr/bin/codesign -vvv --deep  --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s F6ZAL7ANAD $(APP_DIR)/$(APP_NAME)
 
 dmg: $(DMG_NAME)-native ## Create a WarpGUI.dmg
 dmg-universal: $(DMG_NAME)-universal ## Create a universal WarpGUI.dmg
@@ -58,7 +56,6 @@ $(DMG_NAME)-%: $(APP_NAME)-%
 		-srcfolder $(APP_DIR) \
 		-ov -format UDZO
 	@echo "Packed '$(APP_NAME)' in '$(APP_DIR)'"
-	/usr/bin/codesign -vvv --deep  --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s F6ZAL7ANAD  $(DMG_DIR)/$(DMG_NAME)
 install: $(INSTALL)-native ## Mount disk image
 install-universal: $(INSTALL)-native ## Mount universal disk image
 $(INSTALL)-%: $(DMG_NAME)-%
