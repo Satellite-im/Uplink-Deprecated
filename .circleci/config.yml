@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   test_linux:
     docker:
-      - image: circleci/rust@1.6.0
+      - image: circleci/rust
     parameters:
       version:
         default: stable
@@ -24,7 +24,7 @@ jobs:
 
   build_linux:
     docker:
-      - image: circleci/rust@1.6.0    
+      - image: circleci/rust
     parameters:
       version:
         default: stable
