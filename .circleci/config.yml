@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  test:
+  test_build:
     docker:
       - image: 'cimg/rust:1.50.0'
     steps:
@@ -62,15 +62,13 @@ jobs:
       - store_artifacts: # store this build output. Read more: https://circleci.com/docs/artifacts/
           path: bin.zip
           destination: Bin
-
-
 workflows:
-  test_build:
+  test_and_build:
     jobs:
-      - test
+      - test_build
       - build_binary:
-        requires: # sequence the build job to run after test
-          test
+          requires:
+            - test_build
       - build_macos:
-        requires:
-          test
+          requires:
+            - test_build
