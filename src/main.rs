@@ -17,7 +17,7 @@ use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
-use warp_mp_ipfs::config::{MpIpfsConfig, Discovery};
+use warp_mp_ipfs::config::{Discovery, MpIpfsConfig};
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
@@ -60,6 +60,8 @@ struct Opt {
     title: Option<String>,
     #[clap(long)]
     experimental_node: bool,
+    #[clap(long)]
+    direct: bool,
 }
 
 fn main() {
@@ -128,6 +130,7 @@ fn main() {
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
         opt.experimental_node,
+        opt.direct,
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
@@ -165,6 +168,7 @@ async fn initialization(
     path: PathBuf,
     tesseract: Tesseract,
     experimental: bool,
+    direct: bool,
 ) -> Result<
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
@@ -173,9 +177,11 @@ async fn initialization(
     warp::error::Error,
 > {
     let mut config = MpIpfsConfig::production(&path, experimental);
-    config.store_setting.discovery = Discovery::Direct;
+    if direct {
+        config.store_setting.discovery = Discovery::Direct;
+    }
     config.ipfs_setting.mdns.enable = false;
-    
+
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
