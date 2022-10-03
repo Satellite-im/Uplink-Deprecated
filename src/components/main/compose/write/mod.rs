@@ -22,6 +22,11 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     script.set(
         "(function addAutoResize() {
             document.querySelectorAll('.resizeable-textarea').forEach(function (element) {
+                let send_button = document.getElementById('send');
+                send_button.addEventListener('click', function(event) {
+                    element.value = '';
+                });
+
                 element.addEventListener('keyup', function(event) {
                     if (event.keyCode === 13 && !event.shiftKey) {
                         event.target.value = '';
@@ -72,12 +77,16 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "extension-holder",
                 SmallExtensionPlaceholder {}
             }
-            IconButton {
-                icon: Shape::ArrowRight,
-                state: icon_button::State::Secondary,
-                on_pressed: move |_| {
-                    let _ = &cx.props.on_submit.call(text.to_string());
-                },
+            div {
+                id: "send",
+                IconButton {
+                    icon: Shape::ArrowRight,
+                    state: icon_button::State::Secondary,
+                    on_pressed: move |_| {
+                        let _ = &cx.props.on_submit.call(text.to_string());
+                        text.set(String::from(""));
+                    },
+                }
             }
         }
     })

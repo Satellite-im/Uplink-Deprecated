@@ -85,7 +85,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 let conversation_response = warp::async_block_in_place_uncheck(
                                     rg.write().create_conversation(&friend)
                                 );
-
                                 let conversation = match conversation_response {
                                     Ok(v) => v,
                                     Err(Error::ConversationExist { conversation }) => conversation,

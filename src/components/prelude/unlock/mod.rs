@@ -30,7 +30,14 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     } else {
         "error_text"
     };
-    let valid_pin = pin.len() >= 4;
+
+    let confirm_button_class = if error.is_empty() {
+        "confirm-button"
+    } else {
+        "confirm-button has-error"
+    };
+
+    let valid_pin = pin.len() > 3;
 
     let tesseract_available = cx.props.tesseract.exist("keypair");
 
@@ -59,7 +66,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     valid_pin.then(||
                         rsx! {
                             span {
-                                class: "confirm-button",
+                                class: "{confirm_button_class}",
                                 IconButton {
                                     icon: if error.is_empty() {
                                         Shape::Check
@@ -95,8 +102,10 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
 
                         // If the pin entered is longer than the allowed limit, ignore it.
-                        if pin.len() < 6 {
+                        if evt.value.len() < 6 {
                             pin.set(evt.value.to_string());
+                        } else {
+                            pin.set(evt.value[..6].to_string());
                         }
 
                         // If tesseract exists, we can try to unlock as we type to save time

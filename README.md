@@ -1,10 +1,39 @@
-# WarpGUI
-//TODO: Test & build status badges
+<h1 align="center">
+  <a href="https://satellite.im" target="_blank">
+  <img src="extra/images/logo.png" width=200 height=200/><br>
+  WarpGUI
+  </a>
+</h1>
 
+<h4 align="center">Privacy First, Modular, P2P messaging client built atop Warp.</h4>
 
-Warp GUI is a basic implementation of the Warp feature set. It aims to pair nicely with Uplink, Satellite's minimal mobile application.
+<div align="center">
+  <a href="https://github.com/satellite-im/WarpGUI/actions/workflows/ci.yml" target="_blank">
+    <img src="https://github.com/satellite-im/WarpGUI/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <a href="https://satellite.wiki" target="_blank">
+      <img src="https://img.shields.io/static/v1?label=Docs&message=satellite.wiki&color=blue" alt="WarpGUI Docs">
+  </a>
+</div>
+<br/>
 
-## Prerequisites
+Warp GUI is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for basic implementation of Warp features in a universal application.
+
+The goal should be to build a hyper customizable application that can run anywhere and support extensions.
+
+## Features
+
+// TODO
+
+## Contributing
+
+Guidelines for contributing to Lapce can be found in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Installation
+
+// TODO
+
+## Building from source
 
 You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. Or included in standard dev tooling on respective operating systems.
 
@@ -31,7 +60,7 @@ To run the app in dev mode simply run `cargo run`.
 
 The executable has a few command line options that might come in handy:
 
-- `--path` which changes the folder used for storage, currently it's .cache but later it will go somewhere else
+- `--path` which changes the folder used for storage, currently it's .warp but later it will go somewhere else
 - `--title` which comes in handy if you have more than one window open
 
 ### Extra Options
@@ -48,8 +77,12 @@ Please also read through the [Physical Testing Checklist](https://github.com/Sat
 
 ## Resetting Data
 
-It's often necessary to reset your account for development, to do so just delete any `.temp` and `.cache` files within this project.
+It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project.
 
 ## Contributions
 
 All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application are much appriciated.
+
+## Special Thanks
+
+**Lapce** - For serving as a great open source editor and helping me (matt) through so many headaches by providing your code to the world.

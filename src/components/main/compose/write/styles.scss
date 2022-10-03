@@ -6,6 +6,8 @@
     flex: 1;
     flex-direction: row;
     padding: 1rem;
+    -webkit-user-select: none; /* Safari */
+    user-select: none; /* Non-prefixed version, currently */
 
     .extension-holder {
         margin-right: 1rem;
@@ -25,6 +27,8 @@
         transition: height .2s, border .2s;
         word-break: break-all;
         word-wrap: break-word;
+        -webkit-user-select: text; /* Safari */
+        user-select: text; /* Non-prefixed version, currently */
     }
 
     .input:focus {

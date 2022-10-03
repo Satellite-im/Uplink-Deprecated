@@ -3,9 +3,12 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::raygun::Message;
 
-use crate::components::ui_kit::{
+use crate::{
+    components::ui_kit::{
     icon_button::{self, IconButton},
     icon_input::IconInput,
+}, 
+    LANGUAGE,
 };
 
 #[derive(PartialEq, Eq, Props)]
@@ -28,6 +31,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         true => "remote",
         false => "local",
     };
+    let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let first = match cx.props.first {
         true => "first",
@@ -94,7 +98,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             IconInput {
                                 icon: Shape::Reply,
                                 value: "".to_string(),
-                                placeholder: "Send a reply..".to_string(),
+                                placeholder: l.send_a_reply.to_string(),
                                 on_change: move |_| {},
                                 on_enter: move |_| {}
                             }

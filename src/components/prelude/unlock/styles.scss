@@ -16,7 +16,7 @@
             position: absolute;
             right: 0;
             top: 0;
-            z-index: 1000;
+            z-index: 2;
             // font-size: 0; This breaks windows inputs
         }
 
@@ -25,6 +25,14 @@
             position: absolute;
             right: -80px;
             z-index: 3;
+            cursor: pointer;
+            
+            &.has-error {
+                button {
+                    background-color: var(--theme-red);
+                    cursor: not-allowed;   
+                }
+            }
         }
     }
 

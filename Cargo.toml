@@ -1,6 +1,12 @@
 [package]
-name = "warp_gui"
-version = "0.1.0"
+name = "warpgui"
+version = "0.0.0-pre"
+authors = ["everyone@satellite.im"]
+description = "GUI implementation of the Warp protocol."
+readme = "README.md"
+repository = "https://github.com/Satellite-im/WarpGUI"
+license = "Creative Commons Attribution-NonCommercial 1.0"
+categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
 edition = "2021"
 resolver = "2"
 
@@ -26,28 +32,33 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 anyhow = "1.0"
 once_cell = "1.13"
-copypasta = "0.8.1"
 dioxus-heroicons = "0.1.4"
 dioxus-toast = { version = "0.1.5" }
 clap = { version = "3.2", features = ["derive"] }
+toml = "0.5.9"
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
 
 warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
 warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
+arboard = "3.1.0"
 
 
 [build-dependencies]
 glob = "0.3.0"
 rsass = "0.26.0"
 
+[profile.release-lto]
+inherits = "release"
+lto = true
+codegen-units = 1
+
 [package.metadata.bundle]
-name = "WarpGUI"
+name = "warpgui"
 identifier = "im.satellite.warpgui"
-version = "0.1.0"
+version = "0.0.0-pre"
 copyright = "Copyright (c) Satellite.IM Inc."
-category = "Communication"
-short_description = ""
-long_description = """
-"""
+categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
+short_description = "GUI implementation of the Warp protocol."
+long_description = ""
