@@ -43,7 +43,7 @@ impl Default for Config {
     }
 }
 
-pub fn load_or_default() -> Config {
+pub fn load_config_or_default() -> Config {
     let config_location = "Config.toml";
 
     let contents = match fs::read_to_string(config_location) {
@@ -59,7 +59,7 @@ pub fn load_or_default() -> Config {
         }
     };
 
-    // Use a `match` block to return the 
+    // Use a `match` block to return the
     // file `contents` as a `Config struct: Ok(c)`
     // or handle any `errors: Err(_)`.
     let config: Config = match toml::from_str(&contents) {

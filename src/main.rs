@@ -1,8 +1,10 @@
 use clap::Parser;
 use dioxus::desktop::tao;
+use core::time;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::thread;
 use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
@@ -198,6 +200,8 @@ fn App(cx: Scope<State>) -> Element {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     let css = include_str!(".styles.css");
+
+    thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
     cx.render(rsx!(
         div {

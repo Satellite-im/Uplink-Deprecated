@@ -8,6 +8,7 @@ pub enum NavEvent {
     Files,
     Friends,
     Profile,
+    Settings,
 }
 
 #[derive(Props)]
@@ -43,7 +44,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             IconButton {
                 on_pressed: move |_| {
-                   //  let _ = &cx.props.on_pressed.call(NavEvent::Profile);
+                    let _ = &cx.props.on_pressed.call(NavEvent::Settings);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::Cog

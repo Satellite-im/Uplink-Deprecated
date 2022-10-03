@@ -4,7 +4,7 @@ use dioxus_heroicons::outline::Shape;
 use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
-        main::sidebar::nav::{Nav, NavEvent},
+        main::{sidebar::nav::{Nav, NavEvent}, settings::Settings},
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
@@ -27,6 +27,7 @@ pub struct Props {
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
+    let show_settings = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
@@ -118,9 +119,19 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
+            (**show_settings).then(|| rsx!{
+                Settings {
+                    account: cx.props.account.clone(),
+                    on_hide: move |_| {
+                        show_settings.set(false);
+                    },
+                },
+            }),
             Nav {
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);
+                    show_profile.set(false);
+                    show_settings.set(false);
 
                     match e {
                         NavEvent::Home => {
@@ -132,6 +143,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         NavEvent::Profile => {
                             show_profile.set(true);
+                        },
+                        NavEvent::Settings => {
+                            show_settings.set(true);
                         },
                     }
                 }
