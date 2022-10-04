@@ -2,12 +2,11 @@ version: 2.1
 jobs:
   #Ubuntu
   test_ubuntu:
-    machine:
-      image: ubuntu-2204:current
+    docker:
+      - image: cimg/rust:1.64.0
     steps:
       - checkout
-      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
-      - run: source ~/.cargo/env
+      - run: sudo apt update
       - run: sudo apt install -y libgtk-3-dev
       - run: sudo apt install -y libwebkit2gtk-4.0-dev
       - run: sudo apt install -y protobuf-compiler
@@ -16,12 +15,11 @@ jobs:
           command: cargo test
 
   build_ubuntu:
-    machine:
-      image: ubuntu-2204:current
+    docker:
+      - image: cimg/rust:1.64.0
     steps:
       - checkout
-      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
-      - run: source ~/.cargo/env
+      - run: sudo apt update
       - run: sudo apt install -y libgtk-3-dev
       - run: sudo apt install -y libwebkit2gtk-4.0-dev
       - run: sudo apt install -y protobuf-compiler
