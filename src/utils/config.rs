@@ -4,21 +4,27 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Config {
+    general: General,
     privacy: Privacy,
-    ui: UI,
+    audiovideo: AudioVideo,
     extensions: Extensions,
     developer: Developer
 }
 
 #[derive(Deserialize)]
 pub struct Privacy {
-    satelite_sync_nodes: bool,
+    satellite_sync_nodes: bool,
     safer_file_scanning: bool
 }
 
 #[derive(Deserialize)]
-pub struct UI {
+pub struct General {
     theme: String
+}
+
+#[derive(Deserialize)]
+pub struct AudioVideo {
+    noise_supression: bool
 }
 
 #[derive(Deserialize)]
@@ -28,17 +34,18 @@ pub struct Extensions {
 
 #[derive(Deserialize)]
 pub struct Developer {
-    logging: bool,
+    developer_mode: bool,
     cache_dir: String
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
-            privacy: Privacy { satelite_sync_nodes: true, safer_file_scanning: true },
-            ui: UI { theme: "default".to_string() },
+            general: General { theme: String::from("default") },
+            privacy: Privacy { satellite_sync_nodes: true, safer_file_scanning: true },
             extensions: Extensions { enable: true },
-            developer: Developer { logging: false, cache_dir: ".warp".to_string() }
+            audiovideo: AudioVideo { noise_supression: false },
+            developer: Developer { developer_mode: false, cache_dir: ".warp".to_string() }
         }
     }
 }

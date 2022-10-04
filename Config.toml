@@ -6,6 +6,8 @@ satellite_sync_nodes = true     # Increase speed and reliability of the network 
 safer_file_scanning = true      # Note that disabling this will remove file sharing abilities.
 
 [audiovideo]
+noise_supression = false
+
 
 [extensions]
 enable = false                  # Enable or disable the ability to load extensions in app.
