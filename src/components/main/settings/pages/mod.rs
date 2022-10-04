@@ -13,7 +13,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::crypto::DID;
 
-use crate::{components::ui_kit::{extension_placeholder::ExtensionPlaceholder, switch::Switch, button::{Button, State}}, Account};
+use crate::{components::ui_kit::{extension_placeholder::ExtensionPlaceholder, switch::Switch, button::{Button, State}}, Account, utils::config::Config};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -22,6 +22,8 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Developer(cx: Scope<Props>) -> Element {
+    let mut config = Config::load_config_or_default();
+
     let did = if let Ok(ident) = cx.props.account
         .read()
         .get_own_identity()
@@ -47,8 +49,11 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                 div {
                     class: "interactive",
                     Switch {
-                        active: true,
-                        on_change: move |_| {}
+                        active: config.developer.developer_mode,
+                        on_change: move |_| {
+                            config.developer.developer_mode = !config.developer.developer_mode;
+                            let _ = config.save();
+                        }
                     }
                 }
             }
@@ -67,6 +72,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                     class: "interactive",
                     Button {
                         icon: Shape::Download,
+                        disabled: true,
                         text: String::from("Download"),
                         on_pressed: move |_| {},
                     }

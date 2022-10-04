@@ -1,44 +1,46 @@
 use std::fs;
+use std::io::{Write, Error};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    general: General,
-    privacy: Privacy,
-    audiovideo: AudioVideo,
-    extensions: Extensions,
-    developer: Developer
+    pub general: General,
+    pub privacy: Privacy,
+    pub audiovideo: AudioVideo,
+    pub extensions: Extensions,
+    pub developer: Developer
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Privacy {
-    satellite_sync_nodes: bool,
-    safer_file_scanning: bool
+    pub satellite_sync_nodes: bool,
+    pub safer_file_scanning: bool
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct General {
-    theme: String
+    pub theme: String
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AudioVideo {
-    noise_supression: bool
+    pub noise_supression: bool
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Extensions {
-    enable: bool
+    pub enable: bool
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Developer {
-    developer_mode: bool,
-    cache_dir: String
+    pub developer_mode: bool,
+    pub cache_dir: String
 }
 
-impl Default for Config {
+// Implementation to create, load and save the config
+impl Config {
     fn default() -> Self {
         Self {
             general: General { theme: String::from("default") },
@@ -48,39 +50,58 @@ impl Default for Config {
             developer: Developer { developer_mode: false, cache_dir: ".warp".to_string() }
         }
     }
-}
 
-pub fn load_config_or_default() -> Config {
-    let config_location = "Config.toml";
+    pub fn load_config_or_default() -> Config {
+        let config_location = "Config.toml";
+        let contents = match fs::read_to_string(config_location) {
+            // If successful return the files text as `contents`.
+            // `c` is a local variable.
+            Ok(c) => c,
+            // Handle the `error` case.
+            Err(_) => {
+                // Write `msg` to `stderr`.
+                eprintln!("Could not read file `{}`", config_location);
+                // Exit the program with exit code `1`.
+                "".to_string()
+            }
+        };
+        // Use a `match` block to return the
+        // file `contents` as a `Config struct: Ok(c)`
+        // or handle any `errors: Err(_)`.
+        let config: Config = match toml::from_str(&contents) {
+            // If successful, return data as `Data` struct.
+            // `c` is a local variable.
+            Ok(c) => c,
+            // Handle the `error` case.
+            Err(_) => {
+                // Write `msg` to `stderr`.
+                eprintln!("Unable to load data from `{}`", config_location);
+                // Exit the program with exit code `1`.
+                Config::default()
+            }
+        };
+        config
+    }
 
-    let contents = match fs::read_to_string(config_location) {
-        // If successful return the files text as `contents`.
-        // `c` is a local variable.
-        Ok(c) => c,
-        // Handle the `error` case.
-        Err(_) => {
-            // Write `msg` to `stderr`.
-            eprintln!("Could not read file `{}`", config_location);
-            // Exit the program with exit code `1`.
-            "".to_string()
-        }
-    };
+    pub fn save(&self) -> Result<(), Error> {
+        let mut file = std::fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open("Config.toml")?;
+        self.save_to_writer(&mut file)
+    }
 
-    // Use a `match` block to return the
-    // file `contents` as a `Config struct: Ok(c)`
-    // or handle any `errors: Err(_)`.
-    let config: Config = match toml::from_str(&contents) {
-        // If successful, return data as `Data` struct.
-        // `c` is a local variable.
-        Ok(c) => c,
-        // Handle the `error` case.
-        Err(_) => {
-            // Write `msg` to `stderr`.
-            eprintln!("Unable to load data from `{}`", config_location);
-            // Exit the program with exit code `1`.
-            Config::default()
-        }
-    };
-
-    config
+    pub fn save_to_writer<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+        let default = match toml::to_string(&Config::load_config_or_default()) {
+            Ok(d) => d,
+            Err(_) => String::from(""),
+        };
+        let config_data = match toml::to_string(&self) {
+            Ok(d) => d,
+            Err(_) => default,
+        };
+        writer.write_all(config_data.as_bytes())?;
+        writer.flush()?;
+        Ok(())
+    }
 }

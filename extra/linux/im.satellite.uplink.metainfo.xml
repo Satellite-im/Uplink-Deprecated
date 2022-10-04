@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-    <id>im.satellite.warpgui</id>
-    <name>WarpGUI</name>
+    <id>im.satellite.uplink</id>
+    <name>Uplink</name>
     <developer_name>Satellite IM, Inc</developer_name>
     <summary>Experimental</summary>
     <metadata_license>MIT</metadata_license>
@@ -15,7 +15,7 @@
         </p>
     </description>
     <content_rating type="oars-1.1" />
-    <launchable type="desktop-id">im.satellite.warpgui.desktop</launchable>
+    <launchable type="desktop-id">im.satellite.uplink.desktop</launchable>
     <releases>
         <release version="0.1.3" date="2022-05-19"/>
     </releases>

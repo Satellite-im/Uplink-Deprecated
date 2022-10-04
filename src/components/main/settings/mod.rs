@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{utils::config::load_config_or_default, components::{main::settings::{sidebar::Sidebar, pages::Developer}, ui_kit::icon_button::{IconButton, self}}, Account};
+use crate::{components::{main::settings::{sidebar::Sidebar, pages::Developer}, ui_kit::icon_button::{IconButton, self}}, Account};
 
 use self::sidebar::nav::NavEvent;
 
@@ -17,7 +17,6 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let active_page = use_state(&cx, || NavEvent::Developer);
-    let config = load_config_or_default();
 
     cx.render(rsx! {
         div {

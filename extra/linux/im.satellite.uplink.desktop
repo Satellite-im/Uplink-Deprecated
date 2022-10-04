@@ -2,10 +2,10 @@
 Version=1.0
 Type=Application
 
-Name=Warp GUI
+Name=Uplink
 Comment=Experimental
 Categories=Communications;Chat;
 
-Icon=im.satellite.warpgui
-Exec=warp_gui
+Icon=im.satellite.uplink
+Exec=uplink
 Terminal=false

@@ -26,7 +26,7 @@ jobs:
           command: cargo build --release
       - run:
           name: Compress Artifacts (Bin)
-          command: zip -r bin.zip target/release/warp_gui
+          command: zip -r bin.zip target/release/uplink
       - store_artifacts:
           path: bin.zip
           destination: /ubuntu/bin.zip
@@ -78,13 +78,13 @@ jobs:
           command: make app
       - run:
           name: Compress Artifacts (App)
-          command: zip -r app.zip target/release-lto/macos/WarpGUI.app
+          command: zip -r app.zip target/release-lto/macos/Uplink.app
       - run:
           name: Compress Artifacts (DMG)
-          command: zip -r dmg.zip target/release-lto/macos/WarpGUI.DMG
+          command: zip -r dmg.zip target/release-lto/macos/Uplink.DMG
       - run:
           name: Compress Artifacts (Bin)
-          command: zip -r bin.zip target/release-lto/warpgui
+          command: zip -r bin.zip target/release-lto/uplink
       - store_artifacts:
           path: app.zip
           destination: /macos/app.zip

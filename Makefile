@@ -1,9 +1,9 @@
-TARGET = warpgui
+TARGET = uplink
 
 ASSETS_DIR = extra
 RELEASE_DIR = target/release-lto
 
-APP_NAME = WarpGUI.app
+APP_NAME = Uplink.app
 APP_TEMPLATE = $(ASSETS_DIR)/macos/$(APP_NAME)
 APP_DIR = $(RELEASE_DIR)/macos
 APP_BINARY = $(RELEASE_DIR)/$(TARGET)
@@ -11,7 +11,7 @@ CONTENTS = $(APP_DIR)/$(APP_NAME)/Contents
 APP_BINARY_DIR = $(APP_DIR)/$(APP_NAME)/Contents/MacOS
 APP_EXTRAS_DIR = $(APP_DIR)/$(APP_NAME)/Contents/Resources
 
-DMG_NAME = WarpGUI.dmg
+DMG_NAME = Uplink.dmg
 DMG_DIR = $(RELEASE_DIR)/macos
 
 vpath $(TARGET) $(RELEASE_DIR)
@@ -33,8 +33,8 @@ $(TARGET)-universal:
 	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --profile release-lto --target=aarch64-apple-darwin
 	@lipo target/{x86_64,aarch64}-apple-darwin/release-lto/$(TARGET) -create -output $(APP_BINARY)
 
-app: $(APP_NAME)-native ## Create a WarpGUI.app
-app-universal: $(APP_NAME)-universal ## Create a universal WarpGUI.app
+app: $(APP_NAME)-native ## Create a Uplink.app
+app-universal: $(APP_NAME)-universal ## Create a universal Uplink.app
 $(APP_NAME)-%: $(TARGET)-%
 	@mkdir -p $(APP_BINARY_DIR)
 	@mkdir -p $(APP_EXTRAS_DIR)
@@ -43,15 +43,15 @@ $(APP_NAME)-%: $(TARGET)-%
 	@touch -r "$(APP_BINARY)" "$(APP_DIR)/$(APP_NAME)"
 	@echo "Created '$(APP_NAME)' in '$(APP_DIR)'"
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Info.plist
-	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/warpgui.icns
+	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/uplink.icns
 
-dmg: $(DMG_NAME)-native ## Create a WarpGUI.dmg
-dmg-universal: $(DMG_NAME)-universal ## Create a universal WarpGUI.dmg
+dmg: $(DMG_NAME)-native ## Create a Uplink.dmg
+dmg-universal: $(DMG_NAME)-universal ## Create a universal Uplink.dmg
 $(DMG_NAME)-%: $(APP_NAME)-%
 	@echo "Packing disk image..."
 	@ln -sf /Applications $(DMG_DIR)/Applications
 	@hdiutil create $(DMG_DIR)/$(DMG_NAME) \
-		-volname "WarpGUI" \
+		-volname "Uplink" \
 		-fs HFS+ \
 		-srcfolder $(APP_DIR) \
 		-ov -format UDZO

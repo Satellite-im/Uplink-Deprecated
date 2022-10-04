@@ -19,7 +19,7 @@ pub struct PersistedState {
 
 impl PersistedState {
     pub fn load_or_inital() -> Self {
-        match std::fs::read(DEFAULT_PATH.read().join(".warpgui.state.json")) {
+        match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => Default::default(),
         }
@@ -27,7 +27,7 @@ impl PersistedState {
 
     pub fn save(&self) {
         if let Ok(bytes) = serde_json::to_vec(self) {
-            if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".warpgui.state.json"), &bytes)
+            if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes)
             {}
         }
     }
