@@ -5,7 +5,7 @@ pub fn ExtensionPlaceholder(cx: Scope) -> Element {
     cx.render(rsx! {
         div {
             class: "extension-renderer",
-            "Sidebar Ext. Frame",
+            "Ext. Frame",
             button {
                 "Get Extensions"
             }

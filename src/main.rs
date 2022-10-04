@@ -1,8 +1,10 @@
 use clap::Parser;
 use dioxus::desktop::tao;
+use core::time;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::thread;
 use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
@@ -39,7 +41,7 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.warp")));
-pub const WINDOW_SUFFIX_NAME: &'static str = "Warp GUI";
+pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
@@ -71,7 +73,7 @@ fn main() {
     let mut window_menu = Menu::new();
 
     app_menu.add_native_item(MenuItem::Quit);
-    app_menu.add_native_item(MenuItem::About("WarpGUI".to_string()));
+    app_menu.add_native_item(MenuItem::About("Uplink".to_string()));
     // add native shortcuts to `edit_menu` menu
     // in macOS native item are required to get keyboard shortcut
     // to works correctly
@@ -91,7 +93,7 @@ fn main() {
     window_menu.add_native_item(MenuItem::Separator);
     window_menu.add_native_item(MenuItem::CloseWindow);
 
-    main_menu.add_submenu("Warp GUI", true, app_menu);
+    main_menu.add_submenu("Uplink", true, app_menu);
     main_menu.add_submenu("Edit", true, edit_menu);
     main_menu.add_submenu("Window", true, window_menu);
 
@@ -198,6 +200,8 @@ fn App(cx: Scope<State>) -> Element {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     let css = include_str!(".styles.css");
+
+    thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
     cx.render(rsx!(
         div {
