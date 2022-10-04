@@ -23,6 +23,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Developer(cx: Scope<Props>) -> Element {
     let mut config = Config::load_config_or_default();
+    let c = config.clone();
 
     let did = if let Ok(ident) = cx.props.account
         .read()
@@ -115,7 +116,9 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                     class: "interactive",
                 }
             }
-            ExtensionPlaceholder {},
+            (c.developer.developer_mode).then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
         },
     })
 }

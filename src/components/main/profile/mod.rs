@@ -26,7 +26,6 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let friendString = l.friends.to_string();
     let aboutString = l.about.to_string();
     let noAboutString = l.no_about_message.to_string();
-    let developementString = l.developement.to_string();
 
     let username = my_identity.username();
     let badges = my_identity.available_badges();
@@ -51,8 +50,6 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             my_identity.set_status_message(Some(status.to_string()));
         }
     };
-
-    let did = my_identity.did_key();
 
     cx.render(rsx! {
         Popup {
@@ -158,14 +155,6 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     "{noAboutString}",
                                 }
                             },
-                            hr {},
-                            label {
-                                "{developementString}",
-                            },
-                            p {
-                                class: "small-did",
-                                "{did}"
-                            }
                         }
                     }
                 )

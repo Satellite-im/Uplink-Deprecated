@@ -11,7 +11,7 @@ use crate::{
         },
     },
     state::Actions,
-    Account, Messaging, STATE, LANGUAGE
+    Account, Messaging, STATE, LANGUAGE, utils::config::Config
 };
 
 pub mod chat;
@@ -25,6 +25,8 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
+    let config = Config::load_config_or_default();
+
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
     let show_settings = use_state(&cx, || false);
@@ -48,7 +50,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },
-            ExtensionPlaceholder {},
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
             label {
                 "{favString}"
             },

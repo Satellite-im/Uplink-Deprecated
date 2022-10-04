@@ -12,6 +12,5 @@ noise_supression = false
 enable = false
 
 [developer]
-developer_mode = true
+developer_mode = false
 cache_dir = ".warp"
-

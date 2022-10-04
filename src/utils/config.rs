@@ -3,7 +3,7 @@ use std::io::{Write, Error};
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
     pub general: General,
     pub privacy: Privacy,
@@ -12,28 +12,28 @@ pub struct Config {
     pub developer: Developer
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Privacy {
     pub satellite_sync_nodes: bool,
     pub safer_file_scanning: bool
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct General {
     pub theme: String
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct AudioVideo {
     pub noise_supression: bool
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct Extensions {
     pub enable: bool
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Developer {
     pub developer_mode: bool,
     pub cache_dir: String

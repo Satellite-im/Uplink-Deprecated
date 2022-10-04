@@ -43,7 +43,7 @@ $(APP_NAME)-%: $(TARGET)-%
 	@touch -r "$(APP_BINARY)" "$(APP_DIR)/$(APP_NAME)"
 	@echo "Created '$(APP_NAME)' in '$(APP_DIR)'"
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Info.plist
-	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/uplink.icns
+	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/warp_gui.icns
 
 dmg: $(DMG_NAME)-native ## Create a Uplink.dmg
 dmg-universal: $(DMG_NAME)-universal ## Create a universal Uplink.dmg

@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{components::{ui_kit::{icon_input::IconInput, extension_placeholder::ExtensionPlaceholder}, main::settings::sidebar::nav::Nav}};
+use crate::{components::{ui_kit::{icon_input::IconInput, extension_placeholder::ExtensionPlaceholder}, main::settings::sidebar::nav::Nav}, utils::config::Config};
 
 use self::nav::NavEvent;
 
@@ -14,6 +14,8 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let config = Config::load_config_or_default();
+
     cx.render(rsx! {
         div {
             id: "sidebar",
@@ -24,13 +26,17 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },
-            ExtensionPlaceholder {},
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
             Nav {
                 on_pressed: move |ne| {
                     let _ = cx.props.on_pressed.call(ne);
                 }
             },
-            ExtensionPlaceholder {},
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
         },
     })
 }
