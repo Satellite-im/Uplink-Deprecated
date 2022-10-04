@@ -1,4 +1,4 @@
-# Building a release for Mac.
+# Building a release for Mac
 
 ## Prerequisites
 
