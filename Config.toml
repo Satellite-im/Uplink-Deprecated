@@ -13,5 +13,5 @@ noise_supression = false
 enable = false                  # Enable or disable the ability to load extensions in app.
 
 [developer]
-logging = true                  # Enable developer logging in app.
+developer_mode = true                  # Enable developer logging in app.
 cache_dir = ".warp"            # Change to move to a custom cache location.
