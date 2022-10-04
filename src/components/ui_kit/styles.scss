@@ -42,6 +42,11 @@ hr {
   text-align: center;
 }
 
+::-webkit-scrollbar {
+  pointer-events: none;
+}
+
+
 .popup .input {
   background: var(--theme-background);
 }
