@@ -38,6 +38,7 @@ clap = { version = "3.2", features = ["derive"] }
 toml = "0.5.9"
 tokio = { version = "1", features = ["full"] }
 chrono-humanize = "0.2.2"
+dirs = "4.0.0"
 
 warp = { git = "https://github.com/Satellite-im/Warp" }
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }

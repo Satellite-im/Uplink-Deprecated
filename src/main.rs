@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use tracing_subscriber::EnvFilter;
+use dirs;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -38,9 +39,10 @@ use tao::menu::{MenuBar as Menu, MenuItem};
 
 mod state;
 
+
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.warp")));
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from(dirs::home_dir().unwrap().join(".warp"))));
 pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
@@ -71,7 +73,7 @@ fn main() {
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
     let mut window_menu = Menu::new();
-
+    
     app_menu.add_native_item(MenuItem::Quit);
     app_menu.add_native_item(MenuItem::About("Uplink".to_string()));
     // add native shortcuts to `edit_menu` menu
