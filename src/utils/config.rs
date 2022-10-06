@@ -25,7 +25,7 @@ pub struct General {
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct AudioVideo {
-    pub noise_supression: bool
+    pub noise_suppression: bool
 }
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
@@ -46,7 +46,7 @@ impl Config {
             general: General { theme: String::from("default") },
             privacy: Privacy { satellite_sync_nodes: true, safer_file_scanning: true },
             extensions: Extensions { enable: true },
-            audiovideo: AudioVideo { noise_supression: false },
+            audiovideo: AudioVideo { noise_suppression: false },
             developer: Developer { developer_mode: false, cache_dir: ".warp".to_string() }
         }
     }
