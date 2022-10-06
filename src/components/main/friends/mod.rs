@@ -1,7 +1,9 @@
+use std::time::Duration;
+
 use arboard::Clipboard;
 
 use dioxus::{
-    core::UiEvent,
+    core::{UiEvent, to_owned},
     events::{FormEvent, MouseData},
     prelude::*,
 };
@@ -44,14 +46,34 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
-    let friends = use_state(&cx, Vec::new);
-    friends.set(mp.read().list_friends().unwrap_or_default());
+    let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
+    let incoming = use_state(&cx, || mp.read().list_incoming_request().unwrap_or_default());
+    let outgoing = use_state(&cx, || mp.read().list_outgoing_request().unwrap_or_default());
 
-    let requests = use_state(&cx, Vec::new);
-    requests.set(mp.read().list_incoming_request().unwrap_or_default());
+    cx.spawn({
+        to_owned![friends, incoming, outgoing, mp];
+        async move {
+            loop {
+                let friends_list = mp.read().list_friends().unwrap_or_default();
+                let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
+                let outgoing_list = mp.read().list_outgoing_request().unwrap_or_default();
 
-    let outgoing = use_state(&cx, Vec::new);
-    outgoing.set(mp.read().list_outgoing_request().unwrap_or_default());
+                if *friends != friends_list {
+                    friends.set(friends_list);
+                }
+
+                if *incoming != incoming_list {
+                    incoming.set(incoming_list);
+                }
+
+                if *outgoing != outgoing_list {
+                    outgoing.set(outgoing_list);
+                }
+
+                tokio::time::sleep(Duration::from_secs(4)).await;
+            }
+        }
+    });
 
     cx.render(rsx! {
         Popup {
@@ -180,12 +202,12 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         class: "error_text",
                         "{add_error}"
                     },
-                    (requests.len() > 0).then(|| rsx!(
+                    (incoming.len() > 0).then(|| rsx!(
                         label {
                            "{incomingRequestsLang}"
                         },
                         div {
-                            requests.iter().map(|request| rsx!(
+                            incoming.iter().map(|request| rsx!(
                                 FriendRequest {
                                     account: cx.props.account.clone(),
                                     request: request.clone(),
