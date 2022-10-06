@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
@@ -8,7 +7,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::button::Button,
     },
-    Account, Messaging, STATE, LANGUAGE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
@@ -29,8 +28,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
-    // Load Multipass & Raygun's Atom Ref
-    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -93,9 +90,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
                         // TODO: We need to wire this message up to display differently
                         // until we confim whether it was successfully sent or failed
-                        let _send_message = warp::async_block_in_place_uncheck(rg
-                                .write()
-                                .send(conversation_id, None, text_as_vec));
+                        match warp::async_block_in_place_uncheck(rg.write().send(conversation_id, None, text_as_vec)) {
+                            Ok(_) => {},
+                            Err(_e) => {}
+                        };
                     },
                     on_upload: move |_| {}
                 }

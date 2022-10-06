@@ -2,7 +2,7 @@ use crate::{
     components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
     Account, LANGUAGE,
 };
-use dioxus::{events::FormEvent, prelude::*};
+use dioxus::{core::to_owned, events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 
@@ -15,7 +15,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-
     // Read their values from locks
     let mp = cx.props.account.clone();
 
@@ -29,10 +28,21 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let username = my_identity.username();
     let badges = my_identity.available_badges();
-    let friends = use_state(&cx, Vec::new);
-    friends.set(mp.read().list_friends().unwrap_or_default());
-
+    let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
     let friend_count = friends.clone().len();
+
+    cx.spawn({
+        to_owned![friends, mp];
+        async move {
+            loop {
+                let list = mp.read().list_friends().unwrap_or_default();
+                if *friends != list {
+                    friends.set(list);
+                }
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            }
+        }
+    });
 
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, || "".to_string());
