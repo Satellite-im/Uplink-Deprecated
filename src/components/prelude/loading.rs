@@ -19,6 +19,7 @@ pub struct Props {
 pub fn Loading(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    std::thread::sleep(std::time::Duration::from_millis(10));
 
     let multipass = cx.props.account.clone();
     let _account_fetch_status = match multipass.read().get_own_identity() {
