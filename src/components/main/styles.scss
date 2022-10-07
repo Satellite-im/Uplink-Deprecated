@@ -10,3 +10,11 @@
     -webkit-user-select: none;
     user-select: none;
 }
+
+.pill {
+    background-color: var(--theme-primary);
+    border-radius: 20px;
+    margin-left: -15px;
+    margin-top: -10px;
+    padding: 2px;
+}
