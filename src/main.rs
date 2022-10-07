@@ -1,5 +1,6 @@
 use clap::Parser;
 use dioxus::desktop::tao;
+use warp::crypto::digest::typenum::False;
 use core::time;
 use std::ops::Deref;
 use std::path::PathBuf;
@@ -23,6 +24,7 @@ use warp::tesseract::Tesseract;
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
+use utils::config::Config;
 
 use crate::components::main;
 use crate::components::prelude::{auth, unlock, loading};
@@ -42,7 +44,7 @@ mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from(dirs::home_dir().unwrap().join(".warp"))));
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
@@ -197,6 +199,9 @@ async fn initialization(
 fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
+    Config::new_file();
+
+    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
