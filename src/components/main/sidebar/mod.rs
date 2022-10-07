@@ -132,6 +132,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 },
             }),
             Nav {
+                account: cx.props.account.clone(),
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);
                     show_profile.set(false);
