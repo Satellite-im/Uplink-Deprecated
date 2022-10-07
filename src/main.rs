@@ -25,7 +25,7 @@ use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock};
+use crate::components::prelude::{auth, unlock, loading};
 
 pub mod components;
 pub mod extensions;
@@ -225,6 +225,7 @@ fn App(cx: Scope<State>) -> Element {
         AppStyle {},
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+            Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }

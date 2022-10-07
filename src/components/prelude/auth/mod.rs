@@ -8,7 +8,6 @@ use crate::{
     components::ui_kit::{
         button::{self, Button},
         icon_input::IconInput,
-        loader::Loader,
         photo_picker::PhotoPicker,
     },
     Account, LANGUAGE, WINDOW_SUFFIX_NAME,
@@ -34,17 +33,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         "error_text"
     };
 
-    let multipass = cx.props.account.clone();
-
-    let account_fetch_status = match multipass.read().get_own_identity() {
-        Ok(i) => {
-            window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
-            false
-        }
-        Err(_) => true,
-    };
-    let mp = multipass.clone();
+    let mp = cx.props.account.clone();
     let new_account = move |_| {
         let username = username.trim();
         if username.is_empty() {
@@ -53,7 +42,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             match mp.write().create_identity(Some(username), None) {
                 Ok(_) => {
                     window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/main", None, None);
+                    use_router(&cx).push_route("/loading", None, None);
                 }
                 Err(warp::error::Error::InvalidLength { .. }) => {
                     error.set("Username length is invalid".into())
@@ -63,7 +52,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         }
     };
 
-    let mp2 = multipass.clone();
+    let mp2 = cx.props.account.clone();
     let new_account_2 = move |_| {
         let username = username.trim();
         if username.is_empty() {
@@ -72,12 +61,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             match mp2.write().create_identity(Some(username), None) {
                 Ok(_) => {
                     window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/main", None, None);
+                    use_router(&cx).push_route("/loading", None, None);
                 }
                 Err(warp::error::Error::InvalidLength { .. }) => {
                     error.set("Username length is invalid".into())
                 }
-                Err(_) => error.set("Unexpected error has occurred".into()),
+                Err(e) => {
+                    println!("{}", {e});
+                    error.set("Unexpected error has occurred".into())
+                }
             }
         }
     };
@@ -87,58 +79,50 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             class: "auth",
             div {
                 class: "container",
-                if account_fetch_status {
-                    rsx! {
-                        h2 {
-                            "{l.create_account}",
-                        },
-                        label {
-                            "{l.create_account_desc}",
-                        },
-                        div { class: "m-bottom" },
-                        PhotoPicker {},
-                        div { class: "m-bottom" },
-                        div {
-                            class: "full-width",
-                            IconInput {
-                                icon: Shape::Identification,
-                                value: username.clone().to_string(),
-                                placeholder: "Choose a username..".to_string(),
-                                on_change: move | evt: FormEvent | {
-                                    if evt.value.len() < 26 {
-                                        let mut un = evt.value.clone();
-                                        crate::utils::remove_writespace(&mut un);
-                                        username.set(un);
-                                        if !error.is_empty() {
-                                            error.set("".to_string());
-                                        }
-                                    } else {
-                                        username.set(evt.value[..26].to_string());
-                                        error.set("Maximum username length reached (26)".to_string());
-                                    }
-                                },
-                                on_enter: new_account_2,
+                rsx! {
+                    h2 {
+                        "{l.create_account}",
+                    },
+                    label {
+                        "{l.create_account_desc}",
+                    },
+                    div { class: "m-bottom" },
+                    PhotoPicker {},
+                    div { class: "m-bottom" },
+                    div {
+                        class: "full-width",
+                        IconInput {
+                            icon: Shape::Identification,
+                            value: username.clone().to_string(),
+                            placeholder: "Choose a username..".to_string(),
+                            on_change: move | evt: FormEvent | {
+                                error.set("".to_string());
+                                if evt.value.len() > 26 {
+                                    error.set("Maximum username length reached (26)".to_string());
+                                    return;
+                                }
+                                if evt.value.contains(char::is_whitespace) {
+                                    error.set("Username cannot contain spaces.".to_string());
+                                    return;
+                                }
+
+                                username.set(evt.value.clone());
                             },
-                            p {
-                                class: "{error_class}",
-                                "　{error}　"
+                            on_enter: new_account_2,
+                        },
+                        p {
+                            class: "{error_class}",
+                            "　{error}　"
+                        },
+                        Button {
+                            icon: Shape::Check,
+                            text: "Create Account".to_string(),
+                            disabled: !valid_username,
+                            state: match valid_username {
+                                true => button::State::Primary,
+                                false => button::State::Secondary,
                             },
-                            Button {
-                                icon: Shape::Check,
-                                text: "Create Account".to_string(),
-                                disabled: !valid_username,
-                                state: match valid_username {
-                                    true => button::State::Primary,
-                                    false => button::State::Secondary,
-                                },
-                                on_pressed: new_account,
-                            }
-                        }
-                    }
-                } else {
-                    rsx! {
-                        Loader {
-                            text: l.checking_account.clone()
+                            on_pressed: new_account,
                         }
                     }
                 }
