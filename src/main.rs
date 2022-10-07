@@ -224,8 +224,8 @@ fn App(cx: Scope<State>) -> Element {
         }
         AppStyle {},
         Router {
-            Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
-            Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+            Route { to: "/b", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+            Route { to: "/", auth::Auth { account: cx.props.account.clone() } },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))

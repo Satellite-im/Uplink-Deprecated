@@ -105,17 +105,64 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 value: username.clone().to_string(),
                                 placeholder: "Choose a username..".to_string(),
                                 on_change: move | evt: FormEvent | {
+                                    // if !error.is_empty() {
+                                    //     error.set("".to_string());
+                                    // }
                                     if evt.value.len() < 26 {
-                                        let mut un = evt.value.clone();
-                                        crate::utils::remove_writespace(&mut un);
-                                        username.set(un);
-                                        if !error.is_empty() {
-                                            error.set("".to_string());
+                                        if evt.value.contains(char::is_whitespace) {
+                                            if error.is_empty() {
+                                                // let mut un = evt.value.clone();
+                                                // crate::utils::remove_writespace(&mut un);
+                                                username.set(evt.value.to_string());
+                                            
+                                                error.set("Whitespace not allowed in username".to_string());
+                                            }
+                                        } else {
+                                            if !error.is_empty() {
+                                                error.set("".to_string());
+                                            }
                                         }
                                     } else {
                                         username.set(evt.value[..26].to_string());
                                         error.set("Maximum username length reached (26)".to_string());
                                     }
+                                    // match (
+                                    //     !error.is_empty(), 
+                                    //     evt.value.contains(char::is_whitespace),
+                                    // ) {
+                                    //     (true, false) => {
+                                    //         error.set("".to_string());
+                                    //     }
+                                    //     (true, true) => {
+                                    //         username.set(evt.value.to_string());                                            
+                                    //         error.set("Whitespace not allowed in username".to_string());
+                                    //     }
+                                    //     _ => {}
+                                    // }
+                                    // match (
+                                    //     evt.value.len() < 26, 
+                                    //     evt.value.contains(char::is_whitespace), 
+                                    // ) {
+                                    //     (true, true) => {
+                                    //         let mut un = evt.value.clone();
+                                    //         // crate::utils::remove_writespace(&mut un);
+                                    //         username.set(un);
+                                    //         error.set("Whitespace not allowed in username".to_string());
+                                    //     },
+                                    //     (false, true | false) => {
+                                    //         username.set(evt.value[..26].to_string());
+                                    //         error.set("Maximum username length reached (26)".to_string());
+                                    //     },
+                                    //     (true | false, false) => {
+                                    //         if !error.is_empty() {
+                                    //             error.set("".to_string());
+                                    //         }
+                                    //     }
+                                    //     _ => {},
+                                    // }
+                                    // if !error.is_empty() {
+                                    //     error.set("".to_string());
+                                    // }
                                 },
                                 on_enter: new_account_2,
                             },
