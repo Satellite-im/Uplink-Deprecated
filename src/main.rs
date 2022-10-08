@@ -1,6 +1,5 @@
 use clap::Parser;
 use dioxus::desktop::tao;
-use warp::crypto::digest::typenum::False;
 use core::time;
 use std::ops::Deref;
 use std::path::PathBuf;
@@ -75,7 +74,7 @@ fn main() {
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
     let mut window_menu = Menu::new();
-    
+
     app_menu.add_native_item(MenuItem::Quit);
     app_menu.add_native_item(MenuItem::About("Uplink".to_string()));
     // add native shortcuts to `edit_menu` menu

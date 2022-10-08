@@ -852,3 +852,15 @@ input:checked+.slider:before {
   -webkit-user-select: text;
   user-select: text;
 }
+
+.numeric_indicator {
+  background-color: var(--theme-primary);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px;
+  width: 12px;
+  border-radius: 2px;
+  font-size: var(--text-small);
+  user-select: none;
+}

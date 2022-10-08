@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
@@ -29,8 +28,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
-    // Load Multipass & Raygun's Atom Ref
-    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();

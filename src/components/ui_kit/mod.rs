@@ -13,3 +13,4 @@ pub mod skeletons;
 pub mod small_extension_placeholder;
 pub mod switch;
 pub mod tooltip;
+pub mod numeric_indicator;

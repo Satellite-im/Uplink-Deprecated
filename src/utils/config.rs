@@ -1,9 +1,7 @@
 use std::fs;
 use std::io::{Write, Error};
-use dirs;
 
 use serde::{Deserialize, Serialize};
-use warp::crypto::rand::SeedableRng;
 use crate::DEFAULT_PATH;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -59,9 +57,7 @@ impl Config {
         if !fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_ok() {
            fs::write(DEFAULT_PATH.read().join("Config.toml"), toml).unwrap();
         }
-        
     }
-    
 
 
     pub fn load_config_or_default() -> Config {

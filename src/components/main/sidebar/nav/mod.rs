@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
-        ui_kit::icon_button::{self, IconButton},
+        ui_kit::{icon_button::{self, IconButton}, numeric_indicator::NumericIndicator},
     },
     Account,
 };
@@ -38,7 +38,8 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 state: icon_button::State::Secondary,
                 icon: Shape::Folder
             },
-            span {
+            div {
+                class: "has_indicator",
                 IconButton {
                     on_pressed: move |_| {
                         let _ = &cx.props.on_pressed.call(NavEvent::Friends);
@@ -47,9 +48,8 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     icon: Shape::Users
                 },
                 (reqCount > 0).then(|| rsx!(
-                    span {
-                        class: "pill",
-                        "{reqCount}"
+                    NumericIndicator {
+                        count: reqCount
                     }
                 )),
             }
