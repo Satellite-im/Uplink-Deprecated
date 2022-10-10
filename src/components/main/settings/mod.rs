@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{components::{main::settings::{sidebar::Sidebar, pages::Developer}, ui_kit::icon_button::{IconButton, self}}, Account};
+use crate::{components::{main::settings::{sidebar::Sidebar, pages::{Developer, General}}, ui_kit::icon_button::{IconButton, self}}, Account};
 
 use self::sidebar::nav::NavEvent;
 
@@ -28,7 +28,9 @@ pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 id: "content",
                 Sidebar {
-                    on_pressed: move |_ne| {}
+                    on_pressed: move |ne| {
+                        active_page.set(ne);
+                    }
                 },
                 div {
                     id: "page",
@@ -47,6 +49,7 @@ pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div {
                             class: "content",
                             match active_page.get() {
+                                NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
                                 NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
                                 _ => rsx!(Developer { account: cx.props.account.clone() }),
                             }
