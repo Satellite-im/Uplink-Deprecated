@@ -22,9 +22,10 @@ use warp::tesseract::Tesseract;
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
+use utils::config::Config;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock};
+use crate::components::prelude::{auth, unlock, loading};
 
 pub mod components;
 pub mod extensions;
@@ -72,7 +73,7 @@ fn main() {
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
     let mut window_menu = Menu::new();
-    
+
     app_menu.add_native_item(MenuItem::Quit);
     app_menu.add_native_item(MenuItem::About("Uplink".to_string()));
     // add native shortcuts to `edit_menu` menu
@@ -196,6 +197,9 @@ async fn initialization(
 fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
+    Config::new_file();
+
+    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -224,6 +228,7 @@ fn App(cx: Scope<State>) -> Element {
         AppStyle {},
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+            Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }

@@ -77,7 +77,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         let mut tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
-                                                use_router(&cx).push_route("/auth", None, None)
+                                                use_router(&cx).push_route("/loading", None, None)
                                             },
                                             Err(_) => error.set(l2.invalid_pin.clone()),
                                         }
@@ -113,7 +113,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         if evt.value.len() >= 4 && tesseract_available {
                             let mut tesseract = cx.props.tesseract.clone();
                             if tesseract.unlock(evt.value.as_ref()).is_ok() {
-                                use_router(&cx).push_route("/auth", None, None)
+                                use_router(&cx).push_route("/loading", None, None)
                             }
                         }
                     },
@@ -124,7 +124,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             } else {
                                 let mut tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
-                                    Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                    Ok(_) => use_router(&cx).push_route("/loading", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),
                                 }
                             }

@@ -2,6 +2,7 @@ use std::fs;
 use std::io::{Write, Error};
 
 use serde::{Deserialize, Serialize};
+use crate::DEFAULT_PATH;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
@@ -51,8 +52,17 @@ impl Config {
         }
     }
 
+    pub fn new_file(){
+        let toml = toml::to_string(&Config::default()).unwrap();
+        if !fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_ok() {
+           fs::write(DEFAULT_PATH.read().join("Config.toml"), toml).unwrap();
+        }
+    }
+
+
     pub fn load_config_or_default() -> Config {
-        let config_location = "Config.toml";
+        let binding = DEFAULT_PATH.read().join("Config.toml");
+        let config_location = binding.to_str().unwrap();
         let contents = match fs::read_to_string(config_location) {
             // If successful return the files text as `contents`.
             // `c` is a local variable.
@@ -87,7 +97,7 @@ impl Config {
         let mut file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
-            .open("Config.toml")?;
+            .open(DEFAULT_PATH.read().join("Config.toml"))?;
         self.save_to_writer(&mut file)
     }
 
