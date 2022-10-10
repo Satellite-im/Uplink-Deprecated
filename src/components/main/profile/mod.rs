@@ -29,14 +29,15 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let username = my_identity.username();
     let badges = my_identity.available_badges();
     let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
-    let friend_count = friends.clone().len();
+    let friend_count = use_state(&cx, || friends.clone().len());
 
     cx.spawn({
-        to_owned![friends, mp];
+        to_owned![friends, mp, friend_count];
         async move {
             loop {
                 let list = mp.read().list_friends().unwrap_or_default();
                 if *friends != list {
+                    friend_count.set(list.len());
                     friends.set(list);
                 }
                 tokio::time::sleep(std::time::Duration::from_secs(1)).await;
