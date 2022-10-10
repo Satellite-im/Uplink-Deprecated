@@ -25,7 +25,7 @@ pub fn Loading(cx: Scope<Props>) -> Element {
         async move {
             while let Some(flag) = rx.next().await {
                 if flag {
-                    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+                    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
                     loaded.set(true);
                     break;
                 }
@@ -34,10 +34,10 @@ pub fn Loading(cx: Scope<Props>) -> Element {
     });
     std::thread::sleep(std::time::Duration::from_millis(10));
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let file = BufReader::new(File::open("extra/uplink.mp3").unwrap());
+    let file = BufReader::new(File::open("extra/assets/uplink.mp3").unwrap());
     let source = Decoder::new(file).unwrap();
     if let Err(_e) = stream_handle.play_raw(source.convert_samples()) {
-        std::thread::sleep(std::time::Duration::from_secs(4));
+        std::thread::sleep(std::time::Duration::from_secs(2));
         //TODO: Do something if it fails to load audio?
     }
     let multipass = cx.props.account.clone();
@@ -46,6 +46,8 @@ pub fn Loading(cx: Scope<Props>) -> Element {
             if *loaded.get() {
                 window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
                 use_router(&cx).push_route("/main", None, None);
+            } else {
+                tx.send(true);
             }
             false
         }
@@ -58,7 +60,7 @@ pub fn Loading(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         img {
             style: "width: 100%",
-            src: "extra/uplink.gif"
+            src: "extra/assets/uplink.gif"
         }
     })
 }
