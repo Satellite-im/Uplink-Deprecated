@@ -1,12 +1,14 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, core::to_owned};
 use dioxus_heroicons::outline::Shape;
 
 use crate::{
-    components::{
-        ui_kit::{icon_button::{self, IconButton}, numeric_indicator::NumericIndicator},
+    components::ui_kit::{
+        icon_button::{self, IconButton},
+        numeric_indicator::NumericIndicator,
     },
     Account,
 };
+use warp::multipass::Friends;
 
 pub enum NavEvent {
     Home,
@@ -25,9 +27,23 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Total incoming request count
-    let requests = use_state(&cx, Vec::new);
-    requests.set(cx.props.account.read().list_incoming_request().unwrap_or_default());
-    let reqCount: usize = requests.len();
+    let reqCount = use_state(&cx, || 0);
+    let multipass = cx.props.account.clone();
+
+    cx.spawn({
+        to_owned![reqCount, multipass];
+        async move {
+            loop {
+                let list = multipass.list_incoming_request().unwrap_or_default();
+                if list.len() != *reqCount.get() {
+                    reqCount.set(list.len());
+                }
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            }
+        }
+    });
+
+    
     cx.render(rsx! {
         div {
             class: "nav",
@@ -47,9 +63,9 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     state: icon_button::State::Secondary,
                     icon: Shape::Users
                 },
-                (reqCount > 0).then(|| rsx!(
+                (*reqCount.get() > 0).then(|| rsx!(
                     NumericIndicator {
-                        count: reqCount
+                        count: *reqCount.get()
                     }
                 )),
             }
