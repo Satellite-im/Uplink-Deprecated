@@ -54,7 +54,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             NavButton {
                 text: String::from("General"),
                 active: NavEvent::General.eq(active_item),
-                disabled: true,
+                disabled: false,
                 on_pressed: |_| {
                     active_item.set(NavEvent::General);
                     let _ = cx.props.on_pressed.call(NavEvent::General);

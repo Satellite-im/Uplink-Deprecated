@@ -1,5 +1,6 @@
 [general]
 theme = "default"
+show_splash = false
 
 [privacy]
 satellite_sync_nodes = true
