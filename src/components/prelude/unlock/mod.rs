@@ -1,3 +1,4 @@
+use dioxus::core::to_owned;
 use dioxus::router::use_router;
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -8,9 +9,9 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
-        tooltip:: {self, ArrowPosition, Tooltip},
+        tooltip::{self, ArrowPosition, Tooltip},
     },
-    LANGUAGE, 
+    LANGUAGE,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -25,6 +26,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l2 = l.clone();
 
     let pin = use_state(&cx, || String::from(""));
+    let show_tip = use_state(&cx, || false);
     let input_length = pin.len() == 6;
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
@@ -92,7 +94,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 div {
                     class: "m-bottom-xl",
                 },
-                input_length.then(||
+                show_tip.then(||
                 rsx! {
                     span {
                         class: "pin_tooltip",
@@ -117,6 +119,20 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         if evt.value.len() <= 6 {
                             pin.set(evt.value.to_string());
                         } else {
+                            //Because we exceeded 6, we want to show the tooltip showing the error
+                            show_tip.set(true);
+                            //This will spawn the background task as kind of a "timeout" for "show_tip" state
+                            cx.spawn({
+                                // this is the equiv if `let show_tip = show_tip.clone()`
+                                to_owned![show_tip];
+                                async move {
+                                    // since we are using `async` we want to avoid using `std::thread::sleep` as it would stall all
+                                    // running task. Instead, rely on internal functions from either tokio or futures to
+                                    // delay for a set duration
+                                    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+                                    show_tip.set(false);
+                                }
+                            });
                             pin.set(evt.value[..6].to_string());
                         }
 
