@@ -1,5 +1,6 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
+use dioxus_heroicons::{outline::Shape, Icon};
 use warp::{
     raygun::{Conversation, MessageOptions},
 };
@@ -58,6 +59,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             }
                         )
                     })
+                    div {
+                        class: "encrypted-notif",
+                        Icon {
+                            icon: Shape::LockClosed
+                        }
+                        p {
+                            "Messages are encrypted locally, anyone outside of this chat cannot modify, or read them."
+                        }
+                    }
                 }
             }
         }

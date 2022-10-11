@@ -21,7 +21,8 @@ pub struct Privacy {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct General {
-    pub theme: String
+    pub theme: String,
+    pub show_splash: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
@@ -44,7 +45,7 @@ pub struct Developer {
 impl Config {
     fn default() -> Self {
         Self {
-            general: General { theme: String::from("default") },
+            general: General { theme: String::from("default"), show_splash: true },
             privacy: Privacy { satellite_sync_nodes: true, safer_file_scanning: true },
             extensions: Extensions { enable: true },
             audiovideo: AudioVideo { noise_suppression: false },

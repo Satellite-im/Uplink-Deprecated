@@ -859,8 +859,8 @@ input:checked+.slider:before {
   top: 0;
   right: 0;
   padding: 2px;
-  width: 12px;
+  min-width: 12px;
   border-radius: 2px;
   font-size: var(--text-small);
-  user-select: none;
+  pointer-events: none;
 }

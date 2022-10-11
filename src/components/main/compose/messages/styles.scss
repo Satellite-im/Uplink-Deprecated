@@ -11,4 +11,24 @@
   padding: 0 1rem;
   position: relative;
   width: calc(100% - 2rem);
+
+  .encrypted-notif {
+    display: inline-flex;
+    align-content: center;
+    justify-content: center;
+    background: var(--theme-background-light);
+    border-radius: 4px;
+    width: fit-content;
+    align-self: center;
+    padding: 0.5rem;
+    margin: 1rem 0;
+    svg {
+      stroke: var(--theme-text-muted);
+      margin-right: 0.5rem;
+      margin-top: -0.15rem;
+    }
+    p {
+      color: var(--theme-text-muted);
+    }
+  }
 }

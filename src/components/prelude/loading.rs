@@ -1,12 +1,13 @@
+use std::fs::File;
+use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::prelude::*;
-
+use rodio::{source::Source, Decoder, OutputStream};
+use std::io::BufReader;
+use futures::StreamExt;
 use crate::{
-    components::ui_kit::{
-        loader::Loader,
-    },
-    Account, LANGUAGE, WINDOW_SUFFIX_NAME,
+    Account, WINDOW_SUFFIX_NAME, utils::config::Config, components::ui_kit::loader::Loader, LANGUAGE,
 };
 
 // Remember: owned props must implement PartialEq!
@@ -17,15 +18,42 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Loading(cx: Scope<Props>) -> Element {
+    let config = Config::load_config_or_default();
     let window = use_window(&cx);
+    let loaded = use_state(&cx, || false);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let tx: &CoroutineHandle<bool> = use_coroutine(&cx, |mut rx: UnboundedReceiver<bool>| {
+        to_owned![loaded];
+        async move {
+            while let Some(flag) = rx.next().await {
+                if flag {
+                    loaded.set(true);
+                    break;
+                }
+            }
+        }
+    });
     std::thread::sleep(std::time::Duration::from_millis(10));
-
     let multipass = cx.props.account.clone();
     let _account_fetch_status = match multipass.read().get_own_identity() {
         Ok(i) => {
-            window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
-            use_router(&cx).push_route("/main", None, None);
+            if *loaded.get() {
+                if config.general.show_splash {
+                    // Get a output stream handle to the default physical sound device
+                    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+                    // Load a sound from a file, using a path relative to Cargo.toml
+                    let file = BufReader::new(File::open("extra/assets/uplink.mp3").unwrap());
+                    // Decode that sound file into a source
+                    let source = Decoder::new(file).unwrap();
+                    // Play the sound directly on the device
+                    let _ = stream_handle.play_raw(source.convert_samples());
+                    std::thread::sleep(std::time::Duration::from_secs(2));
+                }
+                window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
+                use_router(&cx).push_route("/main", None, None);
+            } else {
+                tx.send(true);
+            }
             false
         }
         Err(_) => {
@@ -34,9 +62,20 @@ pub fn Loading(cx: Scope<Props>) -> Element {
         },
     };
 
-    cx.render(rsx! {
-        Loader {
-            text: l.checking_account.clone()
+    cx.render(
+        if config.general.show_splash {
+            rsx! {
+                img {
+                    style: "width: 100%",
+                    src: "extra/assets/uplink.gif"
+                }
+            }
+        } else {
+            rsx! {
+                Loader {
+                    text: l.checking_account.clone()
+                }
+            }
         }
-    })
+    )
 }
