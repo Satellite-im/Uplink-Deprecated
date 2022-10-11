@@ -8,8 +8,9 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
+        tooltip:: {self, ArrowPosition, Tooltip},
     },
-    LANGUAGE,
+    LANGUAGE, 
 };
 
 // Remember: owned props must implement PartialEq!
@@ -24,6 +25,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l2 = l.clone();
 
     let pin = use_state(&cx, || String::from(""));
+    let input_length = pin.len() == 6;
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
         css!("opacity: 0")
@@ -90,6 +92,16 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 div {
                     class: "m-bottom-xl",
                 },
+                input_length.then(||
+                rsx! {
+                    span {
+                        class: "pin_tooltip",
+                        Tooltip {
+                            text: "Only four to six characters allowed".to_string(),
+                            arrow_position: ArrowPosition::Top
+                        }
+                    }
+                }),
                 p {
                     class: "{error_class}",
                     "{error}　"
@@ -102,7 +114,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
 
                         // If the pin entered is longer than the allowed limit, ignore it.
-                        if evt.value.len() < 6 {
+                        if evt.value.len() <= 6 {
                             pin.set(evt.value.to_string());
                         } else {
                             pin.set(evt.value[..6].to_string());
