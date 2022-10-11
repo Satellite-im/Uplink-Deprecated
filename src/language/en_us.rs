@@ -49,5 +49,6 @@ pub fn make() -> Language {
         chats: "Chats".to_string(),
         no_active_chats: "No active chats, yet...".to_string(),
         start_one: "Start one".to_string(),
+        auth_tooltip: "Only four to six characters allowed".to_string(),
     }
 }

@@ -27,13 +27,13 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
 
     let pin = use_state(&cx, || String::from(""));
     let show_tip = use_state(&cx, || false);
-    let input_length = pin.len() == 6;
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {
         "error_text"
     };
+    let auth_text = l.auth_tooltip.clone();
 
     let confirm_button_class = if error.is_empty() {
         "confirm-button"
@@ -67,7 +67,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         pin: pin.as_bytes().to_vec(),
                         error: !error.is_empty()
                     },
-                    valid_pin.then(||
+                    show_tip.then(||
                         rsx! {
                             span {
                                 class: "{confirm_button_class}",
@@ -99,7 +99,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     span {
                         class: "pin_tooltip",
                         Tooltip {
-                            text: "Only four to six characters allowed".to_string(),
+                            text: auth_text.to_string(),
                             arrow_position: ArrowPosition::Top
                         }
                     }
