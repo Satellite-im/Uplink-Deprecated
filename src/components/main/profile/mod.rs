@@ -31,9 +31,10 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
     let friend_count = use_state(&cx, || friends.clone().len());
 
-    cx.spawn({
-        to_owned![friends, mp, friend_count];
-        async move {
+    use_future(
+        &cx,
+        (friends, &mp, friend_count),
+        |(friends, mp, friend_count)| async move {
             loop {
                 let list = mp.read().list_friends().unwrap_or_default();
                 if *friends != list {
@@ -42,8 +43,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
                 tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             }
-        }
-    });
+        },
+    );
 
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, || "".to_string());

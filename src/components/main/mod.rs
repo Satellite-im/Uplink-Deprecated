@@ -26,7 +26,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     let rg = cx.props.messaging.clone();
 
     let st = state.clone();
-    cx.spawn(async move {
+    use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
                 if !list.is_empty() && st.read().chats != list {

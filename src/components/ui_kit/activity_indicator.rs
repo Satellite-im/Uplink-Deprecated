@@ -17,8 +17,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
     let account = cx.props.account.clone();
     let remote_did = cx.props.remote_did.clone();
 
-    cx.spawn({
-        to_owned![account, status];
+    use_future(&cx, (&account, status), |(account, status)| {
         async move {
             loop {
                 if let Ok(current_status) = account.read().identity_status(&remote_did) {

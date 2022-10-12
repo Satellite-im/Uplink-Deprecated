@@ -3,7 +3,7 @@ use std::time::Duration;
 use arboard::Clipboard;
 
 use dioxus::{
-    core::{UiEvent, to_owned},
+    core::{to_owned, UiEvent},
     events::{FormEvent, MouseData},
     prelude::*,
 };
@@ -38,21 +38,26 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let mp = cx.props.account.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    let incomingRequestsLang = {l.incoming_requests.to_string()};
-    let outgoingRequestsLang = {l.outgoing_requests.to_string()};
-    let yourFriendsLang = {l.your_friends.to_string()};
-    let codeCopied = {l.code_copied.to_string()};
+    let incomingRequestsLang = { l.incoming_requests.to_string() };
+    let outgoingRequestsLang = { l.outgoing_requests.to_string() };
+    let yourFriendsLang = { l.your_friends.to_string() };
+    let codeCopied = { l.code_copied.to_string() };
 
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
     let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
-    let incoming = use_state(&cx, || mp.read().list_incoming_request().unwrap_or_default());
-    let outgoing = use_state(&cx, || mp.read().list_outgoing_request().unwrap_or_default());
+    let incoming = use_state(&cx, || {
+        mp.read().list_incoming_request().unwrap_or_default()
+    });
+    let outgoing = use_state(&cx, || {
+        mp.read().list_outgoing_request().unwrap_or_default()
+    });
 
-    cx.spawn({
-        to_owned![friends, incoming, outgoing, mp];
-        async move {
+    use_future(
+        &cx,
+        (friends, incoming, outgoing, &mp),
+        |(friends, incoming, outgoing, mp)| async move {
             loop {
                 let friends_list = mp.read().list_friends().unwrap_or_default();
                 let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
@@ -72,8 +77,8 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                 tokio::time::sleep(Duration::from_secs(4)).await;
             }
-        }
-    });
+        },
+    );
 
     cx.render(rsx! {
         Popup {

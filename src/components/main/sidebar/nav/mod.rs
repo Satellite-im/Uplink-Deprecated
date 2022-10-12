@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, core::to_owned};
+use dioxus::{core::to_owned, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use crate::{
@@ -30,9 +30,10 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let reqCount = use_state(&cx, || 0);
     let multipass = cx.props.account.clone();
 
-    cx.spawn({
-        to_owned![reqCount, multipass];
-        async move {
+    use_future(
+        &cx,
+        (reqCount, &multipass),
+        |(reqCount, multipass)| async move {
             loop {
                 let list = multipass.list_incoming_request().unwrap_or_default();
                 if list.len() != *reqCount.get() {
@@ -40,10 +41,9 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
                 tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             }
-        }
-    });
+        },
+    );
 
-    
     cx.render(rsx! {
         div {
             class: "nav",
