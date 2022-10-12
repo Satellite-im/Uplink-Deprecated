@@ -2,7 +2,7 @@ use crate::{
     components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
     Account, LANGUAGE,
 };
-use dioxus::{core::to_owned, events::FormEvent, prelude::*};
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 

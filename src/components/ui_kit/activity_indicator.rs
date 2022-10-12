@@ -1,5 +1,5 @@
-use dioxus::{core::to_owned, prelude::*};
-use warp::{crypto::DID, multipass::identity::IdentityStatus};
+use dioxus::prelude::*;
+use warp::{crypto::DID, multipass::identity::IdentityStatus, multipass::IdentityInformation};
 
 use crate::Account;
 
@@ -20,7 +20,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
     use_future(&cx, (&account, status), |(account, status)| {
         async move {
             loop {
-                if let Ok(current_status) = account.read().identity_status(&remote_did) {
+                if let Ok(current_status) = account.identity_status(&remote_did) {
                     if *status != current_status {
                         status.set(current_status);
                     }
@@ -29,7 +29,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
             }
         }
     });
-    
+
     let main_class = match cx.props.inline {
         true => "inline",
         false => "icon-icon",

@@ -67,7 +67,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                     error.set("Username length is invalid".into())
                 }
                 Err(e) => {
-                    println!("{}", {e});
                     error.set("Unexpected error has occurred".into())
                 }
             }

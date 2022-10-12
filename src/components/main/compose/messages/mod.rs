@@ -16,8 +16,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
-    let messages = use_state(&cx, Vec::new);
-
+    let messages = use_state(&cx, || {
+        warp::async_block_in_place_uncheck(
+            rg.get_messages(conversation_id, MessageOptions::default()),
+        ).unwrap_or_default()
+    });
+    
     //Set an error if conversation could not be fetched
     //Note: Broken for the time being
     use_future(&cx, (messages, &rg), |(list, rg)| async move {
