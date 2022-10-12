@@ -20,6 +20,11 @@
             // font-size: 0; This breaks windows inputs
         }
 
+        .pin_tooltip {
+            position: inherit;
+            margin-top: 25px;
+        }
+
         .confirm-button {
             bottom: -12px;
             position: absolute;
