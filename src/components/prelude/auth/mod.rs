@@ -66,7 +66,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 Err(warp::error::Error::InvalidLength { .. }) => {
                     error.set("Username length is invalid".into())
                 }
-                Err(e) => {
+                Err(_e) => {
                     error.set("Unexpected error has occurred".into())
                 }
             }

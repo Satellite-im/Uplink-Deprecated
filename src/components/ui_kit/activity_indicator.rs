@@ -25,7 +25,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
                         status.set(current_status);
                     }
                 }
-                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                tokio::time::sleep(std::time::Duration::from_millis(300)).await;
             }
         }
     });
