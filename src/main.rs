@@ -1,7 +1,7 @@
 use clap::Parser;
 use dioxus::desktop::tao;
 use core::time;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
@@ -245,6 +245,12 @@ impl Deref for Account {
     }
 }
 
+impl DerefMut for Account {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 impl PartialEq for Account {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
@@ -258,6 +264,12 @@ impl Deref for Messaging {
     type Target = Arc<RwLock<Box<dyn RayGun>>>;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl DerefMut for Messaging {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
