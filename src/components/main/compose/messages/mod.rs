@@ -1,9 +1,7 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
-use warp::{
-    raygun::{Conversation, MessageOptions},
-};
+use warp::raygun::{Conversation, MessageOptions, RayGun};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -16,16 +14,53 @@ pub struct Props {
 pub fn Messages(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
 
-    // let _show_skeleton = conversation_id == Uuid::default();
-
-    // Read their values from locks
-    let rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
+    let rg = cx.props.messaging.clone();
+    let messages = use_state(&cx, Vec::new);
 
-    let messages = use_future(&cx, (), |_| async move {
-        rg.read()
-            .get_messages(conversation_id, MessageOptions::default())
-            .await
+    //Set an error if conversation could not be fetched
+    //Note: Broken for the time being
+    use_future(&cx, (messages, &rg), |(list, rg)| async move {
+        loop {
+            let rg_list = match rg
+                .get_messages(conversation_id, MessageOptions::default())
+                .await
+            {
+                Ok(l) => l,
+                Err(_) => break, //TODO: Error?
+            };
+
+            if *list.get() != rg_list {
+                list.set(rg_list);
+            }
+            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        }
+
+        // TODO: Use this instead for handling events
+        // let mut stream = match rg.get_conversation_stream(conversation_id).await {
+        //     Ok(stream) => stream,
+        //     Err(e) => {
+        //         return
+        //     },
+        // };
+
+        // while let Some(event) = stream.next().await {
+        //     match event {
+        //         MessageEventKind::MessageReceived {
+        //             conversation_id,
+        //             message_id,
+        //         }
+        //         | MessageEventKind::MessageSent {
+        //             conversation_id,
+        //             message_id,
+        //         } => {
+        //             if let Ok(message) = rg.get_message(conversation_id, message_id).await {
+        //                 list.make_mut().push(message);
+        //             }
+        //         }
+        //         _ => {}
+        //     }
+        // }
     });
 
     //Note: We will just unwrap for now though we need to
@@ -33,13 +68,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     //      getting own identity
     let ident = mp.read().get_own_identity().unwrap();
 
-    let element = cx.render(match messages.value() {
-        Some(Ok(list)) => {
+    cx.render({
             let mut prev_sender = "".to_string();
             rsx! {
                 div {
                     class: "messages",
-                    list.iter().rev().map(|message|{
+                    messages.iter().rev().map(|message|{
                         let msg_sender = message.sender().to_string();
                         let i = ident.did_key().to_string();
                         let remote = i != msg_sender;
@@ -70,14 +104,5 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     }
                 }
             }
-        }
-        Some(Err(_e)) => {
-            rsx!(div {})
-        }
-        None => rsx!(div {}),
-    });
-
-    messages.restart();
-
-    element
+    })
 }

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::Conversation;
+use warp::raygun::{Conversation, RayGun};
 
 use crate::{
     components::{
@@ -28,9 +28,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
-
-    // Read their values from locks
-    let rg = cx.props.messaging.clone();
 
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
@@ -80,7 +77,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 Write {
                     on_submit: move |message: String| {
                         text.set(String::from(""));
-                        let rg = rg.clone();
+                        let mut rg = cx.props.messaging.clone();
 
                         let text_as_vec = message
                             .split('\n')
@@ -90,7 +87,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
                         // TODO: We need to wire this message up to display differently
                         // until we confim whether it was successfully sent or failed
-                        match warp::async_block_in_place_uncheck(rg.write().send(conversation_id, None, text_as_vec)) {
+                        match warp::async_block_in_place_uncheck(rg.send(conversation_id, None, text_as_vec)) {
                             Ok(_) => {},
                             Err(_e) => {}
                         };
