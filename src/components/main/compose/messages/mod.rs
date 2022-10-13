@@ -67,10 +67,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
         //This is to prevent the future updating the state and causing a rerender
         if *list.read() != messages {
-            *list.write() = rg
-                .get_messages(ext_conversation_id, MessageOptions::default())
-                .await
-                .unwrap_or_default();
+            *list.write() = messages;
         }
 
         while let Some(event) = stream.next().await {
@@ -85,7 +82,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 } => {
                     if ext_conversation_id == conversation_id {
                         if let Ok(message) = rg.get_message(conversation_id, message_id).await {
-                            list.with_mut(|l| l.push(message));
+                            list.write().push(message);
                         }
                     }
                 }
