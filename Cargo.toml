@@ -6,7 +6,12 @@ description = "GUI implementation of the Warp protocol."
 readme = "README.md"
 repository = "https://github.com/Satellite-im/Uplink"
 license = "Creative Commons Attribution-NonCommercial 1.0"
-categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
+categories = [
+    "gui",
+    "filesystem",
+    "multimedia",
+    "cryptography::cryptocurrencies",
+]
 edition = "2021"
 resolver = "2"
 
@@ -42,9 +47,9 @@ futures = "0.3"
 dirs = "4.0.0"
 rodio = "0.16.0"
 
-warp = { git = "https://github.com/Satellite-im/Warp" }
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/derived-topic-id" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/derived-topic-id" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/derived-topic-id" }
 arboard = "3.1.0"
 
 
@@ -62,6 +67,11 @@ name = "uplink"
 identifier = "im.satellite.uplink"
 version = "0.0.0-pre"
 copyright = "Copyright (c) Satellite.IM Inc."
-categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
+categories = [
+    "gui",
+    "filesystem",
+    "multimedia",
+    "cryptography::cryptocurrencies",
+]
 short_description = "GUI implementation of the Warp protocol."
 long_description = ""
