@@ -87,7 +87,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                         "Reset Cache"
                     },
                     p {
-                        "Removes your cacehe and reloads the app, this is useful for testing new accounts quickly."
+                        "Removes your cache and reloads the app, this is useful for testing new accounts quickly."
                     }
                 },
                 div {
