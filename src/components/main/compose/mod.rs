@@ -5,8 +5,7 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use futures::StreamExt;
-use warp::raygun::{Conversation, MessageEventKind, MessageOptions, RayGun, RayGunStream};
+use warp::raygun::{Conversation, RayGun};
 
 use crate::{
     components::{
@@ -33,82 +32,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
     let show_warning = use_state(&cx, || true);
-    let rg = cx.props.messaging.clone();
-
-    let messages = use_state(&cx, Vec::new);
-
-    //Note: Broken for the time being as switching conversation doesnt clear out
-    //      messages. 
-    use_future(&cx, (messages, &rg), |(list, mut rg)| async move {
-        // loop {
-        //     let rg_list = match rg
-        //         .get_messages(conversation_id, MessageOptions::default())
-        //         .await
-        //     {
-        //         Ok(l) => l,
-        //         Err(warp::error::Error::RayGunExtensionUnavailable) => continue,
-        //         Err(_e) => {
-        //             //Do we want to break this loop?
-        //             break;
-        //         }
-        //     };
-
-        //     if *list.get() != rg_list {
-        //         list.set(rg_list);
-        //     }
-        //     tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-        // }
-
-        // TODO: Use this instead for handling events
-
-        let mut stream = loop {
-            match rg.get_conversation_stream(ext_conversation_id).await {
-                Ok(stream) => break stream,
-                Err(warp::error::Error::RayGunExtensionUnavailable) => {
-                    //Give sometime for everything in the background to fully line up
-                    //Note, if this error still happens, it means there is an fatal error
-                    //      in the background
-                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-                    continue;
-                }
-                //TODO: Provide error in some way.
-                Err(_e) => return,
-            }
-        };
-        let messages = rg
-            .get_messages(ext_conversation_id, MessageOptions::default())
-            .await
-            .unwrap_or_default();
-
-        //This is to prevent the future updating the state and causing a rerender
-        if *list.get() != messages {
-            list.set(
-                rg.get_messages(ext_conversation_id, MessageOptions::default())
-                    .await
-                    .unwrap_or_default(),
-            );
-        }
-
-        while let Some(event) = stream.next().await {
-            match event {
-                MessageEventKind::MessageReceived {
-                    conversation_id,
-                    message_id,
-                }
-                | MessageEventKind::MessageSent {
-                    conversation_id,
-                    message_id,
-                } => {
-                    if ext_conversation_id == conversation_id {
-                        if let Ok(message) = rg.get_message(conversation_id, message_id).await {
-                            list.with_mut(|l| l.push(message));
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    });
 
     cx.render(rsx! {
         div {
@@ -145,7 +68,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 class: "messages-container",
                 Messages {
                     account: cx.props.account.clone(),
-                    messages: messages.to_vec(),
+                    messaging: cx.props.messaging.clone(),
+                    conversation: cx.props.conversation.clone(),
                 }
             },
             div {
