@@ -1,12 +1,12 @@
 use clap::Parser;
-use dioxus::desktop::tao;
 use core::time;
+use dioxus::desktop::tao;
+use dirs;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use tracing_subscriber::EnvFilter;
-use dirs;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -16,17 +16,17 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
+use utils::config::Config;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
 use warp::tesseract::Tesseract;
-use warp_mp_ipfs::config::MpIpfsConfig;
+use warp_mp_ipfs::config::{Discovery, MpIpfsConfig};
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
-use utils::config::Config;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock, loading};
+use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
 pub mod extensions;
@@ -40,10 +40,10 @@ use tao::menu::{MenuBar as Menu, MenuItem};
 
 mod state;
 
-
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
+    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
@@ -65,6 +65,8 @@ struct Opt {
     title: Option<String>,
     #[clap(long)]
     experimental_node: bool,
+    #[clap(long)]
+    minimial: bool,
 }
 
 fn main() {
@@ -133,6 +135,7 @@ fn main() {
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
         opt.experimental_node,
+        opt.no_discovery,
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
@@ -170,6 +173,7 @@ async fn initialization(
     path: PathBuf,
     tesseract: Tesseract,
     experimental: bool,
+    minimial: bool,
 ) -> Result<
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
@@ -177,7 +181,10 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let config = MpIpfsConfig::production(&path, experimental);
+    let mut config = match minimial {
+        true => MpIpfsConfig::minimial(&path),
+        false => MpIpfsConfig::production(&path, experimental),
+    };
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
@@ -200,7 +207,6 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
-    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
