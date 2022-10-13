@@ -135,7 +135,7 @@ fn main() {
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
         opt.experimental_node,
-        opt.no_discovery,
+        opt.minimial,
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
@@ -181,7 +181,7 @@ async fn initialization(
     ),
     warp::error::Error,
 > {
-    let mut config = match minimial {
+    let config = match minimial {
         true => MpIpfsConfig::minimial(&path),
         false => MpIpfsConfig::production(&path, experimental),
     };
