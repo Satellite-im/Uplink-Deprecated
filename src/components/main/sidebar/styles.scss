@@ -15,6 +15,51 @@
             margin-top: 1rem;
         }
 
+        .chats {
+            overflow-y: hidden;
+            overflow-x: hidden;
+            display: inline-flex;
+            flex: 1;
+            padding-top: 7px;
+            min-height: 0;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .chat_wrap {
+            position: relative;
+            flex: 1;
+            margin-bottom: 1rem;
+            display: flex;
+            max-height: 100%;
+
+            .gradient_mask {
+                position: absolute;
+                background: linear-gradient(180deg, rgba(4,4,5,1) 0%, rgba(4,4,5,0) 100%);
+                height: 15px;
+                width: 100%;
+                top: 0;
+                z-index: 1;
+            }
+
+            .gradient_mask.is_bottom {
+                bottom: 0;
+                top: unset;
+                background: linear-gradient(0, rgba(4,4,5,1) 0%, rgba(4,4,5,0) 100%);
+            }
+
+            &:hover {
+                .chats {
+                    overflow-y: scroll;
+                    margin-right: -5px;
+                }
+            }
+        }
+
         .favorites {
             display: inline-flex;
             -webkit-user-select: none; /* Safari */
@@ -22,7 +67,7 @@
 
             .labeled {
                 margin-bottom: 10px;
-                padding: .75rem;
+                padding: 0 0 0.75rem;
                 position: relative;
 
                 span {

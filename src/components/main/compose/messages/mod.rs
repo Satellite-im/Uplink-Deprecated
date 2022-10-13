@@ -35,7 +35,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
-            let mut prev_sender = "".to_string();
+            let mut prev_sender = String::from("");
             rsx! {
                 div {
                     class: "messages",

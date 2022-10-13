@@ -49,7 +49,7 @@ impl Config {
             privacy: Privacy { satellite_sync_nodes: true, safer_file_scanning: true },
             extensions: Extensions { enable: true },
             audiovideo: AudioVideo { noise_suppression: false },
-            developer: Developer { developer_mode: false, cache_dir: ".warp".to_string() }
+            developer: Developer { developer_mode: false, cache_dir: String::from(".warp") }
         }
     }
 
@@ -73,7 +73,7 @@ impl Config {
                 // Write `msg` to `stderr`.
                 eprintln!("Could not read file `{}`", config_location);
                 // Exit the program with exit code `1`.
-                "".to_string()
+                String::from("")
             }
         };
         // Use a `match` block to return the

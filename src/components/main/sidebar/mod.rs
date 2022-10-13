@@ -1,12 +1,12 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::{outline::Shape};
 
 use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
         main::{sidebar::nav::{Nav, NavEvent}, settings::Settings},
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            button::{Button, self}, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
         },
     },
@@ -45,8 +45,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             class: "sidebar",
             IconInput {
                 icon: Shape::Search,
-                placeholder: "Search".to_string(),
-                value: "".to_string(),
+                placeholder: String::from("Search"),
+                value: String::from(""),
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },
@@ -70,23 +70,34 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 },
             },
             label {
+                style: "margin-bottom: 0;",
                 "{chatsdString}"
             },
             if has_chats {
                 rsx!(
                     div {
-                        state.read().chats.iter().rev().map(|conv| {
-                            let conversation = conv.clone();
-                            rsx!(
-                                chat::Chat {
-                                    account: cx.props.account.clone(),
-                                    conversation: conversation.clone(),
-                                    on_pressed: move |_| {
-                                        state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                        class: "chat_wrap",
+                        div {
+                            class: "gradient_mask"
+                        },
+                        div {
+                            class: "gradient_mask is_bottom"
+                        },
+                        div {
+                            class: "chats",
+                            state.read().chats.iter().rev().map(|conv| {
+                                let conversation = conv.clone();
+                                rsx!(
+                                    chat::Chat {
+                                        account: cx.props.account.clone(),
+                                        conversation: conversation.clone(),
+                                        on_pressed: move |_| {
+                                            state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                        }
                                     }
-                                }
-                            )
-                        })
+                                )
+                            })
+                        }
                     }
                 )
             } else {
