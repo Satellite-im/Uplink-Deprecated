@@ -6,7 +6,7 @@ use crate::{
         main::{friends::Friends, profile::Profile},
         main::{sidebar::nav::{Nav, NavEvent}, settings::Settings},
         ui_kit::{
-            button::{Button, self}, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            button::{Button}, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
         },
     },

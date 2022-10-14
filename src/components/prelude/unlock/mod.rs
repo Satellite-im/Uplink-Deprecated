@@ -9,7 +9,7 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
-        tooltip::{self, ArrowPosition, Tooltip},
+        tooltip::{ArrowPosition, Tooltip},
     },
     LANGUAGE,
 };
@@ -40,8 +40,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     } else {
         "confirm-button has-error"
     };
-
-    let valid_pin = pin.len() > 3;
 
     let tesseract_available = cx.props.tesseract.exist("keypair");
 
