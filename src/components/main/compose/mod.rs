@@ -10,7 +10,7 @@ use warp::raygun::{Conversation, RayGun};
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::{button::Button, icon_button::IconButton},
+        ui_kit::icon_button::IconButton,
     },
     Account, Messaging, LANGUAGE, STATE,
 };
