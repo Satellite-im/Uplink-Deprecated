@@ -41,7 +41,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     friend_count.set(list.len());
                     friends.set(list);
                 }
-                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                tokio::time::sleep(std::time::Duration::from_millis(300)).await;
             }
         },
     );
