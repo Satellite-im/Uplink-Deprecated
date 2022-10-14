@@ -79,7 +79,11 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                         p {
                             class: "did",
-                            config.developer.developer_mode.then(|| "({conversation_id})")
+                            config.developer.developer_mode.then(|| rsx!(
+                                span {
+                                    "({conversation_id})"
+                                }
+                            ))
                         }
                     }
                 )}

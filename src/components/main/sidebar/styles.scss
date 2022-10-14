@@ -27,8 +27,9 @@
             padding-right: 10px;
             top: 0;
             left: 0;
-            right: -5px;
+            right: -10px;
             bottom: 0;
+            padding-right: 0.9rem;
             &:hover {
                 &::-webkit-scrollbar-thumb {
                     background: var(--theme-primary) !important;
@@ -43,6 +44,7 @@
             margin-bottom: 1rem;
             display: flex;
             max-height: 100%;
+            width: 100%;
         }
 
         .favorites {

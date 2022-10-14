@@ -10,7 +10,7 @@ use warp::raygun::{Conversation, RayGun};
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::button::Button,
+        ui_kit::{button::Button, icon_button::IconButton},
     },
     Account, Messaging, LANGUAGE, STATE,
 };
@@ -55,12 +55,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 div {
                     class: "alpha-warning animate__animated animate__slideInDown",
                     "{warningMessage}",
-                    Button {
+                    IconButton {
                         on_pressed: move |_| {
                             show_warning.set(false);
                         },
                         icon: Shape::Check,
-                        text: l.user_agrees.to_string(),
                     }
                 },
             ))
