@@ -68,10 +68,36 @@ hr {
   background: var(--theme-primary);
   opacity: 1;
 }
+
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-primary);
   border-radius: 2.5px;
+}
+
+.gradient_mask {
+  position: absolute;
+  background-image: url("extra/assets/dither_top.png");
+  background-repeat: repeat-x;
+  background-size: contain;
+  height: 15px;
+  width: 100%;
+  top: 0;
+  z-index: 1;
+}
+
+.gradient_mask.is_bottom {
+  bottom: 0;
+  top: unset;
+  background-image: url("extra/assets/dither_bottom.png");
+}
+
+.gradient_mask.is_foreground {
+  background-image: url("extra/assets/dither_top_foreground.png");
+}
+
+.gradient_mask.is_foreground.is_bottom {
+  background-image: url("extra/assets/dither_bottom_foreground.png");
 }
 
 .popup .input {

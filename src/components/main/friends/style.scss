@@ -11,6 +11,11 @@
         width: 100%;
     }
 
+    .scroll_wrap {
+        position: relative;
+        min-height: 0;
+        display: flex;
+    }
     .scrolling {
         overflow: hidden;
         display: inline-flex;
@@ -20,6 +25,7 @@
         width: calc(100% - 0.5rem);
         margin-right: -5px;
         overflow-y: scroll;
+        margin-top: 0.25rem;
 
         &:hover {
             &::-webkit-scrollbar-thumb {

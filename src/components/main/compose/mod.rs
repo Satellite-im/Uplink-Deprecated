@@ -69,11 +69,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
             ))
             div {
                 class: "messages-container",
+                div { class: "gradient_mask" },
                 Messages {
                     account: cx.props.account.clone(),
                     messaging: cx.props.messaging.clone(),
                     conversation: cx.props.conversation.clone(),
                 }
+                div { class: "gradient_mask is_bottom" },
             },
             div {
                 class: "writer-container",

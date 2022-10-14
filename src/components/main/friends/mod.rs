@@ -184,93 +184,98 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                     },
                     div {
-                        class: "scrolling",
-                        (requests.len() > 0).then(|| rsx!(
-                            label {
-                            "{incomingRequestsLang}"
-                            },
-                            div {
-                                requests.iter().map(|request| rsx!(
-                                    FriendRequest {
-                                        account: cx.props.account.clone(),
-                                        request: request.clone(),
-                                        on_accept: move |_| {
-                                            match cx.props.account.clone()
-                                                .write()
-                                                .accept_request(&request.from())
-                                            {
-                                                Ok(_) => {
-                                                    add_error.set("");
-                                                },
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        on_deny: move |_| {
-                                            match cx.props.account.clone()
-                                                .write()
-                                                .deny_request(&request.from())
-                                            {
-                                                Ok(_) => {
-                                                    add_error.set("");
-                                                },
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        deny_only: false,
-                                    }
-                                )),
-                            }
-                        )),
-                        (outgoing.len() > 0).then(|| rsx!(
-                            label {
-                                "{outgoingRequestsLang}"
-                            },
-                            div {
-                                outgoing.iter().map(|request| rsx!(
-                                    FriendRequest {
-                                        account: cx.props.account.clone(),
-                                        request: request.clone(),
-                                        on_deny:  move |_| {
-                                            match cx.props.account.clone()
-                                                .write()
-                                                .close_request(&request.to())
-                                            {
-                                                Ok(_) => {
-                                                    add_error.set("");
-                                                },
-                                                Err(_) => {
-                                                    // TODO: Catch this and display it
-                                                    println!("Error");
-                                                },
-                                            }
-                                        },
-                                        on_accept: move |_| {},
-                                        deny_only: true,
-                                    }
-                                )),
-                            }
-                        )),
-                        label {
-                            "{yourFriendsLang}"
-                        },
+                        class: "scroll_wrap",
+                        div { class: "gradient_mask is_foreground" },
+                        div { class: "gradient_mask is_bottom is_foreground" },
                         div {
-                            friends.iter().map(|user| rsx!(
-                                Friend {
-                                    account: cx.props.account.clone(),
-                                    messaging: cx.props.messaging.clone(),
-                                    friend: user.clone(),
-                                    on_chat: move |_| {
-                                        add_error.set("");
-                                        cx.props.on_hide.call(());
-                                    }
+                            class: "scrolling",
+                            (requests.len() > 0).then(|| rsx!(
+                                label {
+                                "{incomingRequestsLang}"
+                                },
+                                div {
+                                    requests.iter().map(|request| rsx!(
+                                        FriendRequest {
+                                            account: cx.props.account.clone(),
+                                            request: request.clone(),
+                                            on_accept: move |_| {
+                                                match cx.props.account.clone()
+                                                    .write()
+                                                    .accept_request(&request.from())
+                                                {
+                                                    Ok(_) => {
+                                                        add_error.set("");
+                                                    },
+                                                    Err(_) => {
+                                                        // TODO: Catch this and display it
+                                                        println!("Error");
+                                                    },
+                                                }
+                                            },
+                                            on_deny: move |_| {
+                                                match cx.props.account.clone()
+                                                    .write()
+                                                    .deny_request(&request.from())
+                                                {
+                                                    Ok(_) => {
+                                                        add_error.set("");
+                                                    },
+                                                    Err(_) => {
+                                                        // TODO: Catch this and display it
+                                                        println!("Error");
+                                                    },
+                                                }
+                                            },
+                                            deny_only: false,
+                                        }
+                                    )),
                                 }
                             )),
+                            (outgoing.len() > 0).then(|| rsx!(
+                                label {
+                                    "{outgoingRequestsLang}"
+                                },
+                                div {
+                                    outgoing.iter().map(|request| rsx!(
+                                        FriendRequest {
+                                            account: cx.props.account.clone(),
+                                            request: request.clone(),
+                                            on_deny:  move |_| {
+                                                match cx.props.account.clone()
+                                                    .write()
+                                                    .close_request(&request.to())
+                                                {
+                                                    Ok(_) => {
+                                                        add_error.set("");
+                                                    },
+                                                    Err(_) => {
+                                                        // TODO: Catch this and display it
+                                                        println!("Error");
+                                                    },
+                                                }
+                                            },
+                                            on_accept: move |_| {},
+                                            deny_only: true,
+                                        }
+                                    )),
+                                }
+                            )),
+                            label {
+                                "{yourFriendsLang}"
+                            },
+                            div {
+                                friends.iter().map(|user| rsx!(
+                                    Friend {
+                                        account: cx.props.account.clone(),
+                                        messaging: cx.props.messaging.clone(),
+                                        friend: user.clone(),
+                                        on_chat: move |_| {
+                                            add_error.set("");
+                                            cx.props.on_hide.call(());
+                                        }
+                                    }
+                                )),
+                            }
                         }
                     }
                 }
