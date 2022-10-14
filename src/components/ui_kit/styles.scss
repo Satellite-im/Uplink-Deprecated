@@ -26,6 +26,7 @@ html {
   overflow: hidden;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 
 hr {
@@ -40,6 +41,63 @@ hr {
   font-size: var(--text-small);
   padding: 0.5 auto;
   text-align: center;
+}
+
+ /* width */
+ ::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 2.5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--theme-background);
+  border-radius: 2.5px;
+  opacity: 0;
+  transition: opacity 1000ms ease;
+  -webkit-transition: opacity 1000ms ease;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+  opacity: 1;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+  border-radius: 2.5px;
+}
+
+.gradient_mask {
+  position: absolute;
+  background-image: url("extra/assets/dither_top.png");
+  background-repeat: repeat-x;
+  background-size: contain;
+  height: 15px;
+  width: 100%;
+  top: 0;
+  z-index: 1;
+}
+
+.gradient_mask.is_bottom {
+  bottom: 0;
+  top: unset;
+  background-image: url("extra/assets/dither_bottom.png");
+}
+
+.gradient_mask.is_foreground {
+  background-image: url("extra/assets/dither_top_foreground.png");
+}
+
+.gradient_mask.is_foreground.is_bottom {
+  background-image: url("extra/assets/dither_bottom_foreground.png");
 }
 
 .popup .input {
@@ -149,7 +207,7 @@ label {
     &.online {
       background-color: var(--theme-green);
     }
-  
+
     &.offline {
       background-color: var(--theme-text-muted);
     }
@@ -560,7 +618,7 @@ input:checked+.slider:before {
     position: fixed;
 
     .popup {
-      height: calc(100% - 4rem);
+      max-height: calc(100% - 4rem);
       margin: 2rem;
       border-radius: 8px;
 
@@ -593,9 +651,14 @@ input:checked+.slider:before {
     margin-top: 50px;
     transform: translate3d(0, 110%, 0);
 
+    .wrapper {
+      display: flex;
+      min-height: 0;
+    }
+
     &.full {
-      // TODO: Only do this if max-content is larger than 50%
-      min-height: max-content;
+      height: unset;
+      max-height: 90vh;
 
       &.hidden {
         height: 0px;
@@ -841,4 +904,21 @@ input:checked+.slider:before {
   to {
     transform: translate3d(0, 0, 0), scale3d(1, 1, 1);
   }
+}
+
+.selectable {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.numeric_indicator {
+  background-color: var(--theme-primary);
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px;
+  min-width: 12px;
+  border-radius: 2px;
+  font-size: var(--text-small);
+  pointer-events: none;
 }

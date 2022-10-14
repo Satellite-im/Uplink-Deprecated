@@ -1,3 +1,4 @@
+use dioxus::core::to_owned;
 use dioxus::router::use_router;
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -8,6 +9,7 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
+        tooltip::{self, ArrowPosition, Tooltip},
     },
     LANGUAGE,
 };
@@ -24,12 +26,14 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l2 = l.clone();
 
     let pin = use_state(&cx, || String::from(""));
+    let show_tip = use_state(&cx, || false);
     let error = use_state(&cx, || String::from(""));
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {
         "error_text"
     };
+    let auth_text = l.auth_tooltip.clone();
 
     let confirm_button_class = if error.is_empty() {
         "confirm-button"
@@ -63,7 +67,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         pin: pin.as_bytes().to_vec(),
                         error: !error.is_empty()
                     },
-                    valid_pin.then(||
+                    show_tip.then(||
                         rsx! {
                             span {
                                 class: "{confirm_button_class}",
@@ -77,7 +81,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         let mut tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
-                                                use_router(&cx).push_route("/auth", None, None)
+                                                use_router(&cx).push_route("/loading", None, None)
                                             },
                                             Err(_) => error.set(l2.invalid_pin.clone()),
                                         }
@@ -90,6 +94,16 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                 div {
                     class: "m-bottom-xl",
                 },
+                show_tip.then(||
+                rsx! {
+                    span {
+                        class: "pin_tooltip",
+                        Tooltip {
+                            text: auth_text.to_string(),
+                            arrow_position: ArrowPosition::Top
+                        }
+                    }
+                }),
                 p {
                     class: "{error_class}",
                     "{error}　"
@@ -102,9 +116,23 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         error.set(String::from(""));
 
                         // If the pin entered is longer than the allowed limit, ignore it.
-                        if evt.value.len() < 6 {
+                        if evt.value.len() <= 6 {
                             pin.set(evt.value.to_string());
                         } else {
+                            //Because we exceeded 6, we want to show the tooltip showing the error
+                            show_tip.set(true);
+                            //This will spawn the background task as kind of a "timeout" for "show_tip" state
+                            cx.spawn({
+                                // this is the equiv if `let show_tip = show_tip.clone()`
+                                to_owned![show_tip];
+                                async move {
+                                    // since we are using `async` we want to avoid using `std::thread::sleep` as it would stall all
+                                    // running task. Instead, rely on internal functions from either tokio or futures to
+                                    // delay for a set duration
+                                    tokio::time::sleep(std::time::Duration::from_secs(4)).await;
+                                    show_tip.set(false);
+                                }
+                            });
                             pin.set(evt.value[..6].to_string());
                         }
 
@@ -113,7 +141,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         if evt.value.len() >= 4 && tesseract_available {
                             let mut tesseract = cx.props.tesseract.clone();
                             if tesseract.unlock(evt.value.as_ref()).is_ok() {
-                                use_router(&cx).push_route("/auth", None, None)
+                                use_router(&cx).push_route("/loading", None, None)
                             }
                         }
                     },
@@ -124,7 +152,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             } else {
                                 let mut tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
-                                    Ok(_) => use_router(&cx).push_route("/auth", None, None),
+                                    Ok(_) => use_router(&cx).push_route("/loading", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),
                                 }
                             }

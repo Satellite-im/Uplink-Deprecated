@@ -4,7 +4,7 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    Account,
+    Account, utils::config::Config,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
@@ -20,6 +20,8 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let config = Config::load_config_or_default();
+
     // Read their values from locks
     let mp = cx.props.account.clone();
 
@@ -77,7 +79,11 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                         p {
                             class: "did",
-                            "({conversation_id})"
+                            config.developer.developer_mode.then(|| rsx!(
+                                span {
+                                    "({conversation_id})"
+                                }
+                            ))
                         }
                     }
                 )}

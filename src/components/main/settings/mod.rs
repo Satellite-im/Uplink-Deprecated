@@ -1,23 +1,61 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 
-use crate::utils::config::load_or_default;
+use crate::{components::{main::settings::{sidebar::Sidebar, pages::{Developer, General}}, ui_kit::icon_button::{IconButton, self}}, Account};
+
+use self::sidebar::nav::NavEvent;
+
+pub mod sidebar;
+pub mod pages;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    show: bool,
+    account: Account,
     on_hide: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let config = load_or_default();
+    let active_page = use_state(&cx, || NavEvent::Developer);
 
     cx.render(rsx! {
         div {
             id: "settings",
             div {
+                class: "closer",
+                onclick: move |_| cx.props.on_hide.call(()),
+            }
+            div {
                 id: "content",
-                "settings"
+                Sidebar {
+                    on_pressed: move |ne| {
+                        active_page.set(ne);
+                    }
+                },
+                div {
+                    id: "page",
+                    div {
+                        class: "wrapper",
+                        div {
+                            class: "close_wrapper",
+                            IconButton {
+                                icon: Shape::X,
+                                state: icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    let _ = cx.props.on_hide.call(());
+                                }
+                            }
+                        }
+                        div {
+                            class: "content",
+                            match active_page.get() {
+                                NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
+                                NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
+                                _ => rsx!(Developer { account: cx.props.account.clone() }),
+                            }
+                        }
+                    }
+                }
             }
         }
     })

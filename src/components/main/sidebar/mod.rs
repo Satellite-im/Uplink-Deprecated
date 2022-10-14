@@ -1,17 +1,17 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::{outline::Shape};
 
 use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
-        main::sidebar::nav::{Nav, NavEvent},
+        main::{sidebar::nav::{Nav, NavEvent}, settings::Settings},
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            button::{Button, self}, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
         },
     },
     state::Actions,
-    Account, Messaging, STATE, LANGUAGE
+    Account, Messaging, STATE, LANGUAGE, utils::config::Config
 };
 
 pub mod chat;
@@ -25,8 +25,11 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
+    let config = Config::load_config_or_default();
+
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
+    let show_settings = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
@@ -42,12 +45,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             class: "sidebar",
             IconInput {
                 icon: Shape::Search,
-                placeholder: "Search".to_string(),
-                value: "".to_string(),
+                placeholder: String::from("Search"),
+                value: String::from(""),
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },
-            ExtensionPlaceholder {},
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
             label {
                 "{favString}"
             },
@@ -65,23 +70,34 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 },
             },
             label {
+                style: "margin-bottom: 0;",
                 "{chatsdString}"
             },
             if has_chats {
                 rsx!(
                     div {
-                        state.read().chats.iter().rev().map(|conv| {
-                            let conversation = conv.clone();
-                            rsx!(
-                                chat::Chat {
-                                    account: cx.props.account.clone(),
-                                    conversation: conversation.clone(),
-                                    on_pressed: move |_| {
-                                        state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                        class: "chat_wrap",
+                        div {
+                            class: "gradient_mask"
+                        },
+                        div {
+                            class: "gradient_mask is_bottom"
+                        },
+                        div {
+                            class: "chats",
+                            state.read().chats.iter().rev().map(|conv| {
+                                let conversation = conv.clone();
+                                rsx!(
+                                    chat::Chat {
+                                        account: cx.props.account.clone(),
+                                        conversation: conversation.clone(),
+                                        on_pressed: move |_| {
+                                            state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                        }
                                     }
-                                }
-                            )
-                        })
+                                )
+                            })
+                        }
                     }
                 )
             } else {
@@ -118,9 +134,20 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
+            (**show_settings).then(|| rsx!{
+                Settings {
+                    account: cx.props.account.clone(),
+                    on_hide: move |_| {
+                        show_settings.set(false);
+                    },
+                },
+            }),
             Nav {
+                account: cx.props.account.clone(),
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);
+                    show_profile.set(false);
+                    show_settings.set(false);
 
                     match e {
                         NavEvent::Home => {
@@ -132,6 +159,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         NavEvent::Profile => {
                             show_profile.set(true);
+                        },
+                        NavEvent::Settings => {
+                            show_settings.set(true);
                         },
                     }
                 }

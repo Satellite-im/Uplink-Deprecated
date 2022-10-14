@@ -1,5 +1,6 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
+use dioxus_heroicons::{outline::Shape, Icon};
 use warp::{
     raygun::{Conversation, MessageOptions},
 };
@@ -34,7 +35,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {
-            let mut prev_sender = "".to_string();
+            let mut prev_sender = String::from("");
             rsx! {
                 div {
                     class: "messages",
@@ -58,6 +59,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             }
                         )
                     })
+                    div {
+                        class: "encrypted-notif",
+                        Icon {
+                            icon: Shape::LockClosed
+                        }
+                        p {
+                            "Messages secured by local E2E encryption."
+                        }
+                    }
                 }
             }
         }

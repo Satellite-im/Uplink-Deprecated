@@ -11,10 +11,10 @@ use rsass::{compile_scss, output};
 #[cfg(windows)]
 fn main() -> Result<(), Box<dyn Error>> {
     let mut res = winres::WindowsResource::new();
-    res.set("ProductName", "warp_gui");
-    res.set("FileDescription", "warp_gui");
-    res.set("LegalCopyright", "OSS");
-    res.set_icon("../extra/windows/warp_gui.ico");
+    res.set("ProductName", "uplink");
+    res.set("FileDescription", "uplink");
+    res.set("LegalCopyright", "Creative Commons Attribution-NonCommercial 1.0");
+    res.set_icon("../extra/windows/uplink.ico");
     res.compile()
         .expect("Failed to run the Windows resource compiler (rc.exe)");
 

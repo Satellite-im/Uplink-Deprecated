@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::{
-    components::main::{compose::Compose, settings::Settings}, main::sidebar::Sidebar, Account, Messaging, STATE,
+    components::main::{compose::Compose}, main::sidebar::Sidebar, Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
@@ -33,7 +33,9 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                     st.write().chats = list;
                 }
             }
-            tokio::time::sleep(Duration::from_millis(50)).await;
+            // TODO: find a way to sync this with the frame rate or create a "polling rate" value we can configure
+            // This also doesn't really seem to effect performance
+            tokio::time::sleep(Duration::from_secs(1)).await;
         }
     });
 
@@ -45,10 +47,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     cx.render(rsx! {
         div {
             class: "main",
-            // Settings {
-            //     show: true,
-            //     on_hide: move |_| {},
-            // },
             Sidebar {
                 messaging: cx.props.messaging.clone(),
                 account: cx.props.account.clone()

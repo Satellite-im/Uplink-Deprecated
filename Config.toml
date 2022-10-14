@@ -1,13 +1,17 @@
-[privacy]
-satellite_sync_nodes = true     # Increase speed and reliability of the network by enabling the usage of Satellite sync nodes.
-safer_file_scanning = true      # Note that disabling this will remove file sharing abilities.
-
-[ui]
+[general]
 theme = "default"
+show_splash = false
+
+[privacy]
+satellite_sync_nodes = true
+safer_file_scanning = true
+
+[audiovideo]
+noise_suppression = false
 
 [extensions]
-enable = false                  # Enable or disable the ability to load extensions in app.
+enable = false
 
 [developer]
-logging = true                  # Enable developer logging in app.
-cache_dir = ".warp"            # Change to move to a custom cache location.
+developer_mode = false
+cache_dir = ".warp"

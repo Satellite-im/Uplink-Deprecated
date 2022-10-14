@@ -1,23 +1,23 @@
 <h1 align="center">
   <a href="https://satellite.im" target="_blank">
   <img src="extra/images/logo.png" width=200 height=200/><br>
-  WarpGUI
+  Uplink
   </a>
 </h1>
 
 <h4 align="center">Privacy First, Modular, P2P messaging client built atop Warp.</h4>
 
 <div align="center">
-  <a href="https://github.com/satellite-im/WarpGUI/actions/workflows/ci.yml" target="_blank">
-    <img src="https://github.com/satellite-im/WarpGUI/actions/workflows/ci.yml/badge.svg" />
+  <a href="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml" target="_blank">
+    <img src="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml/badge.svg" />
   </a>
   <a href="https://satellite.wiki" target="_blank">
-      <img src="https://img.shields.io/static/v1?label=Docs&message=satellite.wiki&color=blue" alt="WarpGUI Docs">
+      <img src="https://img.shields.io/static/v1?label=Docs&message=satellite.wiki&color=blue" alt="Uplink Docs">
   </a>
 </div>
 <br/>
 
-Warp GUI is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for basic implementation of Warp features in a universal application.
+Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for basic implementation of Warp features in a universal application.
 
 The goal should be to build a hyper customizable application that can run anywhere and support extensions.
 
@@ -73,7 +73,7 @@ You can specify a window title and a custom path for storage which is useful for
 
 To spawn multiple instances of the app execute the test script `test/physical/launch_physical_test.sh`. This will spawn two named windows with local cache files in a `.temp` directory.
 
-Please also read through the [Physical Testing Checklist](https://github.com/Satellite-im/WarpGUI/blob/dev/test/CHECKLIST.md) and ensure functionality before submitting a PR.
+Please also read through the [Physical Testing Checklist](https://github.com/Satellite-im/Uplink/blob/dev/test/CHECKLIST.md) and ensure functionality before submitting a PR.
 
 ## Resetting Data
 

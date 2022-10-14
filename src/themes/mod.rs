@@ -35,32 +35,32 @@ pub struct Theme {
 impl Default for Theme {
     fn default() -> Self {
         Self {
-            primary: String::from("#205FFA"),
-            primary_dark: String::from("#1e59ec"),
-            primary_light: String::from("#2563fa"),
+            primary: String::from("#4D4DFF"),
+            primary_dark: String::from("#4343fa"),
+            primary_light: String::from("#5252f7"),
 
-            secondary: String::from("#2B2B3B"),
-            secondary_light: String::from("#2f2f40"),
+            secondary: String::from("#3A3A3A"),
+            secondary_light: String::from("#39383b"),
 
             green: String::from("#00B894"),
             light_green: String::from("#00c29c"),
             red: String::from("#F93854"),
             light_red: String::from("#fa4662"),
 
-            background: String::from("#0e0d17"),
-            background_dark: String::from("#0e0d17"),
-            background_light: String::from("#1A1E2E"),
+            background: String::from("#040405"),
+            background_dark: String::from("#000000"),
+            background_light: String::from("#16161c"),
 
-            foreground: String::from("#232838"),
-            foreground_dark: String::from("#1a1e2a"),
+            foreground: String::from("#2C2C2C"),
+            foreground_dark: String::from("#2C2C2C"),
 
-            text: String::from("#EEF0F2"),
-            text_muted: String::from("#6F748A"),
-            text_darker: String::from("#A8AABE"),
-            text_bright: String::from("#EEEFFF"),
-            placeholder: String::from("#6F748A"),
+            text: String::from("#e1e1fc"),
+            text_muted: String::from("#6b6b87"),
+            text_darker: String::from("#acacbf"),
+            text_bright: String::from("#dfdff7"),
+            placeholder: String::from("#94919c"),
 
-            borders: String::from("#232838"),
+            borders: String::from("#17171a"),
             highlight: String::from("#2b2843"),
             semi_transparent: String::from("rgba(14, 13, 23, 0.2)"),
             modal: String::from("#1A1E2E"),

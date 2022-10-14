@@ -1,12 +1,11 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use sir::global_css;
 use warp::raygun::Conversation;
 
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::button::Button,
+        ui_kit::{button::Button, icon_button::IconButton},
     },
     Account, Messaging, STATE, LANGUAGE,
 };
@@ -29,8 +28,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let conversation_id = cx.props.conversation.id();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
-    // Load Multipass & Raygun's Atom Ref
-    let raygun = cx.props.messaging.clone();
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -61,22 +58,23 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 div {
                     class: "alpha-warning animate__animated animate__slideInDown",
                     "{warningMessage}",
-                    Button {
+                    IconButton {
                         on_pressed: move |_| {
                             show_warning.set(false);
                         },
                         icon: Shape::Check,
-                        text: l.user_agrees.to_string(),
                     }
                 },
             ))
             div {
                 class: "messages-container",
+                div { class: "gradient_mask" },
                 Messages {
                     account: cx.props.account.clone(),
                     messaging: cx.props.messaging.clone(),
                     conversation: cx.props.conversation.clone(),
                 }
+                div { class: "gradient_mask is_bottom" },
             },
             div {
                 class: "writer-container",

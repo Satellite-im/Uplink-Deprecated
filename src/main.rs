@@ -1,9 +1,12 @@
 use clap::Parser;
 use dioxus::desktop::tao;
+use core::time;
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::thread;
 use tracing_subscriber::EnvFilter;
+use dirs;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -20,9 +23,10 @@ use warp::tesseract::Tesseract;
 use warp_mp_ipfs::config::{Discovery, MpIpfsConfig};
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
+use utils::config::Config;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock};
+use crate::components::prelude::{auth, unlock, loading};
 
 pub mod components;
 pub mod extensions;
@@ -36,10 +40,11 @@ use tao::menu::{MenuBar as Menu, MenuItem};
 
 mod state;
 
+
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(PathBuf::from("./.warp")));
-pub const WINDOW_SUFFIX_NAME: &'static str = "Warp GUI";
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
+pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
@@ -73,7 +78,7 @@ fn main() {
     let mut window_menu = Menu::new();
 
     app_menu.add_native_item(MenuItem::Quit);
-    app_menu.add_native_item(MenuItem::About("WarpGUI".to_string()));
+    app_menu.add_native_item(MenuItem::About(String::from("Uplink")));
     // add native shortcuts to `edit_menu` menu
     // in macOS native item are required to get keyboard shortcut
     // to works correctly
@@ -93,7 +98,7 @@ fn main() {
     window_menu.add_native_item(MenuItem::Separator);
     window_menu.add_native_item(MenuItem::CloseWindow);
 
-    main_menu.add_submenu("Warp GUI", true, app_menu);
+    main_menu.add_submenu("Uplink", true, app_menu);
     main_menu.add_submenu("Edit", true, edit_menu);
     main_menu.add_submenu("Window", true, window_menu);
 
@@ -139,8 +144,8 @@ fn main() {
     let window = WindowBuilder::new()
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
-        .with_inner_size(LogicalSize::new(1200.0, 730.0));
-
+        .with_inner_size(LogicalSize::new(950.0, 600.0))
+        .with_min_inner_size(LogicalSize::new(330.0, 600.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -201,11 +206,16 @@ async fn initialization(
 fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
+    Config::new_file();
+
+    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     let css = include_str!(".styles.css");
+
+    thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
     cx.render(rsx!(
         div {
@@ -227,6 +237,7 @@ fn App(cx: Scope<State>) -> Element {
         AppStyle {},
         Router {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+            Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }

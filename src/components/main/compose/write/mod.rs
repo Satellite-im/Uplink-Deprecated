@@ -6,7 +6,7 @@ use crate::{
         icon_button::{self, IconButton},
         small_extension_placeholder::SmallExtensionPlaceholder,
     },
-    LANGUAGE,
+    LANGUAGE, utils::config::Config,
 };
 
 #[derive(Props)]
@@ -17,6 +17,8 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let config = Config::load_config_or_default();
+
     let script = use_state(&cx, String::new);
     // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
     script.set(
@@ -73,10 +75,12 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             script {
                 dangerous_inner_html: "{script}"
             }
-            div {
-                class: "extension-holder",
-                SmallExtensionPlaceholder {}
-            }
+            config.developer.developer_mode.then(|| rsx! {
+                div {
+                    class: "extension-holder",
+                    SmallExtensionPlaceholder {}
+                }
+            })
             div {
                 id: "send",
                 IconButton {
