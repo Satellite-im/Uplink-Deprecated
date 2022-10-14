@@ -9,8 +9,17 @@
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0 1rem;
+  padding-right: 0;
   position: relative;
   width: calc(100% - 2rem);
+  margin-right: 1rem;
+
+  &:hover {
+    &::-webkit-scrollbar-thumb {
+      background: var(--theme-primary) !important;
+      opacity: 1;
+    }
+  }
 
   .encrypted-notif {
     display: inline-flex;

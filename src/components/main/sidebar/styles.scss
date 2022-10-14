@@ -16,7 +16,7 @@
         }
 
         .chats {
-            overflow-y: hidden;
+            overflow-y: scroll;
             overflow-x: hidden;
             display: inline-flex;
             flex: 1;
@@ -24,10 +24,17 @@
             min-height: 0;
             flex-direction: column;
             position: absolute;
+            padding-right: 10px;
             top: 0;
             left: 0;
-            right: 0;
+            right: -5px;
             bottom: 0;
+            &:hover {
+                &::-webkit-scrollbar-thumb {
+                    background: var(--theme-primary) !important;
+                    opacity: 1;
+                }
+            }
         }
 
         .chat_wrap {
@@ -50,13 +57,6 @@
                 bottom: 0;
                 top: unset;
                 background: linear-gradient(0, rgba(4,4,5,1) 0%, rgba(4,4,5,0) 100%);
-            }
-
-            &:hover {
-                .chats {
-                    overflow-y: scroll;
-                    margin-right: -5px;
-                }
             }
         }
 

@@ -51,16 +51,23 @@ hr {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  transition: background 0.2s;
-  background: var(--theme-background);
+  background: transparent;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
+  background: var(--theme-background);
   border-radius: 2.5px;
-  background: var(--theme-primary);
+  opacity: 0;
+  transition: opacity 1000ms ease;
+  -webkit-transition: opacity 1000ms ease;
 }
 
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+  opacity: 1;
+}
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-primary);
