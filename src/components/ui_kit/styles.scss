@@ -618,6 +618,11 @@ input:checked+.slider:before {
     margin-top: 50px;
     transform: translate3d(0, 110%, 0);
 
+    .wrapper {
+      display: flex;
+      min-height: 0;
+    }
+
     &.full {
       height: unset;
       max-height: 90vh;
