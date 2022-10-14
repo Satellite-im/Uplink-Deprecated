@@ -9,10 +9,10 @@
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0 1rem;
-  padding-right: 0;
+  padding-right: calc(1rem - 10px);
+  margin-right: 5px;
   position: relative;
   width: calc(100% - 2rem);
-  margin-right: 1rem;
   padding-bottom: 1rem;
 
   &:hover {
