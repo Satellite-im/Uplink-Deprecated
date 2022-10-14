@@ -47,7 +47,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     );
 
     let edit = use_state(&cx, || false);
-    let status = use_state(&cx, || "".to_string());
+    let status = use_state(&cx, || String::from(""));
     let disabled = status.len() == 0;
 
     let set_status = move |_: _| {

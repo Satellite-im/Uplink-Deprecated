@@ -75,7 +75,7 @@ fn main() {
     let mut window_menu = Menu::new();
 
     app_menu.add_native_item(MenuItem::Quit);
-    app_menu.add_native_item(MenuItem::About("Uplink".to_string()));
+    app_menu.add_native_item(MenuItem::About(String::from("Uplink")));
     // add native shortcuts to `edit_menu` menu
     // in macOS native item are required to get keyboard shortcut
     // to works correctly
@@ -140,8 +140,8 @@ fn main() {
     let window = WindowBuilder::new()
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
-        .with_inner_size(LogicalSize::new(1200.0, 730.0));
-
+        .with_inner_size(LogicalSize::new(1200.0, 730.0))
+        .with_min_inner_size(LogicalSize::new(330.0, 600.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,

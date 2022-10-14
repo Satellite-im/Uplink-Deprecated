@@ -21,8 +21,8 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             id: "sidebar",
             IconInput {
                 icon: Shape::Search,
-                placeholder: "Search".to_string(),
-                value: "".to_string(),
+                placeholder: String::from("Search"),
+                value: String::from(""),
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },

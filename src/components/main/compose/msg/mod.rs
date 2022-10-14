@@ -97,7 +97,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             },
                             IconInput {
                                 icon: Shape::Reply,
-                                value: "".to_string(),
+                                value: String::from(""),
                                 placeholder: l.send_a_reply.to_string(),
                                 on_change: move |_| {},
                                 on_enter: move |_| {}

@@ -52,6 +52,7 @@ pub struct Language {
     pub chats: String,
     pub no_active_chats: String,
     pub start_one: String,
+    pub auth_tooltip: String,
 }
 
 impl Language {

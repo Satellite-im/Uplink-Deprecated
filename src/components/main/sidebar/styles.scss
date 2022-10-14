@@ -15,6 +15,36 @@
             margin-top: 1rem;
         }
 
+        .chats {
+            overflow-y: scroll;
+            overflow-x: hidden;
+            display: inline-flex;
+            flex: 1;
+            padding-top: 7px;
+            min-height: 0;
+            flex-direction: column;
+            position: absolute;
+            padding-right: 10px;
+            top: 0;
+            left: 0;
+            right: -5px;
+            bottom: 0;
+            &:hover {
+                &::-webkit-scrollbar-thumb {
+                    background: var(--theme-primary) !important;
+                    opacity: 1;
+                }
+            }
+        }
+
+        .chat_wrap {
+            position: relative;
+            flex: 1;
+            margin-bottom: 1rem;
+            display: flex;
+            max-height: 100%;
+        }
+
         .favorites {
             display: inline-flex;
             -webkit-user-select: none; /* Safari */
@@ -22,7 +52,7 @@
 
             .labeled {
                 margin-bottom: 10px;
-                padding: .75rem;
+                padding: 0 0 0.75rem;
                 position: relative;
 
                 span {
