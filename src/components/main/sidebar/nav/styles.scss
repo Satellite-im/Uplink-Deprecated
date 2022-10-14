@@ -1,13 +1,11 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .nav {
-    bottom: 1rem;
     display: inline-flex;
     flex-direction: row;
     justify-content: space-evenly;
-    left: 0;
-    position: absolute;
-    right: 0;
+    width: 100%;
+    min-height: fit-content;
     -webkit-user-select: none; /* Safari */
     user-select: none; /* Non-prefixed version, currently */
 

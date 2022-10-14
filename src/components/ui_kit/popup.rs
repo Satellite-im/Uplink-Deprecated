@@ -65,6 +65,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 }
                 div {
+                    class: "wrapper",
                     onclick: move |evt| {
                         evt.cancel_bubble();
                         full.set(true);

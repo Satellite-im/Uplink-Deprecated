@@ -94,15 +94,15 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         IconInput {
                             icon: Shape::Identification,
                             value: username.clone().to_string(),
-                            placeholder: "Choose a username..".to_string(),
+                            placeholder: String::from("Choose a username.."),
                             on_change: move | evt: FormEvent | {
-                                error.set("".to_string());
+                                error.set(String::from(""));
                                 if evt.value.len() > 26 {
-                                    error.set("Maximum username length reached (26)".to_string());
+                                    error.set(String::from("Maximum username length reached (26)"));
                                     return;
                                 }
                                 if evt.value.contains(char::is_whitespace) {
-                                    error.set("Username cannot contain spaces.".to_string());
+                                    error.set(String::from("Username cannot contain spaces."));
                                     return;
                                 }
 
@@ -116,7 +116,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         },
                         Button {
                             icon: Shape::Check,
-                            text: "Create Account".to_string(),
+                            text: String::from("Create Account"),
                             disabled: !valid_username,
                             state: match valid_username {
                                 true => button::State::Primary,
