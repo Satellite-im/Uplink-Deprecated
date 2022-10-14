@@ -65,7 +65,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             icon: Shape::LockClosed
                         }
                         p {
-                            "Messages are encrypted locally, anyone outside of this chat cannot modify, or read them."
+                            "Messages secured by local E2E encryption."
                         }
                     }
                 }

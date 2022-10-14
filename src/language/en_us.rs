@@ -15,9 +15,9 @@ pub fn make() -> Language {
         invalid_pin: String::from("Invalid or incorrect pin supplied."),
         short_pin: String::from("Your pin must be at least 4 characters."),
         checking_account: String::from("Checking account.."),
-        prerelease_warning: String::from("Please remember this is pre-release software and bugs, crashes and restarts are expected."),
+        prerelease_warning: String::from("This is pre-release software. Expect bugs, crashes & resets."),
         create_account: String::from("Create Account"),
-        user_agrees: String::from("I agree"),
+        user_agrees: String::from(""),
         send_a_reply: String::from("Send a reply.."),
         create_account_desc:
             String::from("It's free and fast, just tell us what you'd like your username to be."),
