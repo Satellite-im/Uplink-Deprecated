@@ -39,6 +39,11 @@ You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and hav
 
 If you do not have protobuf installed you can install it using homebrew on Mac: `brew install protobuf`.
 
+### Linux
+For Ubuntu, use the following: `sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libasound2-dev protobuf-compiler`.
+
+For Debian, replace `libappindicator3-dev` with `libayatanta-appindicator3-dev`
+
 ### Windows
 // TODO:
 
