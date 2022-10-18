@@ -13,4 +13,5 @@ pub mod popup;
 pub mod skeletons;
 pub mod small_extension_placeholder;
 pub mod switch;
+pub mod textarea;
 pub mod tooltip;
