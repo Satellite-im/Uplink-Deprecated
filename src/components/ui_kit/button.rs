@@ -1,7 +1,7 @@
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum State {
     Primary,
     Success,

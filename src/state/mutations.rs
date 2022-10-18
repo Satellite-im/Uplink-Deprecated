@@ -24,6 +24,6 @@ impl Mutations {
         }
         chats.push(conversation.clone());
         state.chats = chats;
-        state.chat = Some(conversation.clone());
+        state.chat = Some(conversation);
     }
 }

@@ -5,7 +5,7 @@ use dioxus::{
 use dioxus_html::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum State {
     Success,
     Danger,

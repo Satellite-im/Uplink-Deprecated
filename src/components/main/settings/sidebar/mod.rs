@@ -31,7 +31,7 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             })
             Nav {
                 on_pressed: move |ne| {
-                    let _ = cx.props.on_pressed.call(ne);
+                    cx.props.on_pressed.call(ne);
                 }
             },
             config.developer.developer_mode.then(|| rsx! {

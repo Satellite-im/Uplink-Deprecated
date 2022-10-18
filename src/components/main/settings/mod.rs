@@ -42,7 +42,7 @@ pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 icon: Shape::X,
                                 state: icon_button::State::Secondary,
                                 on_pressed: move |_| {
-                                    let _ = cx.props.on_hide.call(());
+                                    cx.props.on_hide.call(());
                                 }
                             }
                         }

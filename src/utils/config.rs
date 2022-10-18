@@ -55,7 +55,7 @@ impl Config {
 
     pub fn new_file(){
         let toml = toml::to_string(&Config::default()).unwrap();
-        if !fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_ok() {
+        if fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_err() {
            fs::write(DEFAULT_PATH.read().join("Config.toml"), toml).unwrap();
         }
     }
