@@ -14,7 +14,12 @@ pub struct Props {
 pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
     let status = use_state(&cx, || IdentityStatus::Offline);
 
-    if let Ok(current_status) = cx.props.account.read().identity_status(&cx.props.remote_did) {
+    if let Ok(current_status) = cx
+        .props
+        .account
+        .read()
+        .identity_status(&cx.props.remote_did)
+    {
         status.set(current_status);
     };
 

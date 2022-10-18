@@ -1,7 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{components::{ui_kit::{icon_input::IconInput, extension_placeholder::ExtensionPlaceholder}, main::settings::sidebar::nav::Nav}, utils::config::Config};
+use crate::{
+    components::{
+        main::settings::sidebar::nav::Nav,
+        ui_kit::{extension_placeholder::ExtensionPlaceholder, icon_input::IconInput},
+    },
+    utils::config::Config,
+};
 
 use self::nav::NavEvent;
 

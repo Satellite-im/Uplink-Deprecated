@@ -1,16 +1,16 @@
 use std::time::Duration;
 
 use crate::{
-    components::main::{compose::Compose}, main::sidebar::Sidebar, Account, Messaging, STATE,
+    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
 
 pub mod compose;
-pub mod sidebar;
 pub mod friends;
 pub mod profile;
 pub mod settings;
+pub mod sidebar;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {

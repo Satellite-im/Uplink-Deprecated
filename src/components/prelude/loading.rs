@@ -1,14 +1,15 @@
-use std::fs::File;
+use crate::{
+    components::ui_kit::loader::Loader, utils::config::Config, Account, LANGUAGE,
+    WINDOW_SUFFIX_NAME,
+};
 use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
-use dioxus::router::use_router;
 use dioxus::prelude::*;
-use rodio::{source::Source, Decoder, OutputStream};
-use std::io::BufReader;
+use dioxus::router::use_router;
 use futures::StreamExt;
-use crate::{
-    Account, WINDOW_SUFFIX_NAME, utils::config::Config, components::ui_kit::loader::Loader, LANGUAGE,
-};
+use rodio::{source::Source, Decoder, OutputStream};
+use std::fs::File;
+use std::io::BufReader;
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]
@@ -59,23 +60,21 @@ pub fn Loading(cx: Scope<Props>) -> Element {
         Err(_) => {
             use_router(&cx).push_route("/auth", None, None);
             true
-        },
+        }
     };
 
-    cx.render(
-        if config.general.show_splash {
-            rsx! {
-                img {
-                    style: "width: 100%",
-                    src: "extra/assets/uplink.gif"
-                }
-            }
-        } else {
-            rsx! {
-                Loader {
-                    text: l.checking_account.clone()
-                }
+    cx.render(if config.general.show_splash {
+        rsx! {
+            img {
+                style: "width: 100%",
+                src: "extra/assets/uplink.gif"
             }
         }
-    )
+    } else {
+        rsx! {
+            Loader {
+                text: l.checking_account.clone()
+            }
+        }
+    })
 }

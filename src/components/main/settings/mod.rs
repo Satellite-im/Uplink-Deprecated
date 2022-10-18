@@ -1,12 +1,21 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{components::{main::settings::{sidebar::Sidebar, pages::{Developer, General}}, ui_kit::icon_button::{IconButton, self}}, Account};
+use crate::{
+    components::{
+        main::settings::{
+            pages::{Developer, General},
+            sidebar::Sidebar,
+        },
+        ui_kit::icon_button::{self, IconButton},
+    },
+    Account,
+};
 
 use self::sidebar::nav::NavEvent;
 
-pub mod sidebar;
 pub mod pages;
+pub mod sidebar;
 
 #[derive(Props)]
 pub struct Props<'a> {

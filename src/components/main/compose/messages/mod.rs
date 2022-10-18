@@ -1,9 +1,7 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
-use warp::{
-    raygun::{Conversation, MessageOptions},
-};
+use warp::raygun::{Conversation, MessageOptions};
 
 #[derive(Props, PartialEq)]
 pub struct Props {

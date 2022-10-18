@@ -1,9 +1,6 @@
-use dioxus::{
-    events::{FormEvent},
-    prelude::*,
-};
-use dioxus_html::KeyCode;
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
+use dioxus_html::KeyCode;
 
 #[derive(PartialEq, Eq)]
 pub enum State {
