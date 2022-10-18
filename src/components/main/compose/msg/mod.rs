@@ -6,7 +6,7 @@ use warp::raygun::Message;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        icon_input::IconInput,
+        icon_textarea::IconTextArea,
     },
     LANGUAGE,
 };
@@ -23,6 +23,11 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Msg(cx: Scope<Props>) -> Element {
     let popout = use_state(&cx, || false);
+    // text has been lifted from the child components into Msg so that
+    // a button press can be used to clear it.
+    let text = use_state(&cx, String::new);
+    // todo: get the submit button working and use `text2.set(String::from(""));` in the callback
+    // let text2 = text.clone();
     let value = cx.props.message.clone().value().join("\n");
     let value2 = value.clone();
     let timestamp = cx.props.message.clone().date();
@@ -95,12 +100,11 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                                 icon: Shape::EmojiHappy,
                                 on_pressed: move |_| {}
                             },
-                            IconInput {
+                            IconTextArea {
                                 icon: Shape::Reply,
-                                value: String::from(""),
                                 placeholder: l.send_a_reply.to_string(),
-                                on_change: move |_| {},
-                                on_enter: move |_| {}
+                                on_submit: move |_| {},
+                                text: text.clone(),
                             }
                             IconButton {
                                 icon: Shape::ArrowRight,

@@ -4,6 +4,7 @@ pub mod button;
 pub mod extension_placeholder;
 pub mod icon_button;
 pub mod icon_input;
+pub mod icon_textarea;
 pub mod input;
 pub mod loader;
 pub mod numeric_indicator;
