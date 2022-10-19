@@ -13,7 +13,15 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::crypto::DID;
 
-use crate::{components::ui_kit::{extension_placeholder::ExtensionPlaceholder, switch::Switch, button::{Button, State}}, Account, utils::config::Config};
+use crate::{
+    components::ui_kit::{
+        button::{Button, State},
+        extension_placeholder::ExtensionPlaceholder,
+        switch::Switch,
+    },
+    utils::config::Config,
+    Account,
+};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -25,10 +33,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
     let mut config = Config::load_config_or_default();
     let c = config.clone();
 
-    let did = if let Ok(ident) = cx.props.account
-        .read()
-        .get_own_identity()
-    {
+    let did = if let Ok(ident) = cx.props.account.read().get_own_identity() {
         ident.did_key().to_string()
     } else {
         DID::default().to_string()

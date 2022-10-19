@@ -5,9 +5,9 @@ use warp::raygun::Message;
 
 use crate::{
     components::ui_kit::{
-    icon_button::{self, IconButton},
-    icon_input::IconInput,
-}, 
+        icon_button::{self, IconButton},
+        icon_input::IconInput,
+    },
     LANGUAGE,
 };
 

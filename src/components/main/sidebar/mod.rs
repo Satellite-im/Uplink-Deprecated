@@ -1,17 +1,21 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{outline::Shape};
+use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
-        main::{sidebar::nav::{Nav, NavEvent}, settings::Settings},
+        main::{
+            settings::Settings,
+            sidebar::nav::{Nav, NavEvent},
+        },
         ui_kit::{
-            button::{Button}, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
         },
     },
     state::Actions,
-    Account, Messaging, STATE, LANGUAGE, utils::config::Config
+    utils::config::Config,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;

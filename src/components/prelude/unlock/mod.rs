@@ -97,7 +97,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     span {
                         class: "pin_tooltip",
                         Tooltip {
-                            text: auth_text.to_string(),
+                            text: auth_text,
                             arrow_position: ArrowPosition::Top
                         }
                     }

@@ -1,6 +1,7 @@
 use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
+
 use futures::StreamExt;
 use warp::raygun::{Conversation, MessageEventKind, MessageOptions, RayGun, RayGunStream};
 

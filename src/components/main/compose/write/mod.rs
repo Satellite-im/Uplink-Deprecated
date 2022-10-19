@@ -1,13 +1,14 @@
-use dioxus::{prelude::*};
-use dioxus_html::KeyCode;
-use dioxus_heroicons::outline::Shape;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         small_extension_placeholder::SmallExtensionPlaceholder,
     },
-    LANGUAGE, utils::config::Config,
+    utils::config::Config,
+    LANGUAGE,
 };
+use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use dioxus_html::KeyCode;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -45,7 +46,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             });
         })()"#;
 
-    let text = use_state(&cx,  String::new);
+    let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {

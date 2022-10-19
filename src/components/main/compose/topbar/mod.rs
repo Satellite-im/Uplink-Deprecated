@@ -4,7 +4,8 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    Account, utils::config::Config,
+    utils::config::Config,
+    Account,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
@@ -30,7 +31,13 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // TODO: Make this more dynamic to include multiple PFPs and usernames.
     // Consider code in this todo temporary and only supportive of 2 way convos
 
-    let display_did = cx.props.conversation.recipients().last().cloned().unwrap_or_default();
+    let display_did = cx
+        .props
+        .conversation
+        .recipients()
+        .last()
+        .cloned()
+        .unwrap_or_default();
 
     let display_user = mp
         .read()

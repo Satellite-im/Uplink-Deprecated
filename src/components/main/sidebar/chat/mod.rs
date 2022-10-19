@@ -1,9 +1,9 @@
-use dioxus::prelude::*;
-use warp::raygun::Conversation;
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    LANGUAGE, STATE, Account,
+    Account, LANGUAGE, STATE,
 };
+use dioxus::prelude::*;
+use warp::raygun::Conversation;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -16,7 +16,6 @@ pub struct Props<'a> {
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
-
 
     let mp = cx.props.account.clone();
 

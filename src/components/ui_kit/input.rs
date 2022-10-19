@@ -1,6 +1,6 @@
 use dioxus::{events::FormEvent, prelude::*};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum State {
     Success,
     Danger,
