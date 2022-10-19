@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use sir::global_css;
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     #[props(optional)]
     large: Option<bool>,

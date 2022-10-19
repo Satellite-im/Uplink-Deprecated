@@ -1,8 +1,8 @@
 use std::fs;
-use std::io::{Write, Error};
+use std::io::{Error, Write};
 
-use serde::{Deserialize, Serialize};
 use crate::DEFAULT_PATH;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
@@ -10,13 +10,13 @@ pub struct Config {
     pub privacy: Privacy,
     pub audiovideo: AudioVideo,
     pub extensions: Extensions,
-    pub developer: Developer
+    pub developer: Developer,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Privacy {
     pub satellite_sync_nodes: bool,
-    pub safer_file_scanning: bool
+    pub safer_file_scanning: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -27,39 +27,49 @@ pub struct General {
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct AudioVideo {
-    pub noise_suppression: bool
+    pub noise_suppression: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct Extensions {
-    pub enable: bool
+    pub enable: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Developer {
     pub developer_mode: bool,
-    pub cache_dir: String
+    pub cache_dir: String,
 }
 
 // Implementation to create, load and save the config
 impl Config {
     fn default() -> Self {
         Self {
-            general: General { theme: String::from("default"), show_splash: true },
-            privacy: Privacy { satellite_sync_nodes: true, safer_file_scanning: true },
+            general: General {
+                theme: String::from("default"),
+                show_splash: true,
+            },
+            privacy: Privacy {
+                satellite_sync_nodes: true,
+                safer_file_scanning: true,
+            },
             extensions: Extensions { enable: true },
-            audiovideo: AudioVideo { noise_suppression: false },
-            developer: Developer { developer_mode: false, cache_dir: String::from(".warp") }
+            audiovideo: AudioVideo {
+                noise_suppression: false,
+            },
+            developer: Developer {
+                developer_mode: false,
+                cache_dir: String::from(".warp"),
+            },
         }
     }
 
-    pub fn new_file(){
+    pub fn new_file() {
         let toml = toml::to_string(&Config::default()).unwrap();
-        if !fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_ok() {
-           fs::write(DEFAULT_PATH.read().join("Config.toml"), toml).unwrap();
+        if fs::metadata(DEFAULT_PATH.read().join("Config.toml")).is_err() {
+            fs::write(DEFAULT_PATH.read().join("Config.toml"), toml).unwrap();
         }
     }
-
 
     pub fn load_config_or_default() -> Config {
         let binding = DEFAULT_PATH.read().join("Config.toml");

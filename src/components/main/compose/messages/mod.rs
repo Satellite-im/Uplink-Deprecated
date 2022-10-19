@@ -2,7 +2,8 @@ use crate::{components::main::compose::msg::Msg, Account, Messaging};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use warp::{
-    raygun::{Conversation, MessageOptions},
+    multipass::MultiPass,
+    raygun::{Conversation, MessageOptions, RayGun},
 };
 
 #[derive(Props, PartialEq)]
@@ -23,15 +24,14 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let messages = use_future(&cx, (), |_| async move {
-        rg.read()
-            .get_messages(conversation_id, MessageOptions::default())
+        rg.get_messages(conversation_id, MessageOptions::default())
             .await
     });
 
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity
-    let ident = mp.read().get_own_identity().unwrap();
+    let ident = mp.get_own_identity().unwrap();
 
     let element = cx.render(match messages.value() {
         Some(Ok(list)) => {

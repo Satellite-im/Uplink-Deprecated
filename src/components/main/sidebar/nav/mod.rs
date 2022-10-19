@@ -2,8 +2,9 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
 use crate::{
-    components::{
-        ui_kit::{icon_button::{self, IconButton}, numeric_indicator::NumericIndicator},
+    components::ui_kit::{
+        icon_button::{self, IconButton},
+        numeric_indicator::NumericIndicator,
     },
     Account,
 };
@@ -26,7 +27,13 @@ pub struct Props<'a> {
 pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Total incoming request count
     let requests = use_state(&cx, Vec::new);
-    requests.set(cx.props.account.read().list_incoming_request().unwrap_or_default());
+    requests.set(
+        cx.props
+            .account
+            .read()
+            .list_incoming_request()
+            .unwrap_or_default(),
+    );
     let reqCount: usize = requests.len();
     cx.render(rsx! {
         div {

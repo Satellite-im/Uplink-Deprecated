@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 // Remember: owned props must implement PartialEq!
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     pin: Vec<u8>,
     error: bool,
@@ -18,7 +18,7 @@ pub fn Pin(cx: Scope<Props>) -> Element {
     }
     // TODO: clean this up with an iterator
     let classes = (
-        if cx.props.pin.get(0).is_some() {
+        if cx.props.pin.first().is_some() {
             active_or_error
         } else {
             "inactive"

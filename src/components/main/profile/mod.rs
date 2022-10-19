@@ -15,7 +15,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-
     // Read their values from locks
     let mp = cx.props.account.clone();
 

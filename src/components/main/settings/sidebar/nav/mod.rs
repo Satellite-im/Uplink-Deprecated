@@ -57,7 +57,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 disabled: false,
                 on_pressed: |_| {
                     active_item.set(NavEvent::General);
-                    let _ = cx.props.on_pressed.call(NavEvent::General);
+                    cx.props.on_pressed.call(NavEvent::General);
                 }
             },
             NavButton {
@@ -66,7 +66,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 disabled: true,
                 on_pressed: |_| {
                     active_item.set(NavEvent::Privacy);
-                    let _ = cx.props.on_pressed.call(NavEvent::Privacy);
+                    cx.props.on_pressed.call(NavEvent::Privacy);
                 }
             },
             NavButton {
@@ -75,7 +75,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 disabled: true,
                 on_pressed: |_| {
                     active_item.set(NavEvent::AudioVideo);
-                    let _ = cx.props.on_pressed.call(NavEvent::AudioVideo);
+                    cx.props.on_pressed.call(NavEvent::AudioVideo);
                 }
             },
             NavButton {
@@ -84,7 +84,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 disabled: true,
                 on_pressed: |_| {
                     active_item.set(NavEvent::Extensions);
-                    let _ = cx.props.on_pressed.call(NavEvent::Extensions);
+                    cx.props.on_pressed.call(NavEvent::Extensions);
                 }
             },
             NavButton {
@@ -93,7 +93,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 disabled: false,
                 on_pressed: |_| {
                     active_item.set(NavEvent::Developer);
-                    let _ = cx.props.on_pressed.call(NavEvent::Developer);
+                    cx.props.on_pressed.call(NavEvent::Developer);
                 }
             }
         }
