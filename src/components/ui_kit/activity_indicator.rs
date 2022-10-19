@@ -17,16 +17,14 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
     let account = cx.props.account.clone();
     let remote_did = cx.props.remote_did.clone();
 
-    use_future(&cx, (&account, status), |(account, status)| {
-        async move {
-            loop {
-                if let Ok(current_status) = account.identity_status(&remote_did) {
-                    if *status != current_status {
-                        status.set(current_status);
-                    }
+    use_future(&cx, (&account, status), |(account, status)| async move {
+        loop {
+            if let Ok(current_status) = account.identity_status(&remote_did) {
+                if *status != current_status {
+                    status.set(current_status);
                 }
-                tokio::time::sleep(std::time::Duration::from_millis(300)).await;
             }
+            tokio::time::sleep(std::time::Duration::from_millis(300)).await;
         }
     });
 

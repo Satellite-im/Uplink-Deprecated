@@ -93,40 +93,40 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     });
 
     cx.render({
-            let mut prev_sender = "".to_string();
-            rsx! {
+        let mut prev_sender = "".to_string();
+        rsx! {
+            div {
+                class: "messages",
+                messages.read().iter().rev().map(|message|{
+                    let msg_sender = message.sender().to_string();
+                    let i = ident.did_key().to_string();
+                    let remote = i != msg_sender;
+                    let last = prev_sender != msg_sender;
+                    let middle = prev_sender == msg_sender;
+                    let first = false;
+
+                    prev_sender = message.sender().to_string();
+
+                    rsx!(
+                        Msg {
+                            message: message.clone(),
+                            remote: remote,
+                            last: last,
+                            first: first,
+                            middle: middle,
+                        }
+                    )
+                })
                 div {
-                    class: "messages",
-                    messages.read().iter().rev().map(|message|{
-                        let msg_sender = message.sender().to_string();
-                        let i = ident.did_key().to_string();
-                        let remote = i != msg_sender;
-                        let last = prev_sender != msg_sender;
-                        let middle = prev_sender == msg_sender;
-                        let first = false;
-
-                        prev_sender = message.sender().to_string();
-
-                        rsx!(
-                            Msg {
-                                message: message.clone(),
-                                remote: remote,
-                                last: last,
-                                first: first,
-                                middle: middle,
-                            }
-                        )
-                    })
-                    div {
-                        class: "encrypted-notif",
-                        Icon {
-                            icon: Shape::LockClosed
-                        }
-                        p {
-                            "Messages secured by local E2E encryption."
-                        }
+                    class: "encrypted-notif",
+                    Icon {
+                        icon: Shape::LockClosed
+                    }
+                    p {
+                        "Messages secured by local E2E encryption."
                     }
                 }
             }
+        }
     })
 }

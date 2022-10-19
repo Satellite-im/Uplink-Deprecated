@@ -1,7 +1,7 @@
 use clap::Parser;
 use core::time;
-use std::ops::{Deref, DerefMut};
 use dioxus::desktop::tao;
+use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
@@ -42,7 +42,8 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
+    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
