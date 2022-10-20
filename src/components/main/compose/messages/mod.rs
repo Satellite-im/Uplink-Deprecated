@@ -50,15 +50,18 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         let mut stream = loop {
             match rg.get_conversation_stream(ext_conversation_id).await {
                 Ok(stream) => break stream,
-                Err(warp::error::Error::RayGunExtensionUnavailable) => {
-                    //Give sometime for everything in the background to fully line up
-                    //Note, if this error still happens, it means there is an fatal error
-                    //      in the background
-                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-                    continue;
-                }
-                //TODO: Provide error in some way.
-                Err(_e) => return,
+                Err(e) => match &e {
+                    warp::error::Error::RayGunExtensionUnavailable => {
+                        //Give sometime for everything in the background to fully line up
+                        //Note, if this error still happens, it means there is an fatal error
+                        //      in the background
+                        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                    }
+                    _ => {
+                        eprintln!("failed to get_conversation_stream: {}", e);
+                        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                    }
+                },
             }
         };
         let messages = rg
