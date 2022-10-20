@@ -29,7 +29,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let warningMessage = l.prerelease_warning.to_string();
 
     let blur = state.read().chat.is_none();
-    let text = use_state(&cx, || String::from(""));
+    let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
     cx.render(rsx! {
@@ -87,11 +87,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         if let Some(id) = ext_conversation_id {
                             // TODO: We need to wire this message up to display differently
                             // until we confim whether it was successfully sent or failed
-                            match warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
-                                Ok(_) => {},
-                                Err(_e) => {
-                                    //TODO: Handle error?
-                                }
+                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                //TODO: Handle error
                             };
                         }
                     },

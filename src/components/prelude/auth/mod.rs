@@ -24,9 +24,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
-    let username = use_state(&cx, || String::from(""));
+    let username = use_state(&cx, String::new);
     let valid_username = username.len() >= 4;
-    let error = use_state(&cx, || String::from(""));
+    let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {

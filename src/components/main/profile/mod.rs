@@ -47,8 +47,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     );
 
     let edit = use_state(&cx, || false);
-    let status = use_state(&cx, || String::from(""));
-    let disabled = status.len() == 0;
+    let status = use_state(&cx, String::new);
+    let disabled = status.is_empty();
 
     let set_status = move |_: _| {
         let mp = mp.clone();
