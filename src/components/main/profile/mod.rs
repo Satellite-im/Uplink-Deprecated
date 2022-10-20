@@ -28,14 +28,27 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let username = my_identity.username();
     let badges = my_identity.available_badges();
-    let friends = use_state(&cx, Vec::new);
-    friends.set(mp.read().list_friends().unwrap_or_default());
+    let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
+    let friend_count = use_state(&cx, || friends.clone().len());
 
-    let friend_count = friends.clone().len();
+    use_future(
+        &cx,
+        (friends, &mp, friend_count),
+        |(friends, mp, friend_count)| async move {
+            loop {
+                let list = mp.read().list_friends().unwrap_or_default();
+                if *friends != list {
+                    friend_count.set(list.len());
+                    friends.set(list);
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+            }
+        },
+    );
 
     let edit = use_state(&cx, || false);
-    let status = use_state(&cx, || String::from(""));
-    let disabled = status.len() == 0;
+    let status = use_state(&cx, String::new);
+    let disabled = status.is_empty();
 
     let set_status = move |_: _| {
         let mp = mp.clone();
