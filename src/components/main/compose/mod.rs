@@ -7,7 +7,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, PageState, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
@@ -15,6 +15,7 @@ pub struct Props {
     account: Account,
     messaging: Messaging,
     conversation: Conversation,
+    page_state: UseState<PageState>,
 }
 
 pub mod messages;
@@ -35,6 +36,15 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, || String::from(""));
     let show_warning = use_state(&cx, || true);
+
+    match cx.props.page_state.get() {
+        PageState::Normal => {
+            // todo: render normally
+        }
+        PageState::Settings => {
+            // todo: render settings
+        }
+    }
 
     cx.render(rsx! {
         div {

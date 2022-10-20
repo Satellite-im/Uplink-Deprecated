@@ -1,7 +1,8 @@
 use std::time::Duration;
 
 use crate::{
-    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, STATE,
+    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, PageState,
+    STATE,
 };
 use dioxus::prelude::*;
 use warp::raygun::{Conversation, RayGun};
@@ -21,6 +22,7 @@ pub struct Prop {
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
     let state = use_atom_ref(&cx, STATE);
+    let page_state = use_state(&cx, || PageState::Normal);
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -49,12 +51,14 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             class: "main",
             Sidebar {
                 messaging: cx.props.messaging.clone(),
-                account: cx.props.account.clone()
+                account: cx.props.account.clone(),
+                page_state: page_state.clone(),
             },
             Compose {
                 account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone(),
                 conversation: conversation
+                page_state: page_state.clone(),
             },
         }
     })

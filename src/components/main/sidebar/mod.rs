@@ -15,7 +15,7 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, PageState, LANGUAGE, STATE,
 };
 
 pub mod chat;
@@ -25,6 +25,7 @@ pub mod nav;
 pub struct Props {
     account: Account,
     messaging: Messaging,
+    page_state: UseState<PageState>,
 }
 
 #[allow(non_snake_case)]
@@ -43,6 +44,15 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
+
+    match cx.props.page_state.get() {
+        PageState::Normal => {
+            // todo: render normally
+        }
+        PageState::Settings => {
+            // todo: render settings
+        }
+    }
 
     cx.render(rsx!{
         div {
@@ -138,11 +148,13 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
+            // todo: move this out
             (**show_settings).then(|| rsx!{
                 Settings {
                     account: cx.props.account.clone(),
                     on_hide: move |_| {
-                        show_settings.set(false);
+                        //show_settings.set(false);
+                        cx.props.page_state.set(PageState::Normal);
                     },
                 },
             }),
@@ -165,7 +177,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             show_profile.set(true);
                         },
                         NavEvent::Settings => {
-                            show_settings.set(true);
+                            //show_settings.set(true);
+                            cx.props.page_state.set(PageState::Settings);
                         },
                     }
                 }

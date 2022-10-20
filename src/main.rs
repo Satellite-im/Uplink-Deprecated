@@ -265,3 +265,9 @@ impl PartialEq for Messaging {
         self.0.is_locked() == other.0.is_locked()
     }
 }
+
+#[derive(Clone, PartialEq, Eq)]
+pub enum PageState {
+    Normal,
+    Settings,
+}
