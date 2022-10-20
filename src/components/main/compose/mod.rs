@@ -5,7 +5,7 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::{Conversation, RayGun};
+use warp::raygun::RayGun;
 
 use crate::{
     components::{
@@ -19,13 +19,12 @@ use crate::{
 pub struct Props {
     account: Account,
     messaging: Messaging,
-    conversation: Conversation,
 }
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let ext_conversation_id = cx.props.conversation.id();
+    let ext_conversation_id = state.read().chat.as_ref().map(|c| c.id());
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
 
@@ -46,7 +45,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 rsx!(
                     TopBar {
                         account: cx.props.account.clone(),
-                        conversation: cx.props.conversation.clone(),
                         on_call: move |_| {},
                     }
                 )
@@ -69,7 +67,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 Messages {
                     account: cx.props.account.clone(),
                     messaging: cx.props.messaging.clone(),
-                    conversation: cx.props.conversation.clone(),
                 }
                 div { class: "gradient_mask is_bottom" },
             },
@@ -86,14 +83,17 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
 
-                        // TODO: We need to wire this message up to display differently
-                        // until we confim whether it was successfully sent or failed
-                        match warp::async_block_in_place_uncheck(rg.send(ext_conversation_id, None, text_as_vec)) {
-                            Ok(_) => {},
-                            Err(_e) => {
-                                //TODO: Handle error?
-                            }
-                        };
+                        // clicking the send button is meaningless if there isn't a conversation. 
+                        if let Some(id) = ext_conversation_id {
+                            // TODO: We need to wire this message up to display differently
+                            // until we confim whether it was successfully sent or failed
+                            match warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                Ok(_) => {},
+                                Err(_e) => {
+                                    //TODO: Handle error?
+                                }
+                            };
+                        }
                     },
                     on_upload: move |_| {}
                 }
