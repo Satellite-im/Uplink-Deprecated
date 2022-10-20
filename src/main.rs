@@ -229,7 +229,8 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
+            Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } }, 
+            Route { to: "/settings", components::main::settings::Settings { account: cx.props.account.clone(), on_hide: |_| {} } },
         }
     ))
 }
