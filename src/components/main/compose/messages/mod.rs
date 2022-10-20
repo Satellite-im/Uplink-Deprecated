@@ -46,7 +46,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             tokio::time::sleep(std::time::Duration::from_millis(10)).await;
                         }
                         _ => {
-                            eprintln!("failed to get_conversation_stream: {}", e);
+                            // todo: properly report this error
+                            // eprintln!("failed to get_conversation_stream: {}", e);
                             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
                         }
                     },
