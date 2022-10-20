@@ -39,17 +39,17 @@ pub fn Loading(cx: Scope<Props>) -> Element {
     let _account_fetch_status = match multipass.read().get_own_identity() {
         Ok(i) => {
             if *loaded.get() {
-                // if config.general.show_splash {
-                //     // Get a output stream handle to the default physical sound device
-                //     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-                //     // Load a sound from a file, using a path relative to Cargo.toml
-                //     let file = BufReader::new(File::open("extra/assets/uplink.mp3").unwrap());
-                //     // Decode that sound file into a source
-                //     let source = Decoder::new(file).unwrap();
-                //     // Play the sound directly on the device
-                //     let _ = stream_handle.play_raw(source.convert_samples());
-                //     std::thread::sleep(std::time::Duration::from_secs(2));
-                // }
+                if config.general.show_splash {
+                    // Get a output stream handle to the default physical sound device
+                    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
+                    // Load a sound from a file, using a path relative to Cargo.toml
+                    let file = BufReader::new(File::open("extra/assets/uplink.mp3").unwrap());
+                    // Decode that sound file into a source
+                    let source = Decoder::new(file).unwrap();
+                    // Play the sound directly on the device
+                    let _ = stream_handle.play_raw(source.convert_samples());
+                    std::thread::sleep(std::time::Duration::from_secs(2));
+                }
                 window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
                 use_router(&cx).push_route("/main", None, None);
             } else {
