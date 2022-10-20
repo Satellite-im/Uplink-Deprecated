@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use arboard::Clipboard;
 
 use dioxus::{
@@ -8,8 +10,6 @@ use dioxus::{
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_toast::{Position, ToastInfo};
 
-use warp::crypto::DID;
-
 use crate::{
     components::{
         main::friends::{friend::Friend, request::FriendRequest},
@@ -17,6 +17,8 @@ use crate::{
     },
     Account, Messaging, LANGUAGE, TOAST_MANAGER,
 };
+use warp::crypto::DID;
+use warp::multipass::Friends;
 
 pub mod friend;
 pub mod request;
@@ -44,14 +46,66 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let add_error = use_state(&cx, || "");
     let remote_friend = use_state(&cx, String::new);
 
-    let friends = use_state(&cx, Vec::new);
-    friends.set(mp.read().list_friends().unwrap_or_default());
+    let friends = use_state(&cx, || mp.list_friends().unwrap_or_default());
+    let incoming = use_state(&cx, || mp.list_incoming_request().unwrap_or_default());
+    let outgoing = use_state(&cx, || mp.list_outgoing_request().unwrap_or_default());
 
-    let requests = use_state(&cx, Vec::new);
-    requests.set(mp.read().list_incoming_request().unwrap_or_default());
+    use_future(
+        &cx,
+        (friends, incoming, outgoing, &mp),
+        |(friends, incoming, outgoing, mp)| async move {
+            // let mut stream = match mp.subscribe() {
+            //     Ok(stream) => stream,
+            //     Err(_) => return,
+            // };
 
-    let outgoing = use_state(&cx, Vec::new);
-    outgoing.set(mp.read().list_outgoing_request().unwrap_or_default());
+            // while let Some(event) = stream.next().await {
+            //     match event {
+            //         warp::multipass::MultiPassEventKind::FriendRequestReceived { .. } => {
+            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
+            //         }
+            //         warp::multipass::MultiPassEventKind::FriendRequestRejected { .. } => {
+            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
+            //         }
+            //         warp::multipass::MultiPassEventKind::FriendRequestClosed { .. } => {
+            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
+            //             outgoing.set(mp.list_incoming_request().unwrap_or_default());
+            //         }
+            //         warp::multipass::MultiPassEventKind::FriendAdded { did } => {
+            //             if mp.has_friend(&did).is_ok() {
+            //                 friends.needs_update();
+            //             }
+            //         }
+            //         warp::multipass::MultiPassEventKind::FriendRemoved { did } => {
+            //             if mp.has_friend(&did).is_err() {
+            //                 friends.needs_update();
+            //             }
+            //         }
+            //         _ => {}
+            //     }
+            // }
+
+            loop {
+                let friends_list = mp.read().list_friends().unwrap_or_default();
+                let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
+                let outgoing_list = mp.read().list_outgoing_request().unwrap_or_default();
+
+                if *friends != friends_list {
+                    friends.set(friends_list);
+                }
+
+                if *incoming != incoming_list {
+                    incoming.set(incoming_list);
+                }
+
+                if *outgoing != outgoing_list {
+                    outgoing.set(outgoing_list);
+                }
+
+                tokio::time::sleep(Duration::from_millis(300)).await;
+            }
+        },
+    );
 
     cx.render(rsx! {
         Popup {
@@ -189,12 +243,12 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div { class: "gradient_mask is_bottom is_foreground" },
                         div {
                             class: "scrolling",
-                            (requests.len() > 0).then(|| rsx!(
+                            (incoming.len() > 0).then(|| rsx!(
                                 label {
                                 "{incomingRequestsLang}"
                                 },
                                 div {
-                                    requests.iter().map(|request| rsx!(
+                                    incoming.iter().map(|request| rsx!(
                                         FriendRequest {
                                             account: cx.props.account.clone(),
                                             request: request.clone(),

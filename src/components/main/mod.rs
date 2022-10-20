@@ -4,7 +4,7 @@ use crate::{
     components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
-use warp::raygun::{Conversation, RayGun};
+use warp::raygun::RayGun;
 
 pub mod compose;
 pub mod friends;
@@ -26,7 +26,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     let rg = cx.props.messaging.clone();
 
     let st = state.clone();
-    cx.spawn(async move {
+    use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
                 if !list.is_empty() && st.read().chats != list {
@@ -39,11 +39,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         }
     });
 
-    let conversation = match state.read().chat.clone() {
-        Some(c) => c,
-        None => Conversation::default(),
-    };
-
     cx.render(rsx! {
         div {
             class: "main",
@@ -54,7 +49,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             Compose {
                 account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone(),
-                conversation: conversation
             },
         }
     })
