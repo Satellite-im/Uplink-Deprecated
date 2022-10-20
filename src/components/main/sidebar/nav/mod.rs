@@ -67,16 +67,13 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 state: icon_button::State::Secondary,
                 icon: Shape::UserCircle
             },
-            Link {
-                to: "/settings",
-                IconButton {
-                    on_pressed: move |_| {
-                        //let _ = &cx.props.on_pressed.call(NavEvent::Settings);
-                    },
-                    state: icon_button::State::Secondary,
-                    icon: Shape::Cog
+            IconButton {
+                on_pressed: move |_| {
+                    let _ = &cx.props.on_pressed.call(NavEvent::Settings);
                 },
-            }
+                state: icon_button::State::Secondary,
+                icon: Shape::Cog
+            },
         }
     })
 }

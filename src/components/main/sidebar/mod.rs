@@ -138,14 +138,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
-            //(**show_settings).then(|| rsx!{
-            //    Settings {
-            //        account: cx.props.account.clone(),
-            //        on_hide: move |_| {
-            //            show_settings.set(false);
-            //        },
-            //    },
-            //}),
+            (**show_settings).then(|| rsx!{
+                Settings {
+                    account: cx.props.account.clone(),
+                    on_hide: move |_| {
+                        show_settings.set(false);
+                    },
+                },
+            }),
             Nav {
                 account: cx.props.account.clone(),
                 on_pressed: move | e: NavEvent | {

@@ -57,12 +57,11 @@ pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                         div {
                             class: "content",
-                            rsx!(Developer { account: cx.props.account.clone() }),
-                            //match active_page.get() {
-                            //    NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
-                            //    NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
-                            //    _ => rsx!(Developer { account: cx.props.account.clone() }),
-                            //}
+                            match active_page.get() {
+                                NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
+                                NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
+                                _ => rsx!(Developer { account: cx.props.account.clone() }),
+                            }
                         }
                     }
                 }
