@@ -266,7 +266,7 @@ impl PartialEq for Messaging {
     }
 }
 
-#[derive(Clone, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 pub enum PageState {
     Normal,
     Settings,
