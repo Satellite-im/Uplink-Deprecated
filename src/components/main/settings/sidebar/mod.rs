@@ -19,12 +19,12 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = Config::load_config_or_default();
 
     cx.render(rsx! {
         div {
-            id: "sidebar",
+            id: "settings_sidebar",
             IconInput {
                 icon: Shape::Search,
                 placeholder: String::from("Search"),

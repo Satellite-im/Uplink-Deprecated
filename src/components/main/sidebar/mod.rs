@@ -5,7 +5,8 @@ use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
         main::{
-            settings::Settings,
+            settings::sidebar::SettingsSidebar,
+            settings::sidebar::nav::NavEvent as settingsNav,
             sidebar::nav::{Nav, NavEvent},
         },
         ui_kit::{
@@ -15,12 +16,13 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, PageState, LANGUAGE, STATE,
 };
 
 pub mod chat;
 pub mod nav;
 
+// use main::settings::sidebar::nav::NavEvent;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
@@ -33,7 +35,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let show_settings = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
@@ -44,7 +45,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
 
-    cx.render(rsx!{
+    cx.render(rsx! {
         div {
             class: "sidebar",
             IconInput {
@@ -56,7 +57,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             },
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
-            })
+            }),
             label {
                 "{favString}"
             },
@@ -138,21 +139,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 show: *show_profile.clone(),
                 on_hide: move |_| show_profile.set(false),
             },
-            (**show_settings).then(|| rsx!{
-                Settings {
-                    account: cx.props.account.clone(),
-                    on_hide: move |_| {
-                        show_settings.set(false);
-                    },
-                },
-            }),
             Nav {
                 account: cx.props.account.clone(),
                 on_pressed: move | e: NavEvent | {
                     show_friends.set(false);
                     show_profile.set(false);
-                    show_settings.set(false);
-
                     match e {
                         NavEvent::Home => {
                         },
@@ -165,9 +156,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             show_profile.set(true);
                         },
                         NavEvent::Settings => {
-                            show_settings.set(true);
+                            use_router(&cx).push_route("/settings", None, None);
                         },
-                    }
+                    };
                 }
             }
         }
