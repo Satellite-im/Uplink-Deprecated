@@ -16,21 +16,33 @@ use self::sidebar::nav::NavEvent;
 pub mod pages;
 pub mod sidebar;
 
-#[derive(Props)]
-pub struct Props<'a> {
+#[derive(Props, PartialEq)]
+pub struct Props {
     account: Account,
-    on_hide: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
-pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+pub fn Settings(cx: Scope<Props>) -> Element {
     let active_page = use_state(&cx, || NavEvent::Developer);
 
     cx.render(rsx! {
         div {
             id: "settings",
+            sidebar::SettingsSidebar {
+                on_pressed: move |ne| {
+                    active_page.set(ne);
+                },
+            },
             div {
                 id: "content",
+                div {
+                    style: "align-self: flex-end; padding: 1rem; padding-bottom: 0;",
+                    IconButton {
+                        on_pressed: move |_| use_router(&cx).push_route("/main", None, None),
+                        icon: Shape::X,
+                        state: icon_button::State::Secondary,
+                    },
+                },
                 div {
                     id: "page",
                     div {

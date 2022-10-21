@@ -2,7 +2,7 @@
     z-index: 100;
     display: flex;
     flex: 1;
-    flex-direction: column;
+    flex-direction: row;
     height: 100%;
     width: 100%;
     background-color: var(--theme-background);
@@ -25,7 +25,7 @@
         z-index: 2;
         top: 2.5%;
         left: 2.5%;
-        flex-direction: row;
+        flex-direction: column;
         #page {
             width: 100%;
             .wrapper {
@@ -34,7 +34,6 @@
                 flex: 1;
                 padding: 1rem;
                 flex-direction: column;
-
                 .close_wrapper {
                     min-width: 100%;
                     min-height: 45px;
