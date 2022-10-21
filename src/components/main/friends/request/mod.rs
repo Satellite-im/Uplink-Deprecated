@@ -7,7 +7,8 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    }, Account,
+    },
+    Account,
 };
 
 #[derive(Props)]

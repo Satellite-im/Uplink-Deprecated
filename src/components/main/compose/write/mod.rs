@@ -1,13 +1,14 @@
-use dioxus::{prelude::*};
-use dioxus_html::KeyCode;
-use dioxus_heroicons::outline::Shape;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         small_extension_placeholder::SmallExtensionPlaceholder,
     },
-    LANGUAGE, utils::config::Config,
+    utils::config::Config,
+    LANGUAGE,
 };
+use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use dioxus_html::KeyCode;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -19,10 +20,9 @@ pub struct Props<'a> {
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = Config::load_config_or_default();
 
-    let script = use_state(&cx, String::new);
     // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
-    script.set(
-        "(function addAutoResize() {
+    let script = r#"
+        (function addAutoResize() {
             document.querySelectorAll('.resizeable-textarea').forEach(function (element) {
                 let send_button = document.getElementById('send');
                 send_button.addEventListener('click', function(event) {
@@ -44,11 +44,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 });
                 element.removeAttribute('data-autoresize');
             });
-        })()"
-            .to_string(),
-    );
+        })()"#;
 
-    let text = use_state(&cx,  String::new);
+    let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {

@@ -1,13 +1,11 @@
 use clap::Parser;
-use dioxus::desktop::tao;
 use core::time;
-use std::collections::HashMap;
-use std::ops::Deref;
+use dioxus::desktop::tao;
+use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use tracing_subscriber::EnvFilter;
-use dirs;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -17,6 +15,7 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
+use utils::config::Config;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
@@ -24,10 +23,9 @@ use warp::tesseract::Tesseract;
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
-use utils::config::Config;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock, loading};
+use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
 pub mod extensions;
@@ -45,8 +43,11 @@ mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
-pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
+
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
+    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
+pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
+
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
@@ -204,7 +205,6 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
-    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -235,6 +235,10 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+            Route { to: "/settings", main::settings::Settings {
+                    account: cx.props.account.clone(),
+                },
+            },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
@@ -247,6 +251,12 @@ impl Deref for Account {
     type Target = Arc<RwLock<Box<dyn MultiPass>>>;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl DerefMut for Account {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
@@ -266,8 +276,20 @@ impl Deref for Messaging {
     }
 }
 
+impl DerefMut for Messaging {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 impl PartialEq for Messaging {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }
+}
+
+#[derive(PartialEq, Eq)]
+pub enum PageState {
+    Normal,
+    Settings,
 }

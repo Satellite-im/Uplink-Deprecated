@@ -66,3 +66,6 @@ copyright = "Copyright (c) Satellite.IM Inc."
 categories = ["gui", "filesystem", "multimedia", "cryptography::cryptocurrencies"]
 short_description = "GUI implementation of the Warp protocol."
 long_description = ""
+
+[target.'cfg(windows)'.build-dependencies]
+winres = "0.1.12"

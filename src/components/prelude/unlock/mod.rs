@@ -9,7 +9,7 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
-        tooltip::{self, ArrowPosition, Tooltip},
+        tooltip::{ArrowPosition, Tooltip},
     },
     LANGUAGE,
 };
@@ -25,9 +25,9 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
 
-    let pin = use_state(&cx, || String::from(""));
+    let pin = use_state(&cx, String::new);
     let show_tip = use_state(&cx, || false);
-    let error = use_state(&cx, || String::from(""));
+    let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {
@@ -40,8 +40,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     } else {
         "confirm-button has-error"
     };
-
-    let valid_pin = pin.len() > 3;
 
     let tesseract_available = cx.props.tesseract.exist("keypair");
 
@@ -99,7 +97,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     span {
                         class: "pin_tooltip",
                         Tooltip {
-                            text: auth_text.to_string(),
+                            text: auth_text,
                             arrow_position: ArrowPosition::Top
                         }
                     }
