@@ -26,8 +26,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
     // text has been lifted from the child components into Msg so that
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
-    // todo: get the submit button working and use `text2.set(String::from(""));` in the callback
-    // let text2 = text.clone();
+    let text2 = text.clone();
     let value = cx.props.message.clone().value().join("\n");
     let value2 = value.clone();
     let timestamp = cx.props.message.clone().date();
@@ -109,7 +108,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             IconButton {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
-                                on_pressed: move |_| {}
+                                on_pressed: move |_| {text2.set(String::from(""));}
                             },
                         }
                     }

@@ -5,15 +5,10 @@ use dioxus_html::KeyCode;
 const RESIZE_TEXTAREA_SCRIPT: &str = r#"
  (function addAutoResize() {
      document.querySelectorAll('.resizeable-textarea').forEach(function (element) {
-         let send_button = document.getElementById('send');
-         send_button.addEventListener('click', function(event) {
-             element.value = '';
-             event.target.style.height = 'auto';
-         });
-
+        
          element.addEventListener('keyup', function(event) {
              if (event.keyCode === 13 && !event.shiftKey) {
-                 event.target.value = '';
+                 
                  event.target.style.height = 'auto';
              }
          });
@@ -37,19 +32,26 @@ pub fn TextArea<'a>(
     text: UseState<String>,
     placeholder: String,
 ) -> Element<'a> {
+    let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
     cx.render(rsx! {
         textarea {
             class: "input resizeable-textarea",
             oninput: move |e| {
-                text.set(e.value.clone());
+                if !clearing_state.get() {
+                    text.set(e.value.clone());
+                } else {
+                    clearing_state.set(false);
+                }
             },
-            onkeypress: move |evt| {
+            onkeydown: move |evt| {
                 if evt.key_code == KeyCode::Enter && !evt.shift_key {
                     on_submit.call(text.to_string());
                     text.set(String::from(""));
+                    clearing_state.set(true);
                 }
             },
-            placeholder: "{placeholder}"
+            placeholder: "{placeholder}",
+            value: "{text}"
         }
         script {
             dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
