@@ -8,9 +8,6 @@ use dioxus::prelude::*;
 use dioxus::router::use_router;
 use futures::StreamExt;
 
-
-
-
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]
 pub struct Props {
