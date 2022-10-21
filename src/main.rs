@@ -231,6 +231,10 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+            Route { to: "/settings", main::settings::Settings {
+                    account: cx.props.account.clone(),
+                },
+            },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
@@ -278,4 +282,10 @@ impl PartialEq for Messaging {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }
+}
+
+#[derive(PartialEq, Eq)]
+pub enum PageState {
+    Normal,
+    Settings,
 }

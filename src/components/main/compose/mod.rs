@@ -5,20 +5,21 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::RayGun;
+use warp::raygun::{RayGun, Conversation};
 
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, PageState, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
     account: Account,
     messaging: Messaging,
+    conversation: Conversation,
 }
 
 #[allow(non_snake_case)]
@@ -32,6 +33,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
+
+    // todo: render normally
     cx.render(rsx! {
         div {
             class: "compose",
