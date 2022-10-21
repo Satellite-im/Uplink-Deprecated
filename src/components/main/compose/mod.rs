@@ -5,7 +5,7 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::{RayGun, Conversation};
+use warp::raygun::{Conversation, RayGun};
 
 use crate::{
     components::{
@@ -32,7 +32,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let blur = state.read().chat.is_none();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
-
 
     // todo: render normally
     cx.render(rsx! {

@@ -5,8 +5,8 @@ use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
         main::{
-            settings::sidebar::SettingsSidebar,
             settings::sidebar::nav::NavEvent as settingsNav,
+            settings::sidebar::SettingsSidebar,
             sidebar::nav::{Nav, NavEvent},
         },
         ui_kit::{
