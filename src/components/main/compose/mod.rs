@@ -5,7 +5,7 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::{Conversation, RayGun};
+use warp::raygun::RayGun;
 
 use crate::{
     components::{
@@ -19,7 +19,6 @@ use crate::{
 pub struct Props {
     account: Account,
     messaging: Messaging,
-    conversation: Conversation,
 }
 
 #[allow(non_snake_case)]

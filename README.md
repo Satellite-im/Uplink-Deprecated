@@ -17,9 +17,9 @@
 </div>
 <br/>
 
-Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for basic implementation of Warp features in a universal application.
+Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementation of Warp features in a universal application.
 
-The goal should be to build a hyper customizable application that can run anywhere and support extensions.
+The goal should be to build a hyper-customizable application that can run anywhere and support extensions.
 
 ## Features
 
@@ -86,8 +86,8 @@ It's often necessary to reset your account for development, to do so just delete
 
 ## Contributions
 
-All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application are much appriciated.
+All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application is much appreciated.
 
 ## Special Thanks
 
-**Lapce** - For serving as a great open source editor and helping me (matt) through so many headaches by providing your code to the world.
+**Lapce** - For serving as a great open-source editor and helping me (matt) through so many headaches by providing your code to the world.

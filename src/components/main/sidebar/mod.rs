@@ -3,8 +3,9 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
-        main::{friends::Friends, profile::Profile},
         main::{
+            friends::Friends,
+            profile::Profile,
             sidebar::nav::{Nav, NavEvent},
         },
         ui_kit::{
