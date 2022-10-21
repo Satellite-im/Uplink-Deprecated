@@ -81,7 +81,7 @@ impl std::fmt::Display for ExtensionManager {
 }
 
 
-pub fn get_extension() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
+pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
     let mut map_extensions: HashMap<ExtensionType, Vec<ExtensionManager>> = HashMap::new();
     let mut ext_mng;
     fs::create_dir_all("extensions").unwrap();
@@ -106,7 +106,7 @@ pub fn get_extension() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
 
 
 pub fn get_renders<'src>(extension_type: ExtensionType, enable: bool) -> Vec<LazyNodes<'src, 'src>>{
-    let exts = get_extension();
+    let exts = get_extensions();
 
     let mut extensions = vec![];
     
@@ -141,3 +141,53 @@ pub fn get_renders<'src>(extension_type: ExtensionType, enable: bool) -> Vec<Laz
 
 
 } 
+
+
+pub fn get_info<'src>(name: Option<&str>, author: Option<&str>, location: Option<ExtensionType>) -> Vec<Extension>{
+    let exts = get_extensions();
+    let mut extensions = vec![];
+
+    if name.is_none() && author.is_none() {
+        if location.is_none() {
+            for (ext_type, ext_mngs) in exts.clone() {
+                for ext_mng in ext_mngs {
+                    extensions.push(ext_mng.info);
+                }
+            }
+            return extensions;
+        }
+
+        let ext_mngs = exts.get(&location.unwrap()).unwrap().clone();
+
+        for ext_mng in ext_mngs {
+            extensions.push(ext_mng.info);
+        }
+
+        return extensions;   
+       
+    }
+    if name.is_some() {
+        for (ext_type, ext_mngs) in exts.clone() {
+            for ext_mng in ext_mngs {
+                if ext_mng.info.name.as_str() == name.unwrap(){
+                    extensions.push(ext_mng.info);
+                    return extensions;
+                }
+            }
+        }
+
+    }
+    if author.is_some() {
+        for (ext_type, ext_mngs) in exts.clone() {
+            for ext_mng in ext_mngs {
+                if ext_mng.info.author.as_str() == author.unwrap(){
+                    extensions.push(ext_mng.info);                
+                }
+            }
+        }
+        return extensions;
+    }
+
+    extensions
+    
+}
