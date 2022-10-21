@@ -3,12 +3,8 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
+        main::sidebar::nav::{Nav, NavEvent},
         main::{friends::Friends, profile::Profile},
-        main::{
-            settings::sidebar::SettingsSidebar,
-            settings::sidebar::nav::NavEvent as settingsNav,
-            sidebar::nav::{Nav, NavEvent},
-        },
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
@@ -16,7 +12,7 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, PageState, LANGUAGE, STATE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;
