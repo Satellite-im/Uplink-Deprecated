@@ -5,8 +5,6 @@ use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
         main::{
-            settings::sidebar::SettingsSidebar,
-            settings::sidebar::nav::NavEvent as settingsNav,
             sidebar::nav::{Nav, NavEvent},
         },
         ui_kit::{
@@ -16,7 +14,7 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, PageState, LANGUAGE, STATE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;
