@@ -106,32 +106,34 @@ pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
 
 
 pub fn get_renders<'src>(extension_type: ExtensionType, enable: bool) -> Vec<LazyNodes<'src, 'src>>{
-    let exts = get_extensions();
-    let mut extensions = vec![];
-    
-    match exts.get(&extension_type) {
-        Some(em) => {
-            for extension in em {
-                extensions.push(extension.render);
-            }
-        },
-        None => {
-            println!("No extensions");
-        },
-
-    };
-
-    let closure = |&Ext: &fn(Scope) -> Option<VNode>| 
-    rsx! (
-        div {
-            Ext {},
-        },
-    );
-    
-    let extensions_to_render = extensions.iter().map(closure).collect::<Vec<LazyNodes>>();
 
     match enable {
-        true =>  extensions_to_render,
+        true =>  {
+            let exts = get_extensions();
+            let mut extensions = vec![];
+            
+            match exts.get(&extension_type) {
+                Some(em) => {
+                    for extension in em {
+                        extensions.push(extension.render);
+                    }
+                },
+                None => {
+                    println!("No extensions");
+                },
+
+            };
+
+            let closure = |&Ext: &fn(Scope) -> Option<VNode>| 
+            rsx! (
+                div {
+                    Ext {},
+                },
+            );
+            
+            let extensions_to_render = extensions.iter().map(closure).collect::<Vec<LazyNodes>>();
+            extensions_to_render
+    }
         false => vec![]
     }
     
