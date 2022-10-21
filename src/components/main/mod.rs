@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::{
-    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, PageState,
+    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging,
     STATE,
 };
 use dioxus::prelude::*;

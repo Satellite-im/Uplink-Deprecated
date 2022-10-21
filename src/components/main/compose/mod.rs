@@ -12,7 +12,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, PageState, LANGUAGE, STATE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
