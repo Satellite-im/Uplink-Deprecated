@@ -5,7 +5,6 @@ use crate::{
     components::{
         main::settings::{
             pages::{Developer, General},
-            sidebar::Sidebar,
         },
         ui_kit::icon_button::{self, IconButton},
     },
@@ -31,30 +30,11 @@ pub fn Settings<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         div {
             id: "settings",
             div {
-                class: "closer",
-                onclick: move |_| cx.props.on_hide.call(()),
-            }
-            div {
                 id: "content",
-                Sidebar {
-                    on_pressed: move |ne| {
-                        active_page.set(ne);
-                    }
-                },
                 div {
                     id: "page",
                     div {
                         class: "wrapper",
-                        div {
-                            class: "close_wrapper",
-                            IconButton {
-                                icon: Shape::X,
-                                state: icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    cx.props.on_hide.call(());
-                                }
-                            }
-                        }
                         div {
                             class: "content",
                             match active_page.get() {

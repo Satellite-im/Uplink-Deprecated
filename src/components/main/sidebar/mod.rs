@@ -5,7 +5,8 @@ use crate::{
     components::{
         main::{friends::Friends, profile::Profile},
         main::{
-            settings::Settings,
+            settings::sidebar::SettingsSidebar,
+            settings::sidebar::nav::NavEvent as settingsNav,
             sidebar::nav::{Nav, NavEvent},
         },
         ui_kit::{
@@ -21,6 +22,7 @@ use crate::{
 pub mod chat;
 pub mod nav;
 
+// use main::settings::sidebar::nav::NavEvent;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
@@ -43,17 +45,17 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
+    let active_page = use_state(&cx, || settingsNav::Developer);
 
     cx.render(rsx! {
         div {
             class: "sidebar",
             match cx.props.page_state.get() {
                 PageState::Settings => rsx! {
-                    Settings {
-                        account: cx.props.account.clone(),
-                        on_hide: move |_| {
-                            cx.props.page_state.set(PageState::Normal);
-                        },
+                        SettingsSidebar {
+                            on_pressed: move |ne| {
+                                active_page.set(ne);
+                            }
                     }
                 },
                 PageState::Normal => rsx! {
