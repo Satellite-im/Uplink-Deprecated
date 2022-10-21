@@ -27,7 +27,6 @@ pub mod nav;
 pub struct Props {
     account: Account,
     messaging: Messaging,
-    page_state: UseState<PageState>,
 }
 
 #[allow(non_snake_case)]

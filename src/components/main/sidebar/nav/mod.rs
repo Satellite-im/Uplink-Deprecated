@@ -8,6 +8,7 @@ use crate::{
     },
     Account,
 };
+use warp::multipass::Friends;
 
 pub enum NavEvent {
     Home,
@@ -26,15 +27,45 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Total incoming request count
-    let requests = use_state(&cx, Vec::new);
-    requests.set(
-        cx.props
-            .account
-            .read()
-            .list_incoming_request()
-            .unwrap_or_default(),
+
+    let multipass = cx.props.account.clone();
+    let reqCount = use_state(&cx, || {
+        multipass.list_incoming_request().unwrap_or_default().len()
+    });
+
+    use_future(
+        &cx,
+        (reqCount, &multipass),
+        |(reqCount, multipass)| async move {
+            loop {
+                let list = multipass.list_incoming_request().unwrap_or_default();
+                if list.len() != *reqCount.get() {
+                    reqCount.set(list.len());
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+            }
+
+            // let mut stream = match multipass.subscribe() {
+            //     Ok(stream) => stream,
+            //     Err(_) => return,
+            // };
+
+            // while let Some(event) = stream.next().await {
+            //     match event {
+            //         warp::multipass::MultiPassEventKind::FriendRequestReceived { .. } => {
+            //             reqCount += 1;
+            //         }
+            //         warp::multipass::MultiPassEventKind::FriendRequestRejected { .. }
+            //         | warp::multipass::MultiPassEventKind::FriendRequestClosed { .. }
+            //         | warp::multipass::MultiPassEventKind::FriendAdded { .. } => {
+            //             reqCount -= 1;
+            //         }
+            //         _ => {}
+            //     }
+            // }
+        },
     );
-    let reqCount: usize = requests.len();
+
     cx.render(rsx! {
         div {
             class: "nav",
@@ -54,9 +85,9 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     state: icon_button::State::Secondary,
                     icon: Shape::Users
                 },
-                (reqCount > 0).then(|| rsx!(
+                (*reqCount.get() > 0).then(|| rsx!(
                     NumericIndicator {
-                        count: reqCount
+                        count: *reqCount.get()
                     }
                 )),
             }

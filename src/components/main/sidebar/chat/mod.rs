@@ -29,8 +29,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .conversation
         .recipients()
         .iter()
+        //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
+        //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
         .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        //flatted the nested iterators
         .flatten()
         .map(|i| i.username())
         .last()

@@ -22,7 +22,6 @@ pub struct Prop {
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let page_state = use_state(&cx, || PageState::Normal);
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -52,13 +51,11 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             Sidebar {
                 messaging: cx.props.messaging.clone(),
                 account: cx.props.account.clone(),
-                page_state: page_state.clone(),
             },
             Compose {
                 account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone(),
-                conversation: conversation
-                page_state: page_state.clone(),
+                conversation: conversation,
             },
         }
     })
