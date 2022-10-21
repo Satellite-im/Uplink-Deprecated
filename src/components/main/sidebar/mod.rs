@@ -1,5 +1,10 @@
+use std::vec;
+
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape};
+use crate::extensions;
+use extensions::*;
+
 
 use crate::{
     components::{
@@ -27,10 +32,13 @@ pub struct Props {
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let config = Config::load_config_or_default();
 
+
+
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
     let show_settings = use_state(&cx, || false);
     let state = use_atom_ref(&cx, STATE);
+
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
@@ -40,7 +48,13 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
 
+    let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+
     cx.render(rsx!{
+        div {
+            exts,
+        }
         div {
             class: "sidebar",
             IconInput {
