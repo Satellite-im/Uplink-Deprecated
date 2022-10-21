@@ -5,6 +5,11 @@ use dioxus_html::KeyCode;
 const RESIZE_TEXTAREA_SCRIPT: &str = r#"
  (function addAutoResize() {
      document.querySelectorAll('.resizeable-textarea').forEach(function (element) {
+
+        let send_button = document.getElementById('send');
+         send_button.addEventListener('click', function(event) {
+             event.target.style.height = 'auto';
+         });
         
          element.addEventListener('keyup', function(event) {
              if (event.keyCode === 13 && !event.shiftKey) {

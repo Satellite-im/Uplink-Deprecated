@@ -108,7 +108,11 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             IconButton {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
-                                on_pressed: move |_| {text2.set(String::from(""));}
+                                on_pressed: move |_| {
+                                    text2.set(String::from(""));
+                                    popout.set(false);
+                                    // todo: send the message
+                                }
                             },
                         }
                     }
