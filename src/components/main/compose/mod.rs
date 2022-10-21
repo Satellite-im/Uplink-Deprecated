@@ -32,6 +32,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
+    // todo: render normally
     cx.render(rsx! {
         div {
             class: "compose",

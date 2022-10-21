@@ -1,12 +1,8 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-#settings {
-    #content {
-        #sidebar {
+        #settings_sidebar {
             min-width: 18rem;
             height: calc(100% - 2rem);
             padding: 1rem;
             border-right: 1px solid var(--theme-borders);
         }
-    }
-}

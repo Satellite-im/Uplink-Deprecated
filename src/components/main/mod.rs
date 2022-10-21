@@ -1,7 +1,8 @@
 use std::time::Duration;
 
 use crate::{
-    components::main::compose::Compose, main::sidebar::Sidebar, Account, Messaging, STATE,
+    main::{compose::Compose, sidebar::Sidebar},
+    Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
 use warp::raygun::RayGun;
@@ -44,7 +45,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             class: "main",
             Sidebar {
                 messaging: cx.props.messaging.clone(),
-                account: cx.props.account.clone()
+                account: cx.props.account.clone(),
             },
             Compose {
                 account: cx.props.account.clone(),
