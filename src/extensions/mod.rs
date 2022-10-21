@@ -84,7 +84,7 @@ impl std::fmt::Display for ExtensionManager {
 pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
     let mut map_extensions: HashMap<ExtensionType, Vec<ExtensionManager>> = HashMap::new();
     let mut ext_mng;
-    fs::create_dir_all("extensions").unwrap();
+    fs::create_dir_all(DEFAULT_PATH.read().join("extensions")).unwrap();
     let paths = fs::read_dir(DEFAULT_PATH.read().join("extensions")).expect("Directory is empty");
     for path in paths {
         let path_extension = path.unwrap().path();
