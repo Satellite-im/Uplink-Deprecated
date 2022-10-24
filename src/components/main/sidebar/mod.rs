@@ -39,7 +39,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let newchatdString = l.new_chat.to_string();
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
-    let has_chats = !state.read().chats.clone().is_empty();
+    let has_chats = !state.read().chats.is_empty();
 
     cx.render(rsx! {
         div {
