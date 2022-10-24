@@ -143,7 +143,7 @@ fn main() {
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
-        .with_min_inner_size(LogicalSize::new(330.0, 600.0));
+        .with_min_inner_size(LogicalSize::new(330.0, 500.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -231,7 +231,8 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/settings", main::settings::Settings {
+            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/settings", main::settings::Settings {
                     account: cx.props.account.clone(),
                 },
             },
