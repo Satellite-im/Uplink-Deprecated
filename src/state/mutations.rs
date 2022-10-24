@@ -1,14 +1,14 @@
 use warp::raygun::Conversation;
 
-use super::PersistedState;
+use super::Conversations;
 
 pub struct Mutations;
 impl Mutations {
-    pub fn chat_with(state: &mut PersistedState, conversation: Conversation) {
+    pub fn chat_with(state: &mut Conversations, conversation: Conversation) {
         let c = conversation.clone();
-        let mut chats = state.chats.clone();
+        let mut chats = state.all_chats.clone();
 
-        for (i, chat) in state.chats.clone().iter().enumerate() {
+        for (i, chat) in state.all_chats.clone().iter().enumerate() {
             let mut recipients_equal = true;
             for recipient in chat.recipients().clone() {
                 if !c.recipients().contains(&recipient) {
@@ -22,7 +22,7 @@ impl Mutations {
             }
         }
         chats.push(conversation.clone());
-        state.chats = chats;
-        state.chat = Some(conversation);
+        state.all_chats = chats;
+        state.current_chat = Some(conversation);
     }
 }

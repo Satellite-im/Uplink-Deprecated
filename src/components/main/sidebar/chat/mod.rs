@@ -1,6 +1,6 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    Account, LANGUAGE, STATE,
+    Account, CONVERSATIONS, LANGUAGE,
 };
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
@@ -14,7 +14,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
+    let state = use_atom_ref(&cx, CONVERSATIONS);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let mp = cx.props.account.clone();
@@ -41,7 +41,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let active = match state.read().chat.clone() {
+    let active = match state.read().current_chat.clone() {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {
                 "active"

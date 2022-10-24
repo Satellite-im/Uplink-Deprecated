@@ -1,4 +1,4 @@
-use crate::{components::main::compose::msg::Msg, Account, Messaging, STATE};
+use crate::{components::main::compose::msg::Msg, Account, Messaging, CONVERSATIONS};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
@@ -13,13 +13,13 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
-    let state = use_atom_ref(&cx, STATE);
+    let state = use_atom_ref(&cx, CONVERSATIONS);
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity
     let ident = cx.props.account.read().get_own_identity().unwrap();
     let messages = use_ref(&cx, Vec::new);
-    let ext_conversation_id = state.read().chat.as_ref().map(|conv| conv.id());
+    let ext_conversation_id = state.read().current_chat.as_ref().map(|conv| conv.id());
 
     let rg = cx.props.messaging.clone();
 

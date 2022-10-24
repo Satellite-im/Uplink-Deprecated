@@ -5,7 +5,7 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     utils::config::Config,
-    Account, STATE,
+    Account, CONVERSATIONS,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
@@ -19,13 +19,13 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
+    let state = use_atom_ref(&cx, CONVERSATIONS);
     let config = Config::load_config_or_default();
 
     // Read their values from locks
     let mp = cx.props.account.clone();
 
-    match &state.read().chat {
+    match &state.read().current_chat {
         Some(conversation) => {
             // TODO: Make this more dynamic to include multiple PFPs and usernames.
             // Consider code in this todo temporary and only supportive of 2 way convos

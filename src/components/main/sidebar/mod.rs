@@ -12,7 +12,7 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, CONVERSATIONS, LANGUAGE,
 };
 
 pub mod chat;
@@ -31,7 +31,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let state = use_atom_ref(&cx, STATE);
+    let state = use_atom_ref(&cx, CONVERSATIONS);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
@@ -39,7 +39,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let newchatdString = l.new_chat.to_string();
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
-    let has_chats = !state.read().chats.is_empty();
+    let has_chats = !state.read().all_chats.is_empty();
 
     cx.render(rsx! {
         div {
@@ -86,7 +86,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         div {
                             class: "chats",
-                            state.read().chats.iter().rev().map(|conv| {
+                            state.read().all_chats.iter().rev().map(|conv| {
                                 let conversation = conv.clone();
                                 rsx!(
                                     chat::Chat {

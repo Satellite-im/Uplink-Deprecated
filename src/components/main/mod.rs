@@ -2,17 +2,17 @@ use std::time::Duration;
 
 use crate::{
     main::{compose::Compose, sidebar::Sidebar},
-    Account, Messaging, STATE,
+    Account, Messaging, CONVERSATIONS,
 };
 use dioxus::prelude::*;
 use warp::raygun::RayGun;
 
 pub mod compose;
+pub mod files;
 pub mod friends;
 pub mod profile;
 pub mod settings;
 pub mod sidebar;
-pub mod files;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {
@@ -22,7 +22,7 @@ pub struct Prop {
 
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
-    let state = use_atom_ref(&cx, STATE);
+    let state = use_atom_ref(&cx, CONVERSATIONS);
 
     // Read their values from locks
     let rg = cx.props.messaging.clone();
@@ -31,8 +31,8 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
-                if !list.is_empty() && st.read().chats != list {
-                    st.write().chats = list;
+                if !list.is_empty() && st.read().all_chats != list {
+                    st.write().all_chats = list;
                 }
             }
             // TODO: find a way to sync this with the frame rate or create a "polling rate" value we can configure
