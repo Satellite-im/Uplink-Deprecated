@@ -23,7 +23,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     div {
                         class: "row",
                         Icon {
+                            class: "closed",
                             icon: Shape::Folder,
+                        },
+                        Icon {
+                            class: "open",
+                            icon: Shape::FolderOpen,
                         },
                         "Folder 1"
                     },
@@ -36,7 +41,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         div {
                             class: "row",
                             Icon {
+                                class: "closed",
                                 icon: Shape::Folder,
+                            },
+                            Icon {
+                                class: "open",
+                                icon: Shape::FolderOpen,
                             },
                             "SubFolder 1"
                         },
@@ -60,7 +70,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         div {
                             class: "row",
                             Icon {
+                                class: "closed",
                                 icon: Shape::Folder,
+                            },
+                            Icon {
+                                class: "open",
+                                icon: Shape::FolderOpen,
                             },
                             "Subfolder 2",
                         },
@@ -73,7 +88,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             div {
                                 class: "row",
                                 Icon {
+                                    class: "closed",
                                     icon: Shape::Folder,
+                                },
+                                Icon {
+                                    class: "open",
+                                    icon: Shape::FolderOpen,
                                 },
                                 "Subfolder 1",
                             },
@@ -86,7 +106,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                 div {
                                     class: "row",
                                     Icon {
+                                        class: "closed",
                                         icon: Shape::Folder,
+                                    },
+                                    Icon {
+                                        class: "open",
+                                        icon: Shape::FolderOpen,
                                     },
                                     "Subfolder 2",
                                 },
@@ -133,10 +158,15 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     div {
                         class: "row",
                         Icon {
+                            class: "closed",
                             icon: Shape::Folder,
                         },
+                        Icon {
+                            class: "open",
+                            icon: Shape::FolderOpen,
+                        },
                         "Folder 2"
-                    }
+                    },
                     input {
                         id: "tree_folder_control",
                         "type": "checkbox",

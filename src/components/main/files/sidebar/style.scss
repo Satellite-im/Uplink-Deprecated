@@ -13,31 +13,42 @@
             position: relative;
             cursor: pointer;
             user-select: none;
-            overflow: hidden;
+            margin: 0;
+            .open {
+                display: none;
+            }
 
             input {
                 position: absolute;
+                visibility: hidden;
             }
-
-            label {
-                display: none;
+            svg {
+                stroke: var(--theme-text-darker);
             }
         }
 
-        label {
-            margin: 0.5rem 0;
+        .tree_folder {
+            margin: 0 0 0.5rem 0;
             font-size: var(--text-size);
-            color: var(--theme-text);
+            color: var(--theme-text-darker);
             font-weight: normal;
             font-family: Poppins !important;
-
-            &input:checked ~ label {
-                display: inline-flex;
+            .tree_folder, .tree_item {
+                display: none;
+                color: var(--theme-text-darker);
             }
-        }
-
-        .root {
-            padding-left: 0;
+            &:has(input:checked) {
+                color: var(--theme-text-bright);
+                & .open {
+                    display: inline-flex;
+                }
+                & .open {
+                    display: none;
+                }
+                & > .tree_folder, & > .tree_item {
+                    display: inline-flex;
+                }
+            }
         }
 
         .row {
@@ -47,6 +58,12 @@
             svg {
                 margin-right: 0.5rem;
             }
+        }
+
+        .root {
+            color: var(--theme-text-bright);
+            padding-left: 0;
+            display: inline-flex;
         }
     }
 }
