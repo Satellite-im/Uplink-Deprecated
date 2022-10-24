@@ -28,14 +28,17 @@ pub struct Conversations {
 #[derive(Serialize, Deserialize, Default)]
 pub struct ConversationInfo {
     /// the total messages that have been recevied for this chat
-    pub total_messages: u32,
+    pub total_messages: usize,
     /// the value of total_messages last time the chat was read
-    pub last_read: u32,
+    pub last_read: usize,
     /// the uuid of the last message sent
-    pub last_msg: Uuid,
+    pub last_msg_sent: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, Default)]
+/// This stores the metadata for all Conversations, not just the active ones
+/// Todo: at some point may want to drive the UI with only the active conversations
+/// However, the metadata for all conversations does need to be stored in case a conversation is closed and reopened
 pub struct ConversationMetadata {
     // `v` stands for value. wrapped this HashMap in a struct to facilitate persistent storage
     /// key: conversation id
