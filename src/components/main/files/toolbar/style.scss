@@ -1,0 +1,27 @@
+#files {
+    #toolbar {
+        min-height: 0;
+        display: inline-flex;
+        padding: 0.5rem;
+        width: calc(100% - 1rem);
+        flex-direction: row;
+        border-bottom: 1px solid var(--theme-borders);
+
+        #controls {
+            flex: 1;
+            height: 100%;
+            min-width: 0;
+            display: inline-flex;
+            flex-direction: row;
+
+            .button {
+                padding: 0 0.25rem;
+            }
+        }
+
+        #close {
+            width: 45px;
+            height: 100%;
+        }
+    }
+}

@@ -1,0 +1,49 @@
+#files {
+    #sidebar {
+        width: var(--sidebar-width);
+        height: 100%;
+        padding: 1rem;
+        border-right: 1px solid var(--theme-borders);
+
+        .tree_folder, .tree_item {
+            display: inline-flex;
+            flex-direction: column;
+            width: 100%;
+            padding-left: 1rem;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            overflow: hidden;
+
+            input {
+                position: absolute
+            }
+        }
+
+        label {
+            height: 20px;
+            margin: 0.5rem 0;
+            font-size: var(--text-size);
+            color: var(--theme-text);
+            font-weight: normal;
+            font-family: Poppins !important;
+
+            &input:checked + label {
+                height: fit-content !important;
+            }
+        }
+
+        .root {
+            padding-left: 0;
+        }
+
+        .row {
+            display: inline-flex;
+            align-items: center;
+
+            svg {
+                margin-right: 0.5rem;
+            }
+        }
+    }
+}

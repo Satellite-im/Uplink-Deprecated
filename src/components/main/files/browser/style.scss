@@ -1,0 +1,17 @@
+#files {
+    #browser {
+        width: 100%;
+        min-height: 0;
+        flex: 1;
+        overflow-y: scroll;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        display: inline-flex;
+        &:hover {
+            &::-webkit-scrollbar-thumb {
+                background: var(--theme-primary);
+                opacity: 1;
+            }
+        }
+    }
+}

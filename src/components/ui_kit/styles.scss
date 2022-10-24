@@ -10,12 +10,22 @@
 
   --padding: 2rem;
   --padding-small: 1rem;
+  --sidebar-width: 300px;
 }
 
 .animate__animated {
   --animate-duration: 0.15s;
 }
-
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+  cursor: pointer;
+}
 body,
 html {
   background: var(--theme-background);
@@ -818,6 +828,25 @@ input:checked+.slider:before {
   padding-top: 2px;
 }
 
+
+.folder {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.6rem;
+  width: 90px;
+  cursor: pointer;
+
+  svg {
+    width: 70px;
+    height: 70px;
+  }
+
+  label {
+    margin: 0;
+    font-size: var(--text-small);
+  }
+}
 
 
 // Animations

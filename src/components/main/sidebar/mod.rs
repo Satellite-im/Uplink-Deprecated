@@ -148,6 +148,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         NavEvent::Home => {
                         },
                         NavEvent::Files => {
+                            use_router(&cx).push_route("/main/files", None, None);
                         },
                         NavEvent::Friends => {
                             show_friends.set(true);
@@ -156,7 +157,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             show_profile.set(true);
                         },
                         NavEvent::Settings => {
-                            use_router(&cx).push_route("/settings", None, None);
+                            use_router(&cx).push_route("/main/settings", None, None);
                         },
                     };
                 }
