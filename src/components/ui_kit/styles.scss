@@ -646,6 +646,7 @@ input:checked+.slider:before {
     background: transparent;
     pointer-events: none;
     position: absolute;
+    display: none;
   }
 
   .popup {
