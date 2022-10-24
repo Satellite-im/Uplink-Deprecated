@@ -16,20 +16,23 @@
             overflow: hidden;
 
             input {
-                position: absolute
+                position: absolute;
+            }
+
+            label {
+                display: none;
             }
         }
 
         label {
-            height: 20px;
             margin: 0.5rem 0;
             font-size: var(--text-size);
             color: var(--theme-text);
             font-weight: normal;
             font-family: Poppins !important;
 
-            &input:checked + label {
-                height: fit-content !important;
+            &input:checked ~ label {
+                display: inline-flex;
             }
         }
 
