@@ -4,7 +4,7 @@ use crate::{
     Account, Messaging, CONVERSATIONS, CONVERSATION_METADATA,
 };
 use dioxus::prelude::*;
-use futures::StreamExt;
+use futures::{stream::FuturesUnordered, StreamExt};
 use std::time::Duration;
 use uuid::Uuid;
 use warp::raygun::{MessageEventKind, MessageOptions, RayGun, RayGunStream};
@@ -54,6 +54,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
     // assuming this reloads when CONVERSATIONS changes
     use_future(&cx, (), |_| async move {
+        // hopefully this allows for polling multiple futures concurrently and cleaning them
+        // up automatically on drop
+        let mut futures = FuturesUnordered::new();
+
         // get all conversations
         let conversations = loop {
             if let Ok(list) = rg.list_conversations().await {
@@ -114,7 +118,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             };
 
             let mu = meta_updater.clone();
-            tokio::task::spawn_local(async move {
+            futures.push(async move {
                 while let Some(event) = stream.next().await {
                     if let MessageEventKind::MessageReceived {
                         conversation_id, ..
@@ -124,6 +128,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                     }
                 }
             });
+        }
+
+        while futures.next().await.is_some() {
+            // should never reach here because the futures don't return
         }
     });
 
