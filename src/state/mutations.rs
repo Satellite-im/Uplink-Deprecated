@@ -1,28 +1,17 @@
-use warp::raygun::Conversation;
-
-use super::Conversations;
+use super::{ConversationInfo, Conversations};
 
 pub struct Mutations;
 impl Mutations {
-    pub fn chat_with(state: &mut Conversations, conversation: Conversation) {
-        let c = conversation.clone();
-        let mut chats = state.all_chats.clone();
+    pub fn chat_with(conversations: &mut Conversations, conversation_info: ConversationInfo) {
+        let mut all_chats: Vec<ConversationInfo> = conversations
+            .all_chats
+            .iter()
+            .filter(|current| current.conversation.id() != conversation_info.conversation.id())
+            .cloned()
+            .collect();
+        all_chats.push(conversation_info.clone());
 
-        for (i, chat) in state.all_chats.clone().iter().enumerate() {
-            let mut recipients_equal = true;
-            for recipient in chat.recipients().clone() {
-                if !c.recipients().contains(&recipient) {
-                    recipients_equal = false;
-                    break;
-                }
-            }
-
-            if recipients_equal {
-                chats.remove(i);
-            }
-        }
-        chats.push(conversation.clone());
-        state.all_chats = chats;
-        state.current_chat = Some(conversation);
+        conversations.all_chats = all_chats;
+        conversations.current_chat = Some(conversation_info);
     }
 }

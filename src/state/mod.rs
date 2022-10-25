@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -10,39 +9,28 @@ use self::mutations::Mutations;
 pub mod mutations;
 
 pub enum Actions {
-    ChatWith(Conversation),
+    ChatWith(ConversationInfo),
+    ConversationsUpdated(Vec<ConversationInfo>),
 }
 
 /// tracks the active conversations. Chagnes are persisted
 #[derive(Serialize, Deserialize, Default)]
 pub struct Conversations {
     /// the currently selected conversation
-    pub current_chat: Option<Conversation>,
+    pub current_chat: Option<ConversationInfo>,
     /// all active conversations
-    pub all_chats: Vec<Conversation>,
+    pub all_chats: Vec<ConversationInfo>,
 }
 
-/// used to display information associated with each chat
-/// belongs in a HashMap<Uuid, ChatInfo>
-/// gets saved to pocket_dimension
-#[derive(Serialize, Deserialize, Default)]
+/// composes `Conversation` with relevant metadata
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct ConversationInfo {
-    /// the total messages that have been recevied for this chat
-    pub total_messages: usize,
-    /// the value of total_messages last time the chat was read
-    pub last_read: usize,
+    pub conversation: Conversation,
+    /// the uuid of the last message read. \
+    /// used to determine the number of unread messages
+    pub last_msg_read: Option<Uuid>,
     /// the uuid of the last message sent
     pub last_msg_sent: Option<Uuid>,
-}
-
-#[derive(Serialize, Deserialize, Default)]
-/// This stores the metadata for all Conversations, not just the active ones
-/// Todo: at some point may want to drive the UI with only the active conversations
-/// However, the metadata for all conversations does need to be stored in case a conversation is closed and reopened
-pub struct ConversationMetadata {
-    // `v` stands for value. wrapped this HashMap in a struct to facilitate persistent storage
-    /// key: conversation id
-    pub v: HashMap<Uuid, ConversationInfo>,
 }
 
 impl Conversations {
@@ -65,34 +53,11 @@ impl Conversations {
     pub fn dispatch(&mut self, action: Actions) -> Self {
         match action {
             Actions::ChatWith(conversation) => Mutations::chat_with(self, conversation),
+            Actions::ConversationsUpdated(conversations) => self.all_chats = conversations,
         };
         Conversations {
             all_chats: self.all_chats.clone(),
             current_chat: self.current_chat.clone(),
-        }
-    }
-}
-
-impl ConversationMetadata {
-    pub fn load_or_inital() -> Self {
-        match std::fs::read(
-            DEFAULT_PATH
-                .read()
-                .join(".uplink.conversation_metadata.json"),
-        ) {
-            Ok(b) => serde_json::from_slice::<ConversationMetadata>(&b).unwrap_or_default(),
-            Err(_) => Default::default(),
-        }
-    }
-
-    pub fn save(&self) {
-        if let Ok(bytes) = serde_json::to_vec(self) {
-            if let Err(_e) = std::fs::write(
-                DEFAULT_PATH
-                    .read()
-                    .join(".uplink.conversation_metadata.json"),
-                &bytes,
-            ) {}
         }
     }
 }

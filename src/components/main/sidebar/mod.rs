@@ -18,7 +18,6 @@ use crate::{
 pub mod chat;
 pub mod nav;
 
-// use main::settings::sidebar::nav::NavEvent;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
@@ -87,13 +86,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         div {
                             class: "chats",
                             state.read().all_chats.iter().rev().map(|conv| {
-                                let conversation = conv.clone();
+                                let conversation_info = conv.clone();
                                 rsx!(
                                     chat::Chat {
                                         account: cx.props.account.clone(),
-                                        conversation: conversation.clone(),
+                                        conversation_info: conversation_info.clone(),
+                                        messaging: cx.props.messaging.clone(),
                                         on_pressed: move |_| {
-                                            state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                            state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
                                         }
                                     }
                                 )

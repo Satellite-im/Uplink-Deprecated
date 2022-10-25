@@ -19,7 +19,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     //      getting own identity
     let ident = cx.props.account.read().get_own_identity().unwrap();
     let messages = use_ref(&cx, Vec::new);
-    let ext_conversation_id = state.read().current_chat.as_ref().map(|conv| conv.id());
+    let ext_conversation_id = state
+        .read()
+        .current_chat
+        .as_ref()
+        .map(|conv| conv.conversation.id());
 
     let rg = cx.props.messaging.clone();
 

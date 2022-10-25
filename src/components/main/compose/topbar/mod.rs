@@ -26,11 +26,12 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let mp = cx.props.account.clone();
 
     match &state.read().current_chat {
-        Some(conversation) => {
+        Some(conversation_info) => {
             // TODO: Make this more dynamic to include multiple PFPs and usernames.
             // Consider code in this todo temporary and only supportive of 2 way convos
-            let conversation_id = conversation.id();
-            let display_did = conversation
+            let conversation_id = conversation_info.conversation.id();
+            let display_did = conversation_info
+                .conversation
                 .recipients()
                 .last()
                 .cloned()

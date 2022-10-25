@@ -1,21 +1,22 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    Account, CONVERSATIONS, CONVERSATION_METADATA, LANGUAGE,
+    state::ConversationInfo,
+    Account, Messaging, CONVERSATIONS, LANGUAGE,
 };
 use dioxus::prelude::*;
-use warp::raygun::Conversation;
+use warp::raygun::RayGun;
 
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
-    conversation: Conversation,
+    conversation_info: ConversationInfo,
+    messaging: Messaging,
     on_pressed: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let conversations = use_atom_ref(&cx, CONVERSATIONS);
-    let chats_meta = use_atom_ref(&cx, CONVERSATION_METADATA);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let mp = cx.props.account.clone();
@@ -27,6 +28,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let username = cx
         .props
+        .conversation_info
         .conversation
         .recipients()
         .iter()
@@ -42,16 +44,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let num_unread = chats_meta
-        .read()
-        .v
-        .get(&cx.props.conversation.id())
-        .map(|ci| ci.total_messages - ci.last_read)
-        .and_then(|x| if x > 0 { Some(x) } else { None });
-
-    let active = match &conversations.read().current_chat {
-        Some(active_chat) => {
-            if active_chat.id() == cx.props.conversation.id() {
+    let active = match conversations.read().current_chat.as_ref() {
+        Some(active) => {
+            if active.conversation.id() == cx.props.conversation_info.conversation.id() {
                 "active"
             } else {
                 "none"
@@ -94,10 +89,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        match num_unread {
+                        /*match cx.props.num_unread {
                             Some(unread) => rsx!("unread: {unread}"),
                             None => rsx!("{l.chat_placeholder}")
-                        }
+                        }*/
                     }
                 }
             }

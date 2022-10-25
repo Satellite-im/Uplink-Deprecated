@@ -8,7 +8,7 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    state::Actions,
+    state::{Actions, ConversationInfo},
     Account, Messaging, CONVERSATIONS,
 };
 
@@ -90,7 +90,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),
                                 };
-                                state.write().dispatch(Actions::ChatWith(conversation)).save();
+                                state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() })).save();
                                 cx.props.on_chat.call(());
                             }
                         }
