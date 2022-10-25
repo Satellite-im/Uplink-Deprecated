@@ -1,10 +1,11 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::ConversationInfo,
+    state::{Actions, ConversationInfo},
     Account, Messaging, CONVERSATIONS, LANGUAGE,
 };
 use dioxus::prelude::*;
-use warp::raygun::RayGun;
+use futures::stream::StreamExt;
+use warp::raygun::{MessageEventKind, MessageOptions, RayGun, RayGunStream};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -17,8 +18,11 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let conversations = use_atom_ref(&cx, CONVERSATIONS);
+    let conversations2 = conversations.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let unread_count = use_state(&cx, || 0_usize).clone();
 
+    let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
 
     let ident = mp
@@ -44,16 +48,72 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let active = match conversations.read().current_chat.as_ref() {
+    let (active, is_active) = match conversations.read().current_chat.as_ref() {
         Some(active) => {
             if *active == cx.props.conversation_info.conversation.id() {
-                "active"
+                ("active", true)
             } else {
-                "none"
+                ("none", false)
             }
         }
-        None => "",
+        None => ("", false),
     };
+
+    let mut conversation_info = cx.props.conversation_info.clone();
+    use_future(&cx, &unread_count, |unread_count| async move {
+        let messages = rg
+            .get_messages(
+                conversation_info.conversation.id(),
+                MessageOptions::default(),
+            )
+            .await
+            .unwrap_or_default();
+
+        let num_unread_messages = match conversation_info.last_msg_read {
+            Some(id) => messages.iter().rev().take_while(|x| x.id() != id).count(),
+            None => messages.len(),
+        };
+
+        if *unread_count.current() != num_unread_messages {
+            unread_count.set(num_unread_messages);
+        }
+
+        let mut stream = loop {
+            match rg
+                .get_conversation_stream(conversation_info.conversation.id())
+                .await
+            {
+                Ok(stream) => break stream,
+                Err(e) => match &e {
+                    warp::error::Error::RayGunExtensionUnavailable => {
+                        //Give sometime for everything in the background to fully line up
+                        //Note, if this error still happens, it means there is an fatal error
+                        //      in the background
+                        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                    }
+                    _ => {
+                        // todo: properly report this error
+                        // eprintln!("failed to get_conversation_stream: {}", e);
+                        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                    }
+                },
+            }
+        };
+
+        while let Some(event) = stream.next().await {
+            if let MessageEventKind::MessageReceived { message_id, .. } = event {
+                if is_active {
+                    conversation_info.last_msg_read = Some(message_id);
+                    conversations2
+                        .write()
+                        .dispatch(Actions::UpdateConversation(conversation_info.clone()))
+                        .save();
+                } else {
+                    unread_count.modify(|x| x + 1);
+                }
+            }
+        }
+    });
 
     if show_skeleton {
         cx.render(rsx! {
@@ -89,10 +149,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        /*match cx.props.num_unread {
-                            Some(unread) => rsx!("unread: {unread}"),
-                            None => rsx!("{l.chat_placeholder}")
-                        }*/
+                        match *unread_count.current() {
+                            0 => rsx!("{l.chat_placeholder}"),
+                            _ => rsx!("unread: {unread_count}"),
+                        }
                     }
                 }
             }

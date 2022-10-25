@@ -15,7 +15,7 @@ pub enum Actions {
 }
 
 /// tracks the active conversations. Chagnes are persisted
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
 pub struct Conversations {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
@@ -24,7 +24,7 @@ pub struct Conversations {
 }
 
 /// composes `Conversation` with relevant metadata
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
 pub struct ConversationInfo {
     pub conversation: Conversation,
     /// the uuid of the last message read. \
