@@ -46,7 +46,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let active = match conversations.read().current_chat.as_ref() {
         Some(active) => {
-            if active.conversation.id() == cx.props.conversation_info.conversation.id() {
+            if *active == cx.props.conversation_info.conversation.id() {
                 "active"
             } else {
                 "none"

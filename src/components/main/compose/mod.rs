@@ -24,11 +24,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, CONVERSATIONS);
-    let ext_conversation_id = state
-        .read()
-        .current_chat
-        .as_ref()
-        .map(|c| c.conversation.id());
+    let ext_conversation_id = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
 

@@ -11,13 +11,14 @@ pub mod mutations;
 pub enum Actions {
     ChatWith(ConversationInfo),
     ConversationsUpdated(Vec<ConversationInfo>),
+    UpdateConversation(ConversationInfo),
 }
 
 /// tracks the active conversations. Chagnes are persisted
 #[derive(Serialize, Deserialize, Default)]
 pub struct Conversations {
     /// the currently selected conversation
-    pub current_chat: Option<ConversationInfo>,
+    pub current_chat: Option<Uuid>,
     /// all active conversations
     pub all_chats: Vec<ConversationInfo>,
 }
@@ -52,12 +53,26 @@ impl Conversations {
 
     pub fn dispatch(&mut self, action: Actions) -> Self {
         match action {
-            Actions::ChatWith(conversation) => Mutations::chat_with(self, conversation),
+            Actions::ChatWith(info) => self.current_chat = Some(info.conversation.id()),
             Actions::ConversationsUpdated(conversations) => self.all_chats = conversations,
+            Actions::UpdateConversation(info) => {
+                let new_chats: Vec<ConversationInfo> = self
+                    .all_chats
+                    .iter()
+                    .map(|x| {
+                        if x.conversation.id() == info.conversation.id() {
+                            info.clone()
+                        } else {
+                            x.clone()
+                        }
+                    })
+                    .collect();
+                self.all_chats = new_chats;
+            }
         };
         Conversations {
             all_chats: self.all_chats.clone(),
-            current_chat: self.current_chat.clone(),
+            current_chat: self.current_chat,
         }
     }
 }

@@ -4,6 +4,7 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
+    state::ConversationInfo,
     utils::config::Config,
     Account, CONVERSATIONS,
 };
@@ -25,11 +26,27 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Read their values from locks
     let mp = cx.props.account.clone();
 
-    match &state.read().current_chat {
+    // todo: move this into the `impl Conversations` by creating an accessor method
+    // use the uuid of the current chat to extract the ConversationInfo from the list
+    let opt = &state.read().current_chat.and_then(|conversation_id| {
+        // TODO: Make this more dynamic to include multiple PFPs and usernames.
+        // Consider code in this todo temporary and only supportive of 2 way convos
+
+        // have to use a vector because of ownership
+        let v: Vec<ConversationInfo> = state
+            .read()
+            .all_chats
+            .iter()
+            .filter(|x| x.conversation.id() == conversation_id)
+            .cloned()
+            .collect();
+
+        // expect the vector to have one item
+        v.first().cloned()
+    });
+
+    match opt {
         Some(conversation_info) => {
-            // TODO: Make this more dynamic to include multiple PFPs and usernames.
-            // Consider code in this todo temporary and only supportive of 2 way convos
-            let conversation_id = conversation_info.conversation.id();
             let display_did = conversation_info
                 .conversation
                 .recipients()
@@ -47,6 +64,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 .map(Identity::username)
                 .unwrap_or_else(String::new);
             // TODO-END
+
+            let id = conversation_info.conversation.id();
 
             cx.render(rsx! {
                 div {
@@ -73,7 +92,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 class: "did",
                                 config.developer.developer_mode.then(|| rsx!(
                                     span {
-                                        "({conversation_id})"
+                                        "({id})"
                                     }
                                 ))
                             }
