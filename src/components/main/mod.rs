@@ -28,20 +28,21 @@ enum StreamCmd {
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
     // global state
-    let CHATS = use_atom_ref(&cx, CONVERSATIONS);
-    let CHAT_META = use_atom_ref(&cx, CONVERSATION_METADATA);
+    let conversations = use_atom_ref(&cx, CONVERSATIONS);
+    let conversation_metadata = use_atom_ref(&cx, CONVERSATION_METADATA);
 
     // local state and props
     let mut rg = cx.props.messaging.clone();
-    let chats = CHATS.clone();
-    let chat_meta = CHAT_META.clone();
-    let chat_meta2 = CHAT_META.clone();
+    let chats = conversations.clone();
+    let chat_meta = conversation_metadata.clone();
+    let chat_meta2 = conversation_metadata.clone();
 
     // updates the chat metadata in response to commands sent by the use_future
     let meta_updater = use_coroutine(&cx, |mut rx: UnboundedReceiver<StreamCmd>| async move {
         while let Some(msg) = rx.next().await {
             match msg {
                 StreamCmd::Increment(id) => {
+                    // assuming this doesn't cause a race condition because the global state is updated inside of use_coroutine
                     if let Some(s) = chat_meta2.write().v.get_mut(&id) {
                         s.total_messages += 1;
                     }
@@ -51,7 +52,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     });
     let meta_updater = meta_updater.clone();
 
-    // reload when CHATS changes
+    // assuming this reloads when CONVERSATIONS changes
     use_future(&cx, (), |_| async move {
         // get all conversations
         let conversations = loop {
@@ -113,15 +114,12 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             };
 
             let mu = meta_updater.clone();
-            //let ac = active_chats.clone();
             tokio::task::spawn_local(async move {
                 while let Some(event) = stream.next().await {
                     if let MessageEventKind::MessageReceived {
                         conversation_id, ..
                     } = event
                     {
-                        // todo: update chat_meta
-                        // todo: not thread safe
                         mu.send(StreamCmd::Increment(conversation_id));
                     }
                 }

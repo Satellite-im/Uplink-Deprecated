@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{Icon, solid::Shape};
+use dioxus_heroicons::{solid::Shape, Icon};
 
 #[derive(Props, PartialEq)]
 pub struct Props {

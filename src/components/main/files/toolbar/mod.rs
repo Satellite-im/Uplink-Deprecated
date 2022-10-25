@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::{icon_button::IconButton, button::Button};
+use crate::components::ui_kit::{button::Button, icon_button::IconButton};
 
 #[derive(Props, PartialEq)]
 pub struct Props {

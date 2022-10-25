@@ -14,7 +14,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let conversations = use_atom_ref(&cx, CONVERSATIONS);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let mp = cx.props.account.clone();
@@ -41,7 +41,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let active = match state.read().current_chat.clone() {
+    let active = match conversations.read().current_chat.clone() {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {
                 "active"
@@ -52,23 +52,29 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         None => "",
     };
 
-    cx.render(rsx! {
-        div {
-            class: "chat {active}",
-            onclick: move |_| cx.props.on_pressed.call(()),
-            if show_skeleton {rsx!(
-                PFPSkeleton {}
-            )} else {rsx!(
+    if show_skeleton {
+        cx.render(rsx! {
+            div {
+                class: "chat {active}",
+                onclick: move |_| cx.props.on_pressed.call(()),
+                PFPSkeleton {},
+                div {
+                    class: "who",
+                    InlineSkeleton {},
+                    InlineSkeleton {}
+                }
+            }
+        })
+    } else {
+        cx.render(rsx! {
+            div {
+                class: "chat {active}",
+                onclick: move |_| cx.props.on_pressed.call(()),
                 div {
                     class: "pfp"
                 },
-            )},
-            div {
-                class: "who",
-                if show_skeleton {rsx!(
-                    InlineSkeleton {},
-                    InlineSkeleton {}
-                )} else {rsx!(
+                div {
+                    class: "who",
                     div {
                         class: "top-row",
                         h3 {
@@ -82,8 +88,8 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     span {
                         "{l.chat_placeholder}"
                     }
-                )}
-            },
-        }
-    })
+                }
+            }
+        })
+    }
 }
