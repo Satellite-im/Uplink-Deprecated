@@ -1,6 +1,6 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    Account, CONVERSATIONS, LANGUAGE,
+    Account, CONVERSATIONS, CONVERSATION_METADATA, LANGUAGE,
 };
 use dioxus::prelude::*;
 use warp::raygun::Conversation;
@@ -15,6 +15,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let conversations = use_atom_ref(&cx, CONVERSATIONS);
+    let chats_meta = use_atom_ref(&cx, CONVERSATION_METADATA);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let mp = cx.props.account.clone();
@@ -41,7 +42,14 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let active = match conversations.read().current_chat.clone() {
+    let num_unread = chats_meta
+        .read()
+        .v
+        .get(&cx.props.conversation.id())
+        .map(|ci| ci.total_messages - ci.last_read)
+        .and_then(|x| if x > 0 { Some(x) } else { None });
+
+    let active = match &conversations.read().current_chat {
         Some(active_chat) => {
             if active_chat.id() == cx.props.conversation.id() {
                 "active"
@@ -86,7 +94,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        "{l.chat_placeholder}"
+                        match num_unread {
+                            Some(unread) => rsx!("unread: {unread}"),
+                            None => rsx!("{l.chat_placeholder}")
+                        }
                     }
                 }
             }

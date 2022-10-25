@@ -27,15 +27,10 @@ enum StreamCmd {
 
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
-    // global state
-    let conversations = use_atom_ref(&cx, CONVERSATIONS);
-    let conversation_metadata = use_atom_ref(&cx, CONVERSATION_METADATA);
-
-    // local state and props
     let mut rg = cx.props.messaging.clone();
-    let chats = conversations.clone();
-    let chat_meta = conversation_metadata.clone();
-    let chat_meta2 = conversation_metadata.clone();
+    let chats = use_atom_ref(&cx, CONVERSATIONS).clone();
+    let chat_meta = use_atom_ref(&cx, CONVERSATION_METADATA).clone();
+    let chat_meta2 = use_atom_ref(&cx, CONVERSATION_METADATA).clone();
 
     // updates the chat metadata in response to commands sent by the use_future
     let meta_updater = use_coroutine(&cx, |mut rx: UnboundedReceiver<StreamCmd>| async move {
@@ -63,7 +58,8 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             if let Ok(list) = rg.list_conversations().await {
                 break list;
             }
-            tokio::time::sleep(Duration::from_secs(1)).await;
+            // todo: possibly add a loading dialog?
+            tokio::time::sleep(Duration::from_millis(300)).await;
         };
 
         for id in conversations.iter().map(|c| c.id()) {
