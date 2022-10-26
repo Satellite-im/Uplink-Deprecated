@@ -12,7 +12,7 @@ use crate::{
     },
     state::Actions,
     utils::config::Config,
-    Account, Messaging, CONVERSATIONS, LANGUAGE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;
@@ -30,7 +30,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let state = use_atom_ref(&cx, STATE);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();

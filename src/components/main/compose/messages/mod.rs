@@ -1,4 +1,4 @@
-use crate::{components::main::compose::msg::Msg, Account, Messaging, CONVERSATIONS};
+use crate::{components::main::compose::msg::Msg, Account, Messaging, STATE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
@@ -13,7 +13,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let state = use_atom_ref(&cx, STATE);
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity

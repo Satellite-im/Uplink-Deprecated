@@ -12,7 +12,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, CONVERSATIONS, LANGUAGE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
@@ -23,7 +23,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let state = use_atom_ref(&cx, STATE);
     let ext_conversation_id = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();

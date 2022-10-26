@@ -5,7 +5,7 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     utils::config::Config,
-    Account, CONVERSATIONS,
+    Account, STATE,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
@@ -19,7 +19,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let state = use_atom_ref(&cx, STATE);
     let config = Config::load_config_or_default();
 
     // Read their values from locks

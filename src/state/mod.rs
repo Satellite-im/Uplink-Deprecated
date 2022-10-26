@@ -17,7 +17,7 @@ pub enum Actions {
 
 /// tracks the active conversations. Chagnes are persisted
 #[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
-pub struct Conversations {
+pub struct PersistedState {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
     /// all active conversations
@@ -35,10 +35,10 @@ pub struct ConversationInfo {
     pub last_msg_sent: Option<Uuid>,
 }
 
-impl Conversations {
+impl PersistedState {
     pub fn load_or_inital() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.conversations.json")) {
-            Ok(b) => serde_json::from_slice::<Conversations>(&b).unwrap_or_default(),
+            Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => Default::default(),
         }
     }
@@ -63,7 +63,7 @@ impl Conversations {
                 self.all_chats.insert(info.conversation.id(), info);
             }
         };
-        Conversations {
+        PersistedState {
             all_chats: self.all_chats.clone(),
             current_chat: self.current_chat,
         }

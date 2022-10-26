@@ -1,7 +1,7 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     state::{Actions, ConversationInfo},
-    Account, Messaging, CONVERSATIONS, LANGUAGE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
@@ -17,8 +17,8 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let conversations = use_atom_ref(&cx, CONVERSATIONS);
-    let conversations2 = conversations.clone();
+    let state = use_atom_ref(&cx, STATE);
+    let state2 = state.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let unread_count = use_state(&cx, || 0_usize).clone();
     let is_active = use_state(&cx, || false);
@@ -49,7 +49,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let (active, _is_active) = match conversations.read().current_chat.as_ref() {
+    let (active, _is_active) = match state.read().current_chat.as_ref() {
         Some(active) => {
             if *active == cx.props.conversation_info.conversation.id() {
                 ("active", true)
@@ -81,7 +81,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 if let Some(msg) = messages.last() {
                     // todo: prevent unnecessary writes
                     conversation_info.last_msg_read = Some(msg.id());
-                    conversations2
+                    state2
                         .write_silent()
                         .dispatch(Actions::UpdateConversation(conversation_info.clone()))
                         .save();
@@ -127,7 +127,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 if let MessageEventKind::MessageReceived { message_id, .. } = event {
                     if *is_active {
                         conversation_info.last_msg_read = Some(message_id);
-                        conversations2
+                        state2
                             .write_silent()
                             .dispatch(Actions::UpdateConversation(conversation_info.clone()))
                             .save();

@@ -1,7 +1,7 @@
 use crate::{
     main::{compose::Compose, sidebar::Sidebar},
     state::{Actions, ConversationInfo},
-    Account, Messaging, CONVERSATIONS,
+    Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
@@ -23,7 +23,7 @@ pub struct Prop {
 
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
-    let st = use_atom_ref(&cx, CONVERSATIONS).clone();
+    let st = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
 
     use_future(&cx, (), |_| async move {

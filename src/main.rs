@@ -13,7 +13,7 @@ use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::Conversations;
+use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
 use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
@@ -45,7 +45,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static CONVERSATIONS: AtomRef<Conversations> = |_| Conversations::load_or_inital();
+static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
 
 #[derive(PartialEq, Props)]
 pub struct State {

@@ -9,7 +9,7 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::{Actions, ConversationInfo},
-    Account, Messaging, CONVERSATIONS,
+    Account, Messaging, STATE,
 };
 
 #[derive(Props)]
@@ -22,7 +22,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    let state = use_atom_ref(&cx, CONVERSATIONS);
+    let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
