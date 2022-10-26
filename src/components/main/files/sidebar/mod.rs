@@ -1,6 +1,10 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, solid::Shape};
 
+use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
+
+pub mod usage;
+
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
@@ -16,6 +20,18 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         div {
             id: "sidebar",
             class: "tree noselect",
+            Usage {
+                usage: UsageStats {
+                    available: 1256,
+                    total: 123456,
+                    used: 122200,
+                    percent_free: 75,
+                }
+            },
+            label {
+                class: "m-top-sm",
+                "Files"
+            },
             div {
                 class: "tree_wrapper",
                 label {
