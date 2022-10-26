@@ -87,6 +87,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         .save();
                     unread_count.set(0);
                 }
+                // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
+                // chat component shouldn't.
+                return;
             } else {
                 let num_unread_messages = match conversation_info.last_msg_read {
                     Some(id) => messages.iter().rev().take_while(|x| x.id() != id).count(),
