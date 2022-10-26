@@ -20,10 +20,11 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
+    // Rust's ownership model
     let unread_count = use_state(&cx, || 0_usize).clone();
+    // need this one for display
     let unread_count2 = unread_count.clone();
-    let unread_count3 = unread_count.clone();
-    let unread_count4 = unread_count.clone();
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -115,7 +116,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 class: "chat {active}",
                 onclick: move |_|{
-                    unread_count2.set(0);
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 } ,
                 PFPSkeleton {},
@@ -131,7 +131,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 class: "chat {active}",
                 onclick: move |_| {
-                    unread_count3.set(0);
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
                 div {
@@ -150,9 +149,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        match *unread_count4.current() {
+                        match *unread_count2.current() {
                             0 => rsx!("{l.chat_placeholder}"),
-                            _ => rsx!("unread: {unread_count4}"),
+                            _ => rsx!("unread: {unread_count2}"),
                         }
                     }
                 }
