@@ -123,7 +123,7 @@ fn main() {
         Ok(tess) => tess,
         Err(_) => {
             //doesnt exist so its set
-            let tess = Tesseract::default();
+            let mut tess = Tesseract::default();
             tess.set_file(DEFAULT_PATH.read().join(".keystore"));
             tess.set_autosave();
             tess
