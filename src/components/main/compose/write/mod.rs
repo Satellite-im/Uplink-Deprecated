@@ -20,7 +20,6 @@ pub struct Props<'a> {
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = Config::load_config_or_default();
     let text = use_state(&cx, String::new);
-    let text2 = text.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {
@@ -48,8 +47,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     icon: Shape::ArrowRight,
                     state: icon_button::State::Secondary,
                     on_pressed: move |_| {
-                        let _ = &cx.props.on_submit.call(text2.to_string());
-                        text2.set(String::from(""));
+                        let text = text.clone();
+                        let _ = &cx.props.on_submit.call(text.to_string());
+                        text.set(String::from(""));
                     },
                 }
             }
