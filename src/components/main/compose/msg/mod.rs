@@ -64,6 +64,30 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
+    // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
+    // note that this has a queryselector and click handler specific to this page
+    const RESIZE_TEXTAREA_SCRIPT: &str = r#"
+    (function addAutoResize() {
+        let element = document.querySelector('.reply-container .resizeable-textarea');
+        if (element == null) {
+            return;
+        }
+    
+        element.addEventListener('keydown', function(event) {
+            if (event.keyCode === 13 && !event.shiftKey) {
+                event.target.style.height = 'auto';
+            }
+        });
+
+        element.style.boxSizing = 'border-box';
+        var offset = element.offsetHeight - element.clientHeight;
+        element.addEventListener('input', function (event) {
+            event.target.style.height = 'auto';
+            event.target.style.height = event.target.scrollHeight + offset + 'px';
+        });
+        element.removeAttribute('data-autoresize');
+    })()"#;
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -91,7 +115,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             },
                         }
                         div {
-                            class: "controls",
+                            class: "controls reply-container",
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
@@ -104,7 +128,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                                 placeholder: l.send_a_reply.to_string(),
                                 on_submit: move |_| {},
                                 text: text.clone(),
-                            }
+                            },
                             IconButton {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
@@ -113,6 +137,9 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                                     popout.set(false);
                                     // todo: send the message
                                 }
+                            },
+                            script {
+                                dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
                             },
                         }
                     }

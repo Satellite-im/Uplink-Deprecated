@@ -1,34 +1,8 @@
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
 
-// TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
-const RESIZE_TEXTAREA_SCRIPT: &str = r#"
- (function addAutoResize() {
-     document.querySelectorAll('.resizeable-textarea').forEach(function (element) {
-
-        let send_button = document.getElementById('send');
-         send_button.addEventListener('click', function(event) {
-             event.target.style.height = 'auto';
-         });
-        
-         element.addEventListener('keyup', function(event) {
-             if (event.keyCode === 13 && !event.shiftKey) {
-                 
-                 event.target.style.height = 'auto';
-             }
-         });
-
-         element.style.boxSizing = 'border-box';
-         var offset = element.offsetHeight - element.clientHeight;
-         element.addEventListener('input', function (event) {
-             event.target.style.height = 'auto';
-             event.target.style.height = event.target.scrollHeight + offset + 'px';
-         });
-         element.removeAttribute('data-autoresize');
-     });
- })()"#;
-
-// `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
+// depends on javascript to resize the textarea
+// because this is used in multiple places, the javascript was moved outside this Element
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn TextArea<'a>(
@@ -57,9 +31,6 @@ pub fn TextArea<'a>(
             },
             placeholder: "{placeholder}",
             value: "{text}"
-        }
-        script {
-            dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
         }
     })
 }
