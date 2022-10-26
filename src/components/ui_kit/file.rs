@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{Icon, solid::Shape};
+use dioxus_heroicons::{solid::Shape, Icon};
 
 use super::folder::State;
 
@@ -9,7 +9,7 @@ pub struct Props {
     name: String,
     state: State,
     kind: String,
-    size: u64
+    size: u64,
 }
 
 #[allow(non_snake_case)]
