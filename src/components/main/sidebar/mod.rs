@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use uuid::Uuid;
 
 use crate::{
     components::{
@@ -28,9 +29,10 @@ pub struct Props {
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let config = Config::load_config_or_default();
 
+    let state = use_atom_ref(&cx, STATE);
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let state = use_atom_ref(&cx, STATE);
+    let current_chat: &UseState<Option<Uuid>> = use_state(&cx, || None);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
@@ -39,6 +41,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
+
+    let _current_chat = state.read().current_chat;
+    if *current_chat != _current_chat {
+        current_chat.set(_current_chat);
+    }
 
     cx.render(rsx! {
         div {
@@ -93,9 +100,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         account: cx.props.account.clone(),
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
-                                        is_active:  state.read().current_chat.map(|cur| cur == *key).unwrap_or(false),
+                                        // hopefully prevents needless re-renders when another chat receives unread messages
+                                        is_active:  *current_chat == Some(*key),
                                         on_pressed: move |_| {
                                             state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
+                                            // hopefully force the UI to update
+                                            current_chat.set(state.read().current_chat);
                                         }
                                     }
                                 )
