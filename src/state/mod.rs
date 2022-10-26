@@ -5,8 +5,6 @@ use warp::raygun::Conversation;
 
 use crate::DEFAULT_PATH;
 
-
-
 pub mod mutations;
 
 pub enum Actions {
