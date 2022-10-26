@@ -21,7 +21,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let unread_count = use_state(&cx, || 0_usize).clone();
-    let is_active: UseState<bool> = use_state(&cx, || false).clone();
+    let unread_count2 = unread_count.clone();
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -49,25 +49,19 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
-    let _is_active = state
+    let is_active = state
         .read()
         .current_chat
         .map(|x| x == cx.props.conversation_info.conversation.id())
         .unwrap_or(false);
-    if *is_active != _is_active {
-        is_active.set(_is_active);
-    }
-    let active = if *is_active { "active" } else { "none" };
+
+    let active = if is_active { "active" } else { "none" };
 
     use_future(
         &cx,
-        (
-            &cx.props.conversation_info.clone(),
-            &unread_count,
-            &is_active,
-        ),
-        |(conversation_info, unread_count, is_active)| async move {
-            if *is_active {
+        &cx.props.conversation_info.clone(),
+        |conversation_info| async move {
+            if is_active {
                 unread_count.set(0);
                 // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
                 // chat component shouldn't.
@@ -157,9 +151,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        match *unread_count.current() {
+                        match *unread_count2.current() {
                             0 => rsx!("{l.chat_placeholder}"),
-                            _ => rsx!("unread: {unread_count}"),
+                            _ => rsx!("unread: {unread_count2}"),
                         }
                     }
                 }
