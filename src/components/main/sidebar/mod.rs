@@ -85,9 +85,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         div {
                             class: "chats",
-                            state.read().all_chats.iter().rev().map(|conv| {
+                            state.read().all_chats.iter().map(|(key, conv)| {
                                 let conversation_info = conv.clone();
-                                let key = conversation_info.conversation.id();
                                 rsx!(
                                     chat::Chat {
                                         key: "{key}",

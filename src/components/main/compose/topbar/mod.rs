@@ -4,7 +4,6 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    state::ConversationInfo,
     utils::config::Config,
     Account, CONVERSATIONS,
 };
@@ -28,22 +27,10 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     // todo: move this into the `impl Conversations` by creating an accessor method
     // use the uuid of the current chat to extract the ConversationInfo from the list
-    let opt = &state.read().current_chat.and_then(|conversation_id| {
-        // TODO: Make this more dynamic to include multiple PFPs and usernames.
-        // Consider code in this todo temporary and only supportive of 2 way convos
-
-        // have to use a vector because of ownership
-        let v: Vec<ConversationInfo> = state
-            .read()
-            .all_chats
-            .iter()
-            .filter(|x| x.conversation.id() == conversation_id)
-            .cloned()
-            .collect();
-
-        // expect the vector to have one item
-        v.first().cloned()
-    });
+    let opt = &state
+        .read()
+        .current_chat
+        .and_then(|conversation_id| state.read().all_chats.get(&conversation_id).cloned());
 
     match opt {
         Some(conversation_info) => {

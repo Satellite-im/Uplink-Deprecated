@@ -4,7 +4,7 @@ use crate::{
     Account, Messaging, CONVERSATIONS,
 };
 use dioxus::prelude::*;
-use std::{collections::HashSet, time::Duration};
+use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
 use warp::raygun::{Conversation, RayGun};
 
@@ -29,27 +29,37 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
-                // not the most efficient
-                let mut set: HashSet<Uuid> = HashSet::new();
-                st.read()
+                let mut incoming: HashMap<Uuid, Conversation> = HashMap::new();
+                for item in &list {
+                    incoming.insert(item.id(), item.clone());
+                }
+                let new_chats: Vec<&Conversation> = list
+                    .iter()
+                    .filter(|x| !st.read().all_chats.contains_key(&x.id()))
+                    .collect();
+                let to_remove: Vec<Uuid> = st
+                    .read()
                     .all_chats
                     .iter()
-                    // extract the Conversation from the ConversationInfo
-                    .map(|x| x.conversation.clone())
-                    // insert it into the set
-                    .for_each(|x| {
-                        set.insert(x.id());
-                    });
-                let new_chats: Vec<&Conversation> =
-                    list.iter().filter(|x| !set.contains(&x.id())).collect();
-                if !new_chats.is_empty() {
-                    let mut updated_list = st.read().all_chats.clone();
-                    updated_list.extend(new_chats.iter().map(|conversation| ConversationInfo {
-                        conversation: (*conversation).clone(),
-                        ..Default::default()
-                    }));
+                    .filter(|(uuid, _)| !incoming.contains_key(uuid))
+                    .map(|(uuid, _)| *uuid)
+                    .collect();
+                if !new_chats.is_empty() || !to_remove.is_empty() {
+                    let mut new_map = st.read().all_chats.clone();
+                    for id in to_remove {
+                        new_map.remove(&id);
+                    }
+                    for item in new_chats {
+                        let ci = ConversationInfo {
+                            conversation: item.clone(),
+                            ..Default::default()
+                        };
+                        new_map.insert(item.id(), ci);
+                    }
+                    // this may be an expensive copy. still, it seems like a good idea to change this all at once.
+                    // alternatively, write_silent could be used to update the state and then write().save may trigger an update
                     st.write()
-                        .dispatch(Actions::ConversationsUpdated(updated_list))
+                        .dispatch(Actions::ConversationsUpdated(new_map))
                         .save();
                 }
             }

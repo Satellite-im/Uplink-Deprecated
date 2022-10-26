@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -10,7 +11,7 @@ pub mod mutations;
 
 pub enum Actions {
     ChatWith(ConversationInfo),
-    ConversationsUpdated(Vec<ConversationInfo>),
+    ConversationsUpdated(HashMap<Uuid, ConversationInfo>),
     UpdateConversation(ConversationInfo),
 }
 
@@ -20,7 +21,7 @@ pub struct Conversations {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
     /// all active conversations
-    pub all_chats: Vec<ConversationInfo>,
+    pub all_chats: HashMap<Uuid, ConversationInfo>,
 }
 
 /// composes `Conversation` with relevant metadata
@@ -54,20 +55,12 @@ impl Conversations {
     pub fn dispatch(&mut self, action: Actions) -> Self {
         match action {
             Actions::ChatWith(info) => self.current_chat = Some(info.conversation.id()),
-            Actions::ConversationsUpdated(conversations) => self.all_chats = conversations,
-            Actions::UpdateConversation(info) => {
-                let new_chats: Vec<ConversationInfo> = self
-                    .all_chats
-                    .iter()
-                    .map(|x| {
-                        if x.conversation.id() == info.conversation.id() {
-                            info.clone()
-                        } else {
-                            x.clone()
-                        }
-                    })
-                    .collect();
+            Actions::ConversationsUpdated(new_chats) => {
                 self.all_chats = new_chats;
+            }
+            Actions::UpdateConversation(info) => {
+                // overwrite the existing entry
+                self.all_chats.insert(info.conversation.id(), info);
             }
         };
         Conversations {
