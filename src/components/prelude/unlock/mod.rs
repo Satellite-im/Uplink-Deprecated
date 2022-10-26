@@ -76,7 +76,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         Shape::X
                                     }
                                     on_pressed: move |_| {
-                                        let tesseract = cx.props.tesseract.clone();
+                                        let mut tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
                                                 use_router(&cx).push_route("/loading", None, None)
@@ -137,7 +137,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         // If tesseract exists, we can try to unlock as we type to save time
                         // We can ignore the error though since we're doing this without the users command
                         if evt.value.len() >= 4 && tesseract_available {
-                            let tesseract = cx.props.tesseract.clone();
+                            let mut tesseract = cx.props.tesseract.clone();
                             if tesseract.unlock(evt.value.as_ref()).is_ok() {
                                 use_router(&cx).push_route("/loading", None, None)
                             }
@@ -148,7 +148,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {
-                                let tesseract = cx.props.tesseract.clone();
+                                let mut tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/loading", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),

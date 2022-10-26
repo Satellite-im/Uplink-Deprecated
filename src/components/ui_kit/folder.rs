@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{Icon, solid::Shape};
+use dioxus_heroicons::{solid::Shape, Icon};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum State {
     Primary,
-    Secondary
+    Secondary,
 }
 
 // Remember: owned props must implement PartialEq!

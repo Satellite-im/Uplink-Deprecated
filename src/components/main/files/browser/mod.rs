@@ -1,6 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::components::ui_kit::{folder::{State, Folder}, file::File};
+use crate::components::ui_kit::{
+    file::File,
+    folder::{Folder, State},
+};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
