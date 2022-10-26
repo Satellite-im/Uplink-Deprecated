@@ -127,7 +127,7 @@ fn main() {
         Ok(tess) => tess,
         Err(_) => {
             //doesnt exist so its set
-            let mut tess = Tesseract::default();
+            let tess = Tesseract::default();
             tess.set_file(DEFAULT_PATH.read().join(".keystore"));
             tess.set_autosave();
             tess
@@ -147,7 +147,7 @@ fn main() {
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
-        .with_min_inner_size(LogicalSize::new(330.0, 600.0));
+        .with_min_inner_size(LogicalSize::new(330.0, 500.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -235,7 +235,8 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/settings", main::settings::Settings {
+            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/settings", main::settings::Settings {
                     account: cx.props.account.clone(),
                 },
             },
@@ -286,10 +287,4 @@ impl PartialEq for Messaging {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }
-}
-
-#[derive(PartialEq, Eq)]
-pub enum PageState {
-    Normal,
-    Settings,
 }

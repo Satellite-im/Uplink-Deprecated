@@ -7,9 +7,6 @@ use dioxus::desktop::use_window;
 use dioxus::prelude::*;
 use dioxus::router::use_router;
 use futures::StreamExt;
-use rodio::{source::Source, Decoder, OutputStream};
-use std::fs::File;
-use std::io::BufReader;
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]

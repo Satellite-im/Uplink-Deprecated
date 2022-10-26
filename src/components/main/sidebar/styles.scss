@@ -9,7 +9,7 @@
         min-width: 300px;
         padding: 1rem;
         position: relative;
-        width: 300px;
+        width: var(--sidebar-width);
 
         .extension-renderer {
             margin-top: 1rem;

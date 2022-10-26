@@ -44,7 +44,7 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     cx.render(rsx! {
         div {
-            style: "max-width: 40px; display: inline-block;",
+            style: "display: inline-block;",
             button {
                 class: "{class}",
                 onclick: move |evt| cx.props.on_pressed.call(evt),

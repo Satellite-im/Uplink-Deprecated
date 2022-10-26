@@ -71,7 +71,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "nav",
             IconButton {
                 on_pressed: move |_| {
-                    let _ = &cx.props.on_pressed.call(NavEvent::Files);
+                    use_router(&cx).push_route("/main/files", None, None);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::Folder
@@ -100,7 +100,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             IconButton {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/settings", None, None);
+                    use_router(&cx).push_route("/main/settings", None, None);
                 },
                 state: icon_button::State::Secondary,
                 icon: Shape::Cog
