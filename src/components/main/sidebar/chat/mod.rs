@@ -1,7 +1,7 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::{Actions, ConversationInfo},
-    Account, Messaging, LANGUAGE, STATE,
+    state::ConversationInfo,
+    Account, Messaging, LANGUAGE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
@@ -12,19 +12,18 @@ pub struct Props<'a> {
     account: Account,
     conversation_info: ConversationInfo,
     messaging: Messaging,
+    is_active: bool,
     on_pressed: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE);
-    let state2 = state.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let unread_count = use_state(&cx, || 0_usize).clone();
-    let is_active = use_state(&cx, || false);
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
+    let is_active = cx.props.is_active;
 
     let ident = mp
         .read()
@@ -48,27 +47,22 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     let show_skeleton = username.is_empty();
+    let active = if is_active { "active" } else { "none" };
 
-    let (active, _is_active) = match state.read().current_chat.as_ref() {
-        Some(active) => {
-            if *active == cx.props.conversation_info.conversation.id() {
-                ("active", true)
-            } else {
-                ("none", false)
-            }
-        }
-        None => ("", false),
-    };
-
-    if is_active != _is_active {
-        is_active.set(_is_active);
-    }
-
-    let mut conversation_info = cx.props.conversation_info.clone();
     use_future(
         &cx,
-        (&unread_count, &is_active.clone()),
-        |(unread_count, is_active)| async move {
+        (
+            &cx.props.conversation_info.clone(),
+            &unread_count,
+            &is_active,
+        ),
+        |(conversation_info, unread_count, is_active)| async move {
+            if is_active {
+                unread_count.set(0);
+                // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
+                // chat component shouldn't.
+                return;
+            }
             let messages = rg
                 .get_messages(
                     conversation_info.conversation.id(),
@@ -77,28 +71,14 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 .await
                 .unwrap_or_default();
 
-            if *is_active {
-                if let Some(msg) = messages.last() {
-                    // todo: prevent unnecessary writes
-                    conversation_info.last_msg_read = Some(msg.id());
-                    state2
-                        .write_silent()
-                        .dispatch(Actions::UpdateConversation(conversation_info.clone()))
-                        .save();
-                    unread_count.set(0);
-                }
-                // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
-                // chat component shouldn't.
-                return;
-            } else {
-                let num_unread_messages = match conversation_info.last_msg_read {
-                    Some(id) => messages.iter().rev().take_while(|x| x.id() != id).count(),
-                    None => messages.len(),
-                };
+            let num_unread_messages = match conversation_info.last_msg_read {
+                // assumes the most recent messages appear first in the list
+                Some(id) => messages.iter().take_while(|x| x.id() != id).count(),
+                None => messages.len(),
+            };
 
-                if *unread_count.current() != num_unread_messages {
-                    unread_count.set(num_unread_messages);
-                }
+            if *unread_count.current() != num_unread_messages {
+                unread_count.set(num_unread_messages);
             }
 
             let mut stream = loop {
@@ -124,16 +104,8 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             };
 
             while let Some(event) = stream.next().await {
-                if let MessageEventKind::MessageReceived { message_id, .. } = event {
-                    if *is_active {
-                        conversation_info.last_msg_read = Some(message_id);
-                        state2
-                            .write_silent()
-                            .dispatch(Actions::UpdateConversation(conversation_info.clone()))
-                            .save();
-                    } else {
-                        unread_count.modify(|x| x + 1);
-                    }
+                if let MessageEventKind::MessageReceived { .. } = event {
+                    unread_count.modify(|x| x + 1);
                 }
             }
         },
@@ -158,7 +130,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "chat {active}",
                 onclick: move |_| {
                     cx.props.on_pressed.call(());
-                    is_active.set(true);
                 },
                 div {
                     class: "pfp"

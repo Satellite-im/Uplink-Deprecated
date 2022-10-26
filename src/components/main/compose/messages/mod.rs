@@ -1,4 +1,4 @@
-use crate::{components::main::compose::msg::Msg, Account, Messaging, STATE};
+use crate::{components::main::compose::msg::Msg, state::Actions, Account, Messaging, STATE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
@@ -13,30 +13,31 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
-    let state = use_atom_ref(&cx, STATE);
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity
+    let state = use_atom_ref(&cx, STATE).clone();
+    // this needs to be passed to the use_future to make the messages page reload when a new chat is selected.
+    let ext_conversation_id = state.read().current_chat;
     let ident = cx.props.account.read().get_own_identity().unwrap();
     let messages = use_ref(&cx, Vec::new);
-    let ext_conversation_id = state.read().current_chat;
 
-    let rg = cx.props.messaging.clone();
-
-    //Note: Broken for the time being as switching conversation doesnt clear out
-    //      messages.
     use_future(
         &cx,
-        (messages, &rg, &ext_conversation_id),
+        (messages, &cx.props.messaging.clone(), &ext_conversation_id),
         |(list, mut rg, input_conversation_id)| async move {
             // don't stream messages from a nonexistent conversation
-            let ext_conversation_id = match input_conversation_id {
-                Some(id) => id,
+            let mut current_chat = match input_conversation_id {
+                // this better not panic
+                Some(id) => state.read().all_chats.get(&id).cloned().unwrap(),
                 None => return,
             };
 
             let mut stream = loop {
-                match rg.get_conversation_stream(ext_conversation_id).await {
+                match rg
+                    .get_conversation_stream(current_chat.conversation.id())
+                    .await
+                {
                     Ok(stream) => break stream,
                     Err(e) => match &e {
                         warp::error::Error::RayGunExtensionUnavailable => {
@@ -54,12 +55,21 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 }
             };
             let messages = rg
-                .get_messages(ext_conversation_id, MessageOptions::default())
+                .get_messages(current_chat.conversation.id(), MessageOptions::default())
                 .await
                 .unwrap_or_default();
 
             //This is to prevent the future updating the state and causing a rerender
             if *list.read() != messages {
+                // assumes the most recent message is first in the list
+                if let Some(msg) = messages.first() {
+                    current_chat.last_msg_read = Some(msg.id());
+                    state
+                        .write_silent()
+                        .dispatch(Actions::UpdateConversation(current_chat.clone()))
+                        .save();
+                }
+
                 *list.write() = messages;
             }
 
@@ -73,8 +83,13 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         conversation_id,
                         message_id,
                     } => {
-                        if ext_conversation_id == conversation_id {
+                        if current_chat.conversation.id() == conversation_id {
                             if let Ok(message) = rg.get_message(conversation_id, message_id).await {
+                                current_chat.last_msg_read = Some(message.id());
+                                state
+                                    .write_silent()
+                                    .dispatch(Actions::UpdateConversation(current_chat.clone()))
+                                    .save();
                                 list.write().push(message);
                             }
                         }

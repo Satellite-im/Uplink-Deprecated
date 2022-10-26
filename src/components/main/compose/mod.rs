@@ -24,7 +24,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let ext_conversation_id = state.read().current_chat;
+    let current_chat = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
 
@@ -85,7 +85,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             .collect::<Vec<_>>();
 
                         // clicking the send button is meaningless if there isn't a conversation. 
-                        if let Some(id) = ext_conversation_id {
+                        if let Some(id) = current_chat {
                             // TODO: We need to wire this message up to display differently
                             // until we confim whether it was successfully sent or failed
                             if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {

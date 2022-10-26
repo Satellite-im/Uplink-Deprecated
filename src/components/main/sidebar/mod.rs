@@ -93,6 +93,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         account: cx.props.account.clone(),
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
+                                        is_active:  state.read().current_chat.map(|cur| cur == *key).unwrap_or(false),
                                         on_pressed: move |_| {
                                             state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
                                         }
