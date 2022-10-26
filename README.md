@@ -17,9 +17,9 @@
 </div>
 <br/>
 
-Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for basic implementation of Warp features in a universal application.
+Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementation of Warp features in a universal application.
 
-The goal should be to build a hyper customizable application that can run anywhere and support extensions.
+The goal should be to build a hyper-customizable application that can run anywhere and support extensions.
 
 ## Features
 
@@ -38,6 +38,11 @@ Guidelines for contributing to Lapce can be found in [`CONTRIBUTING.md`](CONTRIB
 You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. Or included in standard dev tooling on respective operating systems.
 
 If you do not have protobuf installed you can install it using homebrew on Mac: `brew install protobuf`.
+
+### Linux
+For Ubuntu, use the following: `sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libasound2-dev protobuf-compiler`.
+
+For Debian, replace `libappindicator3-dev` with `libayatanta-appindicator3-dev`
 
 ### Windows
 // TODO:
@@ -81,8 +86,8 @@ It's often necessary to reset your account for development, to do so just delete
 
 ## Contributions
 
-All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application are much appriciated.
+All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application is much appreciated.
 
 ## Special Thanks
 
-**Lapce** - For serving as a great open source editor and helping me (matt) through so many headaches by providing your code to the world.
+**Lapce** - For serving as a great open-source editor and helping me (matt) through so many headaches by providing your code to the world.

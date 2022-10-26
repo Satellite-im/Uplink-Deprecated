@@ -1,12 +1,11 @@
 use clap::Parser;
-use dioxus::desktop::tao;
 use core::time;
-use std::ops::Deref;
+use dioxus::desktop::tao;
+use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::thread;
 use tracing_subscriber::EnvFilter;
-use dirs;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -16,6 +15,7 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
+use utils::config::Config;
 use warp::multipass::MultiPass;
 use warp::raygun::RayGun;
 use warp::sync::RwLock;
@@ -23,10 +23,9 @@ use warp::tesseract::Tesseract;
 use warp_mp_ipfs::config::{Discovery, MpIpfsConfig};
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
-use utils::config::Config;
 
 use crate::components::main;
-use crate::components::prelude::{auth, unlock, loading};
+use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
 pub mod extensions;
@@ -40,11 +39,13 @@ use tao::menu::{MenuBar as Menu, MenuItem};
 
 mod state;
 
-
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| RwLock::new(dirs::home_dir().unwrap().join(".warp")));
-pub const WINDOW_SUFFIX_NAME: &'static str = "Uplink";
+
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
+    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
+pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
+
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
@@ -124,7 +125,7 @@ fn main() {
         Ok(tess) => tess,
         Err(_) => {
             //doesnt exist so its set
-            let mut tess = Tesseract::default();
+            let tess = Tesseract::default();
             tess.set_file(DEFAULT_PATH.read().join(".keystore"));
             tess.set_autosave();
             tess
@@ -145,7 +146,7 @@ fn main() {
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
-        .with_min_inner_size(LogicalSize::new(330.0, 600.0));
+        .with_min_inner_size(LogicalSize::new(330.0, 500.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -208,7 +209,6 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
-    
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -239,6 +239,11 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/settings", main::settings::Settings {
+                    account: cx.props.account.clone(),
+                },
+            },
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
@@ -251,6 +256,12 @@ impl Deref for Account {
     type Target = Arc<RwLock<Box<dyn MultiPass>>>;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl DerefMut for Account {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
@@ -267,6 +278,12 @@ impl Deref for Messaging {
     type Target = Arc<RwLock<Box<dyn RayGun>>>;
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl DerefMut for Messaging {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 

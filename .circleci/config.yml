@@ -9,6 +9,8 @@ jobs:
       - run: sudo apt update
       - run: sudo apt install -y libgtk-3-dev
       - run: sudo apt install -y libwebkit2gtk-4.0-dev
+      - run: sudo apt install -y libappindicator3-dev
+      - run: sudo apt install -y libasound2-dev
       - run: sudo apt install -y protobuf-compiler
       - run:
           name: Test
@@ -20,8 +22,11 @@ jobs:
     steps:
       - checkout
       - run: sudo apt update
+      - run: sudo apt update
       - run: sudo apt install -y libgtk-3-dev
       - run: sudo apt install -y libwebkit2gtk-4.0-dev
+      - run: sudo apt install -y libappindicator3-dev
+      - run: sudo apt install -y libasound2-dev
       - run: sudo apt install -y protobuf-compiler
       - run:
           name: Build Binary

@@ -1,8 +1,8 @@
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
-use sir::css;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
+use sir::css;
 
 use crate::{
     components::ui_kit::{
@@ -24,9 +24,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
-    let username = use_state(&cx, || String::from(""));
+    let username = use_state(&cx, String::new);
     let valid_username = username.len() >= 4;
-    let error = use_state(&cx, || String::from(""));
+    let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {
@@ -67,7 +67,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                     error.set("Username length is invalid".into())
                 }
                 Err(e) => {
-                    println!("{}", {e});
+                    println!("{}", e);
                     error.set("Unexpected error has occurred".into())
                 }
             }

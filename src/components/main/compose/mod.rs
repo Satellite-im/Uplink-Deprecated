@@ -1,41 +1,38 @@
+pub mod messages;
+pub mod msg;
+pub mod topbar;
+pub mod write;
+
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::Conversation;
+use warp::raygun::RayGun;
 
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::{button::Button, icon_button::IconButton},
+        ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, STATE, LANGUAGE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 #[derive(PartialEq, Props)]
 pub struct Props {
     account: Account,
     messaging: Messaging,
-    conversation: Conversation,
 }
-
-pub mod messages;
-pub mod msg;
-pub mod topbar;
-pub mod write;
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let conversation_id = cx.props.conversation.id();
+    let ext_conversation_id = state.read().chat.as_ref().map(|c| c.id());
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
 
-    // Read their values from locks
-    let rg = cx.props.messaging.clone();
-
     let blur = state.read().chat.is_none();
-    let text = use_state(&cx, || String::from(""));
+    let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
+    // todo: render normally
     cx.render(rsx! {
         div {
             class: "compose",
@@ -49,7 +46,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 rsx!(
                     TopBar {
                         account: cx.props.account.clone(),
-                        conversation: cx.props.conversation.clone(),
                         on_call: move |_| {},
                     }
                 )
@@ -72,7 +68,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 Messages {
                     account: cx.props.account.clone(),
                     messaging: cx.props.messaging.clone(),
-                    conversation: cx.props.conversation.clone(),
                 }
                 div { class: "gradient_mask is_bottom" },
             },
@@ -81,7 +76,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 Write {
                     on_submit: move |message: String| {
                         text.set(String::from(""));
-                        let rg = rg.clone();
+                        let mut rg = cx.props.messaging.clone();
 
                         let text_as_vec = message
                             .split('\n')
@@ -89,11 +84,14 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
 
-                        // TODO: We need to wire this message up to display differently
-                        // until we confim whether it was successfully sent or failed
-                        let _send_message = warp::async_block_in_place_uncheck(rg
-                                .write()
-                                .send(conversation_id, None, text_as_vec));
+                        // clicking the send button is meaningless if there isn't a conversation. 
+                        if let Some(id) = ext_conversation_id {
+                            // TODO: We need to wire this message up to display differently
+                            // until we confim whether it was successfully sent or failed
+                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                //TODO: Handle error
+                            };
+                        }
                     },
                     on_upload: move |_| {}
                 }

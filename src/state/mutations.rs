@@ -9,7 +9,6 @@ impl Mutations {
         let mut chats = state.chats.clone();
 
         for (i, chat) in state.chats.clone().iter().enumerate() {
-            
             let mut recipients_equal = true;
             for recipient in chat.recipients().clone() {
                 if !c.recipients().contains(&recipient) {
@@ -24,6 +23,6 @@ impl Mutations {
         }
         chats.push(conversation.clone());
         state.chats = chats;
-        state.chat = Some(conversation.clone());
+        state.chat = Some(conversation);
     }
 }

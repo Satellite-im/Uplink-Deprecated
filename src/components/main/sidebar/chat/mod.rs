@@ -1,9 +1,9 @@
-use dioxus::prelude::*;
-use warp::raygun::Conversation;
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    LANGUAGE, STATE, Account,
+    Account, LANGUAGE, STATE,
 };
+use dioxus::prelude::*;
+use warp::raygun::Conversation;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -17,7 +17,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
-
     let mp = cx.props.account.clone();
 
     let ident = mp
@@ -30,8 +29,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .conversation
         .recipients()
         .iter()
+        //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
+        //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
         .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        //flatted the nested iterators
         .flatten()
         .map(|i| i.username())
         .last()

@@ -9,7 +9,7 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         pin::Pin,
-        tooltip::{self, ArrowPosition, Tooltip},
+        tooltip::{ArrowPosition, Tooltip},
     },
     LANGUAGE,
 };
@@ -25,9 +25,9 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
 
-    let pin = use_state(&cx, || String::from(""));
+    let pin = use_state(&cx, String::new);
     let show_tip = use_state(&cx, || false);
-    let error = use_state(&cx, || String::from(""));
+    let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
         css!("opacity: 0")
     } else {
@@ -40,8 +40,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     } else {
         "confirm-button has-error"
     };
-
-    let valid_pin = pin.len() > 3;
 
     let tesseract_available = cx.props.tesseract.exist("keypair");
 
@@ -78,7 +76,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         Shape::X
                                     }
                                     on_pressed: move |_| {
-                                        let mut tesseract = cx.props.tesseract.clone();
+                                        let tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
                                                 use_router(&cx).push_route("/loading", None, None)
@@ -99,7 +97,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     span {
                         class: "pin_tooltip",
                         Tooltip {
-                            text: auth_text.to_string(),
+                            text: auth_text,
                             arrow_position: ArrowPosition::Top
                         }
                     }
@@ -139,7 +137,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         // If tesseract exists, we can try to unlock as we type to save time
                         // We can ignore the error though since we're doing this without the users command
                         if evt.value.len() >= 4 && tesseract_available {
-                            let mut tesseract = cx.props.tesseract.clone();
+                            let tesseract = cx.props.tesseract.clone();
                             if tesseract.unlock(evt.value.as_ref()).is_ok() {
                                 use_router(&cx).push_route("/loading", None, None)
                             }
@@ -150,7 +148,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {
-                                let mut tesseract = cx.props.tesseract.clone();
+                                let tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/loading", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),

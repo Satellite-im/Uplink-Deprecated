@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     count: usize,
 }
