@@ -2,7 +2,7 @@ use super::{ConversationInfo, PersistedState};
 
 pub struct Mutations;
 impl Mutations {
-    pub fn chat_with(conversations: &mut PersistedState, conversation_info: ConversationInfo) {
+    pub fn chat_with(_conversations: &mut PersistedState, _conversation_info: ConversationInfo) {
         // todo: revisit this behavior. seems to make things hard for the user
         unimplemented!()
         /*let mut all_chats: Vec<ConversationInfo> = conversations

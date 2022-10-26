@@ -1,7 +1,7 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     state::ConversationInfo,
-    Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, LANGUAGE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
