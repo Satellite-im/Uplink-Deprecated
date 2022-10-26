@@ -13,15 +13,17 @@ pub struct Props<'a> {
     account: Account,
     conversation_info: ConversationInfo,
     messaging: Messaging,
-    on_pressed: EventHandler<'a, ()>,
+    is_active: bool,
+    on_pressed: EventHandler<'a, Uuid>,
 }
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let unread_count = use_state(&cx, || 0_usize).clone();
     let unread_count2 = unread_count.clone();
+    let unread_count3 = unread_count.clone();
+    let unread_count4 = unread_count.clone();
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -48,19 +50,12 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     let show_skeleton = username.is_empty();
-
-    let is_active = state
-        .read()
-        .current_chat
-        .map(|x| x == cx.props.conversation_info.conversation.id())
-        .unwrap_or(false);
-
-    let active = if is_active { "active" } else { "none" };
+    let active = if cx.props.is_active { "active" } else { "none" };
 
     use_future(
         &cx,
-        &cx.props.conversation_info.clone(),
-        |conversation_info| async move {
+        (&cx.props.conversation_info.clone(), &cx.props.is_active),
+        |(conversation_info, is_active)| async move {
             if is_active {
                 unread_count.set(0);
                 // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
@@ -119,7 +114,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.render(rsx! {
             div {
                 class: "chat {active}",
-                onclick: move |_| cx.props.on_pressed.call(()),
+                onclick: move |_|{
+                    unread_count2.set(0);
+                    cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
+                } ,
                 PFPSkeleton {},
                 div {
                     class: "who",
@@ -133,7 +131,8 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 class: "chat {active}",
                 onclick: move |_| {
-                    cx.props.on_pressed.call(());
+                    unread_count3.set(0);
+                    cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
                 div {
                     class: "pfp"
@@ -151,9 +150,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     span {
-                        match *unread_count2.current() {
+                        match *unread_count4.current() {
                             0 => rsx!("{l.chat_placeholder}"),
-                            _ => rsx!("unread: {unread_count2}"),
+                            _ => rsx!("unread: {unread_count4}"),
                         }
                     }
                 }

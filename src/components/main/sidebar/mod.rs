@@ -41,6 +41,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
 
+    let active_chat: UseState<Option<Uuid>> = use_state(&cx, || None).clone();
+    let _active_chat = state.read().current_chat;
+    if *active_chat != _active_chat {
+        active_chat.set(_active_chat);
+    }
+
     cx.render(rsx! {
         div {
             class: "sidebar",
@@ -88,14 +94,19 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             class: "chats",
                             state.read().all_chats.iter().map(|(key, conv)| {
                                 let conversation_info = conv.clone();
+                                let active_chat = active_chat.clone();
                                 rsx!(
                                     chat::Chat {
                                         key: "{key}",
                                         account: cx.props.account.clone(),
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
-                                        on_pressed: move |_| {
-                                            state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
+                                        is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        on_pressed: move |uuid| {
+                                            if *active_chat != Some(uuid) {
+                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
+                                                active_chat.set(Some(uuid));
+                                            }
                                         }
                                     }
                                 )
