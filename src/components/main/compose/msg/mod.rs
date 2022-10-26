@@ -72,12 +72,6 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         if (element == null) {
             return;
         }
-    
-        element.addEventListener('keydown', function(event) {
-            if (event.keyCode === 13 && !event.shiftKey) {
-                event.target.style.height = 'auto';
-            }
-        });
 
         element.style.boxSizing = 'border-box';
         var offset = element.offsetHeight - element.clientHeight;
