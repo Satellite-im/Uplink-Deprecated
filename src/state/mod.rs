@@ -29,8 +29,8 @@ pub struct ConversationInfo {
     /// the uuid of the last message read. \
     /// used to determine the number of unread messages
     pub last_msg_read: Option<Uuid>,
-    /// the uuid of the last message sent
-    pub last_msg_sent: Option<Uuid>,
+    /// the first two lines of the last message sent
+    pub last_msg_sent: Option<Vec<String>>,
 }
 
 impl PersistedState {

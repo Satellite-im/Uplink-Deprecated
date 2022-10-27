@@ -72,6 +72,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         //This is to prevent the future updating the state and causing a rerender
         if *list.read() != messages {
             // assumes the most recent message is first in the list
+            // todo: filter out messages sent by the user
             if let Some(msg) = messages.first() {
                 if current_chat.last_msg_read != Some(msg.id()) {
                     println!("got new message");
