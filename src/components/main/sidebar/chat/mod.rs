@@ -73,7 +73,15 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
             let num_unread_messages = match conversation_info.last_msg_read {
                 // assumes the most recent messages appear first in the list
-                Some(id) => messages.iter().take_while(|x| x.id() != id).count(),
+                Some(id) => {
+                    let x = messages
+                        .iter()
+                        .filter(|x| x.sender() != ident.did_key())
+                        .take_while(|x| x.id() != id)
+                        .count();
+                    println!("found this many new messages: {}", x);
+                    x
+                }
                 None => messages.len(),
             };
 
