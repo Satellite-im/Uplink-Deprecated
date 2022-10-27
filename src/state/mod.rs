@@ -45,6 +45,7 @@ impl PersistedState {
         if let Ok(bytes) = serde_json::to_vec(self) {
             if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes)
             {
+                eprintln!("error saving: {}", _e);
             }
         }
     }

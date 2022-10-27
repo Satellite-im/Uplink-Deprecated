@@ -1,9 +1,13 @@
-use crate::{components::main::compose::msg::Msg, state::Actions, Account, Messaging, STATE};
+use crate::{
+    components::main::compose::msg::Msg, state::Actions, state::ConversationInfo, Account,
+    Messaging, STATE,
+};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
+use uuid::Uuid;
 
 use futures::StreamExt;
-use warp::raygun::{MessageEventKind, MessageOptions, RayGun, RayGunStream};
+use warp::raygun::{Message, MessageEventKind, MessageOptions, RayGun, RayGunStream};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -17,52 +21,60 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     //      handle the error properly if there is ever one when
     //      getting own identity
     let state = use_atom_ref(&cx, STATE).clone();
-    // this needs to be passed to the use_future to make the messages page reload when a new chat is selected.
-    let ext_conversation_id = state.read().current_chat;
+
+    let mut rg = cx.props.messaging.clone();
     let ident = cx.props.account.read().get_own_identity().unwrap();
-    let messages = use_ref(&cx, Vec::new);
+    // this one has a special name because of the other variable names within the use_future
+    let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
+    // this one is for the rsx! macro
+    let messages = list.clone();
 
-    use_future(
-        &cx,
-        (messages, &cx.props.messaging.clone(), &ext_conversation_id),
-        |(list, mut rg, input_conversation_id)| async move {
-            // don't stream messages from a nonexistent conversation
-            let mut current_chat = match input_conversation_id {
-                // this better not panic
-                Some(id) => state.read().all_chats.get(&id).cloned().unwrap(),
-                None => return,
-            };
+    let current_chat = state
+        .read()
+        .current_chat
+        .and_then(|x| state.read().all_chats.get(&x).cloned());
 
-            let mut stream = loop {
-                match rg
-                    .get_conversation_stream(current_chat.conversation.id())
-                    .await
-                {
-                    Ok(stream) => break stream,
-                    Err(e) => match &e {
-                        warp::error::Error::RayGunExtensionUnavailable => {
-                            //Give sometime for everything in the background to fully line up
-                            //Note, if this error still happens, it means there is an fatal error
-                            //      in the background
-                            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-                        }
-                        _ => {
-                            // todo: properly report this error
-                            // eprintln!("failed to get_conversation_stream: {}", e);
-                            tokio::time::sleep(std::time::Duration::from_secs(1)).await;
-                        }
-                    },
-                }
-            };
-            let messages = rg
-                .get_messages(current_chat.conversation.id(), MessageOptions::default())
+    // restart the use_future when the current_chat changes
+    use_future(&cx, &current_chat, |current_chat| async move {
+        // don't stream messages from a nonexistent conversation
+        let mut current_chat = match current_chat {
+            // this better not panic
+            Some(c) => c,
+            None => return,
+        };
+
+        let mut stream = loop {
+            match rg
+                .get_conversation_stream(current_chat.conversation.id())
                 .await
-                .unwrap_or_default();
+            {
+                Ok(stream) => break stream,
+                Err(e) => match &e {
+                    warp::error::Error::RayGunExtensionUnavailable => {
+                        //Give sometime for everything in the background to fully line up
+                        //Note, if this error still happens, it means there is an fatal error
+                        //      in the background
+                        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                    }
+                    _ => {
+                        // todo: properly report this error
+                        // eprintln!("failed to get_conversation_stream: {}", e);
+                        tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                    }
+                },
+            }
+        };
+        let messages = rg
+            .get_messages(current_chat.conversation.id(), MessageOptions::default())
+            .await
+            .unwrap_or_default();
 
-            //This is to prevent the future updating the state and causing a rerender
-            if *list.read() != messages {
-                // assumes the most recent message is first in the list
-                if let Some(msg) = messages.first() {
+        //This is to prevent the future updating the state and causing a rerender
+        if *list.read() != messages {
+            // assumes the most recent message is first in the list
+            if let Some(msg) = messages.first() {
+                if current_chat.last_msg_read != Some(msg.id()) {
+                    println!("got new message");
                     current_chat.last_msg_read = Some(msg.id());
                     state
                         .write_silent()
@@ -72,33 +84,34 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
                 *list.write() = messages;
             }
+        }
 
-            while let Some(event) = stream.next().await {
-                match event {
-                    MessageEventKind::MessageReceived {
-                        conversation_id,
-                        message_id,
-                    }
-                    | MessageEventKind::MessageSent {
-                        conversation_id,
-                        message_id,
-                    } => {
-                        if current_chat.conversation.id() == conversation_id {
-                            if let Ok(message) = rg.get_message(conversation_id, message_id).await {
-                                current_chat.last_msg_read = Some(message.id());
-                                state
-                                    .write_silent()
-                                    .dispatch(Actions::UpdateConversation(current_chat.clone()))
-                                    .save();
-                                list.write().push(message);
-                            }
+        while let Some(event) = stream.next().await {
+            match event {
+                MessageEventKind::MessageReceived {
+                    conversation_id,
+                    message_id,
+                }
+                | MessageEventKind::MessageSent {
+                    conversation_id,
+                    message_id,
+                } => {
+                    if current_chat.conversation.id() == conversation_id {
+                        if let Ok(message) = rg.get_message(conversation_id, message_id).await {
+                            println!("streamed new message");
+                            list.write().push(message);
+                            current_chat.last_msg_read = Some(message_id);
+                            state
+                                .write_silent()
+                                .dispatch(Actions::UpdateConversation(current_chat.clone()))
+                                .save();
                         }
                     }
-                    _ => {}
                 }
+                _ => {}
             }
-        },
-    );
+        }
+    });
 
     cx.render({
         let mut prev_sender = "".to_string();
@@ -106,6 +119,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
             div {
                 class: "messages",
                 messages.read().iter().rev().map(|message|{
+                    let key = message.id();
                     let msg_sender = message.sender().to_string();
                     let i = ident.did_key().to_string();
                     let remote = i != msg_sender;
@@ -117,6 +131,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
                     rsx!(
                         Msg {
+                            key:"{key}",
                             message: message.clone(),
                             remote: remote,
                             last: last,
