@@ -56,11 +56,9 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                         };
                         new_map.insert(item.id(), ci);
                     }
-                    // this may be an expensive copy. still, it seems like a good idea to change this all at once.
-                    // alternatively, write_silent could be used to update the state and then write().save may trigger an update
+
                     st.write()
-                        .dispatch(Actions::AddRemoveConversations(new_map))
-                        .save();
+                        .dispatch(Actions::AddRemoveConversations(new_map));
                 }
             }
             // TODO: find a way to sync this with the frame rate or create a "polling rate" value we can configure

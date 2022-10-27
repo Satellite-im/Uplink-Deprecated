@@ -79,8 +79,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     current_chat.last_msg_read = Some(msg.id());
                     state
                         .write_silent()
-                        .dispatch(Actions::UpdateConversation(current_chat.clone()))
-                        .save();
+                        .dispatch(Actions::UpdateConversation(current_chat.clone()));
                 }
 
                 *list.write() = messages;
@@ -104,8 +103,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             current_chat.last_msg_read = Some(message_id);
                             state
                                 .write_silent()
-                                .dispatch(Actions::UpdateConversation(current_chat.clone()))
-                                .save();
+                                .dispatch(Actions::UpdateConversation(current_chat.clone()));
                         }
                     }
                 }

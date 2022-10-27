@@ -6,7 +6,6 @@ use warp::raygun::Conversation;
 use crate::DEFAULT_PATH;
 
 pub mod mutations;
-
 pub enum Actions {
     ChatWith(ConversationInfo),
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
@@ -42,28 +41,48 @@ impl PersistedState {
     }
 
     pub fn save(&self) {
-        if let Ok(bytes) = serde_json::to_vec(self) {
-            if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes)
-            {
-                eprintln!("error saving: {}", _e);
+        match serde_json::to_vec(self) {
+            Ok(bytes) => {
+                match std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes) {
+                    Ok(_) => println!("save successful"),
+                    Err(e) => eprintln!("error saving: {}", e),
+                }
             }
+            Err(e) => eprintln!("error serializing on save: {}", e),
         }
     }
 
-    pub fn dispatch(&mut self, action: Actions) -> Self {
-        match action {
-            Actions::ChatWith(info) => self.current_chat = Some(info.conversation.id()),
-            Actions::AddRemoveConversations(new_chats) => {
-                self.all_chats = new_chats;
-            }
+    pub fn dispatch(&mut self, action: Actions) {
+        let next = match action {
+            Actions::ChatWith(info) => PersistedState {
+                current_chat: Some(info.conversation.id()),
+                all_chats: self.all_chats.clone(),
+            },
+            Actions::AddRemoveConversations(new_chats) => PersistedState {
+                current_chat: self.current_chat.clone(),
+                all_chats: new_chats,
+            },
             Actions::UpdateConversation(info) => {
+                let mut next = PersistedState {
+                    current_chat: self.current_chat.clone(),
+                    all_chats: self.all_chats.clone(),
+                };
                 // overwrite the existing entry
-                self.all_chats.insert(info.conversation.id(), info);
+                next.all_chats.insert(info.conversation.id(), info);
+                next
             }
         };
-        PersistedState {
-            all_chats: self.all_chats.clone(),
-            current_chat: self.current_chat,
-        }
+        // only save while there's a lock on PersistedState
+        next.save();
+        // modify PersistedState via assignment rather than mutation
+        *self = next;
+    }
+}
+
+// doesn't run when the window is closed.
+impl Drop for PersistedState {
+    fn drop(&mut self) {
+        println!("saving PersistedState");
+        self.save();
     }
 }

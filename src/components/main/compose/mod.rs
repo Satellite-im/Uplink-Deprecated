@@ -138,7 +138,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 let cur = state.read().all_chats.get(&id).cloned();
                                 if let Some( mut conversation_info) = cur {
                                     conversation_info.last_msg_sent = Some(text_as_vec.iter().take(2).cloned().collect());
-                                    state.write().dispatch(Actions::UpdateConversation(conversation_info)).save();
+                                    state.write().dispatch(Actions::UpdateConversation(conversation_info));
                                 }
 
                                 // TODO: We need to wire this message up to display differently

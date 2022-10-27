@@ -107,7 +107,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         on_pressed: move |uuid| {
                                             if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone())).save();
+                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
                                                 active_chat.set(Some(uuid));
                                             }
                                         }

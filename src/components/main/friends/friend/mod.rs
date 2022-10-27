@@ -90,7 +90,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),
                                 };
-                                state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() })).save();
+                                state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
                                 cx.props.on_chat.call(());
                             }
                         }
