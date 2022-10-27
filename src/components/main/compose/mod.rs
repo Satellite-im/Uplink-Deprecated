@@ -119,13 +119,17 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         on_submit: move |message: String| {
                             text.set(String::from(""));
                             let mut rg = cx.props.messaging.clone();
-    
+
                             let text_as_vec = message
                                 .split('\n')
                                 .filter(|&s| !s.is_empty())
                                 .map(|s| s.to_string())
                                 .collect::<Vec<_>>();
-    
+
+                            if text_as_vec.is_empty() {
+                                return;
+                            }
+                            
                             // clicking the send button is meaningless if there isn't a conversation. 
                             if let Some(id) = current_chat {
                                 // TODO: We need to wire this message up to display differently
@@ -133,6 +137,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
                                     //TODO: Handle error
                                 };
+
+                                // todo: update the state to save the id of the most recent sent message
+                                // or the first 2 lines of text_as_vec
                             }
                         },
                         on_upload: move |_| {}
