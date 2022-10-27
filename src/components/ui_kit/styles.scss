@@ -170,11 +170,16 @@ h1 {
 }
 
 .m-top {
-  margin-top: 2rem;
+  margin-top: 1rem;
+}
+
+.m-top-sm {
+  margin-top: 1rem;
+  display: inline-flex;
 }
 
 .m-bottom {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .m-bottom-sm {

@@ -85,13 +85,13 @@ jobs:
           command: make app
       - run:
           name: Compress Artifacts (App)
-          command: zip -r app.zip target/release-lto/macos/Uplink.app
+          command: zip -r app.zip target/release/macos/Uplink.app
       - run:
           name: Compress Artifacts (DMG)
-          command: zip -r dmg.zip target/release-lto/macos/Uplink.DMG
+          command: zip -r dmg.zip target/release/macos/Uplink.DMG
       - run:
           name: Compress Artifacts (Bin)
-          command: zip -r bin.zip target/release-lto/uplink
+          command: zip -r bin.zip target/release/uplink
       - store_artifacts:
           path: app.zip
           destination: /macos/app.zip

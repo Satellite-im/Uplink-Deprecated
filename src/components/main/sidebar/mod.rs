@@ -4,8 +4,11 @@ use uuid::Uuid;
 
 use crate::{
     components::{
-        main::sidebar::nav::{Nav, NavEvent},
-        main::{friends::Friends, profile::Profile},
+        main::{
+            friends::Friends,
+            profile::Profile,
+            sidebar::nav::{Nav, NavEvent},
+        },
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
             icon_input::IconInput,
