@@ -74,15 +74,18 @@ impl PersistedState {
         };
         // only save while there's a lock on PersistedState
         next.save();
+
         // modify PersistedState via assignment rather than mutation
         *self = next;
     }
 }
 
 // doesn't run when the window is closed.
-impl Drop for PersistedState {
-    fn drop(&mut self) {
-        println!("saving PersistedState");
-        self.save();
-    }
-}
+// does run on the value inside of dispatch though.
+// basically don't use this
+//impl Drop for PersistedState {
+//    fn drop(&mut self) {
+//        println!("saving PersistedState");
+//        self.save();
+//    }
+//}

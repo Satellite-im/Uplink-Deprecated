@@ -33,9 +33,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
-    // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
-    // note that this has a queryselector and click handler specific to this page
-
     // warning: calling element.style.height='auto' on 'keyup' causes the textarea to randomly resize if you're using shift+enter to make line breaks in the message.
     // this is probably due to releasing the shift key before the enter key.
     // if setting the height is done on 'keydown' then when the enter key is pressed, the event fires before Dioxus clears the TextArea, so the height doesn't change.

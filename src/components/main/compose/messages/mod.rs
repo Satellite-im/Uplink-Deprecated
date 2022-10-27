@@ -24,6 +24,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let mut rg = cx.props.messaging.clone();
     let ident = cx.props.account.read().get_own_identity().unwrap();
+    let ident2 = ident.clone();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro
@@ -72,8 +73,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         //This is to prevent the future updating the state and causing a rerender
         if *list.read() != messages {
             // assumes the most recent message is first in the list
-            // todo: filter out messages sent by the user
-            if let Some(msg) = messages.first() {
+            // filters out messages sent by the user
+            if let Some(msg) = messages
+                .iter()
+                .filter(|x| x.sender() != ident2.did_key())
+                .next()
+            {
                 if current_chat.last_msg_read != Some(msg.id()) {
                     println!("got new message");
                     current_chat.last_msg_read = Some(msg.id());
@@ -99,11 +104,16 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     if current_chat.conversation.id() == conversation_id {
                         if let Ok(message) = rg.get_message(conversation_id, message_id).await {
                             println!("streamed new message");
+                            println!("{:#?}", message);
+
+                            if message.sender() != ident2.did_key() {
+                                current_chat.last_msg_read = Some(message_id);
+                                state
+                                    .write_silent()
+                                    .dispatch(Actions::UpdateConversation(current_chat.clone()));
+                            }
+
                             list.write().push(message);
-                            current_chat.last_msg_read = Some(message_id);
-                            state
-                                .write_silent()
-                                .dispatch(Actions::UpdateConversation(current_chat.clone()));
                         }
                     }
                 }
