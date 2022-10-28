@@ -104,6 +104,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         account: cx.props.account.clone(),
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
+                                        last_msg_sent: conv.last_msg_sent.clone(),
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         on_pressed: move |uuid| {
                                             if *active_chat != Some(uuid) {

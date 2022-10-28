@@ -57,5 +57,62 @@
                 font-size: var(--text-size);
             }
         }
+
+        .msg-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+
+            // thanks to https://hackingui.com/a-pure-css-solution-for-multiline-text-truncation/ for this
+            /* styles for '...' */ 
+            .block-with-text {
+                /* hide text if it more than N lines  */
+                overflow: hidden;
+                /* for set '...' in absolute position */
+                position: relative; 
+                /* use this value to count block height */
+                line-height: 1.2em;
+                /* max-height = line-height (1.2) * lines max number (2) */
+                max-height: 2.4em; 
+                /* fix problem when last visible word doesn't adjoin right side  */
+                text-align: justify;  
+                /* place for '...' */
+                margin-right: -1em;
+                padding-right: 1em;
+
+                //white-space: pre-line;
+                word-break: break-word;
+            }
+            /* create the ... */
+            .block-with-text:before {
+                /* points in the end */
+                content: '...';
+                /* absolute position */
+                position: absolute;
+                /* set position to right bottom corner of block */
+                right: 0;
+                bottom: 0;
+            }
+            /* hide ... if we have text, which is less than or equal to max lines */
+            .block-with-text:after {
+                /* points in the end */
+                content: '';
+                /* absolute position */
+                position: absolute;
+                /* set position to right bottom corner of text */
+                right: 0;
+                /* set width and height */
+                width: 1em;
+                height: 1em;
+                margin-top: 0.2em;
+                /* bg color = bg color under block */
+                background: var(--theme-background);
+                /*todo: change background color on active or hover. currently doesn't work*/
+                :hover,
+                :active {
+                    background: var(--theme-background-light);
+                }
+            }
+        }
     }
 }

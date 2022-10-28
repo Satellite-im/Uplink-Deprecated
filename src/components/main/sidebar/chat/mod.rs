@@ -1,6 +1,6 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::ConversationInfo,
+    state::{ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE,
 };
 use dioxus::prelude::*;
@@ -13,6 +13,7 @@ pub struct Props<'a> {
     account: Account,
     conversation_info: ConversationInfo,
     messaging: Messaging,
+    last_msg_sent: Option<Option<LastMsgSent>>,
     is_active: bool,
     on_pressed: EventHandler<'a, Uuid>,
 }
@@ -25,6 +26,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let unread_count = use_state(&cx, || 0_usize).clone();
     // need this one for display
     let unread_count2 = unread_count.clone();
+    // thansk Dioxus for not accepting regular Options
+    let last_msg_sent = cx.props.last_msg_sent.clone().and_then(|x| x);
+    let last_msg_time = last_msg_sent.clone().map(|x| x.display_time());
+    let last_msg_sent = last_msg_sent.map(|x| x.value);
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -151,15 +156,32 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         h3 {
                             "{username}"
                         },
-                        span {
-                            class: "timestamp",
-                            "10:00am"
-                        }
+                        last_msg_time.map(|time| {
+                            rsx! (
+                                span {
+                                    class: "timestamp",
+                                   "{time}"
+                                }
+                            )
+                        }),
                     },
-                    span {
+                    div {
+                        class: "msg-container",
+                        span {
+                            class: "block-with-text",
+                            match last_msg_sent {
+                                Some(msg) => rsx!("{msg}"),
+                                None => rsx!("{l.chat_placeholder}")
+                            }
+                        }
                         match *unread_count2.current() {
-                            0 => rsx!("{l.chat_placeholder}"),
-                            _ => rsx!("unread: {unread_count2}"),
+                            0 => None,
+                            _ => Some(rsx!(
+                                div {
+                                    class: "unread-count",
+                                    "{unread_count2}"
+                                }
+                            )),
                         }
                     }
                 }

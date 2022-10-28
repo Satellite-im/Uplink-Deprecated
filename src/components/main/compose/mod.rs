@@ -12,7 +12,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
-    state::Actions,
+    state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -72,7 +72,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
         element.removeAttribute('data-autoresize');
     })()"#;
 
-    // todo: render normally
+    // todo: remove one tab
     cx.render(rsx! {
             div {
                 class: "compose",
@@ -134,7 +134,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 // mutate the state
                                 let cur = state.read().all_chats.get(&id).cloned();
                                 if let Some( mut conversation_info) = cur {
-                                    conversation_info.last_msg_sent = Some(text_as_vec.iter().take(2).cloned().collect());
+                                    // for multiline messages, take at most 2 lines
+                                    let v: Vec<String> = text_as_vec.iter().take(2).cloned().collect();
+                                    let s: String = v.join("\n");
+                                    // the sizing of the conversation box is fixed, so approximate the needed string length using
+                                    // the placeholder text
+                                    let msg = s.chars().take(24).collect();
+                                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
                                     state.write().dispatch(Actions::UpdateConversation(conversation_info));
                                 }
 

@@ -1,3 +1,4 @@
+use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -21,6 +22,12 @@ pub struct PersistedState {
     pub all_chats: HashMap<Uuid, ConversationInfo>,
 }
 
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
+pub struct LastMsgSent {
+    pub value: String,
+    pub time: DateTime<Local>,
+}
+
 /// composes `Conversation` with relevant metadata
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
 pub struct ConversationInfo {
@@ -29,7 +36,7 @@ pub struct ConversationInfo {
     /// used to determine the number of unread messages
     pub last_msg_read: Option<Uuid>,
     /// the first two lines of the last message sent
-    pub last_msg_sent: Option<Vec<String>>,
+    pub last_msg_sent: Option<LastMsgSent>,
 }
 
 impl PersistedState {
@@ -89,3 +96,16 @@ impl PersistedState {
 //        self.save();
 //    }
 //}
+
+impl LastMsgSent {
+    pub fn new(msg: String) -> Self {
+        Self {
+            value: msg,
+            time: Local::now(),
+        }
+    }
+
+    pub fn display_time(&self) -> String {
+        format!("{}:{}", self.time.hour(), self.time.minute())
+    }
+}
