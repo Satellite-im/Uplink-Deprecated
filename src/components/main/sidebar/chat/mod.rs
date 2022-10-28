@@ -175,13 +175,13 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                         }
                         match *unread_count2.current() {
-                            0 => None,
-                            _ => Some(rsx!(
-                                div {
-                                    class: "unread-count",
-                                    "{unread_count2}"
-                                }
-                            )),
+                            0 =>  rsx!( div {
+                                class: "unread-placeholder",
+                            }),
+                            _ => rsx!( div {
+                                class: "unread-count",
+                                "{unread_count2}"
+                            }),
                         }
                     }
                 }

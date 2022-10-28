@@ -29,6 +29,8 @@ pub struct Theme {
 
     pub semi_transparent: String,
     pub modal: String,
+
+    pub missed_chats_sidebar: String,
 }
 
 // When dealing with colors and backgrounds we should only use values provided within the Themes
@@ -64,6 +66,8 @@ impl Default for Theme {
             highlight: String::from("#2b2843"),
             semi_transparent: String::from("rgba(14, 13, 23, 0.2)"),
             modal: String::from("#1A1E2E"),
+
+            missed_chats_sidebar: String::from("#3385ff"),
         }
     }
 }
@@ -99,6 +103,7 @@ impl Theme {
                 --theme-modal: {};
                 --theme-foreground: {};
                 --theme-foreground-dark: {};
+                --theme-missed-chats-sidebar: {};
             }}",
             &self.primary,
             &self.primary_dark,
@@ -122,6 +127,7 @@ impl Theme {
             &self.modal,
             &self.foreground,
             &self.foreground_dark,
+            &self.missed_chats_sidebar,
         );
         root
     }

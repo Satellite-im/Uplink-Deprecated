@@ -106,6 +106,11 @@ impl LastMsgSent {
     }
 
     pub fn display_time(&self) -> String {
-        format!("{}:{}", self.time.hour(), self.time.minute())
+        format!(
+            "{}/{}/{}",
+            self.time.month(),
+            self.time.day(),
+            self.time.year()
+        )
     }
 }
