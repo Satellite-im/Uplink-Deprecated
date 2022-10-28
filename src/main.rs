@@ -68,6 +68,8 @@ struct Opt {
     experimental_node: bool,
     #[clap(long)]
     direct: bool,
+    #[clap(long)]
+    no_discovery: bool,
 }
 
 fn main() {
@@ -137,6 +139,7 @@ fn main() {
         tesseract.clone(),
         opt.experimental_node,
         opt.direct,
+        opt.no_discovery,
     )) {
         Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
         Err(_e) => todo!(),
@@ -175,6 +178,7 @@ async fn initialization(
     tesseract: Tesseract,
     experimental: bool,
     direct: bool,
+    no_discovery: bool,
 ) -> Result<
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
@@ -186,7 +190,10 @@ async fn initialization(
     if direct {
         config.store_setting.discovery = Discovery::Direct;
     }
-    config.ipfs_setting.mdns.enable = false;
+    if no_discovery {
+        config.store_setting.discovery = Discovery::None;
+    }
+    // config.ipfs_setting.mdns.enable = false;
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await

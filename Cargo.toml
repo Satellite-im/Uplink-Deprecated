@@ -42,9 +42,9 @@ futures = "0.3"
 dirs = "4.0.0"
 rodio = "0.16.0"
 
-warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/direct-discovery" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-restore-ipld" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-restore-ipld" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/mp-restore-ipld" }
 arboard = "3.1.0"
 
 
