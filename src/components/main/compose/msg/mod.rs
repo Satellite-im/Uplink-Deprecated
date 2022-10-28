@@ -6,7 +6,7 @@ use warp::raygun::Message;
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        icon_input::IconInput,
+        icon_textarea::IconTextArea,
     },
     LANGUAGE,
 };
@@ -23,6 +23,10 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Msg(cx: Scope<Props>) -> Element {
     let popout = use_state(&cx, || false);
+    // text has been lifted from the child components into Msg so that
+    // a button press can be used to clear it.
+    let text = use_state(&cx, String::new);
+    let text2 = text.clone();
     let value = cx.props.message.clone().value().join("\n");
     let value2 = value.clone();
     let timestamp = cx.props.message.clone().date();
@@ -60,6 +64,24 @@ pub fn Msg(cx: Scope<Props>) -> Element {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
+    // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
+    // note that this has a queryselector and click handler specific to this page
+    const RESIZE_TEXTAREA_SCRIPT: &str = r#"
+    (function addAutoResize() {
+        let element = document.querySelector('.reply-container .resizeable-textarea');
+        if (element == null) {
+            return;
+        }
+
+        element.style.boxSizing = 'border-box';
+        var offset = element.offsetHeight - element.clientHeight;
+        element.addEventListener('input', function (event) {
+            event.target.style.height = 'auto';
+            event.target.style.height = event.target.scrollHeight + offset + 'px';
+        });
+        element.removeAttribute('data-autoresize');
+    })()"#;
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -87,7 +109,7 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             },
                         }
                         div {
-                            class: "controls",
+                            class: "controls reply-container",
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
@@ -95,17 +117,23 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                                 icon: Shape::EmojiHappy,
                                 on_pressed: move |_| {}
                             },
-                            IconInput {
+                            IconTextArea {
                                 icon: Shape::Reply,
-                                value: String::from(""),
                                 placeholder: l.send_a_reply.to_string(),
-                                on_change: move |_| {},
-                                on_enter: move |_| {}
-                            }
+                                on_submit: move |_| {},
+                                text: text.clone(),
+                            },
                             IconButton {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
-                                on_pressed: move |_| {}
+                                on_pressed: move |_| {
+                                    text2.set(String::from(""));
+                                    popout.set(false);
+                                    // todo: send the message
+                                }
+                            },
+                            script {
+                                dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
                             },
                         }
                     }

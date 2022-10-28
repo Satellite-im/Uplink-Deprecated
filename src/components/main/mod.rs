@@ -8,11 +8,11 @@ use dioxus::prelude::*;
 use warp::raygun::RayGun;
 
 pub mod compose;
+pub mod files;
 pub mod friends;
 pub mod profile;
 pub mod settings;
 pub mod sidebar;
-pub mod files;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {
