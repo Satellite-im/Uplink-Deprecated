@@ -27,6 +27,8 @@
             border-radius: 20px;
             height: 40px;
             width: 40px;
+            /*this is required to prevent a message from squashing the circle/profile picture*/
+            min-width: 40px;
             margin: 0.25rem 0 0.5rem 0.7rem;
         }
 
@@ -49,6 +51,7 @@
                     color: var(--theme-text-muted);
                     flex: 1;
                     text-align: right;
+                    padding-right: 1em;
                 }
             }
 
@@ -80,6 +83,8 @@
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 2;
                 overflow: hidden;
+                /* this is a hack based on the observation that the sidebar has a fixed width*/
+                max-width: 20em;
             }
             
         }
