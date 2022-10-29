@@ -34,7 +34,7 @@ pub struct ConversationInfo {
     pub conversation: Conversation,
     /// the uuid of the last message read. \
     /// used to determine the number of unread messages
-    pub last_msg_read: Option<Uuid>,
+    pub num_unread_messages: u32,
     /// the first two lines of the last message sent
     pub last_msg_sent: Option<LastMsgSent>,
 }
@@ -66,12 +66,12 @@ impl PersistedState {
                 all_chats: self.all_chats.clone(),
             },
             Actions::AddRemoveConversations(new_chats) => PersistedState {
-                current_chat: self.current_chat.clone(),
+                current_chat: self.current_chat,
                 all_chats: new_chats,
             },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
-                    current_chat: self.current_chat.clone(),
+                    current_chat: self.current_chat,
                     all_chats: self.all_chats.clone(),
                 };
                 // overwrite the existing entry

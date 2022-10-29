@@ -1,12 +1,12 @@
 use crate::{
     components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    state::{ConversationInfo, LastMsgSent},
-    Account, Messaging, LANGUAGE,
+    state::{Actions, ConversationInfo, LastMsgSent},
+    Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
-use warp::raygun::{MessageEventKind, MessageOptions, RayGun, RayGunStream};
+use warp::raygun::{MessageEventKind, RayGunStream};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -20,10 +20,11 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
     // Rust's ownership model
-    let unread_count = use_state(&cx, || 0_usize).clone();
+    let unread_count = use_state(&cx, || 0_u32).clone();
     // need this one for display
     let unread_count2 = unread_count.clone();
     // thansk Dioxus for not accepting regular Options
@@ -61,35 +62,15 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     use_future(
         &cx,
         (&cx.props.conversation_info.clone(), &cx.props.is_active),
-        |(conversation_info, is_active)| async move {
+        |(mut conversation_info, is_active)| async move {
             if is_active {
                 unread_count.set(0);
                 // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
                 // chat component shouldn't.
                 return;
             }
-            let messages = rg
-                .get_messages(
-                    conversation_info.conversation.id(),
-                    MessageOptions::default(),
-                )
-                .await
-                .unwrap_or_default();
 
-            let num_unread_messages = match conversation_info.last_msg_read {
-                // assumes the most recent messages appear first in the list
-                Some(id) => {
-                    let x = messages
-                        .iter()
-                        .filter(|x| x.sender() != ident.did_key())
-                        .take_while(|x| x.id() != id)
-                        .count();
-                    println!("found this many new messages: {}", x);
-                    x
-                }
-                None => messages.len(),
-            };
-
+            let num_unread_messages = conversation_info.num_unread_messages;
             if *unread_count.current() != num_unread_messages {
                 unread_count.set(num_unread_messages);
             }
@@ -119,6 +100,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             while let Some(event) = stream.next().await {
                 if let MessageEventKind::MessageReceived { .. } = event {
                     unread_count.modify(|x| x + 1);
+                    // will silently remain zero if you only use *unread_count
+                    conversation_info.num_unread_messages = *unread_count.current();
+                    state
+                        .write_silent()
+                        .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                 }
             }
         },
