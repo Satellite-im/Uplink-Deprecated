@@ -15,4 +15,5 @@ pub mod small_extension_placeholder;
 pub mod switch;
 pub mod tooltip;
 pub mod folder;
+pub mod new_folder;
 pub mod file;

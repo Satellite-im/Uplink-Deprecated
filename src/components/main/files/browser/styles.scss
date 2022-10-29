@@ -7,6 +7,7 @@
         justify-content: flex-start;
         flex-wrap: wrap;
         display: inline-flex;
+        align-content: flex-start;
         &:hover {
             &::-webkit-scrollbar-thumb {
                 background: var(--theme-primary);

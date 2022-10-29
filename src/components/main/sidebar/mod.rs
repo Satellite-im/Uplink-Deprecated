@@ -103,17 +103,21 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 )
             } else {
                 rsx!(
-                    p {
-                        "{noactivechatdString}"
-                    },
                     div {
-                        class: "m-bottom"
-                    },
-                    Button {
-                        icon: Shape::Plus,
-                        text: l.start_one.to_string(),
-                        on_pressed: move |_| show_friends.set(true),
-                    },
+                        class: "fill-vertical",
+                        
+                        p {
+                            "{noactivechatdString}"
+                        },
+                        div {
+                            class: "m-bottom"
+                        },
+                        Button {
+                            icon: Shape::Plus,
+                            text: l.start_one.to_string(),
+                            on_pressed: move |_| show_friends.set(true),
+                        },
+                    }
                 )
             },
             (**show_friends).then(|| rsx!{

@@ -1,15 +1,16 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, events::MouseEvent};
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::{icon_button::IconButton, button::Button};
+use crate::components::ui_kit::icon_button::IconButton;
 
-#[derive(Props, PartialEq)]
-pub struct Props {
-    account: crate::Account,
+#[derive(Props)]
+pub struct Props<'a> {
+    on_new_folder: EventHandler<'a, MouseEvent>,
+    on_show_upload: EventHandler<'a, MouseEvent>,
 }
 
 #[allow(non_snake_case)]
-pub fn Toolbar(cx: Scope<Props>) -> Element {
+pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         div {
             id: "toolbar",
@@ -20,15 +21,14 @@ pub fn Toolbar(cx: Scope<Props>) -> Element {
                     state: crate::components::ui_kit::icon_button::State::Secondary,
                     on_pressed: move |_| {}
                 },
-                Button {
+                IconButton {
                     icon: Shape::FolderAdd,
-                    text: String::from("New Folder"),
-                    state: crate::components::ui_kit::button::State::Secondary,
-                    on_pressed: move |_| {}
+                    state: crate::components::ui_kit::icon_button::State::Secondary,
+                    on_pressed: move |e| cx.props.on_new_folder.call(e)
                 },
                 IconButton {
                     icon: Shape::Upload,
-                    on_pressed: move |_| {}
+                    on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
             },
             div {
@@ -40,6 +40,6 @@ pub fn Toolbar(cx: Scope<Props>) -> Element {
                     icon: Shape::X
                 }
             }
-        }
+        },
     })
 }
