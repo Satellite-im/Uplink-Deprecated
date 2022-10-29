@@ -22,7 +22,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let ext_conversation_id = state.read().chat.as_ref().map(|conv| conv.id());
 
     let rg = cx.props.messaging.clone();
-
     //Note: Broken for the time being as switching conversation doesnt clear out
     //      messages.
     use_future(
@@ -87,10 +86,13 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     cx.render({
         let mut prev_sender = "".to_string();
+        
         rsx! {
             div {
                 class: "messages",
-                messages.read().iter().rev().map(|message|{
+                messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
+                    let message_id = message.id();
+                    let conversation_id = message.conversation_id();
                     let msg_sender = message.sender().to_string();
                     let i = ident.did_key().to_string();
                     let remote = i != msg_sender;
@@ -99,8 +101,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let first = false;
 
                     prev_sender = message.sender().to_string();
-
-                    rsx!(
+                    
+                    rsx!{
                         Msg {
                             message: message.clone(),
                             remote: remote,
@@ -108,16 +110,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             first: first,
                             middle: middle,
                             on_reply: move |reply| {
-                                match ext_conversation_id {
-                                    Some(id) => {
-                                        let mut r = cx.props.messaging.clone();
-                                        r.reply(id, message.id(), vec![reply]);
-                                    },
-                                    None => return
-                                };
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                    //TODO: Display error? 
+                                }
                             }
                         }
-                    )
+                    }
                 })
                 div {
                     class: "encrypted-notif",
