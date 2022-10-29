@@ -107,6 +107,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             last: last,
                             first: first,
                             middle: middle,
+                            on_reply: move |reply| {
+                                match ext_conversation_id {
+                                    Some(id) => {
+                                        let mut r = cx.props.messaging.clone();
+                                        r.reply(id, message.id(), vec![reply]);
+                                    },
+                                    None => return
+                                };
+                            }
                         }
                     )
                 })
