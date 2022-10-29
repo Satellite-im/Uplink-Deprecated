@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
-#[derive(Props, PartialEq)]
+#[derive(Props, PartialEq, Eq)]
 pub struct Props {
     usage: UsageStats,
 }
 
-#[derive(Props, PartialEq)]
+#[derive(Props, PartialEq, Eq)]
 pub struct UsageStats {
     pub available: u128,
     pub total: u128,
