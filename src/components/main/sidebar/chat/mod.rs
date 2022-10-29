@@ -6,6 +6,7 @@ use crate::{
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
+use warp::multipass::{identity::IdentityStatus, IdentityInformation};
 use warp::raygun::{MessageEventKind, RayGunStream};
 
 #[derive(Props)]
@@ -13,7 +14,8 @@ pub struct Props<'a> {
     account: Account,
     conversation_info: ConversationInfo,
     messaging: Messaging,
-    last_msg_sent: Option<Option<LastMsgSent>>,
+    #[props(!optional)]
+    last_msg_sent: Option<LastMsgSent>,
     is_active: bool,
     on_pressed: EventHandler<'a, Uuid>,
 }
@@ -27,10 +29,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let unread_count = use_state(&cx, || 0_u32).clone();
     // need this one for display
     let unread_count2 = unread_count.clone();
-    // thansk Dioxus for not accepting regular Options
-    let last_msg_sent = cx.props.last_msg_sent.clone().and_then(|x| x);
-    let last_msg_time = last_msg_sent.clone().map(|x| x.display_time());
-    let last_msg_sent = last_msg_sent.map(|x| x.value);
+    let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
+    let online_status2 = online_status.clone();
+
+    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
+    let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -58,6 +61,32 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
     let active = if cx.props.is_active { "active" } else { "none" };
+
+    use_future(
+        &cx,
+        (
+            &cx.props.conversation_info.clone(),
+            &cx.props.account.clone(),
+        ),
+        |(conversation_info, account)| async move {
+            let remote_did = conversation_info
+                .conversation
+                .recipients()
+                .last()
+                .cloned()
+                .unwrap_or_default();
+
+            loop {
+                if let Ok(current_status) = account.identity_status(&remote_did) {
+                    if *online_status.current() != current_status {
+                        online_status.set(current_status);
+                    }
+                }
+                // todo: consider making this configurable or longer
+                tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
+            }
+        },
+    );
 
     use_future(
         &cx,
@@ -132,9 +161,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
-                div {
-                    class: "pfp"
-                },
+                ChatPfp {status: online_status2},
                 div {
                     class: "who",
                     div {
@@ -174,4 +201,19 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         })
     }
+}
+
+#[inline_props]
+#[allow(non_snake_case)]
+pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>) -> Element {
+    // todo: render a bubble over top of the pfp
+    let is_online = match *status.current() {
+        IdentityStatus::Online => "online",
+        _ => "",
+    };
+    cx.render(rsx! {
+        div {
+            class: "pfp {is_online}"
+        },
+    })
 }
