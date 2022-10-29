@@ -38,12 +38,13 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let mp = cx.props.account.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l2 = l.clone();
     let incomingRequestsLang = { l.incoming_requests.to_string() };
     let outgoingRequestsLang = { l.outgoing_requests.to_string() };
     let yourFriendsLang = { l.your_friends.to_string() };
     let codeCopied = { l.code_copied.to_string() };
 
-    let add_error = use_state(&cx, || "");
+    let add_error = use_state(&cx, String::new);
     let remote_friend = use_state(&cx, String::new);
 
     let friends = use_state(&cx, || mp.list_friends().unwrap_or_default());
@@ -160,7 +161,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 icon: Shape::UserAdd,
                                 value: remote_friend.to_string(),
                                 on_change: move |evt: FormEvent| {
-                                    add_error.set("");
+                                    add_error.set(String::new());
                                     remote_friend.set(evt.value.clone());
                                 },
                                 on_enter: move |_| {
@@ -174,24 +175,24 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                 Ok(_) => {
                                                     let single_toast = ToastInfo {
                                                         position: Position::TopRight,
-                                                        ..ToastInfo::simple(l.request_sent.clone().as_ref())
+                                                        ..ToastInfo::simple(l2.request_sent.clone().as_ref())
                                                     };
                                                     let _id = toast.write().popup(single_toast);
-                                                    add_error.set("");
+                                                    add_error.set("".into());
                                                     remote_friend.set("".into());
                                                 }
                                                 Err(e) => {
                                                     remote_friend.set("".into());
                                                     add_error.set(match e {
-                                                        warp::error::Error::CannotSendFriendRequest => "{l.couldnt_send.to_string()}",
-                                                        warp::error::Error::FriendRequestExist => "{l.already_sent.to_string()}",
-                                                        warp::error::Error::CannotSendSelfFriendRequest => "{l.add_self}",
-                                                        _ => "{l.something_went_wrong.to_string()}"
+                                                        warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
+                                                        warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
+                                                        warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.clone(),
+                                                        _ => l2.something_went_wrong.to_string()
                                                     })
                                                 },
                                             };
                                         },
-                                        Err(_) => add_error.set("{l.invalid_code.to_string()}"),
+                                        Err(_) => add_error.set(l2.invalid_code.clone()),
                                     }
                                 }
                             }
@@ -210,24 +211,24 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                 Ok(_) => {
                                                     let single_toast = ToastInfo {
                                                         position: Position::TopRight,
-                                                        ..ToastInfo::simple("{l.request_sent}")
+                                                        ..ToastInfo::simple(&l.request_sent)
                                                     };
                                                     let _id = toast.write().popup(single_toast);
-                                                    add_error.set("");
+                                                    add_error.set("".into());
                                                     remote_friend.set("".into());
                                                 }
                                                 Err(e) => {
                                                     remote_friend.set("".into());
                                                     add_error.set(match e {
-                                                        warp::error::Error::CannotSendFriendRequest => "{l.couldnt_send.to_string()}",
-                                                        warp::error::Error::FriendRequestExist => "{l.already_sent.to_string()}",
-                                                        warp::error::Error::CannotSendSelfFriendRequest => "{l.add_self.to_string()}",
-                                                        _ => "{l.something_went_wrong}"
+                                                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
+                                                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
+                                                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
+                                                        _ => l.something_went_wrong.to_string()
                                                     })
                                                 },
                                             };
                                         },
-                                        Err(_) => add_error.set("{l.invalid_code}"),
+                                        Err(_) => add_error.set(l.invalid_code.to_string()),
                                     }
                                 },
                             }
@@ -258,7 +259,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     .accept_request(&request.from())
                                                 {
                                                     Ok(_) => {
-                                                        add_error.set("");
+                                                        add_error.set("".into());
                                                     },
                                                     Err(_) => {
                                                         // TODO: Catch this and display it
@@ -272,7 +273,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     .deny_request(&request.from())
                                                 {
                                                     Ok(_) => {
-                                                        add_error.set("");
+                                                        add_error.set("".into());
                                                     },
                                                     Err(_) => {
                                                         // TODO: Catch this and display it
@@ -300,7 +301,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                     .close_request(&request.to())
                                                 {
                                                     Ok(_) => {
-                                                        add_error.set("");
+                                                        add_error.set("".into());
                                                     },
                                                     Err(_) => {
                                                         // TODO: Catch this and display it
@@ -324,7 +325,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         messaging: cx.props.messaging.clone(),
                                         friend: user.clone(),
                                         on_chat: move |_| {
-                                            add_error.set("");
+                                            add_error.set("".into());
                                             cx.props.on_hide.call(());
                                         }
                                     }
