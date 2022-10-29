@@ -842,6 +842,21 @@ input:checked+.slider:before {
   margin: 0.6rem;
   width: 90px;
   cursor: pointer;
+  max-height: fit-content;
+
+  &.primary {
+    color: var(--theme-primary);
+    stroke: var(--theme-primary);
+  }
+  
+  .new_folder_input {
+    width: 100%;
+    background-color: var(--theme-background-light);
+    border: none;
+    border-radius: 2px;
+    color: var(--theme-text);
+    text-align: center;
+  }
 
   svg {
     width: 70px;

@@ -47,6 +47,14 @@
             width: 100%;
         }
 
+
+        .fill-vertical {
+            display: inline-flex;
+            flex-direction: column;
+            flex: 1;
+            align-content: center;
+        }
+
         .favorites {
             display: inline-flex;
             -webkit-user-select: none; /* Safari */
