@@ -53,6 +53,7 @@
 
         p {
           padding: .2rem;
+          text-align: left;
         }
       }
 
@@ -153,6 +154,31 @@
       .pfp {
         margin-right: var(--padding-small);
       }
+    }
+  }
+}
+
+
+@media only screen and (max-width: 900px) {
+  .messages {
+    .message {
+      max-width: 100%;
+    }
+  }
+}
+
+@media only screen and (min-width: 900px) {
+  .messages {
+    .message {
+      max-width: 400px;
+    }
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .messages {
+    .message {
+      max-width: 700px;
     }
   }
 }

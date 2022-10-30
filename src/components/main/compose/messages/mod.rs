@@ -1,4 +1,4 @@
-use crate::{components::main::compose::msg::Msg, Account, Messaging, STATE};
+use crate::{components::main::compose::reply::Reply, components::main::compose::msg::Msg, Account, Messaging, STATE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
@@ -22,7 +22,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let ext_conversation_id = state.read().chat.as_ref().map(|conv| conv.id());
 
     let rg = cx.props.messaging.clone();
-
     //Note: Broken for the time being as switching conversation doesnt clear out
     //      messages.
     use_future(
@@ -87,11 +86,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     cx.render({
         let mut prev_sender = "".to_string();
+        
         rsx! {
             div {
                 class: "messages",
-                messages.read().iter().rev().map(|message|{
+                messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
+                    let message_id = message.id();
+                    let conversation_id = message.conversation_id();
                     let msg_sender = message.sender().to_string();
+                    let replied =  message.replied();
                     let i = ident.did_key().to_string();
                     let remote = i != msg_sender;
                     let last = prev_sender != msg_sender;
@@ -99,16 +102,39 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let first = false;
 
                     prev_sender = message.sender().to_string();
-
-                    rsx!(
+                    
+                    rsx!{
                         Msg {
                             message: message.clone(),
                             remote: remote,
                             last: last,
                             first: first,
                             middle: middle,
+                            on_reply: move |reply| {
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                    //TODO: Display error? 
+                                }
+                            }
                         }
-                    )
+                        match replied {
+                            Some(replied) => {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        let lines = message.value().join("\n");
+                                        rsx!{
+                                            Reply {
+                                                message: lines,
+                                                is_remote: remote.clone()
+                                            }
+                                        }
+                                    },
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            },
+                            _ => rsx!{ div {} }
+                        }
+                    }
                 })
                 div {
                     class: "encrypted-notif",
