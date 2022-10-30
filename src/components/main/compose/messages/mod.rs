@@ -104,9 +104,22 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     prev_sender = message.sender().to_string();
                     
                     rsx!{
+                        Msg {
+                            message: message.clone(),
+                            remote: remote,
+                            last: last,
+                            first: first,
+                            middle: middle,
+                            on_reply: move |reply| {
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                    //TODO: Display error? 
+                                }
+                            }
+                        }
                         match replied {
                             Some(replied) => {
-                                match warp::async_block_in_place_uncheck(rg.get_message(conversation_id, replied)) {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
                                     Ok(message) => {
                                         let lines = message.value().join("\n");
                                         rsx!{
@@ -119,18 +132,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 }
                             },
                             _ => rsx!{ div {} }
-                        }
-                        Msg {
-                            message: message.clone(),
-                            remote: remote,
-                            last: last,
-                            first: first,
-                            middle: middle,
-                            on_reply: move |reply| {
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                    //TODO: Display error? 
-                                }
-                            }
                         }
                     }
                 })
