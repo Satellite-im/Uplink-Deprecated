@@ -94,6 +94,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let message_id = message.id();
                     let conversation_id = message.conversation_id();
                     let msg_sender = message.sender().to_string();
+                    let replied =  message.replied();
                     let i = ident.did_key().to_string();
                     let remote = i != msg_sender;
                     let last = prev_sender != msg_sender;
@@ -103,6 +104,29 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     prev_sender = message.sender().to_string();
                     
                     rsx!{
+                        match replied {
+                            Some(replied) => {
+                                match warp::async_block_in_place_uncheck(rg.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        let lines = message.value().join("\n");
+                                        rsx!{
+                                            p {
+                                                "{lines}"
+                                            }
+                                        }
+                                        
+                                    },
+                                    Err(_) => {
+                                        rsx!{
+                                            p {
+                                                "Message Dont exist"
+                                            }
+                                        } 
+                                    }
+                                }
+                            },
+                            _ => rsx!{ div {} }
+                        }
                         Msg {
                             message: message.clone(),
                             remote: remote,
