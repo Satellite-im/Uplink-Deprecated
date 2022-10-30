@@ -1,4 +1,4 @@
-use crate::{components::main::compose::msg::Msg, Account, Messaging, STATE};
+use crate::{components::main::compose::reply::Reply, components::main::compose::msg::Msg, Account, Messaging, STATE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
@@ -110,19 +110,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     Ok(message) => {
                                         let lines = message.value().join("\n");
                                         rsx!{
-                                            p {
-                                                "{lines}"
+                                            Reply {
+                                                message: lines
                                             }
                                         }
-                                        
                                     },
-                                    Err(_) => {
-                                        rsx!{
-                                            p {
-                                                "Message Dont exist"
-                                            }
-                                        } 
-                                    }
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
                                 }
                             },
                             _ => rsx!{ div {} }
