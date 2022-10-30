@@ -124,7 +124,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         let lines = message.value().join("\n");
                                         rsx!{
                                             Reply {
-                                                message: lines
+                                                message: lines,
+                                                is_remote: remote.clone()
                                             }
                                         }
                                     },
