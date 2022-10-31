@@ -1,5 +1,10 @@
+use std::vec;
+
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::{outline::Shape};
+use crate::extensions;
+use extensions::*;
+
 
 use crate::{
     components::{
@@ -44,7 +49,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().chats.clone().is_empty();
 
-    cx.render(rsx! {
+    let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+    cx.render(rsx!{
+        div {
+            exts,
+        }
         div {
             class: "sidebar",
             IconInput {

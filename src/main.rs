@@ -33,6 +33,8 @@ pub mod language;
 pub mod themes;
 pub mod utils;
 
+use extensions::*;
+
 use tao::window::WindowBuilder;
 
 use tao::menu::{MenuBar as Menu, MenuItem};
@@ -49,6 +51,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
+
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -69,6 +72,7 @@ struct Opt {
 }
 
 fn main() {
+    
     if fdlimit::raise_fd_limit().is_none() {}
 
     let mut main_menu = Menu::new();
