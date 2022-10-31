@@ -193,7 +193,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }),
                             _ => rsx!( div {
                                 class: "unread-count",
-                                "{unread_count2}"
+                                span {
+                                    "{unread_count2}"
+                                }
                             }),
                         }
                     }
@@ -213,7 +215,14 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>) -> Element {
     };
     cx.render(rsx! {
         div {
-            class: "pfp {is_online}"
-        },
+            class: "pfp-container",
+
+            div {
+                class: "pfp"
+            },
+            div {
+                class: "pfs {is_online}"
+            }
+        }
     })
 }
