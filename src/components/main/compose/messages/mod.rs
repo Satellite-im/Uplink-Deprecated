@@ -90,9 +90,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 } => {
                     if current_chat.conversation.id() == conversation_id {
                         if let Ok(message) = rg.get_message(conversation_id, message_id).await {
-                            println!("streamed new message");
-                            println!("{:#?}", message);
-
                             list.write().push(message);
                         }
                     }

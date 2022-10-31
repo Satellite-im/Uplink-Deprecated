@@ -6,7 +6,6 @@ use warp::raygun::Conversation;
 
 use crate::DEFAULT_PATH;
 
-pub mod mutations;
 pub enum Actions {
     ChatWith(ConversationInfo),
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
@@ -51,7 +50,7 @@ impl PersistedState {
         match serde_json::to_vec(self) {
             Ok(bytes) => {
                 match std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes) {
-                    Ok(_) => println!("save successful"),
+                    Ok(_) => {}
                     Err(e) => eprintln!("error saving: {}", e),
                 }
             }
