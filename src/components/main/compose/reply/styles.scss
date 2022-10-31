@@ -5,7 +5,8 @@
         width: fit-content;
         align-self: flex-end;
         margin: 0.5rem;
-
+        justify-content: flex-start;
+        align-self: flex-start;
         p {
             background: var(--theme-background-light);
             padding: 0.5rem;
@@ -13,24 +14,25 @@
             color: var(--theme-text-muted);
         }
 
-        &.local {
-            justify-content: flex-end;
-            align-self: flex-end;
-        }
-
-
         .pfp {
             background: var(--theme-text-muted);
             border-radius: 15px;
             height: 30px;
             width: 30px;
-            margin-right: 0.5rem;
+            margin-left: 0.5rem;
+        }
 
-            &.local {
-                margin-right: 0;
-                margin-left: 0.5rem;
+
+        &.local {
+            justify-content: flex-end;
+            align-self: flex-end;
+
+            .pfp {
+                margin-left: 0;
+                margin-right: 0.5rem;
             }
         }
+
         .box-drawing {
             text-align: center;
             padding-top: 1rem;
