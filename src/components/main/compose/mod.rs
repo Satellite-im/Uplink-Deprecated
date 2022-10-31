@@ -13,6 +13,7 @@ use crate::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
+    state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -25,16 +26,13 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
-    let ext_conversation_id = state.read().chat.as_ref().map(|c| c.id());
+    let current_chat = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
 
-    let blur = state.read().chat.is_none();
+    let blur = state.read().current_chat.is_none();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
-
-    // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
-    // note that this has a queryselector and click handler specific to this page
 
     // warning: calling element.style.height='auto' on 'keyup' causes the textarea to randomly resize if you're using shift+enter to make line breaks in the message.
     // this is probably due to releasing the shift key before the enter key.
@@ -75,7 +73,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
         element.removeAttribute('data-autoresize');
     })()"#;
 
-    // todo: render normally
+    // todo: remove one tab
     cx.render(rsx! {
             div {
                 class: "compose",
@@ -104,7 +102,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             icon: Shape::Check,
                         }
                     },
-                ))
+                )),
                 div {
                     class: "messages-container",
                     div { class: "gradient_mask" },
@@ -127,15 +125,31 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 .map(|s| s.to_string())
                                 .collect::<Vec<_>>();
 
-                            if !text_as_vec.is_empty() {
-                                // clicking the send button is meaningless if there isn't a conversation.
-                                if let Some(id) = ext_conversation_id {
-                                    // TODO: We need to wire this message up to display differently
-                                    // until we confim whether it was successfully sent or failed
-                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
-                                        //TODO: Handle error
-                                    };
+                            if text_as_vec.is_empty() {
+                                return;
+                            }
+                            
+                            // clicking the send button is meaningless if there isn't a conversation. 
+                            if let Some(id) = current_chat {
+
+                                // mutate the state
+                                let cur = state.read().all_chats.get(&id).cloned();
+                                if let Some( mut conversation_info) = cur {
+                                    // for multiline messages, take at most 2 lines
+                                    let v: Vec<String> = text_as_vec.iter().take(2).cloned().collect();
+                                    let s: String = v.join("\n");
+                                    // the sizing of the conversation box is fixed, so approximate the needed string length using
+                                    // the placeholder text
+                                    let msg = s.chars().take(24).collect();
+                                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
+                                    state.write().dispatch(Actions::UpdateConversation(conversation_info));
                                 }
+
+                                // TODO: We need to wire this message up to display differently
+                                // until we confim whether it was successfully sent or failed
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                    //TODO: Handle error
+                                };
                             }
                         },
                         on_upload: move |_| {}

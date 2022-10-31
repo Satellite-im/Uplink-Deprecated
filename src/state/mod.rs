@@ -1,20 +1,41 @@
+use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use uuid::Uuid;
 use warp::raygun::Conversation;
 
 use crate::DEFAULT_PATH;
 
-use self::mutations::Mutations;
-
-pub mod mutations;
-
 pub enum Actions {
-    ChatWith(Conversation),
+    ChatWith(ConversationInfo),
+    AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
+    UpdateConversation(ConversationInfo),
 }
 
-#[derive(Serialize, Deserialize, Default)]
+/// tracks the active conversations. Chagnes are persisted
+#[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
 pub struct PersistedState {
-    pub chat: Option<Conversation>,
-    pub chats: Vec<Conversation>,
+    /// the currently selected conversation
+    pub current_chat: Option<Uuid>,
+    /// all active conversations
+    pub all_chats: HashMap<Uuid, ConversationInfo>,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
+pub struct LastMsgSent {
+    pub value: String,
+    pub time: DateTime<Local>,
+}
+
+/// composes `Conversation` with relevant metadata
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
+pub struct ConversationInfo {
+    pub conversation: Conversation,
+    /// the uuid of the last message read. \
+    /// used to determine the number of unread messages
+    pub num_unread_messages: u32,
+    /// the first two lines of the last message sent
+    pub last_msg_sent: Option<LastMsgSent>,
 }
 
 impl PersistedState {
@@ -26,20 +47,69 @@ impl PersistedState {
     }
 
     pub fn save(&self) {
-        if let Ok(bytes) = serde_json::to_vec(self) {
-            if let Err(_e) = std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes)
-            {
+        match serde_json::to_vec(self) {
+            Ok(bytes) => {
+                match std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes) {
+                    Ok(_) => {}
+                    Err(e) => eprintln!("error saving: {}", e),
+                }
             }
+            Err(e) => eprintln!("error serializing on save: {}", e),
         }
     }
 
-    pub fn dispatch(&mut self, action: Actions) -> Self {
-        match action {
-            Actions::ChatWith(conversation) => Mutations::chat_with(self, conversation),
+    pub fn dispatch(&mut self, action: Actions) {
+        let next = match action {
+            Actions::ChatWith(info) => PersistedState {
+                current_chat: Some(info.conversation.id()),
+                all_chats: self.all_chats.clone(),
+            },
+            Actions::AddRemoveConversations(new_chats) => PersistedState {
+                current_chat: self.current_chat,
+                all_chats: new_chats,
+            },
+            Actions::UpdateConversation(info) => {
+                let mut next = PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: self.all_chats.clone(),
+                };
+                // overwrite the existing entry
+                next.all_chats.insert(info.conversation.id(), info);
+                next
+            }
         };
-        PersistedState {
-            chats: self.chats.clone(),
-            chat: self.chat.clone(),
+        // only save while there's a lock on PersistedState
+        next.save();
+
+        // modify PersistedState via assignment rather than mutation
+        *self = next;
+    }
+}
+
+// doesn't run when the window is closed.
+// does run on the value inside of dispatch though.
+// basically don't use this
+//impl Drop for PersistedState {
+//    fn drop(&mut self) {
+//        println!("saving PersistedState");
+//        self.save();
+//    }
+//}
+
+impl LastMsgSent {
+    pub fn new(msg: String) -> Self {
+        Self {
+            value: msg,
+            time: Local::now(),
         }
+    }
+
+    pub fn display_time(&self) -> String {
+        format!(
+            "{}/{}/{}",
+            self.time.month(),
+            self.time.day(),
+            self.time.year()
+        )
     }
 }

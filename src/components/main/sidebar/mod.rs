@@ -1,12 +1,10 @@
-use std::vec;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape};
-use crate::extensions;
-use extensions::*;
-
+use uuid::Uuid;
 
 use crate::{
+    extensions::*,
     components::{
         main::{
             friends::Friends,
@@ -26,7 +24,6 @@ use crate::{
 pub mod chat;
 pub mod nav;
 
-// use main::settings::sidebar::nav::NavEvent;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
@@ -37,9 +34,9 @@ pub struct Props {
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let config = Config::load_config_or_default();
 
+    let state = use_atom_ref(&cx, STATE);
     let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
-    let state = use_atom_ref(&cx, STATE);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
@@ -47,7 +44,13 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let newchatdString = l.new_chat.to_string();
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
-    let has_chats = !state.read().chats.clone().is_empty();
+    let has_chats = !state.read().all_chats.is_empty();
+
+    let active_chat: UseState<Option<Uuid>> = use_state(&cx, || None).clone();
+    let _active_chat = state.read().current_chat;
+    if *active_chat != _active_chat {
+        active_chat.set(_active_chat);
+    }
 
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
 
@@ -99,14 +102,22 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         div {
                             class: "chats",
-                            state.read().chats.iter().rev().map(|conv| {
-                                let conversation = conv.clone();
+                            state.read().all_chats.iter().map(|(key, conv)| {
+                                let conversation_info = conv.clone();
+                                let active_chat = active_chat.clone();
                                 rsx!(
                                     chat::Chat {
+                                        key: "{key}",
                                         account: cx.props.account.clone(),
-                                        conversation: conversation.clone(),
-                                        on_pressed: move |_| {
-                                            state.write().dispatch(Actions::ChatWith(conversation.clone())).save();
+                                        conversation_info: conversation_info.clone(),
+                                        messaging: cx.props.messaging.clone(),
+                                        last_msg_sent: conv.last_msg_sent.clone(),
+                                        is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        on_pressed: move |uuid| {
+                                            if *active_chat != Some(uuid) {
+                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
+                                                active_chat.set(Some(uuid));
+                                            }
                                         }
                                     }
                                 )

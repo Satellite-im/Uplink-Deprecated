@@ -25,12 +25,17 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Read their values from locks
     let mp = cx.props.account.clone();
 
-    match &state.read().chat {
-        Some(conversation) => {
-            // TODO: Make this more dynamic to include multiple PFPs and usernames.
-            // Consider code in this todo temporary and only supportive of 2 way convos
-            let conversation_id = conversation.id();
-            let display_did = conversation
+    // todo: move this into the `impl Conversations` by creating an accessor method
+    // use the uuid of the current chat to extract the ConversationInfo from the list
+    let opt = &state
+        .read()
+        .current_chat
+        .and_then(|conversation_id| state.read().all_chats.get(&conversation_id).cloned());
+
+    match opt {
+        Some(conversation_info) => {
+            let display_did = conversation_info
+                .conversation
                 .recipients()
                 .last()
                 .cloned()
@@ -46,6 +51,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 .map(Identity::username)
                 .unwrap_or_else(String::new);
             // TODO-END
+
+            let id = conversation_info.conversation.id();
 
             cx.render(rsx! {
                 div {
@@ -72,7 +79,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 class: "did",
                                 config.developer.developer_mode.then(|| rsx!(
                                     span {
-                                        "({conversation_id})"
+                                        "({id})"
                                     }
                                 ))
                             }

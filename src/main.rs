@@ -16,10 +16,7 @@ use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
-use warp::multipass::MultiPass;
-use warp::raygun::RayGun;
-use warp::sync::RwLock;
-use warp::tesseract::Tesseract;
+use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
@@ -32,8 +29,6 @@ pub mod extensions;
 pub mod language;
 pub mod themes;
 pub mod utils;
-
-use extensions::*;
 
 use tao::window::WindowBuilder;
 
@@ -51,7 +46,6 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
-
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -72,7 +66,6 @@ struct Opt {
 }
 
 fn main() {
-    
     if fdlimit::raise_fd_limit().is_none() {}
 
     let mut main_menu = Menu::new();
