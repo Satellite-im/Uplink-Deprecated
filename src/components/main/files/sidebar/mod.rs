@@ -32,8 +32,8 @@ pub enum FolderDisplay {
 
 #[inline_props]
 #[allow(non_snake_case)]
-pub fn FileElem(cx: Scope, f: File) -> Element {
-    let name = f.name.clone();
+pub fn FileElem(cx: Scope, file: File) -> Element {
+    let name = file.name.clone();
     cx.render(rsx!(
         a {
             class: "tree_item",
@@ -84,7 +84,7 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
                     cx.render(rsx!(
                         dir.contents.iter().map(|item| {
                             match item {
-                                DirItem::File(f) => cx.render(rsx!(FileElem { f: f.clone() })),
+                                DirItem::File(f) => cx.render(rsx!(FileElem { file: f.clone() })),
                                 DirItem::Directory(d) => cx.render(rsx!(Folder { dir: d.clone() })),
                             }
                         })
