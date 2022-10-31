@@ -11,17 +11,18 @@ use crate::{
     LANGUAGE,
 };
 
-#[derive(PartialEq, Eq, Props)]
-pub struct Props {
+#[derive(Props)]
+pub struct Props<'a> {
     message: Message,
     remote: bool,
     first: bool,
     middle: bool,
     last: bool,
+    on_reply: EventHandler<'a, String>
 }
 
 #[allow(non_snake_case)]
-pub fn Msg(cx: Scope<Props>) -> Element {
+pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let popout = use_state(&cx, || false);
     // text has been lifted from the child components into Msg so that
     // a button press can be used to clear it.
@@ -120,7 +121,10 @@ pub fn Msg(cx: Scope<Props>) -> Element {
                             IconTextArea {
                                 icon: Shape::Reply,
                                 placeholder: l.send_a_reply.to_string(),
-                                on_submit: move |_| {},
+                                on_submit: move |e| {
+                                    cx.props.on_reply.call(e);
+                                    popout.set(false);
+                                },
                                 text: text.clone(),
                             },
                             IconButton {

@@ -2,6 +2,7 @@ pub mod messages;
 pub mod msg;
 pub mod topbar;
 pub mod write;
+pub mod reply;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;

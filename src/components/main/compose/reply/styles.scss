@@ -1,0 +1,51 @@
+.messages {
+    .reply {
+        display: inline-flex;
+        justify-content: flex-end;
+        width: fit-content;
+        align-self: flex-end;
+        margin: 0.5rem;
+        justify-content: flex-start;
+        align-self: flex-start;
+        align-items: center;
+
+        p {
+            background: var(--theme-background-light);
+            padding: 0.5rem;
+            border-radius: 8px;
+            color: var(--theme-text-muted);
+        }
+
+        .pfp {
+            background: var(--theme-text-muted);
+            border-radius: 15px;
+            height: 30px;
+            width: 30px;
+            margin-left: 0.5rem;
+        }
+
+
+        &.local {
+            justify-content: flex-end;
+            align-self: flex-end;
+
+            .pfp {
+                margin-left: 0;
+                margin-right: 0.5rem;
+            }
+        }
+
+        .box-drawing {
+            text-align: center;
+            padding-top: 1rem;
+            margin-left: 0.5rem;
+            color: var(--theme-text-muted);
+            background: transparent;
+
+            &.left {
+                margin-right: 0.5rem;
+                margin-left: 0;
+            }
+        }
+    }
+}
