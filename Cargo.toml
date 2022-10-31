@@ -42,6 +42,7 @@ chrono-humanize = "0.2.2"
 futures = "0.3"
 dirs = "4.0.0"
 rodio = "0.16.0"
+libloading = "0.7.3"
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "854beb9b7547c769298006cf53bf631c76908102"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "854beb9b7547c769298006cf53bf631c76908102" }

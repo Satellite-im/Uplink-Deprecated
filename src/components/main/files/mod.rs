@@ -14,14 +14,14 @@ pub struct Props {
 pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
-    
+
     cx.render(rsx! {
         div {
             id: "files",
-            sidebar::Sidebar { account: cx.props.account.clone() },
+            sidebar::Sidebar { _account: cx.props.account.clone() },
             div {
                 id: "content",
-                toolbar::Toolbar { 
+                toolbar::Toolbar {
                     on_new_folder: move |_| {
                         show_new_folder.set(true);
                     },

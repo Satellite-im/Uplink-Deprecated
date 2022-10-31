@@ -1,8 +1,10 @@
+
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::{outline::Shape};
 use uuid::Uuid;
 
 use crate::{
+    extensions::*,
     components::{
         main::{
             friends::Friends,
@@ -50,7 +52,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         active_chat.set(_active_chat);
     }
 
-    cx.render(rsx! {
+    let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+    cx.render(rsx!{
+        div {
+            exts,
+        }
         div {
             class: "sidebar",
             IconInput {
