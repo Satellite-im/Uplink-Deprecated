@@ -52,8 +52,12 @@ pub fn FileElem(cx: Scope, f: File) -> Element {
 #[allow(non_snake_case)]
 pub fn Folder(cx: Scope, dir: Directory) -> Element {
     let display = use_state(&cx, || FolderDisplay::Closed);
-    let folder_name = &dir.name;
+    let folder_icon: Shape = match *display.current() {
+        FolderDisplay::Open => Shape::FolderOpen,
+        FolderDisplay::Closed => Shape::Folder,
+    };
 
+    let folder_name = &dir.name;
     cx.render(rsx! {
         div {
             class: "tree_folder",
@@ -65,22 +69,9 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
                         FolderDisplay::Closed => display.set(FolderDisplay::Open),
                     }
                 },
-                match *display.current() {
-                    FolderDisplay::Open => {
-                        cx.render(rsx!(
-                            Icon {
-                                class: "",
-                                icon: Shape::FolderOpen,
-                            }))
-                    }
-                    FolderDisplay::Closed => {
-                        cx.render(rsx!(
-                            Icon {
-                                class: "",
-                                icon: Shape::Folder,
-                            },
-                        ))
-                    }
+                Icon {
+                    class: "",
+                    icon: folder_icon,
                 },
                 "{folder_name}"
             }
@@ -89,7 +80,7 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
             // it requires the else to return the same type. so now both arms of the match return an Option
             match *display.current() {
                 FolderDisplay::Open => {
-                    // need to wrap this in cx.render because cx.render returns an Option
+                    // cx.render returns an Option
                     cx.render(rsx!(
                         dir.contents.iter().map(|item| {
                             // item is referenced by the map
@@ -141,7 +132,7 @@ pub fn Sidebar(cx: Scope, _account: crate::Account) -> Element {
     cx.render(rsx! {
         div {
             id: "sidebar",
-            class: "tree noselect",
+            class: "tree",
             Usage {
                 usage: UsageStats {
                     available: 1256,
