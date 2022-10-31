@@ -1,3 +1,5 @@
+#![allow(clippy::derive_partial_eq_without_eq)]
+
 use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
@@ -5,17 +7,7 @@ use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 
 pub mod usage;
 
-#[derive(Props, PartialEq)]
-pub struct Props {
-    account: crate::Account,
-}
-
-// want to store all data on heap
-pub type DirectoryRoot = Option<Box<Directory>>;
-
 #[derive(Eq, PartialEq, Clone)]
-// requires a `name` for display purposes and a list of children
-// in the future may want to associate `key` with this so that Dioxus can not re-render stuff
 pub struct Directory {
     pub name: String,
     pub contents: Vec<Box<DirItem>>,
@@ -38,8 +30,8 @@ pub enum FolderDisplay {
     Closed,
 }
 
-#[allow(non_snake_case)]
 #[inline_props]
+#[allow(non_snake_case)]
 pub fn FileElem(cx: Scope, f: File) -> Element {
     let name = f.name.clone();
     cx.render(rsx!(
@@ -56,56 +48,69 @@ pub fn FileElem(cx: Scope, f: File) -> Element {
     ))
 }
 
-#[allow(non_snake_case)]
 #[inline_props]
+#[allow(non_snake_case)]
 pub fn Folder(cx: Scope, dir: Directory) -> Element {
     let display = use_state(&cx, || FolderDisplay::Closed);
     let folder_name = &dir.name;
 
     cx.render(rsx! {
         div {
-            class: "row",
-            onclick: move |_| {
+            class: "tree_folder",
+            div {
+                class: "row",
+                onclick: move |_| {
+                    match *display.current() {
+                        FolderDisplay::Open => display.set(FolderDisplay::Closed),
+                        FolderDisplay::Closed => display.set(FolderDisplay::Open),
+                    }
+                },
                 match *display.current() {
-                    FolderDisplay::Open => display.set(FolderDisplay::Closed),
-                    FolderDisplay::Closed => display.set(FolderDisplay::Open),
-                }
-            },
+                    FolderDisplay::Open => {
+                        cx.render(rsx!(
+                            Icon {
+                                class: "",
+                                icon: Shape::FolderOpen,
+                            }))
+                    }
+                    FolderDisplay::Closed => {
+                        cx.render(rsx!(
+                            Icon {
+                                class: "",
+                                icon: Shape::Folder,
+                            },
+                        ))
+                    }
+                },
+                "{folder_name}"
+            }
+
+            // can't use if Let to render conditionally based on FolderDisplay because Rust complains of an if without else.
+            // it requires the else to return the same type. so now both arms of the match return an Option
             match *display.current() {
                 FolderDisplay::Open => {
+                    // need to wrap this in cx.render because cx.render returns an Option
                     cx.render(rsx!(
-                        Icon {
-                            class: "",
-                            icon: Shape::FolderOpen,
-                        },
-
                         dir.contents.iter().map(|item| {
                             // item is referenced by the map
                             // the reference is to a Box, so need another deref
                             // and don't want to move it, so need to borrow
                             match &**item {
-                                DirItem::File(f) => cx.render(rsx!(FileElem{f: f.clone()})),
-                                DirItem::Directory(d) => cx.render(rsx!(Folder{dir: d.clone()})),
+                                DirItem::File(f) => cx.render(rsx!(FileElem { f: f.clone() })),
+                                DirItem::Directory(d) => cx.render(rsx!(Folder { dir: d.clone() })),
                             }
-                        } )
+                        })
                     ))
                 }
-                FolderDisplay::Closed => {
-                    cx.render(rsx!(
-                        Icon {
-                            class: "",
-                            icon: Shape::Folder,
-                        },
-                    ))
-                }
-            },
-            "{folder_name}"
+                FolderDisplay::Closed => None
+            }
         }
     })
 }
 
+#[inline_props]
 #[allow(non_snake_case)]
-pub fn Sidebar(cx: Scope<Props>) -> Element {
+pub fn Sidebar(cx: Scope, _account: crate::Account) -> Element {
     let subdir_1 = Directory {
         name: "Subdir1".into(),
         contents: vec![Box::new(DirItem::File(File { name: "f1".into() }))],
