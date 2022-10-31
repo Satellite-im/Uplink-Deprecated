@@ -14,14 +14,7 @@
             cursor: pointer;
             user-select: none;
             margin: 0;
-            .open {
-                display: none;
-            }
 
-            input {
-                position: absolute;
-                visibility: hidden;
-            }
             svg {
                 stroke: var(--theme-text-darker);
             }
@@ -33,22 +26,6 @@
             color: var(--theme-text-darker);
             font-weight: normal;
             font-family: Poppins !important;
-            .tree_folder, .tree_item {
-                display: none;
-                color: var(--theme-text-darker);
-            }
-            &:has(input:checked) {
-                color: var(--theme-text-bright);
-                & .open {
-                    display: inline-flex;
-                }
-                & .open {
-                    display: none;
-                }
-                & > .tree_folder, & > .tree_item {
-                    display: inline-flex;
-                }
-            }
         }
 
         .row {
