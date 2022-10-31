@@ -10,7 +10,7 @@ pub mod usage;
 #[derive(Eq, PartialEq, Clone)]
 pub struct Directory {
     pub name: String,
-    pub contents: Vec<Box<DirItem>>,
+    pub contents: Vec<DirItem>,
 }
 
 #[derive(Eq, PartialEq, Clone)]
@@ -83,10 +83,7 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
                     // cx.render returns an Option
                     cx.render(rsx!(
                         dir.contents.iter().map(|item| {
-                            // item is referenced by the map
-                            // the reference is to a Box, so need another deref
-                            // and don't want to move it, so need to borrow
-                            match &**item {
+                            match item {
                                 DirItem::File(f) => cx.render(rsx!(FileElem { f: f.clone() })),
                                 DirItem::Directory(d) => cx.render(rsx!(Folder { dir: d.clone() })),
                             }
@@ -108,23 +105,23 @@ pub fn Sidebar(cx: Scope, _account: crate::Account) -> Element {
     // This is just to work on css
     let subdir_1 = Directory {
         name: "Subdir1".into(),
-        contents: vec![Box::new(DirItem::File(File { name: "f1".into() }))],
+        contents: vec![DirItem::File(File { name: "f1".into() })],
     };
 
     let subdir_3 = Directory {
         name: "Subdir3".into(),
-        contents: vec![Box::new(DirItem::File(File { name: "f2".into() }))],
+        contents: vec![DirItem::File(File { name: "f2".into() })],
     };
     let subdir_2 = Directory {
         name: "Subdir2".into(),
-        contents: vec![Box::new(DirItem::Directory(subdir_3))],
+        contents: vec![DirItem::Directory(subdir_3)],
     };
     let directory = Directory {
         name: "Folder 1".into(),
         contents: vec![
-            Box::new(DirItem::Directory(subdir_1)),
-            Box::new(DirItem::Directory(subdir_2)),
-            Box::new(DirItem::File(File { name: "f3".into() })),
+            DirItem::Directory(subdir_1),
+            DirItem::Directory(subdir_2),
+            DirItem::File(File { name: "f3".into() }),
         ],
     };
 
