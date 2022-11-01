@@ -5,6 +5,28 @@
     position: relative;
   }
 
+    .input {
+        border: 1px solid transparent;
+        border-radius: 20px;
+        box-sizing: border-box;
+        color: var(--theme-text);
+        flex: 1;
+        min-height: 40px;
+        // TODO: Need help making this prettier, textareas suck
+        padding: .75rem 1rem 0 1rem;
+        resize: none;
+        transition: height .2s, border .2s;
+        word-break: break-all;
+        word-wrap: break-word;
+        -webkit-user-select: text; /* Safari */
+        user-select: text; /* Non-prefixed version, currently */
+    }
+
+    .input:focus {
+        border: 1px solid var(--theme-primary);
+        outline: none;
+    }
+
   .message,
   .wrapper {
     align-self: flex-end;

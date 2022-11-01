@@ -34,45 +34,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
-    // warning: calling element.style.height='auto' on 'keyup' causes the textarea to randomly resize if you're using shift+enter to make line breaks in the message.
-    // this is probably due to releasing the shift key before the enter key.
-    // if setting the height is done on 'keydown' then when the enter key is pressed, the event fires before Dioxus clears the TextArea, so the height doesn't change.
-    // so a flag has to be set in the 'keydown' event and checked in the 'keyup' event.
-    const RESIZE_TEXTAREA_SCRIPT: &str = r#"
-    (function addAutoResize() {
-        var chat_sent_by_enter = false;
-
-        let element = document.querySelector('.writer-container .resizeable-textarea');
-        if (element == null) {
-            return;
-        }
-        let send_button = document.getElementById('send');
-        send_button.addEventListener('click', function(event) {
-            element.style.height = 'auto';
-        });
-    
-        element.addEventListener('keydown', function(event) {
-            if (event.keyCode === 13 && !event.shiftKey) {  
-                chat_sent_by_enter = true;
-            }
-        });
-
-        element.addEventListener('keyup', function(event) {
-            if (event.keyCode === 13 && chat_sent_by_enter === true) {
-                chat_sent_by_enter = false;
-                element.style.height = 'auto';
-            }
-        });
-
-        element.style.boxSizing = 'border-box';
-        var offset = element.offsetHeight - element.clientHeight;
-        element.addEventListener('input', function (event) {
-            event.target.style.height = 'auto';
-            event.target.style.height = event.target.scrollHeight + offset + 'px';
-        });
-        element.removeAttribute('data-autoresize');
-    })()"#;
-
     // todo: remove one tab
     cx.render(rsx! {
             div {
@@ -154,9 +115,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         },
                         on_upload: move |_| {}
                     }
-                },
-                script {
-                    dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
                 },
             }
         })
