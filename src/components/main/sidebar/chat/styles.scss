@@ -67,7 +67,6 @@
             display: inline-flex;
             flex: 1;
             flex-direction: column;
-            padding: 0 1rem;
             text-align: left;
 
             .top-row {
@@ -96,25 +95,16 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            margin-right: 1em;
-
-            /* this is the space for the icon in the chats sidebar, showing the number of unread messages */
-            .unread-placeholder,
-            .unread-count {
-                width: 2em;
-                height: 2em;
-                min-width: 2em;
-                border-radius: 0.5em;
-            }
 
             .unread-count {
-                background-color: var(--theme-missed-chats-sidebar);
+                background-color: var(--theme-primary);
+                max-height: fit-content;
+                padding: 0.2rem 0.5rem;
+                border-radius: 2px;
+                margin-left: 0.5rem;
 
                 span {
-                    font-weight: bold;
-                    position: relative;
-                    top: 0.4em;
-                    right: -0.7em;
+                    font-family: "Space Mono", monospace !important;
                 }
             }
 
@@ -123,8 +113,7 @@
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 2;
                 overflow: hidden;
-                /* this is a hack based on the observation that the sidebar has a fixed width*/
-                max-width: 20em;
+                flex: 1;
             }
             
         }

@@ -121,7 +121,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     
                     rsx!{
                         Msg {
-                            //key: "{message_id}",
+                            // key: "{message_id}",
                             message: message.clone(),
                             remote: remote,
                             last: last,
