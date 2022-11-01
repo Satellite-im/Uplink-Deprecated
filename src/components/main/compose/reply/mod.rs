@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 #[derive(Props, PartialEq, Eq)]
 pub struct Props {
     message: String,
-    is_remote: bool
+    is_remote: bool,
 }
 
 #[allow(non_snake_case)]
@@ -14,7 +14,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         "local"
     };
 
-    cx.render({        
+    cx.render({
         rsx! {
             div {
                 class: "reply {class}",

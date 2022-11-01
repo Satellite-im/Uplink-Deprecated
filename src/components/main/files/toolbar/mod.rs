@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, events::MouseEvent};
+use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use crate::components::ui_kit::icon_button::IconButton;

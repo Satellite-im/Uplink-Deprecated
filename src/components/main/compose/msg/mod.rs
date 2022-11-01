@@ -18,7 +18,7 @@ pub struct Props<'a> {
     first: bool,
     middle: bool,
     last: bool,
-    on_reply: EventHandler<'a, String>
+    on_reply: EventHandler<'a, String>,
 }
 
 #[allow(non_snake_case)]

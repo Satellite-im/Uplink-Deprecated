@@ -1,5 +1,8 @@
-
-use crate::{components::main::compose::{reply::Reply, msg::Msg}, Account, Messaging, STATE, state::Actions};
+use crate::{
+    components::main::compose::{msg::Msg, reply::Reply},
+    state::Actions,
+    Account, Messaging, STATE,
+};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 

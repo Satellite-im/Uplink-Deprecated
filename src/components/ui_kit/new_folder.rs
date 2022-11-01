@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{Icon, solid::Shape};
+use dioxus_heroicons::{solid::Shape, Icon};
 use dioxus_html::KeyCode;
 
 use super::folder::State;
@@ -7,7 +7,7 @@ use super::folder::State;
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]
 pub struct Props {
-    state: State
+    state: State,
 }
 
 #[allow(non_snake_case)]
