@@ -148,7 +148,10 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             .take(2)
                             .cloned()
                             .collect::<Vec<String>>()
-                            .join("\n"),
+                            .join("\n")
+                            .chars()
+                            .take(24)
+                            .collect(),
                         Err(_) => {
                             // todo: handle error
                             "".to_string()
