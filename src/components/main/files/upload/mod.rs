@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, events::MouseEvent};
+use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use crate::components::ui_kit::icon_button::IconButton;
@@ -21,7 +21,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "type": "file",
                         onchange: move |e| {
                             println!("Evt {:?}", e);
-                            let p = e.data.value.clone();
+                            let _p = e.data.value.clone();
                         }
                     }
                 },

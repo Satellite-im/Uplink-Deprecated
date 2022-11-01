@@ -3,7 +3,6 @@ use dioxus_heroicons::outline::Shape;
 use uuid::Uuid;
 
 use crate::{
-    extensions::*,
     components::{
         main::{
             friends::Friends,
@@ -15,6 +14,7 @@ use crate::{
             icon_input::IconInput,
         },
     },
+    extensions::*,
     state::Actions,
     utils::config::Config,
     Account, Messaging, LANGUAGE, STATE,
@@ -128,7 +128,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 rsx!(
                     div {
                         class: "fill-vertical",
-                        
                         p {
                             "{noactivechatdString}"
                         },
