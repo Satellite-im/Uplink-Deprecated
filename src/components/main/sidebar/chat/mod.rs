@@ -3,7 +3,6 @@ use crate::{
     state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
-use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
@@ -33,15 +32,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
-    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| {
-        let ht = HumanTime::from(x.time);
-        let s = ht.to_string();
-        let mut split = s.split(char::is_whitespace);
-        let time = split.next().unwrap_or("");
-        let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
-        // TODO: this might not be ideal to support multiple locales.
-        format!("{}{}", time, units)
-    });
+    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
 
     let mut rg = cx.props.messaging.clone();
@@ -148,10 +139,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             .take(2)
                             .cloned()
                             .collect::<Vec<String>>()
-                            .join("\n")
-                            .chars()
-                            .take(24)
-                            .collect(),
+                            .join("\n"),
                         Err(_) => {
                             // todo: handle error
                             "".to_string()
