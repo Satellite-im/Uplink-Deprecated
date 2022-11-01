@@ -10,10 +10,10 @@
             flex-direction: column;
             width: 100%;
             padding-left: 0.25rem;
+            margin: 0.25rem;
             position: relative;
             cursor: pointer;
             user-select: none;
-            margin: 0;
             font-family: "Poppins",sans-serif !important;
             color: var(--theme-text-darker);
 
@@ -23,8 +23,8 @@
         }
 
         .tree_folder {
-            margin: 0 0 0.5rem 0;
             font-size: var(--text-size);
+            color: var(--theme-text-darker);
             font-weight: normal;
         }
 
