@@ -675,7 +675,7 @@ input:checked+.slider:before {
     }
 
     &.full {
-      height: unset;
+      height: 100%;
       max-height: 90vh;
 
       &.hidden {
