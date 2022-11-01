@@ -5,6 +5,7 @@ use crate::{
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
+use chrono_humanize::HumanTime;
 use uuid::Uuid;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
 use warp::raygun::{MessageEventKind, RayGunStream};
@@ -32,7 +33,16 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
-    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
+    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| {
+        let ht = HumanTime::from(x.time);
+        let s = ht.to_string();
+        let split: Vec<&str> = s.split(char::is_whitespace).collect();
+        let amount = split.get(0).unwrap();
+        let c = split.get(1).unwrap();
+        // TODO: this might not be ideal to support multiple locales.
+        let formatted = format!("{}{}", amount, c.chars().next().unwrap());
+        formatted
+    });
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
 
     let mut rg = cx.props.messaging.clone();
