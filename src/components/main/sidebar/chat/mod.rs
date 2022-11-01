@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
-use warp::raygun::{MessageEventKind, RayGunStream};
+use warp::raygun::{MessageEventKind, RayGun, RayGunStream};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -136,12 +136,31 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             };
 
             while let Some(event) = stream.next().await {
-                if let MessageEventKind::MessageReceived { .. } = event {
+                if let MessageEventKind::MessageReceived {
+                    conversation_id,
+                    message_id,
+                } = event
+                {
+                    let msg = match rg.get_message(conversation_id, message_id).await {
+                        Ok(msg) => msg
+                            .value()
+                            .iter()
+                            .take(2)
+                            .cloned()
+                            .collect::<Vec<String>>()
+                            .join("\n"),
+                        Err(_) => {
+                            // todo: handle error
+                            "".to_string()
+                        }
+                    };
+
                     unread_count.modify(|x| x + 1);
                     // will silently remain zero if you only use *unread_count
                     conversation_info.num_unread_messages = *unread_count.current();
+                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
                     state
-                        .write_silent()
+                        .write()
                         .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                 }
             }
