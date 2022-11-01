@@ -1,6 +1,5 @@
-
 use dioxus::prelude::*;
-use dioxus_heroicons::{outline::Shape};
+use dioxus_heroicons::outline::Shape;
 use uuid::Uuid;
 
 use crate::{

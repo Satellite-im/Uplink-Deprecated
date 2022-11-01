@@ -143,7 +143,7 @@ pub fn General(cx: Scope<Props>) -> Element {
                         "Splash Screen"
                     },
                     p {
-                        "Disabling the splash screen can sometimes make for a faster loading experience."
+                        "Disabling the splash screen can sometimes make for a faster startup."
                     }
                 },
                 div {

@@ -183,8 +183,12 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         span {
                             class: "block-with-text",
                             match last_msg_sent {
-                                Some(msg) => rsx!("{msg}"),
-                                None => rsx!("{l.chat_placeholder}")
+                                Some(msg) => rsx!(p {
+                                    "{msg}"
+                                }),
+                                None => rsx!(p {
+                                    "{l.chat_placeholder}"
+                                })
                             }
                         }
                         match *unread_count2.current() {

@@ -119,7 +119,7 @@ pub fn get_renders<'src>(extension_type: ExtensionType, enable: bool) -> Vec<Laz
                     }
                 },
                 None => {
-                    println!("No extensions");
+                    // println!("No extensions");
                 },
 
             };
