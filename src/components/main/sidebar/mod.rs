@@ -128,7 +128,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 rsx!(
                     div {
                         class: "fill-vertical",
-                        
                         p {
                             "{noactivechatdString}"
                         },

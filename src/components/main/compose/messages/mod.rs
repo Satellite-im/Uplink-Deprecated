@@ -103,67 +103,63 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     });
 
     let rg = cx.props.messaging.clone();
-    cx.render({
-        let mut prev_sender = "".to_string();
-        
-        rsx! {
-            div {
-                class: "messages",
-                messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
-                    let message_id = message.id();
-                    let conversation_id = message.conversation_id();
-                    let msg_sender = message.sender().to_string();
-                    let replied =  message.replied();
-                    let i = ident.did_key().to_string();
-                    let remote = i != msg_sender;
-                    let last = prev_sender != msg_sender;
-                    let middle = prev_sender == msg_sender;
-                    let first = false;
+    let mut prev_sender = "".to_string();
+    cx.render(rsx! {
+        div {
+            class: "messages",
+            messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
+                let message_id = message.id();
+                let conversation_id = message.conversation_id();
+                let msg_sender = message.sender().to_string();
+                let replied =  message.replied();
+                let i = ident.did_key().to_string();
+                let remote = i != msg_sender;
+                let last = prev_sender != msg_sender;
+                let middle = prev_sender == msg_sender;
+                let first = false;
 
-                    prev_sender = message.sender().to_string();
-                    
-                    rsx!{
-                        Msg {
-                            // key: "{message_id}",
-                            message: message.clone(),
-                            remote: remote,
-                            last: last,
-                            first: first,
-                            middle: middle,
-                            on_reply: move |reply| {
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                    //TODO: Display error? 
-                                }
+                prev_sender = message.sender().to_string();
+                rsx!{
+                    Msg {
+                        // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
+                        message: message.clone(),
+                        remote: remote,
+                        last: last,
+                        first: first,
+                        middle: middle,
+                        on_reply: move |reply| {
+                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                //TODO: Display error? 
                             }
                         }
-                        match replied {
-                            Some(replied) => {
-                                let r = cx.props.messaging.clone();
-                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                    Ok(message) => {
-                                        let lines = message.value().join("\n");
-                                        rsx!{
-                                            Reply {
-                                                message: lines,
-                                                is_remote: remote
-                                            }
+                    }
+                    match replied {
+                        Some(replied) => {
+                            let r = cx.props.messaging.clone();
+                            match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                Ok(message) => {
+                                    let lines = message.value().join("\n");
+                                    rsx!{
+                                        Reply {
+                                            message: lines,
+                                            is_remote: remote
                                         }
-                                    },
-                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                }
-                            },
-                            _ => rsx!{ div {} }
-                        }
+                                    }
+                                },
+                                Err(_) => { rsx!{ span { "Something went wrong" } } }
+                            }
+                        },
+                        _ => rsx!{ div {} }
                     }
-                })
-                div {
-                    class: "encrypted-notif",
-                    Icon {
-                        icon: Shape::LockClosed
-                    }
-                    p {
-                        "Messages secured by local E2E encryption."
-                    }
+                }
+            })
+            div {
+                class: "encrypted-notif",
+                Icon {
+                    icon: Shape::LockClosed
+                }
+                p {
+                    "Messages secured by local E2E encryption."
                 }
             }
         }
