@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-#[derive(Props, PartialEq)]
+#[derive(Props, PartialEq, Eq)]
 pub struct Props {
     message: String,
     is_remote: bool

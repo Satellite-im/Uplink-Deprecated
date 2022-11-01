@@ -21,7 +21,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "type": "file",
                         onchange: move |e| {
                             println!("Evt {:?}", e);
-                            let p = e.data.value.clone();
+                            let _p = e.data.value.clone();
                         }
                     }
                 },

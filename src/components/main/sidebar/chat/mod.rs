@@ -37,7 +37,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         let ht = HumanTime::from(x.time);
         let s = ht.to_string();
         let split: Vec<&str> = s.split(char::is_whitespace).collect();
-        let amount = split.get(0).unwrap();
+        let amount = split.first().unwrap();
         let c = split.get(1).unwrap();
         // TODO: this might not be ideal to support multiple locales.
         let formatted = format!("{}{}", amount, c.chars().next().unwrap());

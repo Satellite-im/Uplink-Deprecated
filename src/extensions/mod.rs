@@ -1,8 +1,8 @@
-use std::{fs, collections::HashMap, fmt, iter::Map, slice::Iter};
+use std::{collections::HashMap, fmt, fs};
 
+use crate::DEFAULT_PATH;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
-use crate::DEFAULT_PATH;
 
 type Render = unsafe fn() -> Box<fn(Scope) -> Element>;
 type Info = unsafe fn() -> Box<Extension>;
@@ -41,14 +41,14 @@ pub trait BasicExtension {
 #[derive(Clone)]
 pub struct ExtensionManager {
     pub info: Extension,
-    pub render: fn(Scope) -> Element
+    pub render: fn(Scope) -> Element,
 }
 
 impl std::fmt::Display for ExtensionType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
         match self {
             ExtensionType::ChatbarIcon => write!(f, "ChatbarIcon"),
-            ExtensionType::SidebarWidget => write!(f, "SidebarWidget"), 
+            ExtensionType::SidebarWidget => write!(f, "SidebarWidget"),
         }
     }
 }
@@ -69,7 +69,6 @@ impl std::fmt::Display for Extension {
     }
 }
 
-
 impl std::fmt::Display for ExtensionManager {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
         let mut extension_manager_display = String::new();
@@ -80,22 +79,21 @@ impl std::fmt::Display for ExtensionManager {
     }
 }
 
-
-pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
+pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>> {
     let mut map_extensions: HashMap<ExtensionType, Vec<ExtensionManager>> = HashMap::new();
     let mut ext_mng;
     fs::create_dir_all(DEFAULT_PATH.read().join("extensions")).unwrap();
     let paths = fs::read_dir(DEFAULT_PATH.read().join("extensions")).expect("Directory is empty");
     for path in paths {
         let path_extension = path.unwrap().path();
-        
+
         unsafe {
             let lib = Library::new(path_extension).unwrap();
             let render: Symbol<Render> = lib.get(b"ret_rend").unwrap();
             let info: Symbol<Info> = lib.get(b"ret_info").unwrap();
             ext_mng = ExtensionManager {
                 info: *info(),
-                render: *render()
+                render: *render(),
             };
         }
         let location = ext_mng.clone().info.location;
@@ -104,49 +102,48 @@ pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>>{
     map_extensions
 }
 
-
-pub fn get_renders<'src>(extension_type: ExtensionType, enable: bool) -> Vec<LazyNodes<'src, 'src>>{
-
+#[allow(non_snake_case)]
+pub fn get_renders<'src>(
+    extension_type: ExtensionType,
+    enable: bool,
+) -> Vec<LazyNodes<'src, 'src>> {
     match enable {
-        true =>  {
+        true => {
             let exts = get_extensions();
             let mut extensions = vec![];
-            
-            match exts.get(&extension_type) {
-                Some(em) => {
-                    for extension in em {
-                        extensions.push(extension.render);
-                    }
-                },
-                None => {
-                    // println!("No extensions");
-                },
 
+            if let Some(em) = exts.get(&extension_type) {
+                for extension in em {
+                    extensions.push(extension.render);
+                }
             };
 
-            let closure = |&Ext: &fn(Scope) -> Option<VNode>| 
-            rsx! (
-                div {
-                    Ext {},
-                },
-            );
-            
+            let closure = |&Ext: &fn(Scope) -> Option<VNode>| {
+                rsx! (
+                    div {
+                        Ext {},
+                    },
+                )
+            };
+
             let extensions_to_render = extensions.iter().map(closure).collect::<Vec<LazyNodes>>();
             extensions_to_render
+        }
+        false => vec![],
     }
-        false => vec![]
-    }
-    
-} 
+}
 
-
-pub fn get_info<'src>(name: Option<&str>, author: Option<&str>, location: Option<ExtensionType>) -> Vec<Extension>{
+pub fn get_info(
+    name: Option<&str>,
+    author: Option<&str>,
+    location: Option<ExtensionType>,
+) -> Vec<Extension> {
     let exts = get_extensions();
     let mut extensions = vec![];
 
     if name.is_none() && author.is_none() {
         if location.is_none() {
-            for (ext_type, ext_mngs) in exts.clone() {
+            for (_ext_type, ext_mngs) in exts {
                 for ext_mng in ext_mngs {
                     extensions.push(ext_mng.info);
                 }
@@ -160,25 +157,23 @@ pub fn get_info<'src>(name: Option<&str>, author: Option<&str>, location: Option
             extensions.push(ext_mng.info);
         }
 
-        return extensions;   
-       
+        return extensions;
     }
-    if name.is_some() {
-        for (ext_type, ext_mngs) in exts.clone() {
+    if let Some(name) = name {
+        for (_ext_type, ext_mngs) in exts.clone() {
             for ext_mng in ext_mngs {
-                if ext_mng.info.name.as_str() == name.unwrap(){
+                if ext_mng.info.name.as_str() == name {
                     extensions.push(ext_mng.info);
                     return extensions;
                 }
             }
         }
-
     }
-    if author.is_some() {
-        for (ext_type, ext_mngs) in exts.clone() {
+    if let Some(author) = author {
+        for (_ext_type, ext_mngs) in exts {
             for ext_mng in ext_mngs {
-                if ext_mng.info.author.as_str() == author.unwrap(){
-                    extensions.push(ext_mng.info);                
+                if ext_mng.info.author.as_str() == author {
+                    extensions.push(ext_mng.info);
                 }
             }
         }
@@ -186,5 +181,4 @@ pub fn get_info<'src>(name: Option<&str>, author: Option<&str>, location: Option
     }
 
     extensions
-    
 }
