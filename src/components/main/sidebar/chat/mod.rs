@@ -36,12 +36,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let last_msg_time = cx.props.last_msg_sent.clone().map(|x| {
         let ht = HumanTime::from(x.time);
         let s = ht.to_string();
-        let split: Vec<&str> = s.split(char::is_whitespace).collect();
-        let amount = split.first().unwrap();
-        let c = split.get(1).unwrap();
+        let mut split = s.split(char::is_whitespace);
+        let time = split.next().unwrap_or("");
+        let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
         // TODO: this might not be ideal to support multiple locales.
-        let formatted = format!("{}{}", amount, c.chars().next().unwrap());
-        formatted
+        format!("{}{}", time, units)
     });
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
 
