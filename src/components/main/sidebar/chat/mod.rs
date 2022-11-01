@@ -36,7 +36,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let last_msg_time = cx.props.last_msg_sent.clone().map(|x| {
         let ht = HumanTime::from(x.time);
         let s = ht.to_string();
-        let mut split = s.split(char::is_whitespace).take(2);
+        let mut split = s.split(char::is_whitespace);
         let time = split.next().unwrap_or("");
         let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
         // TODO: this might not be ideal to support multiple locales.
