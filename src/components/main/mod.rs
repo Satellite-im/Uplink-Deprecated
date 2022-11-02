@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
 use warp::raygun::{Conversation, RayGun};
-use notify_rust::Notification;
 
 pub mod compose;
 pub mod files;
@@ -26,10 +25,6 @@ pub struct Prop {
 pub fn Main(cx: Scope<Prop>) -> Element {
     let st = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
-    let _n = Notification::new()
-        .summary("Uplink - PaleoArdvark")
-        .body("This is a test notification.")
-        .show();
 
     use_future(&cx, (), |_| async move {
         loop {

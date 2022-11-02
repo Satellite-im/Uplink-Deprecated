@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "type": "command",
+            "name": "Run in Development",
+            "program": "cargo",
+            "args": ["run"]
+        },
+        {
+            "type": "command",
+            "name": "Update Dependancies",
+            "program": "cargo",
+            "args": ["update"]
+        },
+        {
+            "type": "command",
+            "name": "Build Release",
+            "program": "cargo",
+            "args": ["build", "--release"]
+        },
+
+    ]
+}
