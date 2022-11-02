@@ -1,6 +1,8 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use futures::StreamExt;
 use uuid::Uuid;
+use warp::raygun::Message;
 
 use crate::{
     components::{
@@ -16,7 +18,7 @@ use crate::{
     },
     extensions::*,
     state::Actions,
-    utils::config::Config,
+    utils::{config::Config, notifications::Notifications},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -52,6 +54,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     }
 
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+    let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
+        while let Some(msg) = rx.next().await {
+            Notifications::push(format!("{}", msg.id()), "content".into());
+        }
+    });
 
     cx.render(rsx!{
         div {
@@ -112,6 +120,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         messaging: cx.props.messaging.clone(),
                                         last_msg_sent: conv.last_msg_sent.clone(),
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
