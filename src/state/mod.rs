@@ -98,11 +98,19 @@ impl PersistedState {
 //}
 
 impl LastMsgSent {
-    pub fn new(msg: String) -> Self {
+    pub fn new(msg: &[String]) -> Self {
         Self {
             // the sizing of the conversation box is fixed, so approximate the needed string length using
             // the placeholder text
-            value: msg.chars().take(24).collect(),
+            value: msg
+                .iter()
+                .take(2)
+                .cloned()
+                .collect::<Vec<String>>()
+                .join("\n")
+                .chars()
+                .take(24)
+                .collect(),
             time: Local::now(),
         }
     }

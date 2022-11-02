@@ -26,13 +26,16 @@ pub struct Props<'a> {
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
-
+    // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
+    // Rust's ownership model
+    let unread_count = use_state(&cx, || 0_u32).clone();
+    // need this one for display
+    let unread_count2 = unread_count.clone();
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
     let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
-    let num_unread = cx.props.conversation_info.num_unread_messages;
     let tx_chan = cx.props.tx_chan.clone();
 
     let mut rg = cx.props.messaging.clone();
@@ -93,7 +96,17 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         (&cx.props.conversation_info.clone(), &cx.props.is_active),
         |(mut conversation_info, is_active)| async move {
             if is_active {
+                if *unread_count.current() != 0 {
+                    unread_count.set(0);
+                }
+                // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
+                // chat component shouldn't.
                 return;
+            }
+
+            let num_unread_messages = conversation_info.num_unread_messages;
+            if *unread_count.current() != num_unread_messages {
+                unread_count.set(num_unread_messages);
             }
 
             let mut stream = loop {
@@ -124,28 +137,21 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     message_id,
                 } = event
                 {
-                    let msg = match rg.get_message(conversation_id, message_id).await {
+                    match rg.get_message(conversation_id, message_id).await {
                         Ok(msg) => {
-                            // ensure there's a notification.
                             tx_chan.send(msg.clone());
-                            msg.value()
-                                .iter()
-                                .take(2)
-                                .cloned()
-                                .collect::<Vec<String>>()
-                                .join("\n")
+                            unread_count.modify(|x| x + 1);
+                            // will silently remain zero if you only use *unread_count
+                            conversation_info.num_unread_messages = *unread_count.current();
+                            conversation_info.last_msg_sent = Some(LastMsgSent::new(&msg.value()));
+                            state
+                                .write()
+                                .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                         }
-                        Err(_) => {
-                            // todo: handle error
-                            "".to_string()
+                        Err(_e) => {
+                            // todo: possibly log errorv
                         }
                     };
-
-                    conversation_info.num_unread_messages += 1;
-                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
-                    state
-                        .write()
-                        .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                 }
             }
         },
@@ -203,14 +209,14 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 })
                             }
                         }
-                        match num_unread {
+                        match *unread_count2.current() {
                             0 =>  rsx!( div {
                                 class: "unread-placeholder",
                             }),
                             _ => rsx!( div {
                                 class: "unread-count",
                                 span {
-                                    "{num_unread}"
+                                    "{unread_count2}"
                                 }
                             }),
                         }
