@@ -1,4 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Space+Mono&display=swap");
+@import url("extra/assets/style/fonts.css");
+// PureCSS
+@import url("extra/assets/style/base-min.css");
+@import url("extra/assets/style/forms-min.css");
+@import url("extra/assets/style/grids-min.css");
+// Animate
+@import url("extra/assets/style/animate.min.css");
 
 // Globals
 :root {
