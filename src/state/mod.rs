@@ -1,4 +1,5 @@
 use chrono::prelude::*;
+use chrono_humanize::HumanTime;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -99,17 +100,20 @@ impl PersistedState {
 impl LastMsgSent {
     pub fn new(msg: String) -> Self {
         Self {
-            value: msg,
+            // the sizing of the conversation box is fixed, so approximate the needed string length using
+            // the placeholder text
+            value: msg.chars().take(24).collect(),
             time: Local::now(),
         }
     }
 
     pub fn display_time(&self) -> String {
-        format!(
-            "{}/{}/{}",
-            self.time.month(),
-            self.time.day(),
-            self.time.year()
-        )
+        let ht = HumanTime::from(self.time);
+        let s = ht.to_string();
+        let mut split = s.split(char::is_whitespace);
+        let time = split.next().unwrap_or("");
+        let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
+        // TODO: this might not be ideal to support multiple locales.
+        format!("{}{}", time, units)
     }
 }

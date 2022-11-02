@@ -3,12 +3,11 @@ use crate::{
     state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
-use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
-use warp::raygun::{MessageEventKind, RayGunStream};
+use warp::raygun::{MessageEventKind, RayGun, RayGunStream};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -25,24 +24,14 @@ pub struct Props<'a> {
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
-    // Rust's ownership model
-    let unread_count = use_state(&cx, || 0_u32).clone();
-    // need this one for display
-    let unread_count2 = unread_count.clone();
+
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
-    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| {
-        let ht = HumanTime::from(x.time);
-        let s = ht.to_string();
-        let mut split = s.split(char::is_whitespace);
-        let time = split.next().unwrap_or("");
-        let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
-        // TODO: this might not be ideal to support multiple locales.
-        format!("{}{}", time, units)
-    });
+    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
+
+    let num_unread = cx.props.conversation_info.num_unread_messages;
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -102,15 +91,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         (&cx.props.conversation_info.clone(), &cx.props.is_active),
         |(mut conversation_info, is_active)| async move {
             if is_active {
-                unread_count.set(0);
-                // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
-                // chat component shouldn't.
                 return;
-            }
-
-            let num_unread_messages = conversation_info.num_unread_messages;
-            if *unread_count.current() != num_unread_messages {
-                unread_count.set(num_unread_messages);
             }
 
             let mut stream = loop {
@@ -136,12 +117,29 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             };
 
             while let Some(event) = stream.next().await {
-                if let MessageEventKind::MessageReceived { .. } = event {
-                    unread_count.modify(|x| x + 1);
-                    // will silently remain zero if you only use *unread_count
-                    conversation_info.num_unread_messages = *unread_count.current();
+                if let MessageEventKind::MessageReceived {
+                    conversation_id,
+                    message_id,
+                } = event
+                {
+                    let msg = match rg.get_message(conversation_id, message_id).await {
+                        Ok(msg) => msg
+                            .value()
+                            .iter()
+                            .take(2)
+                            .cloned()
+                            .collect::<Vec<String>>()
+                            .join("\n"),
+                        Err(_) => {
+                            // todo: handle error
+                            "".to_string()
+                        }
+                    };
+
+                    conversation_info.num_unread_messages += 1;
+                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
                     state
-                        .write_silent()
+                        .write()
                         .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                 }
             }
@@ -200,14 +198,14 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 })
                             }
                         }
-                        match *unread_count2.current() {
+                        match num_unread {
                             0 =>  rsx!( div {
                                 class: "unread-placeholder",
                             }),
                             _ => rsx!( div {
                                 class: "unread-count",
                                 span {
-                                    "{unread_count2}"
+                                    "{num_unread}"
                                 }
                             }),
                         }
@@ -221,7 +219,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>) -> Element {
-    // todo: render a bubble over top of the pfp
     let is_online = match *status.current() {
         IdentityStatus::Online => "online",
         _ => "",
