@@ -7,7 +7,7 @@ use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
-use warp::raygun::{MessageEventKind, RayGun, RayGunStream};
+use warp::raygun::{Message, MessageEventKind, RayGun, RayGunStream};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -17,6 +17,8 @@ pub struct Props<'a> {
     #[props(!optional)]
     last_msg_sent: Option<LastMsgSent>,
     is_active: bool,
+    // used to send received messages to the Sidebar so they can be used to create a notification
+    tx_chan: CoroutineHandle<Message>,
     on_pressed: EventHandler<'a, Uuid>,
 }
 
@@ -34,6 +36,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
+    let tx_chan = cx.props.tx_chan.clone();
 
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
@@ -136,6 +139,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 {
                     match rg.get_message(conversation_id, message_id).await {
                         Ok(msg) => {
+                            tx_chan.send(msg.clone());
                             unread_count.modify(|x| x + 1);
                             // will silently remain zero if you only use *unread_count
                             conversation_info.num_unread_messages = *unread_count.current();
@@ -145,7 +149,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                         }
                         Err(_e) => {
-                            // todo: possibly log error
+                            // todo: possibly log errorv
                         }
                     };
                 }
