@@ -70,7 +70,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     account: cx.props.account.clone(),
                     messaging: cx.props.messaging.clone(),
                 }
-                div { class: "gradient_mask is_bottom" },
+                div { class: "gradient_mask is_bottom scroll-fit-gradient-mask" },
             },
             div {
                 class: "writer-container",

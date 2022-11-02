@@ -15,6 +15,7 @@
   width: calc(100% - 2rem);
   padding-bottom: 1rem;
   margin-top: 1rem;
+  margin-bottom: 0.5rem;
   &:hover {
     &::-webkit-scrollbar-thumb {
       background: var(--theme-primary) !important;

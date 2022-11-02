@@ -27,7 +27,6 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // text has been lifted from the child components into Msg so that
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
-    let text2 = text.clone();
     let value = cx.props.message.clone().value().join("\n");
     let value2 = value.clone();
     let timestamp = cx.props.message.clone().date();
