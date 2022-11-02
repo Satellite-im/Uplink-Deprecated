@@ -14,7 +14,6 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         "local"
     };
 
-
     let box_right = "🭽";
     let box_left = "🭾";
 

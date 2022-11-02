@@ -93,6 +93,15 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         popout.set(false);
                     },
                     div {
+                        class: "close",
+                        IconButton {
+                            icon: Shape::X,
+                            on_pressed: move |_| {
+                                popout.set(false);
+                            }
+                        },
+                    },
+                    div {
                         class: "message-wrap {slide_class}",
                         div {
                             class: "user-message",
