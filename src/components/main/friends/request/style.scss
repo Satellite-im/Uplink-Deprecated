@@ -1,35 +1,36 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .request {
-    align-items: center;
-    display: inline-flex;
-    flex-direction: row;
-    width: 100%;
+  align-items: center;
+  display: flex;
+  gap: 16px;
 
-    .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
+  .pfp {
+    background: var(--theme-text-muted);
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+    flex-shrink: 0;
+  }
+
+  .who {
+    height: 40px;
+    text-align: left;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    h3 {
+      margin: 0;
     }
+  }
 
-    .who {
-        flex: 1;
-        height: 40px;
-        padding: 0 1rem;
-        text-align: left;
-
-        h3 {
-            margin: 0;
-        }
-    }
-
-    .request-controls {
-        display: inline-flex;
-        height: 40px;
-
-        .control-wrap {
-            margin-left: 1rem;
-        }
-    }
+  .request-controls {
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    gap: 16px;
+  }
 }
