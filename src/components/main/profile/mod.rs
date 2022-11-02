@@ -1,5 +1,5 @@
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup},
+    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker, icon_button::{IconButton, self}},
     Account, LANGUAGE,
 };
 use dioxus::{events::FormEvent, prelude::*};
@@ -30,6 +30,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let badges = my_identity.available_badges();
     let friends = use_state(&cx, || mp.read().list_friends().unwrap_or_default());
     let friend_count = use_state(&cx, || friends.clone().len());
+    //let identity = mp.read().get_own_identity().unwrap();
+    //identity.set_graphics(identity.graphics().)
 
     use_future(
         &cx,
@@ -74,7 +76,9 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div {
                             class: "background",
                             div {
-                                class: "profile-photo",
+                                PhotoPicker {
+                                    account: cx.props.account.clone(),
+                                },
                             }
                         },
                         div {

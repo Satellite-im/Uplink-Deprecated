@@ -38,6 +38,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_else(String::new);
 
     let show_skeleton = username.is_empty();
+    let profile_picture = user.first().map(Identity::graphics).unwrap_or_default().profile_picture();
 
     cx.render(rsx! {
         div {
@@ -45,9 +46,23 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(
-                div {
-                    class: "pfp"
-                },
+                if profile_picture.is_empty() {
+                rsx! (
+                    div {
+                        class: "pfp"
+                    }  
+                )   
+                } else {
+                    rsx!(
+                        img {
+                            src: "{profile_picture}",
+                            height: "50",
+                            width: "50",
+
+                        }
+                    )
+                }
+                
             )}
             div {
                 class: "who",
@@ -55,7 +70,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     InlineSkeleton {}
                 )} else {rsx!(
                     h3 {
-                        "{username}"
+                        "{username}",
                     }
                 )}
             },
