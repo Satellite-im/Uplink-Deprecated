@@ -140,7 +140,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
                                 on_pressed: move |_| {
-                                    cx.props.on_reply.call(e);
+                                    cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
                                 }
                             },
