@@ -18,7 +18,7 @@ use crate::{
     },
     extensions::*,
     state::Actions,
-    utils::{config::Config, notifications::Notifications},
+    utils::{config::Config, notifications::PushNotification},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -68,7 +68,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 .first()
                 .map(Identity::username)
                 .unwrap_or_else(String::new);
-            Notifications::push(display_username, msg.value().join("\n"));
+            PushNotification(display_username, msg.value().join("\n"));
         }
     });
 

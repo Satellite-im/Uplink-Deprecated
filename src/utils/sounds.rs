@@ -5,7 +5,7 @@ pub enum Sounds {
     General,
 }
 
-pub fn play (sound: Sounds) {
+pub fn play(sound: Sounds) {
 
     let sl = Soloud::default().unwrap();
     let mut wav = audio::Wav::default();
