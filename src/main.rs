@@ -203,6 +203,7 @@ fn App(cx: Scope<State>) -> Element {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     let css = include_str!(".styles.css");
+    let tailwind = include_str!("../extra/assets/script/tailwind-3.2.1.js");
 
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
@@ -210,6 +211,7 @@ fn App(cx: Scope<State>) -> Element {
         div {
             class: "markdown",
             dangerous_inner_html: "
+                <script>{tailwind}</script>
                 <link
                     rel=\"stylesheet\"
                     href=\"https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css\"

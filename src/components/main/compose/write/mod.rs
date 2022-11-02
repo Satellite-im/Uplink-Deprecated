@@ -21,7 +21,6 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = Config::load_config_or_default();
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
-
     cx.render(rsx! {
         div { class: "write",
             IconButton {
@@ -29,7 +28,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 on_pressed: move |_| {
                     let _ = &cx.props.on_upload.call(());
                 },
-            }
+            },
             TextArea {
                 on_submit: |val| cx.props.on_submit.call(val),
                 text: text.clone(),
