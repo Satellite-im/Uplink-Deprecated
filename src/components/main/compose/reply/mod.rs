@@ -17,16 +17,16 @@ pub fn Reply(cx: Scope<Props>) -> Element {
     let box_right = "🭽";
     let box_left = "🭾";
 
-    #[cfg(target="macos")]
+    #[cfg(target_os = "macos")]
     let box_left = "⎤";
 
-    #[cfg(target="windows")]
+    #[cfg(target_os="windows")]
     let box_left = "⎤";
 
-    #[cfg(target="macos")]
+    #[cfg(target_os = "macos")]
     let box_right = "⎡";
 
-    #[cfg(target="windows")]
+    #[cfg(target_os="windows")]
     let box_right = "⎡";
 
     cx.render({
