@@ -95,9 +95,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             // mutate the state
                             let cur = state.read().all_chats.get(&id).cloned();
                             if let Some( mut conversation_info) = cur {
-                                // for multiline messages, take at most 2 lines
-                                let msg = text_as_vec.iter().take(2).cloned().collect::<Vec<String>>().join("\n");
-                                conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
+                                conversation_info.last_msg_sent = Some(LastMsgSent::new(&text_as_vec));
                                 state.write().dispatch(Actions::UpdateConversation(conversation_info));
                             }
 
