@@ -1,5 +1,5 @@
-use notify_rust::Notification;
 use crate::utils::sounds;
+use notify_rust::Notification;
 
 // Implementation to create and push new notifications
 #[allow(non_snake_case)]

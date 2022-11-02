@@ -1,16 +1,17 @@
 use chrono::prelude::*;
 use chrono_humanize::HumanTime;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
 use crate::DEFAULT_PATH;
 
 pub enum Actions {
-    ChatWith(ConversationInfo),
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
+    ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
+    UpdateFavorites(HashSet<Uuid>),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -20,6 +21,9 @@ pub struct PersistedState {
     pub current_chat: Option<Uuid>,
     /// all active conversations
     pub all_chats: HashMap<Uuid, ConversationInfo>,
+    /// a list of favorited conversations.
+    /// Uuid is for Conversation and can be used to look things up in all_chats
+    pub favorites: HashSet<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -61,23 +65,40 @@ impl PersistedState {
 
     pub fn dispatch(&mut self, action: Actions) {
         let next = match action {
+            Actions::AddRemoveConversations(new_chats) => {
+                let favorites = self
+                    .favorites
+                    .iter()
+                    .filter(|id| new_chats.contains_key(id))
+                    .cloned()
+                    .collect();
+
+                PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: new_chats,
+                    favorites,
+                }
+            }
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
-            },
-            Actions::AddRemoveConversations(new_chats) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: new_chats,
+                favorites: self.favorites.clone(),
             },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
                     current_chat: self.current_chat,
                     all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
                 };
                 // overwrite the existing entry
                 next.all_chats.insert(info.conversation.id(), info);
                 next
             }
+            Actions::UpdateFavorites(favorites) => PersistedState {
+                current_chat: self.current_chat,
+                all_chats: self.all_chats.clone(),
+                favorites,
+            },
         };
         // only save while there's a lock on PersistedState
         next.save();

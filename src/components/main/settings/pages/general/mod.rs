@@ -1,16 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::{
-    components::ui_kit::switch::Switch,
-    utils::config::Config,
-    Account,
-};
+use crate::{components::ui_kit::switch::Switch, utils::config::Config, Account};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
 }
-
 
 #[allow(non_snake_case)]
 pub fn General(cx: Scope<Props>) -> Element {

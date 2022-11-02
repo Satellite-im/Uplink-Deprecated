@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
-        main::settings::pages::{developer::Developer, profile::Profile, general::General},
+        main::settings::pages::{developer::Developer, general::General, profile::Profile},
         ui_kit::icon_button::{self, IconButton},
     },
     Account,
