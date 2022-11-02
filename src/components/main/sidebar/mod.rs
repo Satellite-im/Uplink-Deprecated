@@ -1,6 +1,8 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use futures::StreamExt;
 use uuid::Uuid;
+use warp::{multipass::identity::Identity, raygun::Message};
 
 use crate::{
     components::{
@@ -16,7 +18,7 @@ use crate::{
     },
     extensions::*,
     state::Actions,
-    utils::config::Config,
+    utils::{config::Config, notifications::Notifications},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -32,6 +34,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let config = Config::load_config_or_default();
+    let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
     let show_friends = use_state(&cx, || false);
@@ -52,6 +55,22 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     }
 
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+    let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
+        while let Some(msg) = rx.next().await {
+            // todo: put display_user and display_username into a common library
+            let display_user = mp
+                .read()
+                .get_identity(msg.sender().clone().into())
+                .unwrap_or_default();
+
+            let display_username = display_user
+                .first()
+                .map(Identity::username)
+                .unwrap_or_else(String::new);
+            Notifications::push(display_username, msg.value().join("\n"));
+        }
+    });
 
     cx.render(rsx!{
         div {
@@ -112,6 +131,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         messaging: cx.props.messaging.clone(),
                                         last_msg_sent: conv.last_msg_sent.clone(),
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
