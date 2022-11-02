@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use uuid::Uuid;
-use warp::{multipass::identity::Identity, raygun::Message};
+use warp::{raygun::Message};
 
 use crate::{
     components::{
@@ -12,7 +12,7 @@ use crate::{
             sidebar::{ favorites::Favorites, nav::{Nav, NavEvent}},
         },
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
+            button::Button, extension_placeholder::ExtensionPlaceholder,
             icon_input::IconInput,
         },
     },
@@ -56,7 +56,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
-        while let Some(msg) = rx.next().await {;
+        while let Some(msg) = rx.next().await {
             let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
             PushNotification(display_username, msg.value().join("\n"));
         }

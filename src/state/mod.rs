@@ -8,9 +8,10 @@ use warp::raygun::Conversation;
 use crate::DEFAULT_PATH;
 
 pub enum Actions {
-    ChatWith(ConversationInfo),
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
+    ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
+    UpdateFavorites(HashSet<Uuid>),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -64,11 +65,6 @@ impl PersistedState {
 
     pub fn dispatch(&mut self, action: Actions) {
         let next = match action {
-            Actions::ChatWith(info) => PersistedState {
-                current_chat: Some(info.conversation.id()),
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-            },
             Actions::AddRemoveConversations(new_chats) => {
                 let favorites = self
                     .favorites
@@ -83,6 +79,11 @@ impl PersistedState {
                     favorites,
                 }
             }
+            Actions::ChatWith(info) => PersistedState {
+                current_chat: Some(info.conversation.id()),
+                all_chats: self.all_chats.clone(),
+                favorites: self.favorites.clone(),
+            },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
                     current_chat: self.current_chat,
@@ -93,6 +94,11 @@ impl PersistedState {
                 next.all_chats.insert(info.conversation.id(), info);
                 next
             }
+            Actions::UpdateFavorites(favorites) => PersistedState {
+                current_chat: self.current_chat,
+                all_chats: self.all_chats.clone(),
+                favorites,
+            },
         };
         // only save while there's a lock on PersistedState
         next.save();
