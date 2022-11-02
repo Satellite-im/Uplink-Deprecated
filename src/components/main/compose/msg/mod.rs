@@ -140,9 +140,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
                                 on_pressed: move |_| {
-                                    text2.set(String::from(""));
+                                    cx.props.on_reply.call(e);
                                     popout.set(false);
-                                    // todo: send the message
                                 }
                             },
                             script {
