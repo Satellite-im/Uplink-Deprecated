@@ -1,7 +1,10 @@
 use chrono::prelude::*;
 use chrono_humanize::HumanTime;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::{
+    cmp::{Ord, Ordering},
+    collections::{HashMap, HashSet},
+};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -41,6 +44,32 @@ pub struct ConversationInfo {
     pub num_unread_messages: u32,
     /// the first two lines of the last message sent
     pub last_msg_sent: Option<LastMsgSent>,
+    /// the time the conversation was created. used to sort the chats
+    pub creation_time: DateTime<Local>,
+}
+
+impl Ord for ConversationInfo {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // partial_cmp never returns None, but if it did, comparing by name is the next best thing.
+        self.partial_cmp(other)
+            .unwrap_or_else(|| self.conversation.name().cmp(&other.conversation.name()))
+    }
+}
+
+impl PartialOrd for ConversationInfo {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        let left = match &self.last_msg_sent {
+            Some(left) => left.time,
+            None => self.creation_time,
+        };
+
+        let right = match &other.last_msg_sent {
+            Some(right) => right.time,
+            None => other.creation_time,
+        };
+
+        Some(left.cmp(&right))
+    }
 }
 
 impl PersistedState {
