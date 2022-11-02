@@ -1,6 +1,5 @@
 use notify_rust::Notification;
 
-
 pub struct Notifications {}
 
 // Implementation to create and push new notifications
