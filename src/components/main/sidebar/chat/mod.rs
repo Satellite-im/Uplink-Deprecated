@@ -136,7 +136,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     };
 
-                    // will silently remain zero if you only use *unread_count
                     conversation_info.num_unread_messages += 1;
                     conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
                     state
@@ -220,7 +219,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>) -> Element {
-    // todo: render a bubble over top of the pfp
     let is_online = match *status.current() {
         IdentityStatus::Online => "online",
         _ => "",
