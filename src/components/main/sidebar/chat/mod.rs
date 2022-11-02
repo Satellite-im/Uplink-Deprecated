@@ -93,7 +93,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         (&cx.props.conversation_info.clone(), &cx.props.is_active),
         |(mut conversation_info, is_active)| async move {
             if is_active {
-                unread_count.set(0);
+                if *unread_count.current() != 0 {
+                    unread_count.set(0);
+                }
                 // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
                 // chat component shouldn't.
                 return;
@@ -132,27 +134,20 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     message_id,
                 } = event
                 {
-                    let msg = match rg.get_message(conversation_id, message_id).await {
-                        Ok(msg) => msg
-                            .value()
-                            .iter()
-                            .take(2)
-                            .cloned()
-                            .collect::<Vec<String>>()
-                            .join("\n"),
-                        Err(_) => {
-                            // todo: handle error
-                            "".to_string()
+                    match rg.get_message(conversation_id, message_id).await {
+                        Ok(msg) => {
+                            unread_count.modify(|x| x + 1);
+                            // will silently remain zero if you only use *unread_count
+                            conversation_info.num_unread_messages = *unread_count.current();
+                            conversation_info.last_msg_sent = Some(LastMsgSent::new(&msg.value()));
+                            state
+                                .write()
+                                .dispatch(Actions::UpdateConversation(conversation_info.clone()));
+                        }
+                        Err(_e) => {
+                            // todo: possibly log error
                         }
                     };
-
-                    unread_count.modify(|x| x + 1);
-                    // will silently remain zero if you only use *unread_count
-                    conversation_info.num_unread_messages = *unread_count.current();
-                    conversation_info.last_msg_sent = Some(LastMsgSent::new(msg));
-                    state
-                        .write()
-                        .dispatch(Actions::UpdateConversation(conversation_info.clone()));
                 }
             }
         },

@@ -1,6 +1,6 @@
 use crate::{
     components::main::compose::{msg::Msg, reply::Reply},
-    state::Actions,
+    state::{Actions, LastMsgSent},
     Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
@@ -92,8 +92,19 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     message_id,
                 } => {
                     if current_chat.conversation.id() == conversation_id {
-                        if let Ok(message) = rg.get_message(conversation_id, message_id).await {
-                            list.write().push(message);
+                        match rg.get_message(conversation_id, message_id).await {
+                            Ok(message) => {
+                                list.write().push(message.clone());
+                                // todo: add message to chats sidebar
+                                current_chat.last_msg_sent =
+                                    Some(LastMsgSent::new(&message.value()));
+                                state
+                                    .write()
+                                    .dispatch(Actions::UpdateConversation(current_chat.clone()));
+                            }
+                            Err(_e) => {
+                                // todo: log error
+                            }
                         }
                     }
                 }
