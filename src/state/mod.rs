@@ -32,7 +32,7 @@ pub struct LastMsgSent {
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
 pub struct ConversationInfo {
     pub conversation: Conversation,
-    /// the uuid of the last message read. \
+    /// the uuid of the last message read.
     /// used to determine the number of unread messages
     pub num_unread_messages: u32,
     /// the first two lines of the last message sent

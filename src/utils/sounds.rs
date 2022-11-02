@@ -5,8 +5,8 @@ pub enum Sounds {
     General,
 }
 
-pub fn play(sound: Sounds) {
-
+#[allow(non_snake_case)]
+pub fn Play(sound: Sounds) {
     let sl = Soloud::default().unwrap();
     let mut wav = audio::Wav::default();
      match sound {
