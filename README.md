@@ -82,7 +82,7 @@ Please also read through the [Physical Testing Checklist](https://github.com/Sat
 
 ## Resetting Data
 
-It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project.
+It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project. Note that on most *nix based systems the .warp file is stored in your home directory unless otherwise configured.
 
 ## Contributions
 
