@@ -64,7 +64,7 @@ pub fn Loading(cx: Scope<Props>) -> Element {
         rsx! {
             img {
                 style: "width: 100%",
-                src: "extra/assets/uplink.gif"
+                src: "extra/assets/img/uplink.gif"
             }
         }
     } else {
