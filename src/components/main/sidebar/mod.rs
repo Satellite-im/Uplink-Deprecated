@@ -9,7 +9,7 @@ use crate::{
         main::{
             friends::Friends,
             profile::Profile,
-            sidebar::nav::{Nav, NavEvent},
+            sidebar::{ favorites::Favorites, nav::{Nav, NavEvent}},
         },
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
@@ -18,11 +18,12 @@ use crate::{
     },
     extensions::*,
     state::Actions,
-    utils::{config::Config, notifications::PushNotification},
+    utils::{config::Config, notifications::PushNotification, self},
     Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;
+pub mod favorites;
 pub mod nav;
 
 #[derive(Props, PartialEq)]
@@ -42,8 +43,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
-    let favString = l.favorites.to_string();
-    let newchatdString = l.new_chat.to_string();
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -57,17 +56,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
-        while let Some(msg) = rx.next().await {
-            // todo: put display_user and display_username into a common library
-            let display_user = mp
-                .read()
-                .get_identity(msg.sender().clone().into())
-                .unwrap_or_default();
-
-            let display_username = display_user
-                .first()
-                .map(Identity::username)
-                .unwrap_or_else(String::new);
+        while let Some(msg) = rx.next().await {;
+            let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
             PushNotification(display_username, msg.value().join("\n"));
         }
     });
@@ -88,21 +78,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
-            label {
-                "{favString}"
-            },
-            div {
-                class: "favorites",
-                div {
-                    class: "labeled",
-                    IconButton {
-                        icon: Shape::Plus,
-                        on_pressed: move |_| {},
-                    },
-                    span {
-                        "{newchatdString}"
-                    }
-                },
+            Favorites { 
+                account: cx.props.account.clone(), 
+                messaging: cx.props.messaging.clone()
             },
             label {
                 style: "margin-bottom: 0;",
