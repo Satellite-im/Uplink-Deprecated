@@ -50,7 +50,7 @@
                 box-shadow:  0px 0px 0 2px var(--theme-background);
     
                 &.online {
-                    background-color: var(--theme-green);
+                    background: var(--theme-green);
                 }
 
                 &:hover,
@@ -96,7 +96,7 @@
             justify-content: space-between;
 
             .unread-count {
-                background-color: var(--theme-primary);
+                background: var(--theme-primary);
                 max-height: fit-content;
                 padding: 0.2rem 0.5rem;
                 border-radius: 2px;

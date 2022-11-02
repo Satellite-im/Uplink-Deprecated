@@ -42,7 +42,17 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     onclick: move |_| {
                         popout.set(false);
                     },
-                    Conversations {
+                    div {
+                        class: "close",
+                        IconButton {
+                            icon: Shape::X,
+                            on_pressed: move |_| {
+                                popout.set(false);
+                            }
+                        },
+                    },
+                    ConversationList {
+                        mp: cx.props.account.clone(),
                         all_chats: all_chats2,
                         on_pressed: move |uuid| {
                             favorites.insert(uuid);
@@ -91,19 +101,22 @@ pub fn FavoriteChat<'a>(
 ) -> Element<'a> {
     let conversation_id = conversation_info.conversation.id();
     let (_, conversation_name) = utils::get_username_from_conversation(conversation_info, mp);
-    let color = match conversation_info.num_unread_messages > 0 {
-        true => "blue",
+    let has_unread = match conversation_info.num_unread_messages > 0 {
+        true => "has-unread",
         _ => "",
     };
     cx.render(rsx! {
         div {
-            class: "favorite-container",
+            class: "favorites-container",
             onclick: move |_| on_pressed.call(conversation_id),
             div {
-                class: "pfp"
-            },
-            div {
-                class: "pfs {color}"
+                class: "profile-wrapper",
+                div {
+                    class: "pfp"
+                },
+                div {
+                    class: "pfs {has_unread}"
+                }
             }
             span {
                 "{conversation_name}"
@@ -114,19 +127,27 @@ pub fn FavoriteChat<'a>(
 
 #[inline_props]
 #[allow(non_snake_case)]
-pub fn Conversations<'a>(
+pub fn ConversationList<'a>(
     cx: Scope,
+    mp: Account,
     all_chats: HashMap<Uuid, ConversationInfo>,
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
     cx.render(rsx!(
        div {
         class: "add-favorites",
-        all_chats.iter().map(|(uuid, _conv)| {
+        all_chats.iter().map(|(uuid, conv)| {
+            let (_, name) = utils::get_username_from_conversation(&conv, &mp);
             cx.render(rsx!(
                 div {
+                    class: "to-add",
                     onclick: move |_| on_pressed.call(*uuid),
-                    "{uuid}"
+                    div {
+                        class: "pfp",
+                    }
+                    span {
+                        "{name}"
+                    }
                 }
             ))
         })
