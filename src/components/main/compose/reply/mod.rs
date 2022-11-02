@@ -14,6 +14,22 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         "local"
     };
 
+
+    let box_right = "🭽";
+    let box_left = "🭾";
+
+    #[cfg(target="macos")]
+    let box_left = "⎤";
+
+    #[cfg(target="windows")]
+    let box_left = "⎤";
+
+    #[cfg(target="macos")]
+    let box_right = "⎡";
+
+    #[cfg(target="windows")]
+    let box_right = "⎡";
+
     cx.render({
         rsx! {
             div {
@@ -21,7 +37,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                 (cx.props.is_remote).then(|| rsx! {
                     p {
                         class: "box-drawing left",
-                        "🭽"
+                        "{box_right}"
                     }
                 }),
                 (!cx.props.is_remote).then(|| rsx! {
@@ -40,7 +56,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                 (!cx.props.is_remote).then(|| rsx! {
                     span {
                         class: "box-drawing",
-                        "🭾"
+                        "{box_left}"
                     }
                 })
             }
