@@ -2,23 +2,25 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use uuid::Uuid;
-use warp::{raygun::Message};
+use warp::raygun::Message;
 
 use crate::{
     components::{
         main::{
             friends::Friends,
             profile::Profile,
-            sidebar::{ favorites::Favorites, nav::{Nav, NavEvent}},
+            sidebar::{
+                favorites::Favorites,
+                nav::{Nav, NavEvent},
+            },
         },
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder,
-            icon_input::IconInput,
+            button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
         },
     },
     extensions::*,
     state::Actions,
-    utils::{config::Config, notifications::PushNotification, self},
+    utils::{self, config::Config, notifications::PushNotification},
     Account, Messaging, LANGUAGE, STATE,
 };
 
@@ -78,8 +80,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
-            Favorites { 
-                account: cx.props.account.clone(), 
+            Favorites {
+                account: cx.props.account.clone(),
                 messaging: cx.props.messaging.clone()
             },
             label {

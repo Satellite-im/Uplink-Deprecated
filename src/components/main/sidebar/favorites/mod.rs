@@ -137,7 +137,7 @@ pub fn ConversationList<'a>(
        div {
         class: "add-favorites",
         all_chats.iter().map(|(uuid, conv)| {
-            let (_, name) = utils::get_username_from_conversation(&conv, &mp);
+            let (_, name) = utils::get_username_from_conversation(conv, mp);
             cx.render(rsx!(
                 div {
                     class: "to-add",

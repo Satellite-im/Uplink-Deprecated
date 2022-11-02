@@ -2,7 +2,6 @@ use dioxus::prelude::*;
 
 use crate::Account;
 
-
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
