@@ -6,6 +6,7 @@ use crate::{
     components::ui_kit::{
         activity_indicator::ActivityIndicator,
         icon_button::IconButton,
+        profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::{Actions, ConversationInfo},
@@ -47,16 +48,12 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             class: "pfp"
                         }  
                     )   
-                    } else {
-                        rsx!(
-                            img {
-                                src: "{profile_picture}",
-                                height: "50",
-                                width: "50",
-    
-                            }
-                        )
-                    }
+                } else {
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                    })
+                }
             )},
             div {
                 class: "who",

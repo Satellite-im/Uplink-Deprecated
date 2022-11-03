@@ -19,3 +19,4 @@ pub mod small_extension_placeholder;
 pub mod switch;
 pub mod textarea;
 pub mod tooltip;
+pub mod profile_picture;

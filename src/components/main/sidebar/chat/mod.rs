@@ -1,5 +1,8 @@
 use crate::{
-    components::ui_kit::skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    components::ui_kit::{
+        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+        profile_picture::PFP
+    },
     state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
@@ -249,16 +252,12 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account) ->
                         class: "pfp"
                     }  
                 )   
-                } else {
-                    rsx!(
-                        img {
-                            src: "{profile_picture}",
-                            height: "50",
-                            width: "50",
-
-                        }
-                    )
-                },
+            } else {
+                rsx!(PFP {
+                    src: profile_picture,
+                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                })
+            },
             div {
                 class: "pfs {is_online}"
             }

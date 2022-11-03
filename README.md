@@ -1,3 +1,4 @@
+
 <h1 align="center">
   <a href="https://satellite.im" target="_blank">
   <img src="extra/images/logo.png" width=200 height=200/><br>
@@ -29,35 +30,28 @@ The goal should be to build a hyper-customizable application that can run anywhe
 
 Guidelines for contributing to Lapce can be found in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-## Installation
-
-// TODO
-
-## Building from source
+## Prerequisites
 
 You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. Or included in standard dev tooling on respective operating systems.
 
 If you do not have protobuf installed you can install it using homebrew on Mac: `brew install protobuf`.
 
+|Distribution|Commands|
+|--|--|
+|Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
+|Arch|pacman -S gtk3 cmake protobuf|
+|MacOS|brew install protobuf, xcode-select --install, curl https://sh.rustup.rs -sSf | sh -s -- -y|
+|Windows|¯\\\_(ツ)\_/¯|
+
+## Building from source
+
 ### Linux
-For Ubuntu, use the following: `sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev libasound2-dev protobuf-compiler`.
-
-For Debian, replace `libappindicator3-dev` with `libayatanta-appindicator3-dev`
-
+// TODO
 ### Windows
-// TODO:
+¯\\\_(ツ)\_/¯
 
 ### Mac
-
-Firstly install [Homebrew](https://brew.sh/).
-
-Next you'll want to make sure you have the build tools installed by running `xcode-select --install`.
-
-Now go ahead and install `protobuf` using Brew:
-
-```sh
-brew install protobuf
-```
+// TODO
 
 ## Running
 

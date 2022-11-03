@@ -13,11 +13,13 @@ div.favorites {
     }
 
     .favorites-container {
-        margin-left: 0.5rem;
-
-        span {
-            color: var(--theme-text-muted);
-        }
+        margin-left: 1rem;
+        max-width: 40px;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+        display: inline-block;
+        color: var(--theme-text-muted);
+        cursor: pointer;
 
         .profile-wrapper {
             display: flex;

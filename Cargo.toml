@@ -45,8 +45,7 @@ dirs = "4.0.0"
 rodio = "0.16.0"
 libloading = "0.7.3"
 soloud = "1.0.2"
-#native-dialog = "0.6.3"
-rfd = "0.10.0"
+rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 image-base64 = "0.1.0"
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "854beb9b7547c769298006cf53bf631c76908102"}

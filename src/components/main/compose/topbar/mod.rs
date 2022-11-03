@@ -1,5 +1,6 @@
 use crate::{
     components::ui_kit::{
+        profile_picture::PFP,
         activity_indicator::ActivityIndicator,
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
@@ -51,16 +52,12 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 class: "pfp"
                             }  
                         )   
-                        } else {
-                            rsx!(
-                                img {
-                                    src: "{profile_picture}",
-                                    height: "50",
-                                    width: "50",
-        
-                                }
-                            )
-                        },
+                    } else {
+                        rsx!(PFP {
+                            src: profile_picture,
+                            size: crate::components::ui_kit::profile_picture::Size::Normal
+                        })
+                    },
                     div {
                         class: "who",
                         div {

@@ -2,6 +2,7 @@ use dioxus::prelude::*;
 use warp::crypto::DID;
 
 use crate::Account;
+use crate::components::ui_kit::profile_picture::PFP;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -60,16 +61,12 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                                 class: "pfp"
                             }  
                         )   
-                        } else {
-                            rsx!(
-                                img {
-                                    src: "{profile_picture}",
-                                    height: "50",
-                                    width: "50",
-        
-                                }
-                            )
-                        }
+                    } else {
+                        rsx!(PFP {
+                            src: profile_picture,
+                            size: crate::components::ui_kit::profile_picture::Size::Normal
+                        })
+                    }
                 }),
                 p {
                     "{cx.props.message}",
@@ -82,14 +79,10 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                             }  
                         )   
                         } else {
-                            rsx!(
-                                img {
-                                    src: "{profile_picture2}",
-                                    height: "50",
-                                    width: "50",
-        
-                                }
-                            )
+                            rsx!(PFP {
+                                src: profile_picture2,
+                                size: crate::components::ui_kit::profile_picture::Size::Small
+                            })
                         }
                 }),
                 (!cx.props.is_remote).then(|| rsx! {

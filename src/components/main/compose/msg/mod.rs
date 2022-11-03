@@ -7,6 +7,7 @@ use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         icon_textarea::IconTextArea,
+        profile_picture::PFP
     },
     LANGUAGE, Account,
 };
@@ -122,17 +123,13 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     div {
                                         class: "pfp"
                                     }  
-                                )   
-                                } else {
-                                    rsx!(
-                                        img {
-                                            src: "{profile_picture}",
-                                            height: "50",
-                                            width: "50",
-                
-                                        }
-                                    )
-                                }
+                                )
+                            } else {
+                                rsx!(PFP {
+                                    src: profile_picture,
+                                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                                })
+                            }
                             div {
                                 class: "value popout {first} {middle} {last}",
                                 p {
@@ -185,14 +182,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     }  
                                 )   
                                 } else {
-                                    rsx!(
-                                        img {
-                                            src: "{profile_picture2}",
-                                            height: "50",
-                                            width: "50",
-                
-                                        }
-                                    )
+                                    rsx!(PFP {
+                                        src: profile_picture2,
+                                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                                    })
                                 } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
@@ -238,14 +231,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     }  
                                 )   
                                 } else {
-                                    rsx!(
-                                        img {
-                                            src: "{profile_picture3}",
-                                            height: "50",
-                                            width: "50",
-                
-                                        }
-                                    )
+                                    rsx!(PFP {
+                                        src: profile_picture3,
+                                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                                    })
                                 } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
