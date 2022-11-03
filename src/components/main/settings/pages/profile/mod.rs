@@ -32,7 +32,6 @@ pub fn Profile(cx: Scope<Props>) -> Element {
             my_identity.set_status_message(Some(status.to_string()));
     };
 
-    // let status = my_identity.status_message().unwrap_or_default();
     cx.render(rsx! {
         div {
             id: "page_profile",
@@ -46,7 +45,6 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                 }
             },
             div {
-                class: "",
                 div {
                     class: "status",
                     label {
@@ -54,9 +52,9 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     },
                 },
                 div {
-                    class: "row change-status",
+                    class: "change-status",
                 div {
-                    class: "row input_status",
+                    class: "input_status",
                     IconInput {
                         icon: Shape::PencilAlt,
                         placeholder: status.to_string(),
@@ -66,7 +64,6 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     },
                 },
                 div {
-                    class: "",
                     Button {
                         text: l.save_status.to_string(),
                         icon: Shape::Check,
