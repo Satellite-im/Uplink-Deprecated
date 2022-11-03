@@ -157,6 +157,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                             message: lines,
                                             is_remote: remote,
                                             account: cx.props.account.clone(),
+                                            sender: message.sender(),
                                         }
                                     }
                                 },
