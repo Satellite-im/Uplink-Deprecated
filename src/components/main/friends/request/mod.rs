@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
+use tracing_subscriber::layer::Identity;
 use warp::multipass::identity::FriendRequest;
 
 use crate::{
@@ -32,7 +33,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let username = utils::get_username_from_did(did, &mp);
     let show_skeleton = username.is_empty();
-    let profile_picture = user.first().map(Identity::graphics).unwrap_or_default().profile_picture();
+    let profile_picture = mp.read().get_own_identity().unwrap().graphics().profile_picture();
 
     cx.render(rsx! {
         div {
