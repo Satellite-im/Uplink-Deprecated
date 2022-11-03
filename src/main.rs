@@ -22,6 +22,7 @@ use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
 use crate::components::main;
+use crate::components::main::settings::sidebar::nav::NavEvent;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;

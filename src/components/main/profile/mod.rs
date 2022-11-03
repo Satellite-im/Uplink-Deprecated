@@ -2,7 +2,7 @@ use crate::{
     components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker},
     Account, LANGUAGE,
 };
-use dioxus::{events::FormEvent, prelude::*};
+use dioxus::{prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 
@@ -52,18 +52,18 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let status = use_state(&cx, String::new);
     let disabled = status.is_empty();
 
-    let set_status = move |_: _| {
-        let mp = mp.clone();
-        if !disabled {
-            edit.set(false);
-            //TODO: Change to using `MultiPass::update_identity`
-            let mut my_identity = match mp.write().get_own_identity() {
-                Ok(me) => me,
-                Err(_) => Identity::default(),
-            };
-            my_identity.set_status_message(Some(status.to_string()));
-        }
-    };
+    // let set_status = move |_: _| {
+    //     let mp = mp.clone();
+    //     if !disabled {
+    //         edit.set(false);
+    //         //TODO: Change to using `MultiPass::update_identity`
+    //         let mut my_identity = match mp.write().get_own_identity() {
+    //             Ok(me) => me,
+    //             Err(_) => Identity::default(),
+    //         };
+    //         my_identity.set_status_message(Some(status.to_string()));
+    //     }
+    // };
 
     cx.render(rsx! {
         Popup {
@@ -73,61 +73,47 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 rsx!(
                     div {
                         class: "profile",
-                        div {
-                            class: "background",
-                            div {
-                                PhotoPicker {
-                                    account: cx.props.account.clone(),
-                                },
-                            }
-                        },
+                        // div {
+                        //     class: "background",
+                        //     div {
+                        //         PhotoPicker {
+                        //             account: cx.props.account.clone(),
+                        //         },
+                        //     }
+                        // },
                         div {
                             class: "profile-body",
                             h3 {
                                 class: "username",
                                 "{username}"
                             },
-                            if **edit {rsx! (
-                                div {
-                                    class: "change-status",
-                                    IconInput {
-                                        icon: Shape::PencilAlt,
-                                        placeholder: l.status_placeholder.to_string(),
-                                        value: status.to_string(),
-                                        on_change: move |e: FormEvent| status.set(e.value.clone()),
-                                        on_enter: set_status
-                                    }
-                                },
-                                if disabled {rsx!(
-                                    Button {
-                                        text: l.save_status.to_string(),
-                                        icon: Shape::Check,
-                                        disabled: true,
-                                        on_pressed: move |_| {},
-                                    },
-                                )} else {rsx!(
-                                    Button {
-                                        text: l.save_status.to_string(),
-                                        icon: Shape::Check,
-                                        on_pressed: move |_| {
-                                            // TODO: Pending Voice & Video
-                                            // set_status.call()
-                                        }
-                                    },
-                                )}
-                            )} else {rsx! (
-                                p {
-                                    class: "status",
-                                    "{status}"
-                                },
+                            {rsx! (
+
                                 Button {
                                     text: l.edit_profile.to_string(),
                                     icon: Shape::PencilAlt,
-                                    on_pressed: move |_| {
-                                        edit.set(true);
-                                    },
+                                on_pressed: move |_| {
+                                    use_router(&cx).push_route("/main/settings", None, None);
                                 },
-                            )}
+                                },
+                                // if disabled {rsx!(
+                                //     Button {
+                                //         text: l.save_status.to_string(),
+                                //         icon: Shape::Check,
+                                //         disabled: true,
+                                //         on_pressed: move |_| {},
+                                //     },
+                                // )} else {rsx!(
+                                //     Button {
+                                //         text: l.save_status.to_string(),
+                                //         icon: Shape::Check,
+                                //         on_pressed: move |_| {
+                                //             // TODO: Pending Voice & Video
+                                //             // set_status.call()
+                                //         }
+                                //     },
+                                // )}
+                            )}, 
                             div {
                                 class: "meta",
                                 div {
