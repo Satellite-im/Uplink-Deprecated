@@ -77,8 +77,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         div {
                             class: "background",
                             div {
-                                class: "profile-photo",
                                 img {
+                                    class: "profile-photo",
                                     src: "{profile_picture}",
                                     height: "100",
                                     width: "100",
