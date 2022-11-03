@@ -4,7 +4,6 @@ use warp::multipass::{identity::{IdentityUpdate}};
 use crate::{components::ui_kit::icon_button::{IconButton}};
 use rfd::FileDialog;
 use crate::{Account};
-use image_base64::to_base64;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -19,8 +18,9 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let base64_picture = identity.graphics().profile_picture();
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
+   
 
-    
+
     cx.render(rsx! {
         div {
             class: "photo-picker",
@@ -49,8 +49,14 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                     let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg"]).set_directory(".").pick_file();
                     match path_image {
                         Some(path) => {
-                            let base64_image = to_base64(path.to_str().unwrap());
-                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(base64_image)) {
+                            
+                            let file = std::fs::read(&path).unwrap();
+
+                            let prefix = String::from("data:image/png;base64,");
+
+                            let base64_image = base64::encode(&file);
+
+                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(prefix + base64_image.as_str())) {
                                 Ok(_) => {},
                                 Err(e) => {println!("{}", e);}
                             }
