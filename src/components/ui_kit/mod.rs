@@ -6,7 +6,6 @@ pub mod file;
 pub mod folder;
 pub mod icon_button;
 pub mod icon_input;
-pub mod icon_textarea;
 pub mod input;
 pub mod loader;
 pub mod new_folder;
