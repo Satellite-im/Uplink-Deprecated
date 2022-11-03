@@ -1,6 +1,7 @@
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
+use dioxus_heroicons::Icon;
 use dioxus_heroicons::outline::Shape;
 use sir::css;
 
@@ -8,7 +9,6 @@ use crate::{
     components::ui_kit::{
         button::{self, Button},
         icon_input::IconInput,
-        photo_picker::PhotoPicker,
     },
     Account, LANGUAGE, WINDOW_SUFFIX_NAME,
 };
@@ -49,6 +49,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 }
                 Err(_) => error.set("Unexpected error has occurred".into()),
             }
+            
         }
     };
 
@@ -87,7 +88,19 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         "{l.create_account_desc}",
                     },
                     div { class: "m-bottom" },
-                    PhotoPicker {},
+
+
+                    div {
+                        class: "display",
+                            rsx! {
+                                Icon {
+                                    icon: Shape::User,
+                                    size: 30,
+                                }
+                            }
+                    },
+        
+                    
                     div { class: "m-bottom" },
                     div {
                         class: "full-width",

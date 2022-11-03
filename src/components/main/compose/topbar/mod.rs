@@ -38,12 +38,29 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
             let id = conversation_info.conversation.id();
 
+            let identity = mp.read().get_own_identity().unwrap();
+            let profile_picture = identity.graphics().profile_picture();
+
+
             cx.render(rsx! {
                 div {
                     class: "topbar",
-                    div {
-                        class: "pfp"
-                    },
+                    if profile_picture.is_empty() {
+                        rsx! (
+                            div {
+                                class: "pfp"
+                            }  
+                        )   
+                        } else {
+                            rsx!(
+                                img {
+                                    src: "{profile_picture}",
+                                    height: "50",
+                                    width: "50",
+        
+                                }
+                            )
+                        },
                     div {
                         class: "who",
                         div {

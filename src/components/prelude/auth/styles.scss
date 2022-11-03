@@ -1,5 +1,9 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
+.photo-picker{
+    width: 20;
+}
+
 .auth {
     align-items: center;
     display: flex;

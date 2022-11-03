@@ -179,7 +179,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
-                ChatPfp {status: online_status2},
+                ChatPfp {status: online_status2, account: cx.props.account.clone()},
                 div {
                     class: "who",
                     div {
@@ -227,20 +227,38 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     }
 }
 
+
+
 #[inline_props]
 #[allow(non_snake_case)]
-pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>) -> Element {
+pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account) -> Element {
     let is_online = match *status.current() {
         IdentityStatus::Online => "online",
         _ => "",
     };
+    let identity = account.clone().read().get_own_identity().unwrap();
+    let profile_picture = identity.graphics().profile_picture();
+
     cx.render(rsx! {
         div {
             class: "pfp-container",
 
-            div {
-                class: "pfp"
-            },
+            if profile_picture.is_empty() {
+                rsx! (
+                    div {
+                        class: "pfp"
+                    }  
+                )   
+                } else {
+                    rsx!(
+                        img {
+                            src: "{profile_picture}",
+                            height: "50",
+                            width: "50",
+
+                        }
+                    )
+                },
             div {
                 class: "pfs {is_online}"
             }
