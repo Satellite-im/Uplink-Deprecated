@@ -1,8 +1,8 @@
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker},
-    Account, LANGUAGE,
+    components::ui_kit::{badge::Badge, profile_picture::PFP, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker},
+    Account, LANGUAGE, utils,
 };
-use dioxus::{prelude::*};
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 
@@ -51,6 +51,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, String::new);
     let disabled = status.is_empty();
+    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone());
 
     // let set_status = move |_: _| {
     //     let mp = mp.clone();
@@ -73,47 +74,35 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 rsx!(
                     div {
                         class: "profile",
-                        // div {
-                        //     class: "background",
-                        //     div {
-                        //         PhotoPicker {
-                        //             account: cx.props.account.clone(),
-                        //         },
-                        //     }
-                        // },
+                        div {
+                            class: "background",
+                            div {
+                                class: "profile-photo",
+                                img {
+                                    src: "{profile_picture}",
+                                    height: "100",
+                                    width: "100",
+                                },
+                            }
+                        },
                         div {
                             class: "profile-body",
                             h3 {
                                 class: "username",
                                 "{username}"
-                            },
-                            {rsx! (
-
+                            }, {rsx! (
+                                p {
+                                    class: "status",
+                                    "{status}"
+                                },
                                 Button {
                                     text: l.edit_profile.to_string(),
                                     icon: Shape::PencilAlt,
-                                on_pressed: move |_| {
-                                    use_router(&cx).push_route("/main/settings", None, None);
+                                    on_pressed: move |_| {
+                                        use_router(&cx).push_route("/main/settings", None, None);
+                                    },
                                 },
-                                },
-                                // if disabled {rsx!(
-                                //     Button {
-                                //         text: l.save_status.to_string(),
-                                //         icon: Shape::Check,
-                                //         disabled: true,
-                                //         on_pressed: move |_| {},
-                                //     },
-                                // )} else {rsx!(
-                                //     Button {
-                                //         text: l.save_status.to_string(),
-                                //         icon: Shape::Check,
-                                //         on_pressed: move |_| {
-                                //             // TODO: Pending Voice & Video
-                                //             // set_status.call()
-                                //         }
-                                //     },
-                                // )}
-                            )}, 
+                            )}
                             div {
                                 class: "meta",
                                 div {
