@@ -1,6 +1,9 @@
 use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use embeds::LinkEmbed;
+use linkify::LinkFinder;
+
 use warp::{raygun::Message, crypto::DID};
 
 use crate::{
@@ -9,9 +12,11 @@ use crate::{
         icon_textarea::IconTextArea,
         profile_picture::PFP
     },
-    utils,
+    utils::{self, get_meta::{SiteMeta, get_meta}},
     LANGUAGE, Account,
 };
+
+pub mod embeds;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -27,6 +32,40 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    let finder = LinkFinder::new();
+    let content = cx.props.message.value().clone();
+    let joined_a = content.clone().join("\n");
+    let joined_b = joined_a.clone();
+
+    let links: Vec<_> = finder
+        .links(&joined_b)
+        .collect();
+
+    let has_links = if links.len() > 0 { true } else { false };
+
+    // Parses links and grabs data like the title, favicon and description
+    let fetch_meta = use_future(&cx, &joined_a.clone(), |content| async move {
+        if has_links {
+            let s = content.as_str();
+
+            let links: Vec<_> = finder
+                .links(s)
+                .collect();
+
+            let first_link = match links.first() {
+                Some(l) => l.as_str(),
+                None => ""
+            };
+            get_meta(first_link).await
+        } else { Ok(SiteMeta::default()) }
+    });
+
+    let meta = match fetch_meta.value() {
+        Some(Ok(val)) => val.clone(),
+        Some(Err(_)) => SiteMeta::default(),
+        None => SiteMeta::default(),
+    };
+
     let popout = use_state(&cx, || false);
     // text has been lifted from the child components into Msg so that
     // a button press can be used to clear it.
@@ -178,7 +217,12 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 hover.set(false);
                             },
                             p {
-                                "{value}"
+                                "{value}",
+                                (has_links.clone()).then(|| rsx!{
+                                    LinkEmbed {
+                                        meta: meta
+                                    }
+                                }),
                             }
                         }
                     )
@@ -197,6 +241,11 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             p {
                                 "{value}"
+                                (has_links.clone()).then(|| rsx!{
+                                    LinkEmbed {
+                                        meta: meta
+                                    }
+                                }),
                             }
                         },
                         if cx.props.last {
