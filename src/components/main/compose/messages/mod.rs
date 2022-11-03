@@ -128,6 +128,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 let last = prev_sender != msg_sender;
                 let middle = prev_sender == msg_sender;
                 let first = false;
+                let value = message.value().join("\n");
 
                 prev_sender = message.sender().to_string();
                 rsx!{
@@ -151,10 +152,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             let r = cx.props.messaging.clone();
                             match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
                                 Ok(message) => {
-                                    let lines = message.value().join("\n");
                                     rsx!{
                                         Reply {
-                                            message: lines,
+                                            message: value,
                                             is_remote: remote,
                                             account: cx.props.account.clone(),
                                             sender: message.sender(),

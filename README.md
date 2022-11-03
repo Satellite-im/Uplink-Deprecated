@@ -8,14 +8,6 @@
 
 <h4 align="center">Privacy First, Modular, P2P messaging client built atop Warp.</h4>
 
-<div align="center">
-  <a href="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml" target="_blank">
-    <img src="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml/badge.svg" />
-  </a>
-  <a href="https://satellite.wiki" target="_blank">
-      <img src="https://img.shields.io/static/v1?label=Docs&message=satellite.wiki&color=blue" alt="Uplink Docs">
-  </a>
-</div>
 <br/>
 
 Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementation of Warp features in a universal application.
@@ -28,13 +20,11 @@ The goal should be to build a hyper-customizable application that can run anywhe
 
 ## Contributing
 
-Guidelines for contributing to Lapce can be found in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Guidelines for contributing are located in the [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Prerequisites
 
-You'll need to install [`rust`](https://www.rust-lang.org/tools/install) and have `cmake`, `protobuf` and `make` installed. These are usually installed with a build tool package like `xcode-select --install` on mac. Or included in standard dev tooling on respective operating systems.
-
-If you do not have protobuf installed you can install it using homebrew on Mac: `brew install protobuf`.
+You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system.
 
 |Distribution|Commands|
 |--|--|
@@ -81,7 +71,3 @@ It's often necessary to reset your account for development, to do so just delete
 ## Contributions
 
 All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application is much appreciated.
-
-## Special Thanks
-
-**Lapce** - For serving as a great open-source editor and helping me (matt) through so many headaches by providing your code to the world.

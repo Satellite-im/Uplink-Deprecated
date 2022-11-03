@@ -25,7 +25,6 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
         div {
             class: "photo-picker",
             div {
-                class: "display",
                 if show_profile_picture {
                     rsx! {
                         Icon {
@@ -36,6 +35,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                 } else {
                     rsx!{
                         img {
+                            class: "profile_photo",
                             src: "{image_state}",
                             height: "100",
                             width: "100",
