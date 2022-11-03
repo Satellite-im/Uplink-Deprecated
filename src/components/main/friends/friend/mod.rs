@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::{crypto::DID, error::Error, multipass::identity::Identity, raygun::Conversation};
+use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     components::ui_kit::{
@@ -9,7 +9,7 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::{Actions, ConversationInfo},
-    Account, Messaging, STATE,
+    utils, Account, Messaging, STATE,
 };
 
 #[derive(Props)]
@@ -27,18 +27,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
 
-    // Determine our friends DID
-    let friend = cx.props.friend.clone();
-
-    let user = mp.read().get_identity(friend.into()).unwrap_or_default();
-
     // std::thread::sleep(std::time::Duration::from_millis(100));
 
-    let username = user
-        .first()
-        .map(Identity::username)
-        .unwrap_or_else(String::new);
-
+    let username = utils::get_username_from_did(cx.props.friend.clone(), &mp);
     let show_skeleton = username.is_empty();
 
     let profile_picture = mp.read().get_own_identity().unwrap().graphics().profile_picture();

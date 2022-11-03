@@ -81,6 +81,12 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 false => Shape::ArrowsExpand
                             }
                         },
+                        IconButton {
+                            on_pressed: move |_| {
+                                cx.props.on_dismiss.call(());
+                            },
+                            icon: Shape::X
+                        },
                     },
                     // TODO:
                     // ID:

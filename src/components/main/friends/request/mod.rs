@@ -1,14 +1,14 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use warp::multipass::identity::{FriendRequest, Identity};
+use warp::multipass::identity::FriendRequest;
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    Account,
+    utils, Account,
 };
 
 #[derive(Props)]
@@ -30,13 +30,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.props.request.from()
     };
 
-    let user = mp.read().get_identity(did.into()).unwrap_or_default();
-
-    let username = user
-        .first()
-        .map(Identity::username)
-        .unwrap_or_else(String::new);
-
+    let username = utils::get_username_from_did(did, &mp);
     let show_skeleton = username.is_empty();
     let profile_picture = user.first().map(Identity::graphics).unwrap_or_default().profile_picture();
 

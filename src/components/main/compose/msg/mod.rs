@@ -29,7 +29,6 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // text has been lifted from the child components into Msg so that
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
-    let text2 = text.clone();
     let value = cx.props.message.clone().value().join("\n");
     let value2 = value.clone();
     let timestamp = cx.props.message.clone().date();
@@ -103,6 +102,15 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         popout.set(false);
                     },
                     div {
+                        class: "close",
+                        IconButton {
+                            icon: Shape::X,
+                            on_pressed: move |_| {
+                                popout.set(false);
+                            }
+                        },
+                    },
+                    div {
                         class: "message-wrap {slide_class}",
                         div {
                             class: "user-message",
@@ -154,9 +162,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 icon: Shape::ArrowRight,
                                 state: icon_button::State::Secondary,
                                 on_pressed: move |_| {
-                                    text2.set(String::from(""));
+                                    cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
-                                    // todo: send the message
                                 }
                             },
                             script {

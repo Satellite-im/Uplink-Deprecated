@@ -4,12 +4,11 @@ use crate::{
         icon_button::IconButton,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
-    utils::config::Config,
+    utils::{self, config::Config},
     Account, STATE,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::multipass::identity::Identity;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -34,23 +33,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     match opt {
         Some(conversation_info) => {
-            let display_did = conversation_info
-                .conversation
-                .recipients()
-                .last()
-                .cloned()
-                .unwrap_or_default();
-
-            let display_user = mp
-                .read()
-                .get_identity(display_did.clone().into())
-                .unwrap_or_default();
-
-            let display_username = display_user
-                .first()
-                .map(Identity::username)
-                .unwrap_or_else(String::new);
-            // TODO-END
+            let (display_did, display_username) =
+                utils::get_username_from_conversation(conversation_info, &mp);
 
             let id = conversation_info.conversation.id();
 

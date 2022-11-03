@@ -7,6 +7,21 @@
         flex-direction: row;
         border-bottom: 1px solid var(--theme-borders);
 
+        input[type="file"]::-webkit-file-upload-button, input[type="file"]::file-selector-button {
+            user-select: none;
+            cursor: pointer;
+            background-color: var(--theme-primary);
+            border-radius: 20px;
+            height: 40px;
+            min-width: 110px;
+            text-align: center;
+            border: none;
+            gap: 8px;
+            color: var(--theme-text-bright);
+            stroke: var(--theme-text-bright);
+            padding: 0 2rem;
+        }
+
         #content {
             flex: 1;
             height: 100%;

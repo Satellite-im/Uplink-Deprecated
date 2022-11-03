@@ -1,26 +1,31 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use futures::StreamExt;
 use uuid::Uuid;
+use warp::raygun::Message;
 
 use crate::{
     components::{
         main::{
             friends::Friends,
             profile::Profile,
-            sidebar::nav::{Nav, NavEvent},
+            sidebar::{
+                favorites::Favorites,
+                nav::{Nav, NavEvent},
+            },
         },
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_button::IconButton,
-            icon_input::IconInput,
+            button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
         },
     },
     extensions::*,
-    state::Actions,
-    utils::config::Config,
+    state::{Actions, ConversationInfo},
+    utils::{self, config::Config, notifications::PushNotification},
     Account, Messaging, LANGUAGE, STATE,
 };
 
 pub mod chat;
+pub mod favorites;
 pub mod nav;
 
 #[derive(Props, PartialEq)]
@@ -32,6 +37,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
     let config = Config::load_config_or_default();
+    let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
     let show_friends = use_state(&cx, || false);
@@ -39,8 +45,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let friendString = l.friends.to_string();
-    let favString = l.favorites.to_string();
-    let newchatdString = l.new_chat.to_string();
     let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -52,6 +56,23 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     }
 
     let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+
+    let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
+        while let Some(msg) = rx.next().await {
+            let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
+            PushNotification(display_username, msg.value().join("\n"));
+        }
+    });
+
+    // sort the chats by time (ascending order)
+    let mut chats: Vec<ConversationInfo> = state
+        .read()
+        .all_chats
+        .iter()
+        .map(|(_k, v)| v)
+        .cloned()
+        .collect();
+    chats.sort();
 
     cx.render(rsx!{
         div {
@@ -69,21 +90,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
-            label {
-                "{favString}"
-            },
-            div {
-                class: "favorites",
-                div {
-                    class: "labeled",
-                    IconButton {
-                        icon: Shape::Plus,
-                        on_pressed: move |_| {},
-                    },
-                    span {
-                        "{newchatdString}"
-                    }
-                },
+            Favorites {
+                account: cx.props.account.clone(),
+                messaging: cx.props.messaging.clone()
             },
             label {
                 style: "margin-bottom: 0;",
@@ -101,7 +110,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         div {
                             class: "chats",
-                            state.read().all_chats.iter().map(|(key, conv)| {
+                            // order the chats with most recent first (descending order)
+                            chats.iter().rev().map(|conv| {
+                                let key = conv.conversation.id();
                                 let conversation_info = conv.clone();
                                 let active_chat = active_chat.clone();
                                 rsx!(
@@ -112,6 +123,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         messaging: cx.props.messaging.clone(),
                                         last_msg_sent: conv.last_msg_sent.clone(),
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));

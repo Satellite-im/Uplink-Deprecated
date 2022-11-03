@@ -1,0 +1,20 @@
+// Loader
+
+.bar {
+    float: left;
+    width: 15px;
+    height: 6px;
+    border-radius: 2px;
+    background-color: var(--theme-text-bright);
+}
+
+.load .bar {
+    animation: loadingJ 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+}
+
+.load span {
+    color: var(--theme-placeholder);
+    animation: loadingK 2s cubic-bezier(0.17, 0.37, 0.43, 0.67) infinite;
+    font-family: "Space Mono", monospace;
+    font-size: 12pt;
+}

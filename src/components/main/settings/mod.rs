@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
-        main::settings::pages::{Developer, General},
+        main::settings::pages::{developer::Developer, general::General, profile::Profile},
         ui_kit::icon_button::{self, IconButton},
     },
     Account,
@@ -50,6 +50,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                             match active_page.get() {
                                 NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
                                 NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
+                                NavEvent::Profile => rsx!(Profile { account: cx.props.account.clone() }),
                                 _ => rsx!(Developer { account: cx.props.account.clone() }),
                             }
                         }

@@ -9,6 +9,7 @@ pub enum NavEvent {
     AudioVideo,
     Extensions,
     Developer,
+    Profile,
 }
 
 #[derive(Props)]
@@ -58,6 +59,15 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 on_pressed: |_| {
                     active_item.set(NavEvent::General);
                     cx.props.on_pressed.call(NavEvent::General);
+                }
+            },
+            NavButton {
+                text: String::from("Profile"),
+                active: NavEvent::Profile.eq(active_item),
+                disabled: false,
+                on_pressed: |_| {
+                    active_item.set(NavEvent::Profile);
+                    cx.props.on_pressed.call(NavEvent::Profile);
                 }
             },
             NavButton {

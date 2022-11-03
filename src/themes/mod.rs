@@ -10,6 +10,7 @@ pub struct Theme {
     pub light_red: String,
     pub green: String,
     pub light_green: String,
+    pub blue: String,
 
     pub background: String,
     pub background_dark: String,
@@ -46,6 +47,7 @@ impl Default for Theme {
             light_green: String::from("#00c29c"),
             red: String::from("#F93854"),
             light_red: String::from("#fa4662"),
+            blue: String::from("#5252f7"),
 
             background: String::from("#040405"),
             background_dark: String::from("#000000"),
@@ -86,6 +88,7 @@ impl Theme {
                 --theme-light-green: {};
                 --theme-red: {};
                 --theme-light-red: {};
+                --theme-blue: {};
                 --theme-background: {};
                 --theme-background-light: {};
                 --theme-text: {};
@@ -109,6 +112,7 @@ impl Theme {
             &self.light_green,
             &self.red,
             &self.light_red,
+            &self.blue,
             &self.background,
             &self.background_light,
             &self.text,
