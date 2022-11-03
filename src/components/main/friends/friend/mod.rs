@@ -41,15 +41,31 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let show_skeleton = username.is_empty();
 
+    let profile_picture = mp.read().get_own_identity().unwrap().graphics().profile_picture();
+
+
     cx.render(rsx! {
         div {
             class: "friend",
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(
-                div {
-                    class: "pfp"
-                },
+                if profile_picture.is_empty() {
+                    rsx! (
+                        div {
+                            class: "pfp"
+                        }  
+                    )   
+                    } else {
+                        rsx!(
+                            img {
+                                src: "{profile_picture}",
+                                height: "50",
+                                width: "50",
+    
+                            }
+                        )
+                    }
             )},
             div {
                 class: "who",

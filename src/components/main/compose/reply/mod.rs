@@ -1,9 +1,12 @@
 use dioxus::prelude::*;
 
-#[derive(Props, PartialEq, Eq)]
+use crate::Account;
+
+#[derive(Props, PartialEq)]
 pub struct Props {
     message: String,
     is_remote: bool,
+    account: Account,
 }
 
 #[allow(non_snake_case)]
@@ -13,6 +16,11 @@ pub fn Reply(cx: Scope<Props>) -> Element {
     } else {
         "local"
     };
+
+    let identity = cx.props.account.clone().read().get_own_identity().unwrap();
+    let profile_picture = identity.graphics().profile_picture();
+    let profile_picture2 = profile_picture.clone();
+
 
     cx.render({
         rsx! {
@@ -25,17 +33,43 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                     }
                 }),
                 (!cx.props.is_remote).then(|| rsx! {
-                    div {
-                        class: "pfp",
-                    }
+                    if profile_picture.is_empty() {
+                        rsx! (
+                            div {
+                                class: "pfp"
+                            }  
+                        )   
+                        } else {
+                            rsx!(
+                                img {
+                                    src: "{profile_picture}",
+                                    height: "50",
+                                    width: "50",
+        
+                                }
+                            )
+                        }
                 }),
                 p {
                     "{cx.props.message}",
                 },
                 (cx.props.is_remote).then(|| rsx! {
-                    div {
-                        class: "pfp",
-                    }
+                    if profile_picture2.clone().is_empty() {
+                        rsx! (
+                            div {
+                                class: "pfp"
+                            }  
+                        )   
+                        } else {
+                            rsx!(
+                                img {
+                                    src: "{profile_picture2}",
+                                    height: "50",
+                                    width: "50",
+        
+                                }
+                            )
+                        }
                 }),
                 (!cx.props.is_remote).then(|| rsx! {
                     span {

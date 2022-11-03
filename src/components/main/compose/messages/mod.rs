@@ -134,6 +134,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     Msg {
                         // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
                         message: message.clone(),
+                        account: cx.props.account.clone(),
+                        sender: message.sender(),
                         remote: remote,
                         last: last,
                         first: first,
@@ -153,7 +155,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     rsx!{
                                         Reply {
                                             message: lines,
-                                            is_remote: remote
+                                            is_remote: remote,
+                                            account: cx.props.account.clone(),
                                         }
                                     }
                                 },

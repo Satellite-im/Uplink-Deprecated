@@ -1,19 +1,21 @@
 use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::raygun::Message;
+use warp::{raygun::Message, crypto::DID};
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
         icon_textarea::IconTextArea,
     },
-    LANGUAGE,
+    LANGUAGE, Account,
 };
 
 #[derive(Props)]
 pub struct Props<'a> {
     message: Message,
+    account: Account,
+    sender: DID,
     remote: bool,
     first: bool,
     middle: bool,
@@ -82,6 +84,14 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         });
         element.removeAttribute('data-autoresize');
     })()"#;
+    let identity = cx.props.account.clone().read().get_own_identity().unwrap();
+    let identity_sender = cx.props.account.read().get_identity(cx.props.sender.clone().into()).unwrap_or_default();
+
+    let sender = identity_sender.first().unwrap_or(&identity);
+
+    let profile_picture = identity.graphics().profile_picture();
+    let profile_picture2 = sender.graphics().profile_picture();
+    let profile_picture3 = profile_picture.clone();
 
     cx.render(rsx! (
         div {
@@ -99,9 +109,22 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
-                            div {
-                                class: "pfp",
-                            },
+                            if profile_picture.is_empty() {
+                                rsx! (
+                                    div {
+                                        class: "pfp"
+                                    }  
+                                )   
+                                } else {
+                                    rsx!(
+                                        img {
+                                            src: "{profile_picture}",
+                                            height: "50",
+                                            width: "50",
+                
+                                        }
+                                    )
+                                }
                             div {
                                 class: "value popout {first} {middle} {last}",
                                 p {
@@ -148,7 +171,22 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!( div { class: "pfp" } )
+                            rsx!( if profile_picture2.is_empty() {
+                                rsx! (
+                                    div {
+                                        class: "pfp"
+                                    }  
+                                )   
+                                } else {
+                                    rsx!(
+                                        img {
+                                            src: "{profile_picture2}",
+                                            height: "50",
+                                            width: "50",
+                
+                                        }
+                                    )
+                                } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
@@ -186,7 +224,22 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         },
                         if cx.props.last {
-                            rsx!( div { class: "pfp" } )
+                            rsx!( if profile_picture3.is_empty() {
+                                rsx! (
+                                    div {
+                                        class: "pfp"
+                                    }  
+                                )   
+                                } else {
+                                    rsx!(
+                                        img {
+                                            src: "{profile_picture3}",
+                                            height: "50",
+                                            width: "50",
+                
+                                        }
+                                    )
+                                } )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },

@@ -1,5 +1,5 @@
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker, icon_button::{IconButton, self}},
+    components::ui_kit::{badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker},
     Account, LANGUAGE,
 };
 use dioxus::{events::FormEvent, prelude::*};

@@ -1,9 +1,9 @@
 use dioxus::{prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
-use warp::multipass::{identity::{self, IdentityUpdate}, MultiPass};
-use crate::{components::ui_kit::icon_button::{IconButton, self}, utils::config::Privacy};
+use warp::multipass::{identity::{IdentityUpdate}};
+use crate::{components::ui_kit::icon_button::{IconButton}};
 use rfd::FileDialog;
-use crate::{DEFAULT_PATH, Account};
+use crate::{Account};
 use image_base64::to_base64;
 
 #[derive(PartialEq, Props)]
@@ -19,6 +19,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let base64_picture = identity.graphics().profile_picture();
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
+
     
     cx.render(rsx! {
         div {

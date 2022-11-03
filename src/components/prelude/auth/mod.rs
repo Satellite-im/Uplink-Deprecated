@@ -9,7 +9,6 @@ use crate::{
     components::ui_kit::{
         button::{self, Button},
         icon_input::IconInput,
-        photo_picker::PhotoPicker,
     },
     Account, LANGUAGE, WINDOW_SUFFIX_NAME,
 };
