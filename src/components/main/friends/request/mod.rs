@@ -1,12 +1,12 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use tracing_subscriber::layer::Identity;
 use warp::multipass::identity::FriendRequest;
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
+        profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     utils, Account,
@@ -31,9 +31,9 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.props.request.from()
     };
 
-    let username = utils::get_username_from_did(did, &mp);
+    let username = utils::get_username_from_did(did.clone(), &mp);
     let show_skeleton = username.is_empty();
-    let profile_picture = mp.read().get_own_identity().unwrap().graphics().profile_picture();
+    let profile_picture = utils::get_pfp_from_did(did, &mp);
 
     cx.render(rsx! {
         div {
@@ -48,17 +48,12 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }  
                 )   
                 } else {
-                    rsx!(
-                        img {
-                            src: "{profile_picture}",
-                            height: "50",
-                            width: "50",
-
-                        }
-                    )
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                    })
                 }
-                
-            )}
+             )}
             div {
                 class: "who",
                 if show_skeleton {rsx!(

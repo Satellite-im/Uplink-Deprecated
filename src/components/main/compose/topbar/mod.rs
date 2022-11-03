@@ -35,13 +35,10 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     match opt {
         Some(conversation_info) => {
             let (display_did, display_username) =
-                utils::get_username_from_conversation(conversation_info, &mp);
+                utils::get_username_from_conversation(conversation_info, &mp.clone());
+            let profile_picture = utils::get_pfp_from_did(display_did.clone(), &mp);
 
             let id = conversation_info.conversation.id();
-
-            let identity = mp.read().get_own_identity().unwrap();
-            let profile_picture = identity.graphics().profile_picture();
-
 
             cx.render(rsx! {
                 div {

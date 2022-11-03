@@ -28,13 +28,10 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
 
-    // std::thread::sleep(std::time::Duration::from_millis(100));
-
     let username = utils::get_username_from_did(cx.props.friend.clone(), &mp);
     let show_skeleton = username.is_empty();
 
-    let profile_picture = mp.read().get_own_identity().unwrap().graphics().profile_picture();
-
+    let profile_picture = utils::get_pfp_from_did(cx.props.friend.clone(), &mp);
 
     cx.render(rsx! {
         div {

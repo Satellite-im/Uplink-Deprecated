@@ -9,6 +9,7 @@ use crate::{
         icon_textarea::IconTextArea,
         profile_picture::PFP
     },
+    utils,
     LANGUAGE, Account,
 };
 
@@ -67,30 +68,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
-    // TODO: This is ugly, but we need it for resizing textareas until someone finds a better solution.
-    // note that this has a queryselector and click handler specific to this page
-    const RESIZE_TEXTAREA_SCRIPT: &str = r#"
-    (function addAutoResize() {
-        let element = document.querySelector('.reply-container .resizeable-textarea');
-        if (element == null) {
-            return;
-        }
-
-        element.style.boxSizing = 'border-box';
-        var offset = element.offsetHeight - element.clientHeight;
-        element.addEventListener('input', function (event) {
-            event.target.style.height = 'auto';
-            event.target.style.height = event.target.scrollHeight + offset + 'px';
-        });
-        element.removeAttribute('data-autoresize');
-    })()"#;
-    let identity = cx.props.account.clone().read().get_own_identity().unwrap();
-    let identity_sender = cx.props.account.read().get_identity(cx.props.sender.clone().into()).unwrap_or_default();
-
-    let sender = identity_sender.first().unwrap_or(&identity);
-
-    let profile_picture = identity.graphics().profile_picture();
-    let profile_picture2 = sender.graphics().profile_picture();
+    let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+    let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
 
     cx.render(rsx! (
@@ -162,10 +141,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
                                 }
-                            },
-                            script {
-                                dangerous_inner_html: "{RESIZE_TEXTAREA_SCRIPT}"
-                            },
+                            }
                         }
                     }
                 }

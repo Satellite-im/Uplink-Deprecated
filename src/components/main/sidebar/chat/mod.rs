@@ -3,6 +3,7 @@ use crate::{
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
         profile_picture::PFP
     },
+    utils,
     state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
@@ -11,6 +12,7 @@ use futures::stream::StreamExt;
 use uuid::Uuid;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
 use warp::raygun::{Message, MessageEventKind, RayGun, RayGunStream};
+use warp::crypto::DID;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -48,6 +50,22 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .read()
         .get_own_identity()
         .expect("Unexpected error <temp>");
+
+    let did = cx
+        .props
+        .conversation_info
+        .conversation
+        .recipients()
+        .iter()
+        //filters out our own did key in the iter
+        .filter(|did| ident.did_key().ne(did))
+        //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
+        .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        //flatted the nested iterators
+        .flatten()
+        .map(|i| i.did_key())
+        .last()
+        .unwrap_or_default();
 
     let username = cx
         .props
@@ -182,7 +200,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
-                ChatPfp {status: online_status2, account: cx.props.account.clone()},
+                ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
                 div {
                     class: "who",
                     div {
@@ -234,13 +252,13 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
 #[inline_props]
 #[allow(non_snake_case)]
-pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account) -> Element {
+pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, did: DID) -> Element {
     let is_online = match *status.current() {
         IdentityStatus::Online => "online",
         _ => "",
     };
     let identity = account.clone().read().get_own_identity().unwrap();
-    let profile_picture = identity.graphics().profile_picture();
+    let profile_picture = utils::get_pfp_from_did(did.clone(), &account);
 
     cx.render(rsx! {
         div {

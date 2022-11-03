@@ -2,6 +2,7 @@ use dioxus::prelude::*;
 use warp::crypto::DID;
 
 use crate::Account;
+use crate::utils;
 use crate::components::ui_kit::profile_picture::PFP;
 
 #[derive(Props, PartialEq)]
@@ -20,13 +21,8 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         "local"
     };
 
-
-    let identity = cx.props.account.clone().read().get_own_identity().unwrap();
-    let identity_sender = cx.props.account.read().get_identity(cx.props.sender.clone().into()).unwrap_or_default();
-    let sender = identity_sender.first().unwrap_or(&identity);
-    let profile_picture = identity.graphics().profile_picture();
-    let profile_picture2 = sender.graphics().profile_picture();
-
+    let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+    let profile_picture2 = profile_picture.clone();
 
     let box_right = "🭽";
     let box_left = "🭾";
