@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use embeds::LinkEmbed;
 use linkify::LinkFinder;
+use pulldown_cmark::{html, Options, Parser};
 
 use warp::{raygun::Message, crypto::DID};
 
@@ -71,7 +72,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
     let value = cx.props.message.clone().value().join("\n");
-    let value2 = value.clone();
+    let value3 = value.clone();
     let timestamp = cx.props.message.clone().date();
     let ht = HumanTime::from(timestamp);
     let remote = match cx.props.remote {
@@ -110,6 +111,18 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
+
+    // Set up options and parser. Strikethroughs are not part of the CommonMark standard
+    // and we therefore must enable it explicitly.
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    let parser = Parser::new_ext(&value3, options);
+
+    // Write to String buffer.
+    let mut html_output: String = String::with_capacity(value3.clone().len() * 3 / 2);
+    html::push_html(&mut html_output, parser);
+
+    let (output1, output2, output3) = (html_output.clone(), html_output.clone(), html_output.clone());
 
     cx.render(rsx! (
         div {
@@ -150,8 +163,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                             div {
                                 class: "value popout {first} {middle} {last}",
-                                p {
-                                    "{value2}"
+                                div {
+                                    dangerous_inner_html: "{output1}"
                                 },
                             },
                         }
@@ -216,8 +229,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onmouseout: |_| {
                                 hover.set(false);
                             },
-                            p {
-                                "{value}",
+                            div {
+                                dangerous_inner_html: "{output2}",
                                 (has_links.clone()).then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
@@ -239,8 +252,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onmouseout: |_| {
                                 hover.set(false);
                             },
-                            p {
-                                "{value}"
+                            div {
+                                dangerous_inner_html: "{output3}",
                                 (has_links.clone()).then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta

@@ -63,25 +63,35 @@
 
       &.first {
         border-radius: 16px 16px 4px;
+        .link-embed {
+            border-radius: 16px 16px 4px;
+        }
       }
 
       &.middle {
         border-radius: 16px 4px 4px 16px;
+        .link-embed {
+            border-radius: 16px 4px 4px 16px;
+        }
       }
 
       &.last {
         border-radius: 16px 4px 16px 16px;
         margin-bottom: 1rem;
 
+        .link-embed {
+            border-radius: 16px 4px 16px 16px;
+        }
+
         p {
-          padding: .2rem;
-          text-align: left;
+            margin: 0.25rem 0;
         }
       }
 
       p {
         margin: 0;
         white-space: pre-line;
+        text-align: left;
         word-break: break-word;
       }
     }
@@ -107,14 +117,23 @@
 
         &.first {
           border-radius: 16px 16px 16px 4px;
+          .link-embed {
+              border-radius: 16px 16px 16px 4px;
+          }
         }
 
         &.middle {
           border-radius: 4px 16px 16px 4px;
+          .link-embed {
+              border-radius: 4px 16px 16px 4px;
+          }
         }
 
         &.last {
           border-radius: 4px 16px 16px 16px;
+          .link-embed {
+              border-radius: 4px 16px 16px 16px;
+          }
         }
       }
 
