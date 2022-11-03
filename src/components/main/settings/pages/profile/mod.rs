@@ -13,6 +13,7 @@ pub struct Props {
     account: Account,
 }
 
+
 #[allow(non_snake_case)]
 pub fn Profile(cx: Scope<Props>) -> Element {
 

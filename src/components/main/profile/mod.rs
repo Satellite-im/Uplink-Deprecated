@@ -49,8 +49,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     );
 
     let edit = use_state(&cx, || false);
-    let status = use_state(&cx, String::new);
-    let disabled = status.is_empty();
+    let status = my_identity.status_message().unwrap_or_default();
     let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone());
 
     // let set_status = move |_: _| {
@@ -90,19 +89,18 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             h3 {
                                 class: "username",
                                 "{username}"
-                            }, {rsx! (
-                                p {
-                                    class: "status",
-                                    "{status}"
+                            }, 
+                            p {
+                                class: "status",
+                                "{status}"
+                            },
+                            Button {
+                                text: l.edit_profile.to_string(),
+                                icon: Shape::PencilAlt,
+                                on_pressed: move |_| {
+                                    use_router(&cx).push_route("/main/settings", None, None);
                                 },
-                                Button {
-                                    text: l.edit_profile.to_string(),
-                                    icon: Shape::PencilAlt,
-                                    on_pressed: move |_| {
-                                        use_router(&cx).push_route("/main/settings", None, None);
-                                    },
-                                },
-                            )}
+                            },
                             div {
                                 class: "meta",
                                 div {
