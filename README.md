@@ -8,14 +8,6 @@
 
 <h4 align="center">Privacy First, Modular, P2P messaging client built atop Warp.</h4>
 
-<div align="center">
-  <a href="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml" target="_blank">
-    <img src="https://github.com/satellite-im/Uplink/actions/workflows/ci.yml/badge.svg" />
-  </a>
-  <a href="https://satellite.wiki" target="_blank">
-      <img src="https://img.shields.io/static/v1?label=Docs&message=satellite.wiki&color=blue" alt="Uplink Docs">
-  </a>
-</div>
 <br/>
 
 Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementation of Warp features in a universal application.
