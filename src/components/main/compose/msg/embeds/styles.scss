@@ -1,8 +1,7 @@
 .link-embed {
-    background: var(--theme-foreground);
+    background: var(--theme-foreground-dark);
     text-align: left;
-    margin-top: 0.5rem;
-    border-radius: 8px;
+    margin: 0.5rem 0;
     display: inline-flex;
     flex-direction: column;
     overflow: hidden;
