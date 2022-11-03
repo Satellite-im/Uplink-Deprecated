@@ -1,8 +1,8 @@
 use crate::{
-    components::ui_kit::{badge::Badge, profile_picture::PFP, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker},
+    components::ui_kit::{badge::Badge, button::Button, popup::Popup, },
     Account, LANGUAGE, utils,
 };
-use dioxus::{events::FormEvent, prelude::*};
+use dioxus::{prelude::*};
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 
@@ -47,23 +47,8 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         },
     );
-
-    let edit = use_state(&cx, || false);
     let status = my_identity.status_message().unwrap_or_default();
     let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone());
-
-    // let set_status = move |_: _| {
-    //     let mp = mp.clone();
-    //     if !disabled {
-    //         edit.set(false);
-    //         //TODO: Change to using `MultiPass::update_identity`
-    //         let mut my_identity = match mp.write().get_own_identity() {
-    //             Ok(me) => me,
-    //             Err(_) => Identity::default(),
-    //         };
-    //         my_identity.set_status_message(Some(status.to_string()));
-    //     }
-    // };
 
     cx.render(rsx! {
         Popup {
@@ -92,7 +77,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }, 
                             p {
                                 class: "status",
-                                "{status}"
+                                "{status}, here is status"
                             },
                             Button {
                                 text: l.edit_profile.to_string(),

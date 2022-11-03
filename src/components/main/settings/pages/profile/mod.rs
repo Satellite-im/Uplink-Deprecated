@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::ui_kit::{ badge::Badge, button::Button, icon_input::IconInput, popup::Popup, photo_picker::PhotoPicker },
+    components::ui_kit::{ button::Button, icon_input::IconInput, photo_picker::PhotoPicker },
     Account, LANGUAGE
 };
 use dioxus_heroicons::outline::Shape;
@@ -31,9 +31,20 @@ pub fn Profile(cx: Scope<Props>) -> Element {
             };
             my_identity.set_status_message(Some(status.to_string()));
     };
+
+    // let status = my_identity.status_message().unwrap_or_default();
     cx.render(rsx! {
         div {
             id: "page_profile",
+            div {
+                class: "profile_header",
+                div {
+                    class: "profile_picture",
+                    PhotoPicker {
+                        account: cx.props.account.clone(),
+                    },
+                }
+            },
             div {
                 class: "",
                 div {
@@ -48,7 +59,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     class: "row input_status",
                     IconInput {
                         icon: Shape::PencilAlt,
-                        placeholder: l.status_placeholder.to_string(),
+                        placeholder: status.to_string(),
                         value: status.to_string(),
                         on_change: move |e: FormEvent| status.set(e.value.clone()),
                         on_enter: set_status
@@ -65,22 +76,6 @@ pub fn Profile(cx: Scope<Props>) -> Element {
 
             }
             },
-            div {
-                class: "item",
-                div {
-                    class: "profile_picture",
-                    div {
-                        label {
-                            "Choose a profile picture."
-                        }
-                        div {
-                            PhotoPicker {
-                                account: cx.props.account.clone(),
-                            },
-                        }
-                    },
-                },
-            }
         }
     })
 }
