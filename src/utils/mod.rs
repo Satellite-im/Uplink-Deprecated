@@ -5,6 +5,7 @@ use crate::{state::ConversationInfo, Account};
 pub mod config;
 pub mod notifications;
 pub mod sounds;
+pub mod get_meta;
 
 pub fn remove_writespace(s: &mut String) {
     s.retain(|c| !c.is_whitespace());

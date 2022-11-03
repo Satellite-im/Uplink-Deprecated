@@ -1,0 +1,45 @@
+.link-embed {
+    background: var(--theme-foreground);
+    text-align: left;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    display: inline-flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .embed-icon {
+        min-width: 40px;
+        padding: 1rem;
+        background: var(--theme-background);
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+
+        img {
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            margin-right: 1rem;
+        }
+
+        h2 {
+            margin: 0;
+        }
+    }
+    .embed-details {
+        padding: 1rem;
+        flex: 1;
+
+        div {
+            width: 100%;
+        }
+
+        .button {
+            width: 100%;
+            margin-top: 1rem;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
