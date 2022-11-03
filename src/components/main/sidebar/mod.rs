@@ -19,7 +19,7 @@ use crate::{
         },
     },
     extensions::*,
-    state::Actions,
+    state::{Actions, ConversationInfo},
     utils::{self, config::Config, notifications::PushNotification},
     Account, Messaging, LANGUAGE, STATE,
 };
@@ -64,6 +64,16 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         }
     });
 
+    // sort the chats by time (ascending order)
+    let mut chats: Vec<ConversationInfo> = state
+        .read()
+        .all_chats
+        .iter()
+        .map(|(_k, v)| v)
+        .cloned()
+        .collect();
+    chats.sort();
+
     cx.render(rsx!{
         div {
             exts,
@@ -100,7 +110,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         },
                         div {
                             class: "chats",
-                            state.read().all_chats.iter().map(|(key, conv)| {
+                            // order the chats with most recent first (descending order)
+                            chats.iter().rev().map(|conv| {
+                                let key = conv.conversation.id();
                                 let conversation_info = conv.clone();
                                 let active_chat = active_chat.clone();
                                 rsx!(
