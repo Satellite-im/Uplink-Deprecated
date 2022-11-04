@@ -8,7 +8,7 @@
         },
         {
             "type": "command",
-            "name": "Update Dependancies",
+            "name": "Update Dependencies",
             "program": "cargo",
             "args": ["update"]
         },
@@ -17,7 +17,7 @@
             "name": "Build Release",
             "program": "cargo",
             "args": ["build", "--release"]
-        },
+        }
 
     ]
 }

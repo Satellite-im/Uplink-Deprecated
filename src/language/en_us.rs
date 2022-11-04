@@ -40,7 +40,7 @@ pub fn make() -> Language {
         location: String::from("Location"),
         badges: String::from("Badges"),
         save_status: String::from("Save Status"),
-        status_placeholder: String::from("Some status message..."),
+        status_message_placeholder: String::from("Some status message..."),
         friends: String::from("Friends"),
         edit_profile: String::from("Edit Profile"),
         about: String::from("About"),

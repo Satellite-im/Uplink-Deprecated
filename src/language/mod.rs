@@ -41,7 +41,7 @@ pub struct Language {
     pub location: String,
     pub badges: String,
     pub save_status: String,
-    pub status_placeholder: String,
+    pub status_message_placeholder: String,
     pub friends: String,
     pub edit_profile: String,
     pub no_about_message: String,

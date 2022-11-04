@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use sir::{css, global_css};
+use sir::{global_css};
 mod extension;
 use extension::{Extension, BasicExtension, ExtensionType};
 
