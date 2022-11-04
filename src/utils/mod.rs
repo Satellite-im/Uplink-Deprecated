@@ -39,7 +39,6 @@ pub fn get_pfp_from_did(did: DID, mp: &Account) -> String {
     let display_user = mp.read().get_identity(did.into()).unwrap_or_default();
     display_user
         .first()
-        .unwrap()
-        .graphics()
-        .profile_picture()
+        .map(|ident| ident.graphics().profile_picture())
+        .unwrap_or_default()  
 }
