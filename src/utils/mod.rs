@@ -1,4 +1,5 @@
 use warp::{crypto::DID, multipass::identity::Identity};
+use regex;
 
 use crate::{state::ConversationInfo, Account};
 
@@ -42,4 +43,18 @@ pub fn get_pfp_from_did(did: DID, mp: &Account) -> String {
         .unwrap()
         .graphics()
         .profile_picture()
+}
+
+pub fn wrap_in_markdown(val: &str) -> String {
+    let re = regex::Regex::new(r"\b[**]+").unwrap();
+    let re2 = regex::Regex::new(r"[**]+\b").unwrap();
+    let re3 = regex::Regex::new(r"\b[__]+").unwrap();
+    let re4 = regex::Regex::new(r"[__]+\b").unwrap();
+
+    let final_string = re.replace_all(val.clone(), r"</b>**");
+    let final_string = re2.replace_all(&final_string, r"**<b>");
+    let final_string = re3.replace_all(&final_string, r"__<strike>");
+    let final_string = re4.replace_all(&final_string, r"</strike>__");
+
+    String::from(final_string)
 }
