@@ -11,11 +11,18 @@ pub fn TextArea<'a>(
     placeholder: String,
 ) -> Element<'a> {
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
-    let dyn_input = rsx! {
+
+    let inner_html = cx.use_hook(|_| " ");
+    if clearing_state.get() {
+        *inner_html = "";
+        cx.needs_update();
+    }
+
+    let elm = rsx! {
         div {
             class: "dynamic-input",
-            "key": "{text}",
-            oninput: |e| {
+            contenteditable: "true",
+            oninput: move |e| {
                 if !clearing_state.get() {
                     text.set(e.value.clone());
                 } else {
@@ -24,15 +31,17 @@ pub fn TextArea<'a>(
             },
             onkeyup: |e| {
                 if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
-                    cx.props.on_submit.call(text.to_string());
+                    on_submit.call(text.to_string());
                     text.set(String::from(""));
                     clearing_state.set(true);
                 }
             },
-            "contenteditable": "true",
-            "placeholder": "{placeholder}"
+            "placeholder": "{placeholder}",
+            "dangerous_inner_html": "{inner_html}"
         }
     };
 
-    cx.render(dyn_input)
+    clearing_state.set(false);
+    *inner_html = " ";
+    cx.render(elm)
 }
