@@ -78,10 +78,17 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                                 None =>  "".to_string(),
                             };
 
-                            let prefix = format!("data:{};base64,", mime);
-                            let base64_image = base64::encode(&file);
+                            let image = match &file.len() {
+                                0 => "".to_string(),
+                                _ => {
+                                    let prefix = format!("data:{};base64,", mime);
+                                    let base64_image = base64::encode(&file);
+                                    let img = prefix + base64_image.as_str();
+                                    img
+                                }
+                            };
 
-                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(prefix + base64_image.as_str())) {
+                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(image)) {
                                 Ok(_) => {},
                                 Err(e) => {println!("{}", e);}
                             }
