@@ -47,7 +47,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
-                    let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg"]).set_directory(".").pick_file();
+                    let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file();
                     match path_image {
                         Some(path) => {
                             
@@ -64,6 +64,8 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                             .to_string();
 
                             let parts_of_filename: Vec<&str> = filename.split(".").collect();
+
+                            //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
 
                             let mime = match parts_of_filename.last() {
                                 Some(m) => {
