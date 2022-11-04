@@ -4,7 +4,7 @@ use warp::multipass::{identity::{IdentityUpdate}};
 use crate::{components::ui_kit::icon_button::{IconButton}};
 use rfd::FileDialog;
 use crate::{Account};
-use image_base64::to_base64;
+use mime::*;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -19,13 +19,11 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let base64_picture = identity.graphics().profile_picture();
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
-
     
     cx.render(rsx! {
         div {
             class: "photo-picker",
             div {
-                class: "display",
                 if show_profile_picture {
                     rsx! {
                         Icon {
@@ -36,6 +34,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                 } else {
                     rsx!{
                         img {
+                            class: "profile_photo",
                             src: "{image_state}",
                             height: "100",
                             width: "100",
@@ -46,11 +45,50 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
-                    let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg"]).set_directory(".").pick_file();
+                    let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file();
                     match path_image {
                         Some(path) => {
-                            let base64_image = to_base64(path.to_str().unwrap());
-                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(base64_image)) {
+                            
+                            let file = match std::fs::read(&path) {
+                                Ok(image_vec) => image_vec,
+                                Err(_) => vec![],
+                            };
+
+                            let filename = std::path::Path::new(&path)
+                            .file_name()
+                            .unwrap_or(std::ffi::OsStr::new(""))
+                            .to_str()
+                            .unwrap()
+                            .to_string();
+
+                            let parts_of_filename: Vec<&str> = filename.split(".").collect();
+
+                            //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
+
+                            let mime = match parts_of_filename.last() {
+                                Some(m) => {
+                                    match *m {
+                                        "png" => IMAGE_PNG.to_string(),
+                                        "jpg" => IMAGE_JPEG.to_string(),
+                                        "jpeg" => IMAGE_JPEG.to_string(),
+                                        "svg" => IMAGE_SVG.to_string(),
+                                        &_ => "".to_string(),
+                                    }
+                                },
+                                None =>  "".to_string(),
+                            };
+
+                            let image = match &file.len() {
+                                0 => "".to_string(),
+                                _ => {
+                                    let prefix = format!("data:{};base64,", mime);
+                                    let base64_image = base64::encode(&file);
+                                    let img = prefix + base64_image.as_str();
+                                    img
+                                }
+                            };
+
+                            match account.write().update_identity(IdentityUpdate::set_graphics_picture(image)) {
                                 Ok(_) => {},
                                 Err(e) => {println!("{}", e);}
                             }

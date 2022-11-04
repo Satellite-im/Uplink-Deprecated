@@ -52,7 +52,8 @@ rodio = "0.16.0"
 libloading = "0.7.3"
 soloud = "1.0.2"
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
-image-base64 = "0.1.0"
+base64 = "0.13.1"
+mime = "0.3.16"
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
