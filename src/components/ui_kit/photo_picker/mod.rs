@@ -46,8 +46,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
                     let path_image = FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file();
-                    match path_image {
-                        Some(path) => {
+                    if let Some(path) = path_image {
                             
                             let file = match std::fs::read(&path) {
                                 Ok(image_vec) => image_vec,
@@ -56,12 +55,12 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
 
                             let filename = std::path::Path::new(&path)
                             .file_name()
-                            .unwrap_or(std::ffi::OsStr::new(""))
+                            .unwrap_or_else(|| std::ffi::OsStr::new(""))
                             .to_str()
                             .unwrap()
                             .to_string();
 
-                            let parts_of_filename: Vec<&str> = filename.split(".").collect();
+                            let parts_of_filename: Vec<&str> = filename.split('.').collect();
 
                             //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
 
@@ -95,11 +94,8 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                             let identity = account.read().get_own_identity().unwrap();
                             let image = identity.graphics().profile_picture();
                             image_state.set(image);
-                        },
-                        None => {},
-                    }
+                        }
                     
-
                 }
             },
         }

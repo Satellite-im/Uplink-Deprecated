@@ -68,18 +68,18 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                     "{cx.props.message}",
                 },
                 (cx.props.is_remote).then(|| rsx! {
-                    if profile_picture2.clone().is_empty() {
+                    if profile_picture2.is_empty() {
                         rsx! (
                             div {
                                 class: "pfp"
                             }  
                         )   
-                        } else {
+                    } else {
                             rsx!(PFP {
                                 src: profile_picture2,
                                 size: crate::components::ui_kit::profile_picture::Size::Small
                             })
-                        }
+                    }
                 }),
                 (!cx.props.is_remote).then(|| rsx! {
                     span {
