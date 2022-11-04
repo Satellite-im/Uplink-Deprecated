@@ -20,8 +20,6 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
     
-
-    
     cx.render(rsx! {
         div {
             class: "photo-picker",
@@ -70,14 +68,14 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                             let mime = match parts_of_filename.last() {
                                 Some(m) => {
                                     match *m {
-                                        "png" => IMAGE_PNG,
-                                        "jpg" => IMAGE_JPEG,
-                                        "jpeg" => IMAGE_JPEG,
-                                        "svg" => IMAGE_SVG,
-                                        &_ => TEXT_PLAIN  
+                                        "png" => IMAGE_PNG.to_string(),
+                                        "jpg" => IMAGE_JPEG.to_string(),
+                                        "jpeg" => IMAGE_JPEG.to_string(),
+                                        "svg" => IMAGE_SVG.to_string(),
+                                        &_ => "".to_string(),
                                     }
                                 },
-                                None =>  TEXT_PLAIN,
+                                None =>  "".to_string(),
                             };
 
                             let prefix = format!("data:{};base64,", mime);
