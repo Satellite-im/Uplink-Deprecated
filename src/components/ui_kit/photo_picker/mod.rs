@@ -4,6 +4,7 @@ use warp::multipass::{identity::{IdentityUpdate}};
 use crate::{components::ui_kit::icon_button::{IconButton}};
 use rfd::FileDialog;
 use crate::{Account};
+use mime::*;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -18,9 +19,9 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let base64_picture = identity.graphics().profile_picture();
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
-   
+    
 
-
+    
     cx.render(rsx! {
         div {
             class: "photo-picker",
@@ -50,10 +51,34 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                     match path_image {
                         Some(path) => {
                             
-                            let file = std::fs::read(&path).unwrap();
+                            let file = match std::fs::read(&path) {
+                                Ok(image_vec) => image_vec,
+                                Err(_) => vec![],
+                            };
 
-                            let prefix = String::from("data:image/png;base64,");
+                            let filename = std::path::Path::new(&path)
+                            .file_name()
+                            .unwrap_or(std::ffi::OsStr::new(""))
+                            .to_str()
+                            .unwrap()
+                            .to_string();
 
+                            let parts_of_filename: Vec<&str> = filename.split(".").collect();
+
+                            let mime = match parts_of_filename.last() {
+                                Some(m) => {
+                                    match *m {
+                                        "png" => IMAGE_PNG,
+                                        "jpg" => IMAGE_JPEG,
+                                        "jpeg" => IMAGE_JPEG,
+                                        "svg" => IMAGE_SVG,
+                                        &_ => TEXT_PLAIN  
+                                    }
+                                },
+                                None =>  TEXT_PLAIN,
+                            };
+
+                            let prefix = format!("data:{};base64,", mime);
                             let base64_image = base64::encode(&file);
 
                             match account.write().update_identity(IdentityUpdate::set_graphics_picture(prefix + base64_image.as_str())) {
