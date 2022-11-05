@@ -1,5 +1,5 @@
 use warp::{crypto::DID, multipass::identity::Identity};
-use regex;
+use regex::Regex;
 
 use crate::{state::ConversationInfo, Account};
 
@@ -44,15 +44,20 @@ pub fn get_pfp_from_did(did: DID, mp: &Account) -> String {
 }
 
 pub fn wrap_in_markdown(val: &str) -> String {
-    let re = regex::Regex::new(r"\b[**]+").unwrap();
-    let re2 = regex::Regex::new(r"[**]+\b").unwrap();
-    let re3 = regex::Regex::new(r"\b[__]+").unwrap();
-    let re4 = regex::Regex::new(r"[__]+\b").unwrap();
+    let regex_asterisk = Regex::new(r"\*{2}(.*?)\*{2}").unwrap();
+    let regex_tilda = Regex::new(r"\~{2}(.*?)\~{2}").unwrap();
+    let regex_one_underscore = Regex::new(r"_(.*?)_").unwrap();
+    let regex_two_underscores = Regex::new(r"__(.*?)__").unwrap();
 
-    let final_string = re.replace_all(val.clone(), r"</b>**");
-    let final_string = re2.replace_all(&final_string, r"**<b>");
-    let final_string = re3.replace_all(&final_string, r"__<strike>");
-    let final_string = re4.replace_all(&final_string, r"</strike>__");
+    let replacement_asterisk = "<span class=“delimiter”>**</span><b>$1</b><span class=“delimiter”>**</span>";
+    let replacement_tilda = "<span class=“delimiter”>~~</span><strike>$1</strike><span class=“delimiter”>~~</span>";
+    let replacement_one_underscore = "<span class=“delimiter”>_</span><i>$1</i><span class=“delimiter”>_</span>";
+    let replacement_two_underscore = "<span class=“delimiter”>__</span><u>$1</u><span class=“delimiter”>__</span>";
+
+    let final_string = regex_asterisk.replace(val.clone(), replacement_asterisk);
+    let final_string = regex_tilda.replace(&final_string, replacement_tilda);
+    let final_string = regex_one_underscore.replace(&final_string, replacement_one_underscore);
+    let final_string = regex_two_underscores.replace(&final_string, replacement_two_underscore);
 
     String::from(final_string)
 }
