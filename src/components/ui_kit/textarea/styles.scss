@@ -1,64 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
 .textarea-wrap {
-    min-width: 100px;
-    width: 100%;
+  min-height: 40px;
+  position: relative;
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+
+  .dynamic-input,
+  .shadow-input {
     min-height: 40px;
-    position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: var(--theme-text);
+    border-radius: 4px;
+    border: none;
+    background: var(--theme-foreground);
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    margin: 1px calc(1px + 0.5rem);
+    text-align: left;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    text-size: 11pt;
+    font-family: monospace;
+    line-height: 1.6;
+  }
 
-    .dynamic-input, .shadow-input {
-        min-height: 40px;
-        padding-left: 10px;
-        padding-right: 10px;
-        color: var(--theme-text);
-        border-radius: 4px;
-        border: none;
-        background: var(--theme-foreground);
-        box-sizing: border-box;
-        border: 1px solid transparent;
-        transition: 0.2s;
-        margin: 1px calc(1px + 0.5rem);
-        text-align: left;
-        padding: 0.4rem 1rem;
-        border-radius: 20px;
-        text-size: 11pt;
-        font-family: monospace;
-        line-height: 1.6;
+  .dynamic-input {
+    color: var(--theme-foreground);
+    caret-color: var(--theme-text);
+  }
+
+  .dynamic-input:focus {
+    outline: none;
+    border: 1px solid var(--theme-primary);
+  }
+
+  .dynamic-input:focus + .placeholder {
+    display: none;
+  }
+
+  .placeholder {
+    position: absolute;
+    z-index: 2;
+    color: var(--theme-placeholder);
+    top: 10px;
+    left: 1.65rem;
+    pointer-events: none;
+  }
+
+  .shadow-input {
+    position: absolute;
+    pointer-events: none;
+    background: transparent;
+    color: var(--theme-text);
+    z-index: 1;
+
+    .delimiter {
+      color: var(--theme-placeholder);
     }
-
-    .dynamic-input {
-        color: var(--theme-foreground);
-        caret-color: var(--theme-text);
-    }
-
-    .dynamic-input:focus {
-        outline: none;
-        border: 1px solid var(--theme-primary);
-    }
-
-    .dynamic-input:focus + .placeholder {
-        display: none;
-    }
-
-    .placeholder {
-        position: absolute;
-        z-index: 2;
-        color: var(--theme-placeholder);
-        top: 10px;
-        left: 1.65rem;
-        pointer-events: none;
-    }
-
-    .shadow-input {
-        position: absolute;
-        pointer-events: none;
-        background: transparent;
-        color: var(--theme-text);
-        z-index: 1;
-
-        .delimiter {
-            color: var(--theme-placeholder);
-        }
-    }
+  }
 }

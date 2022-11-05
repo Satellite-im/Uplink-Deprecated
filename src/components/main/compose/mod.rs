@@ -72,8 +72,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 }
                 div { class: "gradient_mask is_bottom scroll-fit-gradient-mask" },
             },
-            div {
-                class: "writer-container",
                 Write {
                     on_submit: move |message: String| {
                         text.set(String::from(""));
@@ -108,7 +106,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     },
                     on_upload: move |_| {}
                 }
-            },
         }
     })
 }
