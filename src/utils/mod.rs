@@ -49,10 +49,10 @@ pub fn wrap_in_markdown(val: &str) -> String {
     let regex_one_underscore = Regex::new(r"_(.*?)_").unwrap();
     let regex_two_underscores = Regex::new(r"__(.*?)__").unwrap();
 
-    let replacement_asterisk = "<span class=“delimiter”>**</span><b>$1</b><span class=“delimiter”>**</span>";
-    let replacement_tilda = "<span class=“delimiter”>~~</span><strike>$1</strike><span class=“delimiter”>~~</span>";
-    let replacement_one_underscore = "<span class=“delimiter”>_</span><i>$1</i><span class=“delimiter”>_</span>";
-    let replacement_two_underscore = "<span class=“delimiter”>__</span><u>$1</u><span class=“delimiter”>__</span>";
+    let replacement_asterisk = "<span class=\"delimiter\">**</span><b>$1</b><span class=\"delimiter\">**</span>";
+    let replacement_tilda = "<span class=\"delimiter\">~~</span><strike>$1</strike><span class=\"delimiter\">~~</span>";
+    let replacement_one_underscore = "<span class=\"delimiter\">_</span><i>$1</i><span class=\"delimiter\">_</span>";
+    let replacement_two_underscore = "<span class=\"delimiter\">__</span><u>$1</u><span class=\"delimiter\">__</span>";
 
     let final_string = regex_asterisk.replace(val.clone(), replacement_asterisk);
     let final_string = regex_tilda.replace(&final_string, replacement_tilda);

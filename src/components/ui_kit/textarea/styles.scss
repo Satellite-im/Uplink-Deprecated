@@ -56,5 +56,9 @@
         background: transparent;
         color: var(--theme-text);
         z-index: 1;
+
+        .delimiter {
+            color: var(--theme-placeholder);
+        }
     }
 }
