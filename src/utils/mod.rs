@@ -54,10 +54,10 @@ pub fn wrap_in_markdown(val: &str) -> String {
     let replacement_one_underscore = "<span class=\"delimiter\">_</span><i>$1</i><span class=\"delimiter\">_</span>";
     let replacement_two_underscore = "<span class=\"delimiter\">__</span><u>$1</u><span class=\"delimiter\">__</span>";
 
-    let final_string = regex_asterisk.replace(val.clone(), replacement_asterisk);
-    let final_string = regex_tilda.replace(&final_string, replacement_tilda);
-    let final_string = regex_one_underscore.replace(&final_string, replacement_one_underscore);
-    let final_string = regex_two_underscores.replace(&final_string, replacement_two_underscore);
+    let final_string = regex_asterisk.replace_all(val.clone(), replacement_asterisk);
+    let final_string = regex_tilda.replace_all(&final_string, replacement_tilda);
+    let final_string = regex_one_underscore.replace_all(&final_string, replacement_one_underscore);
+    let final_string = regex_two_underscores.replace_all(&final_string, replacement_two_underscore);
 
     String::from(final_string)
 }
