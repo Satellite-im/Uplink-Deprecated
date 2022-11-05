@@ -1,46 +1,53 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .topbar {
-    display: inline-flex;
-    flex-direction: row;
+  display: inline-flex;
+  flex-direction: row;
+  height: 40px;
+  padding: 1rem;
+
+  .pfp {
+    background: var(--theme-text-muted);
+    border-radius: 20px;
     height: 40px;
-    padding: 1rem;
+    width: 40px;
+  }
 
-    .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
+  .controls {
+    display: flex;
+    button {
+      margin: 0 0 0 0.5rem;
+    }
+  }
+
+  .who {
+    display: inline-flex;
+    flex: 1;
+    flex-direction: column;
+    height: 40px;
+    padding: 0 1rem;
+    text-align: left;
+
+    .top-row {
+      display: inline-flex;
+      flex-direction: row;
+
+      h3 {
+        margin: 0;
+      }
     }
 
-    .who {
-        display: inline-flex;
-        flex: 1;
-        flex-direction: column;
-        height: 40px;
-        padding: 0 1rem;
-        text-align: left;
-
-        .top-row {
-            display: inline-flex;
-            flex-direction: row;
-
-            h3 {
-                margin: 0;
-            }
-        }
-
-        .user-info-inline {
-            align-items: center;
-            display: inline-flex;
-        }
-
-        .did {
-            align-self: center;
-            color: var(--theme-text-darker);
-            font-size: var(--text-small);
-            margin-left: 1rem;
-            padding-top: 4px;
-        }
+    .user-info-inline {
+      align-items: center;
+      display: inline-flex;
     }
+
+    .did {
+      align-self: center;
+      color: var(--theme-text-darker);
+      font-size: var(--text-small);
+      margin-left: 1rem;
+      padding-top: 4px;
+    }
+  }
 }

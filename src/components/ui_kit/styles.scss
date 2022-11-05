@@ -20,6 +20,11 @@
   --sidebar-width: 300px;
 }
 
+[contenteditable] {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
 .animate__animated {
   --animate-duration: 0.15s;
 }

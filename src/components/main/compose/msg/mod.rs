@@ -10,7 +10,7 @@ use warp::{raygun::Message, crypto::DID};
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        icon_textarea::IconTextArea,
+        textarea::TextArea,
         profile_picture::PFP
     },
     utils::{self, get_meta::{SiteMeta, get_meta}},
@@ -177,11 +177,11 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 icon: Shape::EmojiHappy,
                                 on_pressed: move |_| {}
                             },
-                            IconTextArea {
-                                icon: Shape::Reply,
+                            TextArea {
                                 placeholder: l.send_a_reply.to_string(),
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
+                                    
                                     popout.set(false);
                                 },
                                 text: text.clone(),

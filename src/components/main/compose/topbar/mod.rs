@@ -83,7 +83,20 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     div {
                         class: "controls",
                         IconButton {
+                            icon: Shape::Heart,
+                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+
+                            },
+                        },
+                        IconButton {
                             icon: Shape::Phone,
+                            on_pressed: move |_| {
+                                cx.props.on_call.call(());
+                            },
+                        },
+                        IconButton {
+                            icon: Shape::VideoCamera,
                             on_pressed: move |_| {
                                 cx.props.on_call.call(());
                             },
