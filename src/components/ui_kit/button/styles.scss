@@ -12,6 +12,15 @@
   color: var(--theme-text-bright);
   stroke: var(--theme-text-bright);
   padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    fill: transparent;
+    stroke: var(--theme-text-bright);
+    stroke-width: 2px;
+  }
 }
 
 button:disabled,
@@ -39,11 +48,6 @@ button[disabled] {
 
 .button-secondary:active {
   background-color: var(--theme-secondary);
-}
-
-.button span {
-  display: inline-block;
-  margin-bottom: 8px;
 }
 
 .button-lg {

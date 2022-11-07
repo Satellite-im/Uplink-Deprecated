@@ -4,15 +4,6 @@
   user-select: none;
   min-width: 40px;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  svg {
-    fill: transparent;
-    stroke: var(--theme-text-bright);
-    stroke-width: 2px;
-  }
 
   &-lg {
     min-width: 52px;
