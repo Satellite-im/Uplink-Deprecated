@@ -45,8 +45,8 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 rsx! (
                     div {
                         class: "pfp"
-                    }  
-                )   
+                    }
+                )
                 } else {
                     rsx!(PFP {
                         src: profile_picture,

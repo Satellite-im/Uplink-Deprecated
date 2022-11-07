@@ -14,32 +14,28 @@ pub struct SiteMeta {
     pub title: String,
     pub description: String,
     pub icon: String,
-    pub url: String
+    pub url: String,
 }
 
 pub async fn get_meta(url: &str) -> Result<SiteMeta> {
-    let content = reqwest::get(url)
-        .await?
-        .text()
-        .await?;
+    let content = reqwest::get(url).await?.text().await?;
 
     let doc = Document::from(content.as_str());
-    let title = doc
-        .find(Name("title"))
-        .next()
-        .unwrap();
+    let title = doc.find(Name("title")).next().unwrap();
 
     let desc = doc
         .find(Name("meta"))
         .filter_map(|n| {
             let attr = n.attr("name");
             let is_desc = match attr {
-                Some(v) => if v.eq("description") {
-                    n.attr("content")
-                } else {
-                    None
-                },
-                None => None
+                Some(v) => {
+                    if v.eq("description") {
+                        n.attr("content")
+                    } else {
+                        None
+                    }
+                }
+                None => None,
             };
             is_desc
         })
@@ -51,12 +47,14 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
         .filter_map(|n| {
             let attr = n.attr("rel");
             let is_desc = match attr {
-                Some(v) => if v.eq("icon") {
-                    n.attr("href")
-                } else {
-                    None
-                },
-                None => None
+                Some(v) => {
+                    if v.eq("icon") {
+                        n.attr("href")
+                    } else {
+                        None
+                    }
+                }
+                None => None,
             };
             is_desc
         })
@@ -67,6 +65,6 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
         title: title.text(),
         description: String::from(desc),
         icon: String::from(icon),
-        url: String::from(url)
+        url: String::from(url),
     })
 }

@@ -1,18 +1,17 @@
 use crate::{
     components::ui_kit::{
+        profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-        profile_picture::PFP
     },
-    utils,
     state::{Actions, ConversationInfo, LastMsgSent},
-    Account, Messaging, LANGUAGE, STATE,
+    utils, Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
+use warp::crypto::DID;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
 use warp::raygun::{Message, MessageEventKind, RayGun, RayGunStream};
-use warp::crypto::DID;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -248,8 +247,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     }
 }
 
-
-
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, did: DID) -> Element {
@@ -267,8 +264,8 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
                 rsx! (
                     div {
                         class: "pfp"
-                    }  
-                )   
+                    }
+                )
             } else {
                 rsx!(PFP {
                     src: profile_picture,

@@ -1,8 +1,8 @@
 use crate::{
-    components::ui_kit::{badge::Badge, button::Button, popup::Popup, },
-    Account, LANGUAGE, utils,
+    components::ui_kit::{badge::Badge, button::Button, popup::Popup},
+    utils, Account, LANGUAGE,
 };
-use dioxus::{prelude::*};
+use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::multipass::identity::Identity;
 
@@ -74,7 +74,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             h3 {
                                 class: "username",
                                 "{username}"
-                            }, 
+                            },
                             p {
                                 class: "status",
                                 "{status}, here is status"

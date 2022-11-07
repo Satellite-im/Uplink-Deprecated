@@ -1,8 +1,8 @@
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
-use dioxus_heroicons::Icon;
 use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::Icon;
 use sir::css;
 
 use crate::{
@@ -49,7 +49,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 }
                 Err(_) => error.set("Unexpected error has occurred".into()),
             }
-            
         }
     };
 
@@ -99,8 +98,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 }
                             }
                     },
-        
-                    
+
+
                     div { class: "m-bottom" },
                     div {
                         class: "full-width",
