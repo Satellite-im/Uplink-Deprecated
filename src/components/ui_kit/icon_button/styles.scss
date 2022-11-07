@@ -4,16 +4,19 @@
   user-select: none;
   min-width: 40px;
   padding: 0;
-}
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-.icon-button svg {
-  margin-bottom: 0;
-  margin-right: 0;
-  fill: transparent;
-}
+  svg {
+    fill: transparent;
+    stroke: var(--theme-text-bright);
+    stroke-width: 2px;
+  }
 
-.icon-button-lg {
-  min-width: 52px;
-  height: 52px;
-  border-radius: 26px;
+  &-lg {
+    min-width: 52px;
+    height: 52px;
+    border-radius: 26px;
+  }
 }
