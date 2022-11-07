@@ -21,8 +21,8 @@
 }
 
 [contenteditable] {
-    -webkit-user-select: text;
-    user-select: text;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .animate__animated {
@@ -31,18 +31,18 @@
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
   cursor: pointer;
 }
 
 .selectable {
-    -webkit-user-select: text;
-    user-select: text;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 body,
@@ -72,8 +72,8 @@ hr {
   text-align: center;
 }
 
- /* width */
- ::-webkit-scrollbar {
+/* width */
+::-webkit-scrollbar {
   width: 5px;
   border-radius: 2.5px;
 }
@@ -91,7 +91,6 @@ hr {
   transition: opacity 1000ms ease;
   -webkit-transition: opacity 1000ms ease;
 }
-
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--theme-primary);
@@ -266,7 +265,6 @@ label {
 }
 
 @keyframes loadingK {
-
   0%,
   100% {
     color: var(--theme-placeholder);
@@ -278,7 +276,6 @@ label {
 }
 
 @keyframes loadingJ {
-
   0%,
   100% {
     transform: translate(0, 0);

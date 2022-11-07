@@ -1,39 +1,39 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-.photo-picker{
-    width: 20;
+.photo-picker {
+  width: 20;
 }
 
 .auth {
+  align-items: center;
+  display: flex;
+  height: 80%;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+
+  .error_text {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .container {
     align-items: center;
     display: flex;
-    height: 80%;
+    flex-direction: column;
     justify-content: center;
-    text-align: center;
-    width: 100%;
+    max-width: 720px;
+    min-width: 300px;
+    position: relative;
 
-    .error_text {
-        margin-bottom: 1rem;
-        text-align: center;
+    .full-width {
+      .input {
+        width: 100%;
+      }
+
+      .button {
+        width: 100%;
+      }
     }
-
-    .container {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        max-width: 720px;
-        min-width: 300px;
-        position: relative;
-
-        .full-width {
-            .input {
-                width: 100%;
-            }
-
-            .button {
-                width: 100%;
-            }
-        }
-    }
+  }
 }

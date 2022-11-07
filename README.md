@@ -1,4 +1,3 @@
-
 <h1 align="center">
   <a href="https://satellite.im" target="_blank">
   <img src="extra/images/logo.png" width=200 height=200/><br>
@@ -26,21 +25,25 @@ Guidelines for contributing are located in the [`CONTRIBUTING.md`](CONTRIBUTING.
 
 You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system.
 
-|Distribution|Commands|
-|--|--|
-|Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
-|Arch|pacman -S gtk3 cmake protobuf|
-|MacOS|brew install protobuf, xcode-select --install, curl https://sh.rustup.rs -sSf | sh -s -- -y|
-|Windows|¯\\\_(ツ)\_/¯|
+| Distribution    | Commands                                                                             |
+| --------------- | ------------------------------------------------------------------------------------ | ----------- |
+| Debian & Ubuntu | apt get -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler |
+| Arch            | pacman -S gtk3 cmake protobuf                                                        |
+| MacOS           | brew install protobuf, xcode-select --install, curl https://sh.rustup.rs -sSf        | sh -s -- -y |
+| Windows         | ¯\\\_(ツ)\_/¯                                                                        |
 
 ## Building from source
 
 ### Linux
+
 // TODO
+
 ### Windows
+
 ¯\\\_(ツ)\_/¯
 
 ### Mac
+
 // TODO
 
 ## Running
@@ -56,6 +59,7 @@ The executable has a few command line options that might come in handy:
 
 You can specify a window title and a custom path for storage which is useful for local AB testing.
 `cargo run -- --title "User 1" --path .user1`
+
 > Note: You can also pass these options directly to the binary by omitting the `--`.
 
 ## Local Testing
@@ -66,7 +70,7 @@ Please also read through the [Physical Testing Checklist](https://github.com/Sat
 
 ## Resetting Data
 
-It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project. Note that on most *nix based systems the .warp file is stored in your home directory unless otherwise configured.
+It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project. Note that on most \*nix based systems the .warp file is stored in your home directory unless otherwise configured.
 
 ## Contributions
 
