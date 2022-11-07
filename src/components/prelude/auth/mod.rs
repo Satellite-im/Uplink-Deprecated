@@ -34,8 +34,12 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
     let mp = cx.props.account.clone();
-    let new_account = move |_| {
+    let create_identity = move || {
         let username = username.trim();
+        // the input box will set an error message on invalid input. ensure this hasn't happened.
+        if !(*error.current()).is_empty() {
+            return;
+        }
         if username.is_empty() {
             error.set("Username is required".into())
         } else {
@@ -51,28 +55,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             }
         }
     };
-
-    let mp2 = cx.props.account.clone();
-    let new_account_2 = move |_| {
-        let username = username.trim();
-        if username.is_empty() {
-            error.set("Username is required".into())
-        } else {
-            match mp2.write().create_identity(Some(username), None) {
-                Ok(_) => {
-                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/loading", None, None);
-                }
-                Err(warp::error::Error::InvalidLength { .. }) => {
-                    error.set("Username length is invalid".into())
-                }
-                Err(e) => {
-                    println!("{}", e);
-                    error.set("Unexpected error has occurred".into())
-                }
-            }
-        }
-    };
+    let create_identity2 = create_identity.clone();
 
     cx.render(rsx! {
         div {
@@ -105,7 +88,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         class: "full-width",
                         IconInput {
                             icon: Shape::Identification,
-                            value: username.clone().to_string(),
                             placeholder: String::from("Choose a username.."),
                             on_change: move | evt: FormEvent | {
                                 error.set(String::from(""));
@@ -117,10 +99,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     error.set(String::from("Username cannot contain spaces."));
                                     return;
                                 }
-
                                 username.set(evt.value.clone());
                             },
-                            on_enter: new_account_2,
+                            on_enter: move |_| create_identity(),
                         },
                         p {
                             class: "{error_class}",
@@ -134,7 +115,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 true => button::State::Primary,
                                 false => button::State::Secondary,
                             },
-                            on_pressed: new_account,
+                            on_pressed: move |_| create_identity2(),
                         }
                     }
                 }

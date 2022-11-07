@@ -83,7 +83,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             IconInput {
                 icon: Shape::Search,
                 placeholder: String::from("Search"),
-                value: String::from(""),
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },

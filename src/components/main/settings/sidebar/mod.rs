@@ -28,7 +28,6 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             IconInput {
                 icon: Shape::Search,
                 placeholder: String::from("Search"),
-                value: String::from(""),
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },

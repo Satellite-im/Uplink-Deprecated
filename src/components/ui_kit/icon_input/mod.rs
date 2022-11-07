@@ -11,7 +11,6 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     icon: Shape,
-    value: String,
     on_change: EventHandler<'a, FormEvent>,
     on_enter: EventHandler<'a, ()>,
     placeholder: String,
@@ -28,8 +27,9 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             input {
                 class: "input",
                 placeholder: "{cx.props.placeholder}",
-                oninput: |e| cx.props.on_change.call(e),
-                value: "{cx.props.value}",
+                oninput: |e: FormEvent| {
+                    cx.props.on_change.call(e);
+                },
                 onkeyup: |evt| {
                     if evt.key_code == KeyCode::Enter {
                         cx.props.on_enter.call(())

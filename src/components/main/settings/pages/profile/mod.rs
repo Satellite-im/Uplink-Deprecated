@@ -19,6 +19,15 @@ pub fn Profile(cx: Scope<Props>) -> Element {
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, String::new);
     let mp = cx.props.account.clone();
+
+    // todo: why does this not make the status persist when the settings page is reloaded/
+    let status_msg = mp
+        .read()
+        .get_own_identity()
+        .ok()
+        .and_then(|i| i.status_message())
+        .unwrap_or_else(String::new);
+
     let set_status = move |_: _| {
         let mp = mp.clone();
         edit.set(false);
@@ -27,8 +36,10 @@ pub fn Profile(cx: Scope<Props>) -> Element {
             Ok(me) => me,
             Err(_) => Identity::default(),
         };
-        my_identity.set_status_message(Some(status.to_string()));
+        my_identity.set_status_message(Some((*status.current()).clone()));
+        println!("setting status: {}", &*status.current());
     };
+    let set_status2 = set_status.clone();
 
     cx.render(rsx! {
         div {
@@ -55,9 +66,10 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     class: "input_status",
                     IconInput {
                         icon: Shape::PencilAlt,
-                        placeholder: status.to_string(),
-                        value: status.to_string(),
-                        on_change: move |e: FormEvent| status.set(e.value.clone()),
+                        placeholder: status_msg,
+                        on_change: move |e: FormEvent| {
+                            status.set(e.value.clone());
+                        },
                         on_enter: set_status
                     },
                 },
@@ -65,7 +77,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     Button {
                         text: l.save_status.to_string(),
                         icon: Shape::Check,
-                        on_pressed: move |_| {},
+                        on_pressed: move |_| set_status2(()),
                     }
                 }
 

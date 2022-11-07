@@ -15,7 +15,7 @@ use crate::{
         main::friends::{friend::Friend, request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
     },
-    Account, Messaging, LANGUAGE, TOAST_MANAGER,
+    Account, Language, Messaging, LANGUAGE, TOAST_MANAGER,
 };
 use warp::crypto::DID;
 use warp::multipass::Friends;
@@ -37,7 +37,7 @@ pub struct Props<'a> {
 pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let mp = cx.props.account.clone();
-    let l = use_atom_ref(&cx, LANGUAGE).read();
+    let l = use_atom_ref(&cx, LANGUAGE).read().clone();
     let l2 = l.clone();
     let incomingRequestsLang = { l.incoming_requests.to_string() };
     let outgoingRequestsLang = { l.outgoing_requests.to_string() };
@@ -57,39 +57,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         &cx,
         (friends, incoming, outgoing, &mp),
         |(friends, incoming, outgoing, mp)| async move {
-            // let mut stream = match mp.subscribe() {
-            //     Ok(stream) => stream,
-            //     Err(_) => return,
-            // };
-
-            // while let Some(event) = stream.next().await {
-            //     match event {
-            //         warp::multipass::MultiPassEventKind::FriendRequestReceived { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRequestRejected { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRequestClosed { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //             outgoing.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendAdded { did } => {
-            //             if mp.has_friend(&did).is_ok() {
-            //                 friends.needs_update();
-            //             }
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRemoved { did } => {
-            //             if mp.has_friend(&did).is_err() {
-            //                 friends.needs_update();
-            //             }
-            //         }
-            //         _ => {}
-            //     }
-            // }
-
             loop {
-                let friends_list: HashSet<_> =  HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
+                let friends_list: HashSet<_> =
+                    HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
                 let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
                 let outgoing_list = mp.read().list_outgoing_request().unwrap_or_default();
 
@@ -109,6 +79,36 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         },
     );
+
+    // occurs when a friend is selected via IconInput or IconButton
+    let select_friend = move |l: Language| {
+        let did = DID::try_from((*remote_friend.current()).clone());
+        remote_friend.set("".into());
+        match did {
+            Ok(d) => {
+                match cx.props.account.clone().write().send_request(&d) {
+                    Ok(_) => {
+                        let single_toast = ToastInfo {
+                            position: Position::TopRight,
+                            ..ToastInfo::simple(&l.request_sent)
+                        };
+                        let _id = toast.write().popup(single_toast);
+                        if !(*add_error.current()).is_empty() {
+                            add_error.set(String::new());
+                        }
+                    }
+                    Err(e) => add_error.set(match e {
+                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
+                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
+                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
+                        _ => l.something_went_wrong.to_string(),
+                    }),
+                };
+            }
+            Err(_) => add_error.set(l.invalid_code.to_string()),
+        }
+    };
+    let select_friend2 = select_friend.clone();
 
     cx.render(rsx! {
         Popup {
@@ -161,77 +161,21 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             IconInput {
                                 placeholder: l.add_placeholder.clone(),
                                 icon: Shape::UserAdd,
-                                value: remote_friend.to_string(),
                                 on_change: move |evt: FormEvent| {
-                                    add_error.set(String::new());
+                                    if !(*add_error.current()).is_empty() {
+                                        add_error.set(String::new());
+                                    }
                                     remote_friend.set(evt.value.clone());
                                 },
                                 on_enter: move |_| {
-                                    let did = DID::try_from(remote_friend.clone().to_string());
-                                    match did {
-                                        Ok(d) => {
-                                            match cx.props.account.clone()
-                                                .write()
-                                                .send_request(&d)
-                                            {
-                                                Ok(_) => {
-                                                    let single_toast = ToastInfo {
-                                                        position: Position::TopRight,
-                                                        ..ToastInfo::simple(l2.request_sent.clone().as_ref())
-                                                    };
-                                                    let _id = toast.write().popup(single_toast);
-                                                    add_error.set("".into());
-                                                    remote_friend.set("".into());
-                                                }
-                                                Err(e) => {
-                                                    remote_friend.set("".into());
-                                                    add_error.set(match e {
-                                                        warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
-                                                        warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
-                                                        warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.clone(),
-                                                        _ => l2.something_went_wrong.to_string()
-                                                    })
-                                                },
-                                            };
-                                        },
-                                        Err(_) => add_error.set(l2.invalid_code.clone()),
-                                    }
+                                    select_friend(l.clone());
                                 }
                             }
                             IconButton {
                                 icon: Shape::Plus,
                                 on_pressed: move |e: UiEvent<MouseData>| {
                                     e.cancel_bubble();
-
-                                    let did = DID::try_from(remote_friend.clone().to_string());
-                                    match did {
-                                        Ok(d) => {
-                                            match cx.props.account.clone()
-                                                .write()
-                                                .send_request(&d)
-                                            {
-                                                Ok(_) => {
-                                                    let single_toast = ToastInfo {
-                                                        position: Position::TopRight,
-                                                        ..ToastInfo::simple(&l.request_sent)
-                                                    };
-                                                    let _id = toast.write().popup(single_toast);
-                                                    add_error.set("".into());
-                                                    remote_friend.set("".into());
-                                                }
-                                                Err(e) => {
-                                                    remote_friend.set("".into());
-                                                    add_error.set(match e {
-                                                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
-                                                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
-                                                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
-                                                        _ => l.something_went_wrong.to_string()
-                                                    })
-                                                },
-                                            };
-                                        },
-                                        Err(_) => add_error.set(l.invalid_code.to_string()),
-                                    }
+                                    select_friend2(l2.clone());
                                 },
                             }
                         },
@@ -244,7 +188,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         class: "scroll_wrap",
                         div {
                             class: "scrolling",
-                            (incoming.len() > 0).then(|| rsx!(
+                            (!incoming.is_empty()).then(|| rsx!(
                                 label {
                                 "{incomingRequestsLang}"
                                 },
@@ -286,7 +230,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     )),
                                 }
                             )),
-                            (outgoing.len() > 0).then(|| rsx!(
+                            (!outgoing.is_empty()).then(|| rsx!(
                                 label {
                                     "{outgoingRequestsLang}"
                                 },
