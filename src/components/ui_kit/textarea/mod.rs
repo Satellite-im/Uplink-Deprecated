@@ -2,6 +2,7 @@ use crate::utils;
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
 
+// for more information about this, see here: https://github.com/DioxusLabs/dioxus/issues/611
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]
 #[allow(non_snake_case)]
@@ -15,7 +16,7 @@ pub fn TextArea<'a>(
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
 
     let inner_html = cx.use_hook(|_| " ");
-    let inner_html2 = &mut inner_html.clone();
+    let inner_html2 = &mut <&str>::clone(inner_html);
     if clearing_state.get() {
         *inner_html = "";
         cx.needs_update();
