@@ -254,7 +254,7 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
         IdentityStatus::Online => "online",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did.clone(), &account);
+    let profile_picture = utils::get_pfp_from_did(did.clone(), account);
 
     cx.render(rsx! {
         div {

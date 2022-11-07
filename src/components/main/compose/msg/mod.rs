@@ -37,16 +37,14 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let finder = LinkFinder::new();
-    let content = cx.props.message.value().clone();
-    let joined_a = content.clone().join("\n");
+    let content = cx.props.message.value();
+    let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
 
-    let links: Vec<_> = finder.links(&joined_b).collect();
-
-    let has_links = if links.len() > 0 { true } else { false };
+    let has_links = finder.links(&joined_b).count() != 0;
 
     // Parses links and grabs data like the title, favicon and description
-    let fetch_meta = use_future(&cx, &joined_a.clone(), |content| async move {
+    let fetch_meta = use_future(&cx, &joined_a, |content| async move {
         if has_links {
             let s = content.as_str();
 
@@ -73,7 +71,6 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
     let value = cx.props.message.clone().value().join("\n");
-    let value3 = value.clone();
     let timestamp = cx.props.message.clone().date();
     let ht = HumanTime::from(timestamp);
     let remote = match cx.props.remote {
@@ -118,10 +115,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // and we therefore must enable it explicitly.
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
-    let parser = Parser::new_ext(&value3, options);
+    let parser = Parser::new_ext(&value, options);
 
     // Write to String buffer.
-    let mut html_output: String = String::with_capacity(value3.clone().len() * 3 / 2);
+    let mut html_output: String = String::with_capacity(value.len() * 3 / 2);
     html::push_html(&mut html_output, parser);
 
     let (output1, output2, output3) = (
@@ -237,7 +234,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output2}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
@@ -260,7 +257,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output3}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
