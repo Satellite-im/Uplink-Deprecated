@@ -4,7 +4,6 @@ use crate::{
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use warp::multipass::identity::Identity;
 
 #[derive(Props)]
 pub struct Props<'a> {
