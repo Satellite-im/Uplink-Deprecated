@@ -135,8 +135,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 let conversation_id = message.conversation_id();
                 let msg_sender = message.sender();
                 let is_remote = ident.did_key() != msg_sender;
-                let value = message.value().join("\n");
-
                 let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
                 let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
 
@@ -163,7 +161,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 Ok(message) => {
                                     rsx!{
                                         Reply {
-                                            message: value,
+                                            message: message.value().join("\n"),
                                             is_remote: is_remote,
                                             account: cx.props.account.clone(),
                                             sender: message.sender(),
