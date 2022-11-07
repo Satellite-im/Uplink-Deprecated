@@ -1,8 +1,8 @@
 use crate::{
     components::ui_kit::{
-        profile_picture::PFP,
         activity_indicator::ActivityIndicator,
         icon_button::IconButton,
+        profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     utils::{self, config::Config},
@@ -47,8 +47,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         rsx! (
                             div {
                                 class: "pfp"
-                            }  
-                        )   
+                            }
+                        )
                     } else {
                         rsx!(PFP {
                             src: profile_picture,

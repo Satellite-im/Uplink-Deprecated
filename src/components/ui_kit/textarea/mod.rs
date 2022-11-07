@@ -1,6 +1,6 @@
+use crate::utils;
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
-use crate::utils;
 
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]

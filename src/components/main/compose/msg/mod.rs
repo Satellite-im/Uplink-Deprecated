@@ -5,16 +5,19 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
-use warp::{raygun::Message, crypto::DID};
+use warp::{crypto::DID, raygun::Message};
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
+        profile_picture::PFP,
         textarea::TextArea,
-        profile_picture::PFP
     },
-    utils::{self, get_meta::{SiteMeta, get_meta}},
-    LANGUAGE, Account,
+    utils::{
+        self,
+        get_meta::{get_meta, SiteMeta},
+    },
+    Account, LANGUAGE,
 };
 
 pub mod embeds;
@@ -38,9 +41,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let joined_a = content.clone().join("\n");
     let joined_b = joined_a.clone();
 
-    let links: Vec<_> = finder
-        .links(&joined_b)
-        .collect();
+    let links: Vec<_> = finder.links(&joined_b).collect();
 
     let has_links = if links.len() > 0 { true } else { false };
 
@@ -49,16 +50,16 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         if has_links {
             let s = content.as_str();
 
-            let links: Vec<_> = finder
-                .links(s)
-                .collect();
+            let links: Vec<_> = finder.links(s).collect();
 
             let first_link = match links.first() {
                 Some(l) => l.as_str(),
-                None => ""
+                None => "",
             };
             get_meta(first_link).await
-        } else { Ok(SiteMeta::default()) }
+        } else {
+            Ok(SiteMeta::default())
+        }
     });
 
     let meta = match fetch_meta.value() {
@@ -108,7 +109,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
-    let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+    let profile_picture =
+        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
 
@@ -122,7 +124,11 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let mut html_output: String = String::with_capacity(value3.clone().len() * 3 / 2);
     html::push_html(&mut html_output, parser);
 
-    let (output1, output2, output3) = (html_output.clone(), html_output.clone(), html_output.clone());
+    let (output1, output2, output3) = (
+        html_output.clone(),
+        html_output.clone(),
+        html_output.clone(),
+    );
 
     cx.render(rsx! (
         div {
