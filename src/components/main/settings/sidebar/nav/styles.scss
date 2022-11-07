@@ -10,7 +10,8 @@
       margin: 0.5rem 0;
       .button {
         background-color: transparent;
-        width: 90%;
+        width: 100%;
+        max-width: 100%;
         &:hover {
           background-color: var(--theme-borders);
         }

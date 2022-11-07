@@ -54,6 +54,10 @@
       min-height: 0;
     }
 
+    &.show {
+      transform: unset;
+    }
+
     &.full {
       height: 100%;
       max-height: 90vh;
