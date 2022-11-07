@@ -5,9 +5,10 @@
   height: 100px;
   background: var(--theme-secondary);
   border-radius: 50px;
-  display: inline-block;
+  display: flex;
   position: relative;
   justify-content: center;
+  align-items: center;
 }
 
 .profile_photo {

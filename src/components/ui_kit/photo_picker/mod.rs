@@ -21,9 +21,8 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let show_profile_picture = base64_picture.is_empty();
 
     cx.render(rsx! {
-        div {
-            class: "photo-picker",
             div {
+                class: "photo-picker",
                 if show_profile_picture {
                     rsx! {
                         Icon {
@@ -41,7 +40,6 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                         }
                     }
                 }
-            }
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
