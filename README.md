@@ -24,13 +24,13 @@ Guidelines for contributing are located in the [`CONTRIBUTING.md`](CONTRIBUTING.
 
 ## Prerequisites
 
-You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system.
+You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system. Mac setup depends on [Homebrew](https://brew.sh).
 
 |Distribution|Commands|
 |--|--|
 |Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
 |Arch|pacman -S gtk3 cmake protobuf|
-|MacOS|brew install protobuf, xcode-select --install, curl https://sh.rustup.rs -sSf | sh -s -- -y|
+|MacOS|xcode-select --install, brew install protobuf cmake rustup-init|
 |Windows|¯\\\_(ツ)\_/¯|
 
 ## Building from source

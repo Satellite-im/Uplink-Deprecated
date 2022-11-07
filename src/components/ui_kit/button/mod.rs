@@ -51,28 +51,24 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     cx.render(match cx.props.icon {
         Some(icon) => rsx! {
-            div {
-                button {
-                    class: "{class}",
-                    onclick: move |evt| cx.props.on_pressed.call(evt),
-                    disabled: "{disabled}",
-                    Icon {
-                        icon: icon,
-                    },
-                    span {
-                        "{text}"
-                    }
+            button {
+                class: "{class}",
+                onclick: move |evt| cx.props.on_pressed.call(evt),
+                disabled: "{disabled}",
+                Icon {
+                    icon: icon,
+                },
+                span {
+                    "{text}"
                 }
             }
         },
         None => rsx! {
-            div {
-                button {
-                    class: "{class}",
-                    disabled: "{disabled}",
-                    onclick: move |evt| cx.props.on_pressed.call(evt),
-                    "{text}"
-                }
+            button {
+                class: "{class}",
+                disabled: "{disabled}",
+                onclick: move |evt| cx.props.on_pressed.call(evt),
+                "{text}"
             }
         },
     })

@@ -57,6 +57,5 @@ pub fn TextArea<'a>(
     };
 
     clearing_state.set(false);
-    inner_html = " ";
     cx.render(elm)
 }

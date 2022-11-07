@@ -40,7 +40,7 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
             is_desc
         })
         .next()
-        .unwrap();
+        .unwrap_or_default();
 
     let icon = doc
         .find(Name("link"))
@@ -59,7 +59,7 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
             is_desc
         })
         .next()
-        .unwrap();
+        .unwrap_or_default();
 
     Ok(SiteMeta {
         title: title.text(),
