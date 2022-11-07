@@ -15,10 +15,9 @@ pub fn TextArea<'a>(
 ) -> Element<'a> {
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
 
-    let inner_html = cx.use_hook(|_| " ");
-    let inner_html2 = &mut <&str>::clone(inner_html);
+    let mut inner_html = cx.use_hook(|_| " ").clone();
     if clearing_state.get() {
-        *inner_html = "";
+        inner_html = "";
         cx.needs_update();
     }
 
@@ -60,6 +59,5 @@ pub fn TextArea<'a>(
     };
 
     clearing_state.set(false);
-    *inner_html2 = " ";
     cx.render(elm)
 }
