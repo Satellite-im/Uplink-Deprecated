@@ -43,16 +43,14 @@ pub fn IconButton<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     };
 
     cx.render(rsx! {
-        div {
-            button {
-                class: "{class}",
-                onclick: move |evt| cx.props.on_pressed.call(evt),
-                disabled: "{disabled}",
-                Icon {
-                    icon: cx.props.icon,
-                },
-                cx.props.text.clone().map(|text| rsx!("{text}")),
-            }
+        button {
+            class: "{class}",
+            onclick: move |evt| cx.props.on_pressed.call(evt),
+            disabled: "{disabled}",
+            Icon {
+                icon: cx.props.icon,
+            },
+            cx.props.text.clone().map(|text| rsx!("{text}")),
         }
     })
 }

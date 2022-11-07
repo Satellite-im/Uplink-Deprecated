@@ -25,7 +25,9 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
 
+    #[allow(unused_variables)]
     let box_right = "🭽";
+    #[allow(unused_variables)]
     let box_left = "🭾";
 
     #[cfg(target_os = "macos")]
