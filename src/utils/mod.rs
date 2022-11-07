@@ -35,16 +35,15 @@ pub fn get_username_from_did(did: DID, mp: &Account) -> String {
         .unwrap_or_else(String::new)
 }
 
-pub fn get_pfp_from_did(did: DID, mp: &Account) -> String {
+pub fn get_pfp_from_did(did: DID, mp: &Account) -> Option<String> {
     let display_user = mp.read().get_identity(did.into()).unwrap_or_default();
     display_user
         .first()
         .map(|ident| ident.graphics().profile_picture())
-        .unwrap_or_default()
 }
 
 pub fn wrap_in_markdown(val: &str) -> String {
-    let replace_newlines = val.clone().replace("\n", "<br />");
+    let replace_newlines = val.replace('\n', "<br />");
 
     let regex_asterisk = Regex::new(r"\*{2}(.*?)\*{2}").unwrap();
     let regex_tilda = Regex::new(r"\~{2}(.*?)\~{2}").unwrap();

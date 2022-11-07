@@ -27,6 +27,9 @@
 
   .profile-body {
     width: 100%;
+    button {
+      display: inline-flex;
+    }
 
     .small-did {
       font-size: 8pt;

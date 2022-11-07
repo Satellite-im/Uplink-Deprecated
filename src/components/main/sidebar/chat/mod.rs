@@ -254,23 +254,14 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
         IdentityStatus::Online => "online",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did.clone(), &account);
+    let profile_picture = utils::get_pfp_from_did(did.clone(), account);
 
     cx.render(rsx! {
         div {
             class: "pfp-container",
-
-            if profile_picture.is_empty() {
-                rsx! (
-                    div {
-                        class: "pfp"
-                    }
-                )
-            } else {
-                rsx!(PFP {
-                    src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
-                })
+            PFP {
+                src: profile_picture,
+                size: crate::components::ui_kit::profile_picture::Size::Normal
             },
             div {
                 class: "pfs {is_online}"
