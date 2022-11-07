@@ -37,7 +37,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
             Err(_) => Identity::default(),
         };
         my_identity.set_status_message(Some((*status.current()).clone()));
-        println!("setting status: {}", &*status.current());
+        //println!("setting status: {}", &*status.current());
     };
     let set_status2 = set_status.clone();
 
