@@ -86,9 +86,8 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                         }
                     };
 
-                    match account.write().update_identity(IdentityUpdate::set_graphics_picture(image)) {
-                        Ok(_) => {},
-                        Err(e) => {println!("{}", e);}
+                    if let Err(e) =  account.write().update_identity(IdentityUpdate::set_graphics_picture(image)) {
+                        println!("{}", e);
                     }
                     let identity = account.read().get_own_identity().unwrap();
                     let image = identity.graphics().profile_picture();
