@@ -1,23 +1,24 @@
 .input_status {
-  width: 60%;
+    width: 60%;
 }
 .change-status {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 .profile_header {
-  background: var(--theme-text-muted);
-  border-radius: 8px 8px 0 0;
-  height: 140px;
-  margin-bottom: 40px;
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  justify-items: center;
+    background: var(--theme-text-muted);
+    border-radius: 8px 8px 0 0;
+    height: 140px;
+    margin-bottom: 40px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+
 }
 
 .profile_picture {
-  margin-top: 80px;
+    margin-top: 80px;
 }

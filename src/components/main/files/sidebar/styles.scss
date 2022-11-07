@@ -1,47 +1,46 @@
 #files {
-  #sidebar {
-    width: var(--sidebar-width);
-    height: 100%;
-    padding: 1rem;
-    border-right: 1px solid var(--theme-borders);
+    #sidebar {
+        width: var(--sidebar-width);
+        height: 100%;
+        padding: 1rem;
+        border-right: 1px solid var(--theme-borders);
 
-    .tree_folder,
-    .tree_item {
-      display: inline-flex;
-      flex-direction: column;
-      width: 100%;
-      padding-left: 0.25rem;
-      margin: 0.25rem;
-      position: relative;
-      cursor: pointer;
-      user-select: none;
-      font-family: "Poppins", sans-serif !important;
-      color: var(--theme-text-darker);
+        .tree_folder, .tree_item {
+            display: inline-flex;
+            flex-direction: column;
+            width: 100%;
+            padding-left: 0.25rem;
+            margin: 0.25rem;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            font-family: "Poppins",sans-serif !important;
+            color: var(--theme-text-darker);
 
-      svg {
-        stroke: var(--theme-text-darker);
-      }
+            svg {
+                stroke: var(--theme-text-darker);
+            }
+        }
+
+        .tree_folder {
+            font-size: var(--text-size);
+            color: var(--theme-text-darker);
+            font-weight: normal;
+        }
+
+        .row {
+            display: inline-flex;
+            align-items: center;
+
+            svg {
+                margin-right: 0.5rem;
+            }
+        }
+
+        .root {
+            color: var(--theme-text-bright);
+            padding-left: 0;
+            display: inline-flex;
+        }
     }
-
-    .tree_folder {
-      font-size: var(--text-size);
-      color: var(--theme-text-darker);
-      font-weight: normal;
-    }
-
-    .row {
-      display: inline-flex;
-      align-items: center;
-
-      svg {
-        margin-right: 0.5rem;
-      }
-    }
-
-    .root {
-      color: var(--theme-text-bright);
-      padding-left: 0;
-      display: inline-flex;
-    }
-  }
 }

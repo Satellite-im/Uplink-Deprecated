@@ -55,7 +55,7 @@ jobs:
       - checkout
       - run: brew update
       - run: brew install protobuf
-      - run: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
+      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
@@ -70,7 +70,7 @@ jobs:
       - checkout
       - run: brew update
       - run: brew install protobuf
-      - run: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
+      - run: 'curl https://sh.rustup.rs -sSf | sh -s -- -y'
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable

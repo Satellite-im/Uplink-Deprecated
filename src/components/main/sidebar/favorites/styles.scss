@@ -1,103 +1,102 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 div.favorites {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  z-index: 1;
-
-  .labeled,
-  .favorites-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-  }
+    z-index: 1;
 
-  .favorites-container {
-    margin-left: 1rem;
-    max-width: 40px;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-    display: inline-block;
-    color: var(--theme-text-muted);
-    cursor: pointer;
+    .labeled, .favorites-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-    .profile-wrapper {
-      display: flex;
-      flex-direction: row;
-      position: relative;
+    .favorites-container {
+        margin-left: 1rem;
+        max-width: 40px;
+        text-overflow: ellipsis;
+        overflow-x: hidden;
+        display: inline-block;
+        color: var(--theme-text-muted);
+        cursor: pointer;
 
-      .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
-        /*this is required to prevent a message from squashing the circle/profile picture*/
-        min-width: 40px;
-        /*same width as .pfs*/
-      }
+        .profile-wrapper {
+            display: flex;
+            flex-direction: row;
+            position: relative;
 
-      .pfs {
-        position: absolute;
-        border-radius: 10px;
-        height: 12px;
-        width: 12px;
-        min-width: 12px;
-        bottom: 0;
-        right: 0;
+            .pfp {
+                background: var(--theme-text-muted);
+                border-radius: 20px;
+                height: 40px;
+                width: 40px;
+                /*this is required to prevent a message from squashing the circle/profile picture*/
+                min-width: 40px;
+                /*same width as .pfs*/
+            }
+            
+            .pfs {
+                position: absolute;
+                border-radius: 10px;
+                height: 12px;
+                width: 12px;
+                min-width: 12px;
+                bottom: 0;
+                right: 0;
+            
+                background: var(--theme-text-muted);
+                box-shadow:  0px 0px 0 2px var(--theme-background);
 
-        background: var(--theme-text-muted);
-        box-shadow: 0px 0px 0 2px var(--theme-background);
-
-        &.has-unread {
-          background: var(--theme-blue);
+                &.has-unread {
+                    background: var(--theme-blue);
+                }
+            }
         }
-      }
     }
-  }
 
-  .add-favorites {
-    display: flex;
-    flex-direction: column;
-    align-items: left;
+    .add-favorites {
+        display: flex;
+        flex-direction: column;
+        align-items: left;
 
-    .to-add {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+        .to-add {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
 
-      .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
-        /*this is required to prevent a message from squashing the circle/profile picture*/
-        min-width: 40px;
-        /*same width as .pfs*/
-        margin-right: 10px;
-      }
+            .pfp {
+                background: var(--theme-text-muted);
+                border-radius: 20px;
+                height: 40px;
+                width: 40px;
+                /*this is required to prevent a message from squashing the circle/profile picture*/
+                min-width: 40px;
+                /*same width as .pfs*/
+                margin-right: 10px;
+            }
+        }
     }
-  }
 
-  .popout-mask {
-    align-items: center;
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(5px);
-    bottom: 0;
-    display: inline-flex;
-    justify-content: center;
-    left: 330px;
-    overflow: hidden;
-    position: fixed;
-    right: 0;
-    top: 0;
-    transition: blur 0.2s;
-    z-index: 2;
+    .popout-mask {
+        align-items: center;
+        -webkit-backdrop-filter: blur(5px);
+        backdrop-filter: blur(5px);
+        bottom: 0;
+        display: inline-flex;
+        justify-content: center;
+        left: 330px;
+        overflow: hidden;
+        position: fixed;
+        right: 0;
+        top: 0;
+        transition: blur .2s;
+        z-index: 2;
 
-    .close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
     }
-  }
 }

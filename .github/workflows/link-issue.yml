@@ -1,4 +1,4 @@
-name: "Issue Links"
+name: 'Issue Links'
 on:
   pull_request:
     types: [opened]
@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: tkt-actions/add-issue-links@v1.8.0
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          branch-prefix: "issue-"
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
+          branch-prefix: 'issue-'

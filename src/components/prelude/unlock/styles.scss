@@ -1,62 +1,63 @@
 .unlock {
-  align-items: center;
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  text-align: center;
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    text-align: center;
 
-  .container {
-    max-width: 350px;
+    .container {
+        max-width: 350px;
 
-    .invis-input {
-      bottom: 0;
-      cursor: default;
-      left: 0;
-      opacity: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      z-index: 2;
-      // font-size: 0; This breaks windows inputs
-    }
-
-    .pin_tooltip {
-      position: inherit;
-      margin-top: 25px;
-    }
-
-    .confirm-button {
-      bottom: -12px;
-      position: absolute;
-      right: -80px;
-      z-index: 3;
-      cursor: pointer;
-
-      &.has-error {
-        button {
-          background-color: var(--theme-red);
-          cursor: not-allowed;
+        .invis-input {
+            bottom: 0;
+            cursor: default;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            z-index: 2;
+            // font-size: 0; This breaks windows inputs
         }
-      }
+
+        .pin_tooltip {
+            position: inherit;
+            margin-top: 25px;
+        }
+
+        .confirm-button {
+            bottom: -12px;
+            position: absolute;
+            right: -80px;
+            z-index: 3;
+            cursor: pointer;
+            
+            &.has-error {
+                button {
+                    background-color: var(--theme-red);
+                    cursor: not-allowed;   
+                }
+            }
+        }
     }
-  }
 
-  .login-actions {
-    bottom: 2rem;
-    display: inline-block;
-    left: 2rem;
-    max-height: 40px;
-    position: fixed;
-    right: 2rem;
-    text-align: right;
-    z-index: 3;
+    .login-actions {
+        bottom: 2rem;
+        display: inline-block;
+        left: 2rem;
+        max-height: 40px;
+        position: fixed;
+        right: 2rem;
+        text-align: right;
+        z-index: 3;
 
-    div {
-      padding: 0.2rem 0.6rem;
+        div {
+            padding: .2rem .6rem;
 
-      &:last-of-type {
-        padding-right: 0;
-      }
+            &:last-of-type {
+                padding-right: 0;
+            }
+        }
     }
-  }
+
 }

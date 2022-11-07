@@ -1,39 +1,38 @@
 #files {
-  #upload {
-    min-height: 0;
-    display: inline-flex;
-    padding: 0.5rem;
-    width: calc(100% - 1rem);
-    flex-direction: row;
-    border-bottom: 1px solid var(--theme-borders);
+    #upload {
+        min-height: 0;
+        display: inline-flex;
+        padding: 0.5rem;
+        width: calc(100% - 1rem);
+        flex-direction: row;
+        border-bottom: 1px solid var(--theme-borders);
 
-    input[type="file"]::-webkit-file-upload-button,
-    input[type="file"]::file-selector-button {
-      user-select: none;
-      cursor: pointer;
-      background-color: var(--theme-primary);
-      border-radius: 20px;
-      height: 40px;
-      min-width: 110px;
-      text-align: center;
-      border: none;
-      gap: 8px;
-      color: var(--theme-text-bright);
-      stroke: var(--theme-text-bright);
-      padding: 0 2rem;
-    }
+        input[type="file"]::-webkit-file-upload-button, input[type="file"]::file-selector-button {
+            user-select: none;
+            cursor: pointer;
+            background-color: var(--theme-primary);
+            border-radius: 20px;
+            height: 40px;
+            min-width: 110px;
+            text-align: center;
+            border: none;
+            gap: 8px;
+            color: var(--theme-text-bright);
+            stroke: var(--theme-text-bright);
+            padding: 0 2rem;
+        }
 
-    #content {
-      flex: 1;
-      height: 100%;
-      min-width: 0;
-      display: inline-flex;
-      flex-direction: row;
-    }
+        #content {
+            flex: 1;
+            height: 100%;
+            min-width: 0;
+            display: inline-flex;
+            flex-direction: row;
+        }
 
-    #close {
-      width: 45px;
-      height: 100%;
+        #close {
+            width: 45px;
+            height: 100%;
+        }
     }
-  }
 }
