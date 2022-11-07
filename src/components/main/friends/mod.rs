@@ -240,8 +240,6 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                     div {
                         class: "scroll_wrap",
-                        div { class: "gradient_mask is_foreground" },
-                        div { class: "gradient_mask is_bottom is_foreground" },
                         div {
                             class: "scrolling",
                             (incoming.len() > 0).then(|| rsx!(

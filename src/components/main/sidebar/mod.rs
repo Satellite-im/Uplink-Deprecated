@@ -103,12 +103,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     div {
                         class: "chat_wrap",
                         div {
-                            class: "gradient_mask"
-                        },
-                        div {
-                            class: "gradient_mask is_bottom"
-                        },
-                        div {
                             class: "chats",
                             // order the chats with most recent first (descending order)
                             chats.iter().rev().map(|conv| {

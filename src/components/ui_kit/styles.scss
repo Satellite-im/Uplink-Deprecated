@@ -101,33 +101,6 @@ hr {
   border-radius: 2.5px;
 }
 
-.gradient_mask {
-  position: absolute;
-  //background-image: url("extra/assets/img/dither_top.png");
-  background-repeat: repeat-x;
-  background-size: contain;
-  height: 15px;
-  width: 100%;
-  top: 0;
-  z-index: 1;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-.gradient_mask.is_bottom {
-  bottom: 0;
-  top: unset;
-  //background-image: url("extra/assets/img/dither_bottom.png");
-}
-
-.gradient_mask.is_foreground {
-  //background-image: url("extra/assets/img/dither_top_foreground.png");
-}
-
-.gradient_mask.is_foreground.is_bottom {
-  //background-image: url("extra/assets/img/dither_bottom_foreground.png");
-}
-
 .toast-single {
   background-color: var(--theme-primary) !important;
   border: none !important;
