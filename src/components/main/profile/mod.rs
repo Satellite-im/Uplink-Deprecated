@@ -47,7 +47,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         },
     );
     let status = my_identity.status_message().unwrap_or_default();
-    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone());
+    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone()).unwrap_or_default();
 
     cx.render(rsx! {
         Popup {

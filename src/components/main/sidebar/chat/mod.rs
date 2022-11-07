@@ -259,18 +259,9 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
     cx.render(rsx! {
         div {
             class: "pfp-container",
-
-            if profile_picture.is_empty() {
-                rsx! (
-                    div {
-                        class: "pfp"
-                    }
-                )
-            } else {
-                rsx!(PFP {
-                    src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
-                })
+            PFP {
+                src: profile_picture,
+                size: crate::components::ui_kit::profile_picture::Size::Normal
             },
             div {
                 class: "pfs {is_online}"

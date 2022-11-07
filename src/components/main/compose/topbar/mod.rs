@@ -43,17 +43,9 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             cx.render(rsx! {
                 div {
                     class: "topbar",
-                    if profile_picture.is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }
-                        )
-                    } else {
-                        rsx!(PFP {
-                            src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
-                        })
+                    PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
                     },
                     div {
                         class: "who",

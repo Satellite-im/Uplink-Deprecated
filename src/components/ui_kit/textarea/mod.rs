@@ -2,10 +2,11 @@ use crate::utils;
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
 
+// for more information about this, see here: https://github.com/DioxusLabs/dioxus/issues/611
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]
 #[allow(non_snake_case)]
-//TODO: Evaluate inner_html and `cx.use_hook(|_| " ").clone();` to determine if this is actually necessary 
+//TODO: Evaluate inner_html and `cx.use_hook(|_| " ").clone();` to determine if this is actually necessary
 #[allow(clippy::clone_double_ref)]
 //TODO: Like above but for `inner_html = " "`
 #[allow(unused_assignments)]

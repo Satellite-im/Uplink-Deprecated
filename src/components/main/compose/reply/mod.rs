@@ -23,7 +23,6 @@ pub fn Reply(cx: Scope<Props>) -> Element {
 
     let profile_picture =
         utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
-    let profile_picture2 = profile_picture.clone();
 
     #[allow(unused_variables)]
     let box_right = "🭽";
@@ -46,49 +45,32 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         rsx! {
             div {
                 class: "reply {class}",
-                (cx.props.is_remote).then(|| rsx! {
-                    p {
-                        class: "box-drawing left",
-                        "{box_right}"
-                    }
-                }),
-                (!cx.props.is_remote).then(|| rsx! {
-                    if profile_picture.is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }
-                        )
-                    } else {
-                        rsx!(PFP {
-                            src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
-                        })
-                    }
-                }),
+                if cx.props.is_remote {
+                    rsx!(p {
+                            class: "box-drawing left",
+                            "{box_right}"
+                    })
+                } else {
+                    let profile_picture = profile_picture.clone();
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                    })
+                }
                 p {
                     "{cx.props.message}",
                 },
-                (cx.props.is_remote).then(|| rsx! {
-                    if profile_picture2.is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }
-                        )
-                        } else {
-                            rsx!(PFP {
-                                src: profile_picture2,
-                                size: crate::components::ui_kit::profile_picture::Size::Small
-                            })
-                        }
-                }),
-                (!cx.props.is_remote).then(|| rsx! {
-                    span {
+                if cx.props.is_remote {
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Small
+                    })
+                } else {
+                    rsx!(span {
                         class: "box-drawing",
                         "{box_left}"
-                    }
-                })
+                    })
+                }
             }
         }
     })
