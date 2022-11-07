@@ -119,7 +119,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let rg = cx.props.messaging.clone();
     let senders: Vec<DID> = messages.iter().map(|msg| msg.sender()).collect();
     // messages has already been reversed
-    let idx_range = (0..messages.len()).into_iter();
+    let idx_range = 0..messages.len();
     let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
     let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
 

@@ -37,8 +37,8 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let finder = LinkFinder::new();
-    let content = cx.props.message.value().clone();
-    let joined_a = content.clone().join("\n");
+    let content = cx.props.message.value();
+    let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
 
     let links: Vec<_> = finder.links(&joined_b).collect();
@@ -46,7 +46,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let has_links = if links.len() > 0 { true } else { false };
 
     // Parses links and grabs data like the title, favicon and description
-    let fetch_meta = use_future(&cx, &joined_a.clone(), |content| async move {
+    let fetch_meta = use_future(&cx, &joined_a, |content| async move {
         if has_links {
             let s = content.as_str();
 
@@ -73,7 +73,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
     let value = cx.props.message.clone().value().join("\n");
-    let value3 = value.clone();
+    let value3 = value;
     let timestamp = cx.props.message.clone().date();
     let ht = HumanTime::from(timestamp);
     let remote = match cx.props.remote {
