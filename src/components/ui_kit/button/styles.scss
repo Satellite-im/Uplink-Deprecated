@@ -1,84 +1,84 @@
 // Buttons
 .button {
-    user-select: none;
-    cursor: pointer;
-    background-color: var(--theme-primary);
-    border-radius: 20px;
-    height: 40px;
-    min-width: 110px;
-    text-align: center;
-    border: none;
-    gap: 8px;
-    color: var(--theme-text-bright);
-    stroke: var(--theme-text-bright);
-    padding: 0 2rem;
+  user-select: none;
+  cursor: pointer;
+  background-color: var(--theme-primary);
+  border-radius: 20px;
+  height: 40px;
+  min-width: 110px;
+  text-align: center;
+  border: none;
+  gap: 8px;
+  color: var(--theme-text-bright);
+  stroke: var(--theme-text-bright);
+  padding: 0 2rem;
 }
 
 button:disabled,
 button[disabled] {
-    cursor: default;
-    opacity: 0.5;
-    pointer-events: none;
+  cursor: default;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .button:hover {
-    background-color: var(--theme-primary-light);
+  background-color: var(--theme-primary-light);
 }
 
 .button:active {
-    background-color: var(--theme-primary);
+  background-color: var(--theme-primary);
 }
 
 .button-secondary {
-    background-color: var(--theme-secondary);
+  background-color: var(--theme-secondary);
 }
 
 .button-secondary:hover {
-    background-color: var(--theme-secondary-light);
+  background-color: var(--theme-secondary-light);
 }
 
 .button-secondary:active {
-    background-color: var(--theme-secondary);
+  background-color: var(--theme-secondary);
 }
 
 .button span {
-    display: inline-block;
-    margin-bottom: 8px;
+  display: inline-block;
+  margin-bottom: 8px;
 }
 
 .button svg {
-    margin-bottom: -5px;
-    padding-top: 3px;
-    margin-right: 5px;
-    fill: transparent;
-    stroke: var(--theme-text-bright);
+  margin-bottom: -5px;
+  padding-top: 3px;
+  margin-right: 5px;
+  fill: transparent;
+  stroke: var(--theme-text-bright);
 }
 
 .button-lg {
-    height: 52px;
-    border-radius: 26px;
+  height: 52px;
+  border-radius: 26px;
 }
 
 .button-success {
-    background-color: var(--theme-green);
+  background-color: var(--theme-green);
 }
 
 .button-success:hover {
-    background-color: var(--theme-light-green);
+  background-color: var(--theme-light-green);
 }
 
 .button-success:active {
-    background-color: var(--theme-green);
+  background-color: var(--theme-green);
 }
 
 .button-danger {
-    background-color: var(--theme-red);
+  background-color: var(--theme-red);
 }
 
 .button-danger:hover {
-    background-color: var(--theme-light-red);
+  background-color: var(--theme-light-red);
 }
 
 .button-danger:active {
-    background-color: var(--theme-red);
+  background-color: var(--theme-red);
 }

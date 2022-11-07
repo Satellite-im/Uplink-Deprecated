@@ -1,21 +1,21 @@
 #settings {
-    .item {
-        display: inline-flex;
-        flex-direction: row;
-        width: 100%;
-        padding: 1rem 0;
-        border-bottom: 1px solid var(--theme-borders);
+  .item {
+    display: inline-flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--theme-borders);
 
-        .description {
-            width: 60%;
-            text-align: left;
-        }
-
-        .interactive {
-            width: 40%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: space-around;
-        }
+    .description {
+      width: 60%;
+      text-align: left;
     }
+
+    .interactive {
+      width: 40%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+  }
 }
