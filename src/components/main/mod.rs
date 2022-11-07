@@ -14,6 +14,7 @@ pub mod friends;
 pub mod profile;
 pub mod settings;
 pub mod sidebar;
+pub mod welcome;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {
