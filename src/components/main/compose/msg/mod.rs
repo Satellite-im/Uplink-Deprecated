@@ -40,10 +40,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let content = cx.props.message.value();
     let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
-
-    let links: Vec<_> = finder.links(&joined_b).collect();
-
-    let has_links = if links.len() > 0 { true } else { false };
+    let has_links = finder.links(&joined_b).next().is_some();
 
     // Parses links and grabs data like the title, favicon and description
     let fetch_meta = use_future(&cx, &joined_a, |content| async move {
@@ -221,7 +218,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output2}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
@@ -244,7 +241,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output3}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
