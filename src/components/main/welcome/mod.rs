@@ -6,7 +6,7 @@ pub fn Welcome(cx: Scope) -> Element {
         div {
             id: "welcome",
             img {
-                src: "extra/assets/img/uplink_muted.svg"
+                src: "extra/assets/img/uplink_muted.png"
             }
         }
     })

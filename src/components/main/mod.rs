@@ -1,5 +1,5 @@
 use crate::{
-    main::{compose::Compose, sidebar::Sidebar},
+    main::{compose::Compose, sidebar::Sidebar, welcome::Welcome},
     state::{Actions, ConversationInfo},
     Account, Messaging, STATE,
 };
@@ -26,6 +26,8 @@ pub struct Prop {
 pub fn Main(cx: Scope<Prop>) -> Element {
     let st = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
+    let state = use_atom_ref(&cx, STATE);
+    let display_welcome = state.read().current_chat.is_none();
 
     use_future(&cx, (), |_| async move {
         loop {
@@ -71,14 +73,24 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     cx.render(rsx! {
         div {
             class: "main",
-            Sidebar {
-                messaging: cx.props.messaging.clone(),
-                account: cx.props.account.clone(),
-            },
-            Compose {
-                account: cx.props.account.clone(),
-                messaging: cx.props.messaging.clone(),
-            },
+            rsx!(
+                Sidebar {
+                    messaging: cx.props.messaging.clone(),
+                    account: cx.props.account.clone(),
+                },
+                if display_welcome {
+                    rsx!(
+                        Welcome {}
+                    )
+                } else {
+                    rsx!(
+                        Compose {
+                            account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone(),
+                        }
+                    )
+                }
+            )
         }
     })
 }

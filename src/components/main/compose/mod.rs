@@ -10,7 +10,7 @@ use warp::raygun::RayGun;
 
 use crate::{
     components::{
-        main::{compose::{messages::Messages, topbar::TopBar, write::Write}, welcome::Welcome},
+        main::{compose::{messages::Messages, topbar::TopBar, write::Write} },
         ui_kit::icon_button::IconButton,
     },
     state::{Actions, LastMsgSent},
@@ -29,19 +29,12 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let current_chat = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warningMessage = l.prerelease_warning.to_string();
-
-    let display_welcome = state.read().current_chat.is_none();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
 
     cx.render(rsx! {
         div {
             class: "compose",
-            if display_welcome {
-                rsx!(
-                    Welcome {}
-                )
-            } else {
                 rsx!(
                     TopBar {
                         account: cx.props.account.clone(),
@@ -101,7 +94,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         on_upload: move |_| {}
                     }
                 )
-            },
         }
     })
 }

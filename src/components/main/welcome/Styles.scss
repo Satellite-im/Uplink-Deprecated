@@ -1,4 +1,11 @@
 #welcome {
+  display: inline-flex;
+  flex-grow: 1;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  justify-content: center;
+  align-items: center;
   img {
     max-width: 350px;
   }
