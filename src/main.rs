@@ -22,7 +22,6 @@ use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
 use crate::components::main;
-use crate::components::main::settings::sidebar::nav::NavEvent;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
@@ -208,15 +207,6 @@ fn App(cx: Scope<State>) -> Element {
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
     cx.render(rsx!(
-        div {
-            class: "markdown",
-            dangerous_inner_html: "
-                <link
-                    rel=\"stylesheet\"
-                    href=\"https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css\"
-                />
-            ",
-        },
         style {
             "{theme_colors}",
             "{css}"
