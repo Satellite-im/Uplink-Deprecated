@@ -5,6 +5,7 @@ use dioxus_html::KeyCode;
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]
 #[allow(non_snake_case)]
+#[allow(unused_assignments)]
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
@@ -13,9 +14,10 @@ pub fn TextArea<'a>(
 ) -> Element<'a> {
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
 
-    let mut inner_html = cx.use_hook(|_| " ").clone();
+    let inner_html = cx.use_hook(|_| " ");
+    let inner_html2 = &mut inner_html.clone();
     if clearing_state.get() {
-        inner_html = "";
+        *inner_html = "";
         cx.needs_update();
     }
 
@@ -57,5 +59,6 @@ pub fn TextArea<'a>(
     };
 
     clearing_state.set(false);
+    *inner_html2 = " ";
     cx.render(elm)
 }
