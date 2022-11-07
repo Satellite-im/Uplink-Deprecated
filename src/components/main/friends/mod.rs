@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{collections::HashSet, time::Duration};
 
 use arboard::Clipboard;
 
@@ -47,7 +47,9 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let add_error = use_state(&cx, String::new);
     let remote_friend = use_state(&cx, String::new);
 
-    let friends = use_state(&cx, || mp.list_friends().unwrap_or_default());
+    let friends = use_state(&cx, || {
+        HashSet::from_iter(mp.list_friends().unwrap_or_default())
+    });
     let incoming = use_state(&cx, || mp.list_incoming_request().unwrap_or_default());
     let outgoing = use_state(&cx, || mp.list_outgoing_request().unwrap_or_default());
 
@@ -87,7 +89,7 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             // }
 
             loop {
-                let friends_list = mp.read().list_friends().unwrap_or_default();
+                let friends_list: HashSet<_> =  HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
                 let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
                 let outgoing_list = mp.read().list_outgoing_request().unwrap_or_default();
 
