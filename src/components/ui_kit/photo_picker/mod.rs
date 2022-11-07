@@ -63,7 +63,6 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                     let parts_of_filename: Vec<&str> = filename.split('.').collect();
 
                     //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
-
                     let mime = match parts_of_filename.last() {
                         Some(m) => {
                             match *m {
@@ -94,6 +93,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                     let identity = account.read().get_own_identity().unwrap();
                     let image = identity.graphics().profile_picture();
                     image_state.set(image);
+
                 }
             },
         }
