@@ -155,18 +155,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
-                            if profile_picture.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )
-                            } else {
-                                rsx!(PFP {
-                                    src: profile_picture,
-                                    size: crate::components::ui_kit::profile_picture::Size::Normal
-                                })
-                            }
+                            PFP {
+                                src: profile_picture,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            },
                             div {
                                 class: "value popout {first} {middle} {last}",
                                 div {
@@ -187,7 +179,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 placeholder: l.send_a_reply.to_string(),
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
-                                    
+
                                     popout.set(false);
                                 },
                                 text: text.clone(),
@@ -209,22 +201,14 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!( if profile_picture2.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )   
-                                } else {
-                                    rsx!(PFP {
-                                        src: profile_picture2,
-                                        size: crate::components::ui_kit::profile_picture::Size::Normal
-                                    })
-                                } )
+                            rsx!(PFP {
+                                src: profile_picture2,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            })
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
-                        div {
+                        div { // todo: don't duplicate this
                             class: "value {first} {middle} {last}",
                             onclick: |_| {
                                 popout.set(true);
@@ -268,18 +252,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         },
                         if cx.props.last {
-                            rsx!( if profile_picture3.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )   
-                                } else {
-                                    rsx!(PFP {
-                                        src: profile_picture3,
-                                        size: crate::components::ui_kit::profile_picture::Size::Normal
-                                    })
-                                } )
+                            rsx!(PFP {
+                                src: profile_picture3,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            })
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
