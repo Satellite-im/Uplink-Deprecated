@@ -32,36 +32,20 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
-                let mut incoming: HashMap<Uuid, Conversation> = HashMap::new();
+                let mut current_conversations: HashMap<Uuid, ConversationInfo> = HashMap::new();
                 for item in &list {
-                    incoming.insert(item.id(), item.clone());
-                }
-                let new_chats: Vec<&Conversation> = list
-                    .iter()
-                    .filter(|x| !st.read().all_chats.contains_key(&x.id()))
-                    .collect();
-                let to_remove: Vec<Uuid> = st
-                    .read()
-                    .all_chats
-                    .iter()
-                    .filter(|(uuid, _)| !incoming.contains_key(uuid))
-                    .map(|(uuid, _)| *uuid)
-                    .collect();
-                if !new_chats.is_empty() || !to_remove.is_empty() {
-                    let mut new_map = st.read().all_chats.clone();
-                    for id in to_remove {
-                        new_map.remove(&id);
-                    }
-                    for item in new_chats {
-                        let ci = ConversationInfo {
+                    let to_insert = match st.read().all_chats.get(&item.id()) {
+                        Some(v) => v.clone(),
+                        None => ConversationInfo {
                             conversation: item.clone(),
                             ..Default::default()
-                        };
-                        new_map.insert(item.id(), ci);
-                    }
-
+                        },
+                    };
+                    current_conversations.insert(item.id(), to_insert);
+                }
+                if current_conversations != st.read().all_chats {
                     st.write()
-                        .dispatch(Actions::AddRemoveConversations(new_map));
+                        .dispatch(Actions::AddRemoveConversations(current_conversations));
                 }
             }
             // TODO: find a way to sync this with the frame rate or create a "polling rate" value we can configure

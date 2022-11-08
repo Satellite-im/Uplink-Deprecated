@@ -1,5 +1,20 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
+#friends {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  flex-direction: row;
+
+  #content {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    display: inline-flex;
+    flex-direction: column;
+  }
+}
+/*
 .friends {
   display: inline-flex;
   width: 100%;
@@ -50,4 +65,4 @@
       flex: 1;
     }
   }
-}
+}*/
