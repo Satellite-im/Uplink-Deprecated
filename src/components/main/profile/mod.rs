@@ -73,10 +73,9 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         } else {
                                             rsx!(
                                             img {
-                                                class: "profile-photo",
                                                 src: "{profile_picture}",
-                                                height: "100",
-                                                width: "100",
+                                                height: "100%",
+                                                width: "100%",
                                             })
                                     }
                                 }
