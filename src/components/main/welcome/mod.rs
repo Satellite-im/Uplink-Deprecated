@@ -24,7 +24,9 @@ pub fn Welcome(cx: Scope) -> Element {
                 icon: Shape::Plus,
                 text: l.start_one.to_string(),
                 state: button::State::Secondary,
-                on_pressed: move |_| {} // show_friends.set(true),
+                on_pressed: move |_| {
+                    use_router(&cx).push_route("/main/friends", None, None);
+                }
             },
         }
     })
