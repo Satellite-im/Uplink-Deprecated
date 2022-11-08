@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::{
     components::main::compose::{msg::Msg, reply::Reply},
     state::Actions,
@@ -103,54 +105,86 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     });
 
     let rg = cx.props.messaging.clone();
-    let mut prev_sender = "".to_string();
+    let messages_vec = VecDeque::from(
+        messages
+            .read()
+            .clone()
+            .into_iter()
+            .map(Some)
+            .collect::<Vec<Option<Message>>>(),
+    );
+    let mut messages_prev_vec = messages_vec.clone();
+    let mut messages_next_vec = messages_vec.clone();
+    messages_prev_vec.push_front(None);
+    messages_prev_vec.pop_back();
+    messages_next_vec.pop_front();
+    messages_next_vec.push_back(None);
+    let messages_iter = messages_vec
+        .iter()
+        .zip(messages_prev_vec)
+        .zip(messages_next_vec)
+        .map(|((m, p), n)| (rg.clone(), m, p, n))
+        .rev();
+
     cx.render(rsx! {
         div {
             class: "messages",
-            messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
-                let message_id = message.id();
-                let conversation_id = message.conversation_id();
-                let msg_sender = message.sender().to_string();
-                let replied =  message.replied();
-                let i = ident.did_key().to_string();
-                let remote = i != msg_sender;
-                let last = prev_sender != msg_sender;
-                let middle = prev_sender == msg_sender;
-                let first = false;
+            messages_iter.map(|(mut rg, message, prev_message, next_message)| {
+                if let Some(message) = message {
+                    let message_id = message.id();
+                    let conversation_id = message.conversation_id();
+                    let msg_sender = message.sender().to_string();
+                    let replied =  message.replied();
+                    let i = ident.did_key().to_string();
+                    let remote = i != msg_sender;
+                    let first = match prev_message.clone() {
+                        Some(prev_message) => prev_message.sender().to_string() != msg_sender,
+                        None => true,
+                    };
+                    let middle = match prev_message {
+                        Some(prev_message) => prev_message.sender().to_string() == msg_sender,
+                        None => false,
+                    };
+                    let last = match next_message {
+                        Some(next_message) => next_message.sender().to_string() != msg_sender,
+                        None => true,
+                    };
 
-                prev_sender = message.sender().to_string();
-                rsx!{
-                    Msg {
-                        // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
-                        message: message.clone(),
-                        remote: remote,
-                        last: last,
-                        first: first,
-                        middle: middle,
-                        on_reply: move |reply| {
-                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                //TODO: Display error? 
+                    rsx!{
+                        Msg {
+                            // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
+                            message: message.clone(),
+                            remote: remote,
+                            last: last,
+                            first: first,
+                            middle: middle,
+                            on_reply: move |reply| {
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                    //TODO: Display error? 
+                                }
                             }
                         }
-                    }
-                    match replied {
-                        Some(replied) => {
-                            let r = cx.props.messaging.clone();
-                            match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                Ok(message) => {
-                                    let lines = message.value().join("\n");
-                                    rsx!{
-                                        Reply {
-                                            message: lines,
-                                            is_remote: remote
+                        match replied {
+                            Some(replied) => {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        let lines = message.value().join("\n");
+                                        rsx!{
+                                            Reply {
+                                                message: lines,
+                                                is_remote: remote
+                                            }
                                         }
-                                    }
-                                },
-                                Err(_) => { rsx!{ span { "Something went wrong" } } }
-                            }
-                        },
-                        _ => rsx!{ div {} }
+                                    },
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            },
+                            _ => rsx!{ div {} }
+                        }
                     }
+                } else {
+                    rsx! { div {} }
                 }
             })
             div {
