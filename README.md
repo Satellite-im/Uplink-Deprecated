@@ -30,7 +30,7 @@ You'll need to install the required dependancies for your system in order to bui
 |--|--|
 |Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
 |Arch|pacman -S gtk3 cmake protobuf|
-|MacOS|xcode-select --install, brew install protobuf cmake rustup-init|
+|MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init|
 |Windows|¯\\\_(ツ)\_/¯|
 
 ## Building from source
