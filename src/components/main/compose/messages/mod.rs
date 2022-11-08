@@ -43,11 +43,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         true
     });
 
-    match should_reload.value() {
-        Some(_) => {
-            cx.needs_update();
-        }
-        None => {}
+    if let Some(_) = should_reload.value() {
+        cx.needs_update();
     };
 
     // restart the use_future when the current_chat changes
