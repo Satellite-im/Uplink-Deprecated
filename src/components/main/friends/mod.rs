@@ -3,12 +3,15 @@ pub mod request;
 pub mod sidebar;
 
 use crate::{
-    components::main::friends::{friend::Friend, sidebar::Sidebar},
+    components::{
+        main::friends::{friend::Friend, sidebar::Sidebar},
+        ui_kit::icon_button::IconButton,
+    },
     Account, Messaging, LANGUAGE,
 };
 
 use dioxus::prelude::*;
-use dioxus_heroicons::{outline::Shape, Icon};
+use dioxus_heroicons::outline::Shape;
 use std::{collections::HashSet, time::Duration};
 use warp::multipass::Friends;
 
@@ -20,13 +23,10 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Friends(cx: Scope<Props>) -> Element {
-    let l = use_atom_ref(&cx, LANGUAGE).read();
     let add_error = use_state(&cx, String::new);
     let friends = use_state(&cx, || {
         HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
     });
-    let friendString = l.friends.to_string();
-    let yourFriendsLang = { l.your_friends.to_string() };
 
     use_future(
         &cx,
@@ -85,17 +85,19 @@ pub fn Friends(cx: Scope<Props>) -> Element {
             div {
                 id: "content",
                 div {
-                    class: "title",
-                    Icon {
-                        icon: Shape::Users,
-                        size: 20,
-                    },
-                    "{friendString}",
-                },
-                label {
-                    "{yourFriendsLang}"
+                    class: "toolbar",
+                    div {
+                        class: "controls",
+                        IconButton {
+                            icon: Shape::X,
+                            on_pressed: move |_| {
+                                use_router(&cx).push_route("/main", None, None);
+                            }
+                        }
+                    }
                 },
                 div {
+                    class: "friends-list",
                     friends.iter().map(|user| rsx!(
                         Friend {
                             account: cx.props.account.clone(),

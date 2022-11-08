@@ -16,4 +16,7 @@
     color: var(--theme-text-muted);
     margin: 1rem 0;
   }
+  .button {
+    pointer-events: all;
+  }
 }

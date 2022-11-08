@@ -159,7 +159,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             "{l.copy_friend_code}",
         },
         div {
-            class: "add",
+            class: "code",
             Button {
                 text: l.copy_code.to_string(),
                 icon: Shape::ClipboardCopy,

@@ -13,56 +13,31 @@
     display: inline-flex;
     flex-direction: column;
   }
-}
-/*
-.friends {
-  display: inline-flex;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  padding: 1rem;
-  overflow: hidden;
-  .static {
-    display: inline-flex;
-    flex-direction: column;
-    width: 100%;
+
+  .friends-list {
+    padding: 1rem;
   }
 
-  .scroll_wrap {
-    position: relative;
+  .toolbar {
     min-height: 0;
-    display: flex;
-  }
-  .scrolling {
-    overflow: hidden;
     display: inline-flex;
-    flex: 1;
-    flex-direction: column;
-    width: calc(100% - 0.5rem);
-    margin-right: -5px;
-    overflow-y: scroll;
-    margin-top: 0.25rem;
+    padding: 0.5rem 1rem;
+    width: calc(100% - 2rem);
+    flex-direction: row;
+    border-bottom: 1px solid var(--theme-borders);
 
-    &:hover {
-      &::-webkit-scrollbar-thumb {
-        background: var(--theme-primary);
-        opacity: 1;
+    .controls {
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .button {
+        margin-left: 0.25rem;
+        padding: 0 0.25rem;
       }
     }
   }
-
-  .friend,
-  .request {
-    margin-bottom: 1rem;
-  }
-
-  .add {
-    display: inline-flex;
-    flex-direction: row;
-
-    .icon-input {
-      margin-right: 1rem;
-      flex: 1;
-    }
-  }
-}*/
+}
