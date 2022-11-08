@@ -37,6 +37,19 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .current_chat
         .and_then(|x| state.read().all_chats.get(&x).cloned());
 
+    // periodically refresh message timestamps
+    let should_reload = use_future(&cx, (), |_| async move {
+        tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+        true
+    });
+
+    match should_reload.value() {
+        Some(_) => {
+            cx.needs_update();
+        }
+        None => {}
+    };
+
     // restart the use_future when the current_chat changes
     use_future(&cx, &current_chat, |current_chat| async move {
         // don't stream messages from a nonexistent conversation
@@ -145,8 +158,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         account: cx.props.account.clone(),
                         sender: message.sender(),
                         remote: is_remote,
-                        last:  is_last,
-                        first: is_first,
+                        // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards. 
+                        last:  is_first,
+                        first: is_last,
                         middle: !is_last && !is_first,
                         on_reply: move |reply| {
                             if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {

@@ -38,7 +38,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
-    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
+    let last_msg_time = cx
+        .props
+        .last_msg_sent
+        .clone()
+        .map(|x| utils::display_msg_time(x.time));
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
     let tx_chan = cx.props.tx_chan.clone();
 

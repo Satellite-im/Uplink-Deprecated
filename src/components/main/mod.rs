@@ -3,6 +3,7 @@ use crate::{
     state::{Actions, ConversationInfo},
     Account, Messaging, STATE,
 };
+use chrono::prelude::*;
 use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
@@ -55,6 +56,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                     for item in new_chats {
                         let ci = ConversationInfo {
                             conversation: item.clone(),
+                            creation_time: DateTime::from(Local::now()),
                             ..Default::default()
                         };
                         new_map.insert(item.id(), ci);

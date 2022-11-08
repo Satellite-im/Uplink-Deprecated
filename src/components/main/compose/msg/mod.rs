@@ -1,4 +1,3 @@
-use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use embeds::LinkEmbed;
@@ -72,7 +71,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let value = cx.props.message.clone().value().join("\n");
 
     let timestamp = cx.props.message.clone().date();
-    let ht = HumanTime::from(timestamp);
+    let ht = utils::display_msg_time(timestamp);
     let remote = match cx.props.remote {
         true => "remote",
         false => "local",
