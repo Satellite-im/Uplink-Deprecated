@@ -60,26 +60,29 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             class: "profile",
                             div {
                                 class: "background",
-                                rsx! (
+                            if profile_picture != "" {
+                                rsx!(
+                                    img {
+                                        class: "profile-photo",
+                                        src: "{profile_picture}",
+                                        height: "100",
+                                        width: "100",
+                                    }
+                                )
+                            } else {
+                                rsx!(
                                     div {
                                         class: "profile-photo",
-                                        if profile_picture == "" {
-                                            rsx! {
+                                         rsx! {
                                                 Icon {
                                                     size: 40,
                                                     icon: Shape::User,
                                                 },
                                             }
-                                        } else {
-                                            rsx!(
-                                            img {
-                                                src: "{profile_picture}",
-                                                height: "100%",
-                                                width: "100%",
-                                            })
+                                  
                                     }
-                                }
-    )
+                                )
+                            }                            
                             },
                             div {
                                 class: "profile-body",
