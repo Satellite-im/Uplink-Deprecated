@@ -51,13 +51,11 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     cx.render(rsx! {
-        Popup {
-            on_dismiss: |_| cx.props.on_hide.call(()),
-            hidden: !cx.props.show,
-            children: cx.render(
-                rsx!(
-                    div {
-                        class: "profile",
+            Popup {
+                on_dismiss: |_| cx.props.on_hide.call(()),
+                hidden: !cx.props.show,
+                children: cx.render(
+                    rsx!(
                         div {
                             class: "profile",
                             div {
@@ -75,36 +73,18 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 rsx!(
                                     div {
                                         class: "profile-photo",
-                                        rsx! {
-                                            Icon {
-                                                size: 40,
-                                                icon: Shape::User,
+                                         rsx! {
+                                                Icon {
+                                                    size: 40,
+                                                    icon: Shape::User,
+                                                },
                                             }
-                                        }
-                                    })
-                                }
-                            )
-                        }
-                        },
-                        div {
-                            class: "profile-body",
-                            h3 {
-                                class: "username",
-                                "{username}"
-                            },
-                            p {
-                                class: "status",
-                                "{status}, here is status"
-                            },
-                            Button {
-                                text: l.edit_profile.to_string(),
-                                icon: Shape::PencilAlt,
-                                on_pressed: move |_| {
-                                    use_router(&cx).push_route("/main/settings", None, None);
-                                },
+                                  
+                                    }
+                                )
+                            }                            
                             },
                             div {
-<<<<<<< HEAD
                                 class: "profile-body",
                                 h3 {
                                     class: "username",
@@ -121,54 +101,53 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         use_router(&cx).push_route("/main/settings/profile", None, None);
                                     },
                                 },
-=======
-                                class: "meta",
->>>>>>> ca5c995 (fix compile error)
                                 div {
-                                    class: "badges",
-                                    label {
-                                        "{badgesString}"
+                                    class: "meta",
+                                    div {
+                                        class: "badges",
+                                        label {
+                                            "{badgesString}"
+                                        },
+                                        div {
+                                            class: "container",
+                                            badges.iter().map(|_badge| rsx!(
+                                                Badge {},
+                                            ))
+                                        }
                                     },
                                     div {
-                                        class: "container",
-                                        badges.iter().map(|_badge| rsx!(
-                                            Badge {},
-                                        ))
+                                        class: "location",
+                                        label {
+                                            "{locationString}"
+                                        },
+                                        p {
+                                            "Unknown"
+                                        }
+                                    },
+                                    div {
+                                        class: "friend-count",
+                                        label {
+                                            "{friendString}"
+                                        }
+                                        p {
+                                            "{friend_count}"
+                                        }
                                     }
                                 },
+                                hr {},
                                 div {
-                                    class: "location",
+                                    class: "about",
                                     label {
-                                        "{locationString}"
+                                        "{aboutString}"
                                     },
                                     p {
-                                        "Unknown"
+                                        "{noAboutString}",
                                     }
                                 },
-                                div {
-                                    class: "friend-count",
-                                    label {
-                                        "{friendString}"
-                                    }
-                                    p {
-                                        "{friend_count}"
-                                    }
-                                }
-                            },
-                            hr {},
-                            div {
-                                class: "about",
-                                label {
-                                    "{aboutString}"
-                                },
-                                p {
-                                    "{noAboutString}",
-                                }
-                            },
+                            }
                         }
-                    }
+                    )
                 )
-            )
-        },
-    })
+            },
+        })
 }
