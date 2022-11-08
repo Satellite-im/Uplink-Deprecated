@@ -106,7 +106,6 @@ pub fn FavoriteChat<'a>(
         _ => "",
     };
     let profile_picture = utils::get_pfp_from_did(did, mp);
-    let profile_picture2 = profile_picture.clone();
 
     cx.render(rsx! {
         div {

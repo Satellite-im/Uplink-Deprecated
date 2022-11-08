@@ -6,7 +6,7 @@ use crate::{
 use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
-use warp::raygun::{Conversation, RayGun};
+use warp::raygun::RayGun;
 
 pub mod compose;
 pub mod files;
