@@ -60,29 +60,28 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             class: "profile",
                             div {
                                 class: "background",
-                            if profile_picture != "" {
-                                rsx!(
-                                    img {
-                                        class: "profile-photo",
-                                        src: "{profile_picture}",
-                                        height: "100",
-                                        width: "100",
-                                    }
-                                )
-                            } else {
-                                rsx!(
-                                    div {
-                                        class: "profile-photo",
-                                         rsx! {
+                                if !profile_picture.is_empty() {
+                                    rsx!(
+                                        img {
+                                            class: "profile-photo",
+                                            src: "{profile_picture}",
+                                            height: "100",
+                                            width: "100",
+                                        }
+                                    )
+                                } else {
+                                    rsx!(
+                                        div {
+                                            class: "profile-photo",
+                                            rsx! {
                                                 Icon {
                                                     size: 40,
                                                     icon: Shape::User,
                                                 },
                                             }
-                                  
-                                    }
-                                )
-                            }                            
+                                        }
+                                    )
+                                }
                             },
                             div {
                                 class: "profile-body",
