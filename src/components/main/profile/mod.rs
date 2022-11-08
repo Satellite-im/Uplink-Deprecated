@@ -3,7 +3,7 @@ use crate::{
     utils, Account, LANGUAGE,
 };
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -47,91 +47,105 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         },
     );
     let status = my_identity.status_message().unwrap_or_default();
-    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone()).unwrap_or_default();
+    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone())
+        .unwrap_or_default();
 
     cx.render(rsx! {
-        Popup {
-            on_dismiss: |_| cx.props.on_hide.call(()),
-            hidden: !cx.props.show,
-            children: cx.render(
-                rsx!(
-                    div {
-                        class: "profile",
+            Popup {
+                on_dismiss: |_| cx.props.on_hide.call(()),
+                hidden: !cx.props.show,
+                children: cx.render(
+                    rsx!(
                         div {
-                            class: "background",
+                            class: "profile",
                             div {
-                                img {
-                                    class: "profile-photo",
-                                    src: "{profile_picture}",
-                                    height: "100",
-                                    width: "100",
-                                },
-                            }
-                        },
-                        div {
-                            class: "profile-body",
-                            h3 {
-                                class: "username",
-                                "{username}"
-                            },
-                            p {
-                                class: "status",
-                                "{status}, here is status"
-                            },
-                            Button {
-                                text: l.edit_profile.to_string(),
-                                icon: Shape::PencilAlt,
-                                on_pressed: move |_| {
-                                    use_router(&cx).push_route("/main/settings", None, None);
-                                },
-                            },
-                            div {
-                                class: "meta",
-                                div {
-                                    class: "badges",
-                                    label {
-                                        "{badgesString}"
-                                    },
+                                class: "background",
+                                rsx! (
                                     div {
-                                        class: "container",
-                                        badges.iter().map(|_badge| rsx!(
-                                            Badge {},
-                                        ))
-                                    }
-                                },
-                                div {
-                                    class: "location",
-                                    label {
-                                        "{locationString}"
-                                    },
-                                    p {
-                                        "Unknown"
-                                    }
-                                },
-                                div {
-                                    class: "friend-count",
-                                    label {
-                                        "{friendString}"
-                                    }
-                                    p {
-                                        "{friend_count}"
+                                        class: "profile-photo",
+                                        if profile_picture == "" {
+                                            rsx! {
+                                                Icon {
+                                                    size: 40,
+                                                    icon: Shape::User,
+                                                },
+                                            }
+                                        } else {
+                                            rsx!(
+                                            img {
+                                                class: "profile-photo",
+                                                src: "{profile_picture}",
+                                                height: "100",
+                                                width: "100",
+                                            })
                                     }
                                 }
+    )
                             },
-                            hr {},
                             div {
-                                class: "about",
-                                label {
-                                    "{aboutString}"
+                                class: "profile-body",
+                                h3 {
+                                    class: "username",
+                                    "{username}"
                                 },
                                 p {
-                                    "{noAboutString}",
-                                }
-                            },
+                                    class: "status",
+                                    "{status}, here is status"
+                                },
+                                Button {
+                                    text: l.edit_profile.to_string(),
+                                    icon: Shape::PencilAlt,
+                                    on_pressed: move |_| {
+                                        use_router(&cx).push_route("/main/settings", None, None);
+                                    },
+                                },
+                                div {
+                                    class: "meta",
+                                    div {
+                                        class: "badges",
+                                        label {
+                                            "{badgesString}"
+                                        },
+                                        div {
+                                            class: "container",
+                                            badges.iter().map(|_badge| rsx!(
+                                                Badge {},
+                                            ))
+                                        }
+                                    },
+                                    div {
+                                        class: "location",
+                                        label {
+                                            "{locationString}"
+                                        },
+                                        p {
+                                            "Unknown"
+                                        }
+                                    },
+                                    div {
+                                        class: "friend-count",
+                                        label {
+                                            "{friendString}"
+                                        }
+                                        p {
+                                            "{friend_count}"
+                                        }
+                                    }
+                                },
+                                hr {},
+                                div {
+                                    class: "about",
+                                    label {
+                                        "{aboutString}"
+                                    },
+                                    p {
+                                        "{noAboutString}",
+                                    }
+                                },
+                            }
                         }
-                    }
+                    )
                 )
-            )
-        },
-    })
+            },
+        })
 }
