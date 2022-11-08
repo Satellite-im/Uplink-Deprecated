@@ -1,5 +1,4 @@
 use chrono::prelude::*;
-use chrono_humanize::HumanTime;
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::{Ord, Ordering},
@@ -32,7 +31,7 @@ pub struct PersistedState {
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
 pub struct LastMsgSent {
     pub value: String,
-    pub time: DateTime<Local>,
+    pub time: DateTime<Utc>,
 }
 
 /// composes `Conversation` with relevant metadata
@@ -45,7 +44,7 @@ pub struct ConversationInfo {
     /// the first two lines of the last message sent
     pub last_msg_sent: Option<LastMsgSent>,
     /// the time the conversation was created. used to sort the chats
-    pub creation_time: DateTime<Local>,
+    pub creation_time: DateTime<Utc>,
 }
 
 impl Ord for ConversationInfo {
@@ -161,17 +160,7 @@ impl LastMsgSent {
                 .chars()
                 .take(24)
                 .collect(),
-            time: Local::now(),
+            time: DateTime::from(Local::now()),
         }
-    }
-
-    pub fn display_time(&self) -> String {
-        let ht = HumanTime::from(self.time);
-        let s = ht.to_string();
-        let mut split = s.split(char::is_whitespace);
-        let time = split.next().unwrap_or("");
-        let units = split.next().unwrap_or("").chars().next().unwrap_or(' ');
-        // TODO: this might not be ideal to support multiple locales.
-        format!("{}{}", time, units)
     }
 }

@@ -1,12 +1,13 @@
-use regex::Regex;
-use warp::{crypto::DID, multipass::identity::Identity};
-
-use crate::{state::ConversationInfo, Account};
-
 pub mod config;
 pub mod get_meta;
 pub mod notifications;
 pub mod sounds;
+
+use crate::{state::ConversationInfo, Account};
+
+use chrono::{prelude::*, Duration};
+use regex::Regex;
+use warp::{crypto::DID, multipass::identity::Identity};
 
 pub fn remove_writespace(s: &mut String) {
     s.retain(|c| !c.is_whitespace());
@@ -33,6 +34,37 @@ pub fn get_username_from_did(did: DID, mp: &Account) -> String {
         .first()
         .map(Identity::username)
         .unwrap_or_else(String::new)
+}
+
+// minutes, hours, days up to 7, then the date
+pub fn display_msg_time(timestamp: DateTime<Utc>) -> String {
+    // todo: get language for the text here.
+    let current_time: DateTime<Local> = Local::now();
+    let msg_time: DateTime<Local> = DateTime::from(timestamp);
+    let difference: Duration = current_time - msg_time;
+
+    let days = difference.num_days();
+
+    if days > 7 {
+        format!(
+            "{}/{}/{}",
+            msg_time.month(),
+            msg_time.day(),
+            msg_time.year()
+        )
+    } else if days >= 1 {
+        format!("{}d", days)
+    } else {
+        let minutes = difference.num_minutes();
+        let hours = difference.num_hours();
+        if hours >= 1 {
+            format!("{}h", hours)
+        } else if minutes > 1 {
+            format!("{}m", minutes)
+        } else {
+            "now".to_string()
+        }
+    }
 }
 
 pub fn get_pfp_from_did(did: DID, mp: &Account) -> Option<String> {
