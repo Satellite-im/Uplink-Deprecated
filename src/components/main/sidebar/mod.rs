@@ -40,7 +40,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
-    let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
@@ -143,25 +142,13 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         Button {
                             icon: Shape::Plus,
                             text: l.start_one.to_string(),
-                            on_pressed: move |_| show_friends.set(true),
+                            on_pressed: move |_| {
+
+                            },
                         },
                     }
                 )
             },
-            (**show_friends).then(|| rsx!{
-                //TODO: this is a fix for now, but next milestone we should rework popups to
-                // de-render themselves after css hide animations are completed.
-                Friends {
-                    account: cx.props.account.clone(),
-                    messaging: cx.props.messaging.clone(),
-                    title: friendString,
-                    show: true,
-                    icon: Shape::Users,
-                    on_hide: move |_| {
-                        show_friends.set(false);
-                    },
-                }
-            }),
             Profile {
                 account: cx.props.account.clone(),
                 show: *show_profile.clone(),
@@ -170,8 +157,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             Nav {
                 account: cx.props.account.clone(),
                 on_pressed: move | e: NavEvent | {
-                    show_friends.set(false);
-                    show_profile.set(false);
                     match e {
                         NavEvent::Home => {
                         },
@@ -179,7 +164,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             use_router(&cx).push_route("/main/files", None, None);
                         },
                         NavEvent::Friends => {
-                            show_friends.set(true);
+                            use_router(&cx).push_route("/main/friends", None, None);
                         },
                         NavEvent::Profile => {
                             show_profile.set(true);

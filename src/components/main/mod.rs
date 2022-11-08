@@ -9,6 +9,7 @@ use uuid::Uuid;
 use warp::raygun::{Conversation, RayGun};
 
 pub mod compose;
+pub mod contacts;
 pub mod files;
 pub mod friends;
 pub mod profile;
@@ -76,7 +77,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             rsx!(
                 Sidebar {
                     messaging: cx.props.messaging.clone(),
-                    account: cx.props.account.clone(),
+                    account: cx.props.account.clone()
                 },
                 if display_welcome {
                     rsx!(

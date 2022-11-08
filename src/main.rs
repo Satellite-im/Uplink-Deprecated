@@ -220,6 +220,7 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
             Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/friends", main::contacts::Contacts { account: cx.props.account.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
                     account: cx.props.account.clone(),
                 },
