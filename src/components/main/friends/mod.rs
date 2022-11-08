@@ -50,8 +50,12 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let friends = use_state(&cx, || {
         HashSet::from_iter(mp.list_friends().unwrap_or_default())
     });
-    let incoming = use_state(&cx, || mp.list_incoming_request().unwrap_or_default());
-    let outgoing = use_state(&cx, || mp.list_outgoing_request().unwrap_or_default());
+    let incoming = use_state(&cx, || {
+        HashSet::from_iter(mp.list_incoming_request().unwrap_or_default())
+    });
+    let outgoing = use_state(&cx, || {
+        HashSet::from_iter(mp.list_outgoing_request().unwrap_or_default())
+    });
 
     use_future(
         &cx,
@@ -60,8 +64,10 @@ pub fn Friends<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             loop {
                 let friends_list: HashSet<_> =
                     HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
-                let incoming_list = mp.read().list_incoming_request().unwrap_or_default();
-                let outgoing_list = mp.read().list_outgoing_request().unwrap_or_default();
+                let incoming_list: HashSet<_> =
+                    HashSet::from_iter(mp.read().list_incoming_request().unwrap_or_default());
+                let outgoing_list: HashSet<_> =
+                    HashSet::from_iter(mp.read().list_outgoing_request().unwrap_or_default());
 
                 if *friends != friends_list {
                     friends.set(friends_list);
