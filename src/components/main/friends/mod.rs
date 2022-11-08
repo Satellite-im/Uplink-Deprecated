@@ -5,8 +5,8 @@ pub mod sidebar;
 
 use crate::{
     components::{
-        main::friends::{{sidebar::Sidebar, friend::Friend}, request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput, popup::Popup},
+        main::friends::{{sidebar::Sidebar, friend::Friend}},
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
     },
     Account, Messaging, LANGUAGE, TOAST_MANAGER,
 };

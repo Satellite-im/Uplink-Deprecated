@@ -7,7 +7,6 @@ use warp::raygun::Message;
 use crate::{
     components::{
         main::{
-            friends::Friends,
             profile::Profile,
             sidebar::{
                 favorites::Favorites,
@@ -15,7 +14,7 @@ use crate::{
             },
         },
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+            extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
             skeletal_chats::SkeletalChats,
         },
     },

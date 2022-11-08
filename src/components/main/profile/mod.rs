@@ -73,13 +73,12 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 rsx!(
                                     div {
                                         class: "profile-photo",
-                                         rsx! {
-                                                Icon {
-                                                    size: 40,
-                                                    icon: Shape::User,
-                                                },
-                                            }
-                                  
+                                        rsx! {
+                                            Icon {
+                                                size: 40,
+                                                icon: Shape::User,
+                                            },
+                                        }
                                     }
                                 )
                             }                            
