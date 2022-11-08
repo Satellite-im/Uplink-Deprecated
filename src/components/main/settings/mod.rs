@@ -17,11 +17,18 @@ pub mod sidebar;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    page_to_open: NavEvent,
 }
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
-    let active_page = use_state(&cx, || NavEvent::Developer);
+    let page_to_open_on_settings =  match cx.props.page_to_open {
+        NavEvent::Profile => NavEvent::Profile, 
+        NavEvent::Developer => NavEvent::Developer, 
+        _ => NavEvent::General,
+    };
+ 
+    let active_page = use_state(&cx, || page_to_open_on_settings);
 
     cx.render(rsx! {
         div {
@@ -29,6 +36,11 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             sidebar::SettingsSidebar {
                 on_pressed: move |ne| {
                     active_page.set(ne);
+                },
+                initial_value: match active_page.get() {
+                    NavEvent::Profile => NavEvent::Profile, 
+                    NavEvent::Developer => NavEvent::Developer, 
+                    _ => NavEvent::General,
                 },
             },
             div {
