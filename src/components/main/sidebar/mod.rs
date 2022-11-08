@@ -131,25 +131,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         }
                     }
                 )
-            } else {
-                rsx!(
-                    SkeletalChats {},
-                    div {
-                        class: "fill-vertical",
-                        p {
-                            "{noactivechatdString}"
-                        },
-                        div {
-                            class: "m-bottom"
-                        },
-                        Button {
-                            icon: Shape::Plus,
-                            text: l.start_one.to_string(),
-                            on_pressed: move |_| show_friends.set(true),
-                        },
-                    }
-                )
-            },
+            } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
             (**show_friends).then(|| rsx!{
                 //TODO: this is a fix for now, but next milestone we should rework popups to
                 // de-render themselves after css hide animations are completed.
