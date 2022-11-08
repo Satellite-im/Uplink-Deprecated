@@ -62,13 +62,12 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 class: "background",
                                 rsx! (
                                     div {
-                                        class: "",
+                                        class: "profile-photo",
                                         if profile_picture == "" {
                                             rsx! {
                                                 Icon {
-                                                    class: "profile-photo",
+                                                    size: 40,
                                                     icon: Shape::User,
-                                                    size: 30,
                                                 },
                                             }
                                         } else {
