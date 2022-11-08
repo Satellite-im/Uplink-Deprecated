@@ -98,7 +98,7 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     text: l.edit_profile.to_string(),
                                     icon: Shape::PencilAlt,
                                     on_pressed: move |_| {
-                                        use_router(&cx).push_route("/main/settings", None, None);
+                                        use_router(&cx).push_route("/main/settings/profile", None, None);
                                     },
                                 },
                                 div {
