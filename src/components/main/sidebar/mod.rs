@@ -16,6 +16,7 @@ use crate::{
         },
         ui_kit::{
             button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+            skeletal_chats::SkeletalChats,
         },
     },
     extensions::*,
@@ -132,6 +133,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 )
             } else {
                 rsx!(
+                    SkeletalChats {},
                     div {
                         class: "fill-vertical",
                         p {
