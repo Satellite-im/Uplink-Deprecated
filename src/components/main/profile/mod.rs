@@ -51,11 +51,13 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     cx.render(rsx! {
-            Popup {
-                on_dismiss: |_| cx.props.on_hide.call(()),
-                hidden: !cx.props.show,
-                children: cx.render(
-                    rsx!(
+        Popup {
+            on_dismiss: |_| cx.props.on_hide.call(()),
+            hidden: !cx.props.show,
+            children: cx.render(
+                rsx!(
+                    div {
+                        class: "profile",
                         div {
                             class: "profile",
                             div {
@@ -77,13 +79,32 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             Icon {
                                                 size: 40,
                                                 icon: Shape::User,
-                                            },
+                                            }
                                         }
-                                    }
-                                )
-                            }                            
+                                    })
+                                }
+                            )
+                        }
+                        },
+                        div {
+                            class: "profile-body",
+                            h3 {
+                                class: "username",
+                                "{username}"
+                            },
+                            p {
+                                class: "status",
+                                "{status}, here is status"
+                            },
+                            Button {
+                                text: l.edit_profile.to_string(),
+                                icon: Shape::PencilAlt,
+                                on_pressed: move |_| {
+                                    use_router(&cx).push_route("/main/settings", None, None);
+                                },
                             },
                             div {
+<<<<<<< HEAD
                                 class: "profile-body",
                                 h3 {
                                     class: "username",
@@ -100,53 +121,54 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         use_router(&cx).push_route("/main/settings/profile", None, None);
                                     },
                                 },
+=======
+                                class: "meta",
+>>>>>>> ca5c995 (fix compile error)
                                 div {
-                                    class: "meta",
-                                    div {
-                                        class: "badges",
-                                        label {
-                                            "{badgesString}"
-                                        },
-                                        div {
-                                            class: "container",
-                                            badges.iter().map(|_badge| rsx!(
-                                                Badge {},
-                                            ))
-                                        }
+                                    class: "badges",
+                                    label {
+                                        "{badgesString}"
                                     },
                                     div {
-                                        class: "location",
-                                        label {
-                                            "{locationString}"
-                                        },
-                                        p {
-                                            "Unknown"
-                                        }
-                                    },
-                                    div {
-                                        class: "friend-count",
-                                        label {
-                                            "{friendString}"
-                                        }
-                                        p {
-                                            "{friend_count}"
-                                        }
+                                        class: "container",
+                                        badges.iter().map(|_badge| rsx!(
+                                            Badge {},
+                                        ))
                                     }
                                 },
-                                hr {},
                                 div {
-                                    class: "about",
+                                    class: "location",
                                     label {
-                                        "{aboutString}"
+                                        "{locationString}"
                                     },
                                     p {
-                                        "{noAboutString}",
+                                        "Unknown"
                                     }
                                 },
-                            }
+                                div {
+                                    class: "friend-count",
+                                    label {
+                                        "{friendString}"
+                                    }
+                                    p {
+                                        "{friend_count}"
+                                    }
+                                }
+                            },
+                            hr {},
+                            div {
+                                class: "about",
+                                label {
+                                    "{aboutString}"
+                                },
+                                p {
+                                    "{noAboutString}",
+                                }
+                            },
                         }
-                    )
+                    }
                 )
-            },
-        })
+            )
+        },
+    })
 }
