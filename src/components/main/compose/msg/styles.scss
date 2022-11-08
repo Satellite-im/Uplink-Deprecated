@@ -52,7 +52,7 @@
     .value {
       align-items: center;
       background-color: var(--theme-primary);
-      border-radius: 16px 16px 4px;
+      border-radius: 16px 4px 4px 16px;
       display: inline-flex;
       flex: 1;
       margin-left: 0;
@@ -62,15 +62,11 @@
       text-align: right;
 
       &.first {
-        border-radius: 16px 16px 4px;
-      }
-
-      &.middle {
-        border-radius: 16px 4px 4px 16px;
+        border-top-right-radius: 16px;
       }
 
       &.last {
-        border-radius: 16px 4px 16px 16px;
+        border-bottom-right-radius: 16px;
         margin-bottom: 1rem;
 
         p {
@@ -101,20 +97,16 @@
 
       .value {
         background: var(--theme-foreground-dark);
-        border-radius: 16px 16px 16px 4px;
+        border-radius: 4px 16px 16px 4px;
         margin-left: 1rem;
         margin-right: 0;
 
         &.first {
-          border-radius: 16px 16px 16px 4px;
-        }
-
-        &.middle {
-          border-radius: 4px 16px 16px 4px;
+          border-top-left-radius: 16px;
         }
 
         &.last {
-          border-radius: 4px 16px 16px 16px;
+          border-bottom-left-radius: 16px;
         }
       }
 
