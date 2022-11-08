@@ -26,7 +26,7 @@ pub fn Contacts(cx: Scope<Props>) -> Element {
                             friend: user.clone(),
                             on_chat: move |_| {
                                 add_error.set("".into());
-                                cx.props.on_hide.call(());
+                                // TODO: route to main compose
                             }
                         }
                     )),
