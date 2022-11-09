@@ -1,7 +1,7 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .profile {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   width: 100%;
 
@@ -24,7 +24,7 @@
       left: calc(50% - 41px);
       position: absolute;
       width: 80px;
-      display: inline-flex;
+      display: flex;
       justify-content: center;
       align-items: center;
     }
@@ -33,7 +33,7 @@
   .profile-body {
     width: 100%;
     button {
-      display: inline-flex;
+      display: flex;
     }
 
     .small-did {
@@ -56,7 +56,7 @@
     }
 
     .meta {
-      display: inline-flex;
+      display: flex;
       flex-direction: row;
       justify-content: space-between;
       width: 100%;

@@ -27,7 +27,7 @@
   }
 
   .writer-container {
-    display: inline-flex;
+    display: flex;
     width: 100%;
   }
 
@@ -36,7 +36,7 @@
     align-items: center;
     border-bottom: 1px solid var(--theme-borders);
     border-top: 1px solid var(--theme-borders);
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     padding: 0.5rem 0.5rem;

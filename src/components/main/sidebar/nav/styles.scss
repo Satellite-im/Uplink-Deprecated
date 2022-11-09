@@ -1,7 +1,7 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .nav {
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   width: 100%;
