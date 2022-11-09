@@ -2,7 +2,7 @@
 use crate::{
     components::{
         main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
+        ui_kit::{button::Button, icon_button::IconButton, icon_input_without_value::IconInputWithOutValue},
     },
     Account,  LANGUAGE, TOAST_MANAGER,
 };
@@ -159,24 +159,31 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             "{l.copy_friend_code}",
         },
         div {
-            class: "code",
-            Button {
-                text: l.copy_code.to_string(),
-                icon: Shape::ClipboardCopy,
-                on_pressed: move |e: UiEvent<MouseData>| {
-                    e.cancel_bubble();
-    
-                    let mut clipboard = Clipboard::new().unwrap();
-                    if let Ok(ident) = account2
-                        .read()
-                        .get_own_identity()
-                    {
-                        let single_toast = ToastInfo {
-                            position: Position::TopRight,
-                            ..ToastInfo::simple(&codeCopied)
-                        };
-                        let _id = toast.write().popup(single_toast);
-                        clipboard.set_text(ident.did_key().to_string()).unwrap();
+            class: "sidebar-section",
+            label {
+                "{l.copy_friend_code}",
+            },
+            div {
+                class: "code",
+                Button {
+                    text: l.copy_code.to_string(),
+                    icon: Shape::ClipboardCopy,
+                    on_pressed: move |e: UiEvent<MouseData>| {
+                        e.cancel_bubble();
+        
+                        let mut clipboard = Clipboard::new().unwrap();
+                        if let Ok(ident) = account2
+                            .read()
+                            .get_own_identity()
+                        {
+                            let single_toast = ToastInfo {
+                                position: Position::TopRight,
+                                ..ToastInfo::simple(&codeCopied)
+                            };
+                            let _id = toast.write().popup(single_toast);
+                            //copy to the clipboard without prefix 'did:key:'
+                             clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap();
+                        }
                     }
                 }
             }
@@ -185,87 +192,92 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             "{l.add_someone}",
         },
         div {
-            class: "add",
-            IconInput {
-                placeholder: l.add_placeholder.clone(),
-                icon: Shape::UserAdd,
-                value: remote_friend.to_string(),
-                on_change: move |evt: FormEvent| {
-                    add_error.set(String::new());
-                    remote_friend.set(evt.value.clone());
-                },
-                on_enter: move |_| {
-                    let did = DID::try_from(remote_friend.clone().to_string());
-                    match did {
-                        Ok(d) => {
-                            match account.clone()
-                                .write()
-                                .send_request(&d)
-                            {
-                                Ok(_) => {
-                                    let single_toast = ToastInfo {
-                                        position: Position::TopRight,
-                                        ..ToastInfo::simple(l2.request_sent.clone().as_ref())
-                                    };
-                                    let _id = toast.write().popup(single_toast);
-                                    add_error.set("".into());
-                                    remote_friend.set("".into());
-                                }
-                                Err(e) => {
-                                    remote_friend.set("".into());
-                                    add_error.set(match e {
-                                        warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
-                                        warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
-                                        warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.clone(),
-                                        _ => l2.something_went_wrong.to_string()
-                                    })
-                                },
-                            };
-                        },
-                        Err(_) => add_error.set(l2.invalid_code.clone()),
+            class: "sidebar-section",
+            label {
+                "{l.add_someone}",
+            },
+            div {
+                class: "add",
+                IconInputWithOutValue {
+                    placeholder: l.add_placeholder.clone(),
+                    icon: Shape::UserAdd,
+                    on_change: move |evt: FormEvent| {
+                        add_error.set(String::new());
+                        remote_friend.set(evt.value.clone());
+                    },
+                    on_enter: move |_| {
+                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));                
+                        match did {
+                            Ok(d) => {
+                                match account.clone()
+                                    .write()
+                                    .send_request(&d)
+                                {
+                                    Ok(_) => {
+                                        let single_toast = ToastInfo {
+                                            position: Position::TopRight,
+                                            ..ToastInfo::simple(l2.request_sent.clone().as_ref())
+                                        };
+                                        let _id = toast.write().popup(single_toast);
+                                        add_error.set("".into());
+                                        remote_friend.set("".into());
+                                    }
+                                    Err(e) => {
+                                        remote_friend.set("".into());
+                                        add_error.set(match e {
+                                            warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
+                                            warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
+                                            warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.clone(),
+                                            _ => l2.something_went_wrong.to_string()
+                                        })
+                                    },
+                                };
+                            },
+                            Err(_) => add_error.set(l2.invalid_code.clone()),
+                        }
                     }
                 }
-            }
-            IconButton {
-                icon: Shape::Plus,
-                on_pressed: move |e: UiEvent<MouseData>| {
-                    e.cancel_bubble();
-    
-                    let did = DID::try_from(remote_friend.clone().to_string());
-                    match did {
-                        Ok(d) => {
-                            match account.clone()
-                                .write()
-                                .send_request(&d)
-                            {
-                                Ok(_) => {
-                                    let single_toast = ToastInfo {
-                                        position: Position::TopRight,
-                                        ..ToastInfo::simple(&l.request_sent)
-                                    };
-                                    let _id = toast.write().popup(single_toast);
-                                    add_error.set("".into());
-                                    remote_friend.set("".into());
-                                }
-                                Err(e) => {
-                                    remote_friend.set("".into());
-                                    add_error.set(match e {
-                                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
-                                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
-                                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
-                                        _ => l.something_went_wrong.to_string()
-                                    })
-                                },
-                            };
-                        },
-                        Err(_) => add_error.set(l.invalid_code.to_string()),
-                    }
-                },
-            }
-        },
-        span {
-            class: "error_text",
-            "{add_error}"
-        },
+                IconButton {
+                    icon: Shape::Plus,
+                    on_pressed: move |e: UiEvent<MouseData>| {
+                        e.cancel_bubble();
+
+                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));
+                        match did {
+                            Ok(d) => {
+                                match account.clone()
+                                    .write()
+                                    .send_request(&d)
+                                {
+                                    Ok(_) => {
+                                        let single_toast = ToastInfo {
+                                            position: Position::TopRight,
+                                            ..ToastInfo::simple(&l.request_sent)
+                                        };
+                                        let _id = toast.write().popup(single_toast);
+                                        add_error.set("".into());
+                                        remote_friend.set("".into());
+                                    }
+                                    Err(e) => {
+                                        remote_friend.set("".into());
+                                        add_error.set(match e {
+                                            warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
+                                            warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
+                                            warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
+                                            _ => l.something_went_wrong.to_string()
+                                        })
+                                    },
+                                };
+                            },
+                            Err(_) => add_error.set(l.invalid_code.to_string()),
+                        }
+                    },
+                }
+            },
+            span {
+                class: "error_text",
+                "{add_error}"
+            },
+        }
     ))
 }
