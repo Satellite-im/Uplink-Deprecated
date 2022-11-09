@@ -75,7 +75,7 @@ pub fn get_pfp_from_did(did: DID, mp: &Account) -> Option<String> {
 }
 
 pub fn wrap_in_markdown(val: &str) -> String {
-    let replace_newlines = val.replace('\n', "<br />");
+    let replace_newlines = val.replace("(break_line)", "<br/>");
 
     let regex_asterisk = Regex::new(r"\*{2}(.*?)\*{2}").unwrap();
     let regex_tilda = Regex::new(r"\~{2}(.*?)\~{2}").unwrap();
