@@ -2,7 +2,7 @@ pub mod messages;
 pub mod msg;
 pub mod reply;
 pub mod sidebar;
-pub mod topbar;
+//pub mod topbar;
 pub mod write;
 
 use dioxus::prelude::*;
@@ -11,8 +11,9 @@ use warp::raygun::RayGun;
 
 use crate::{
     components::{
-        main::{compose::{messages::Messages, topbar::TopBar, write::Write} },
+        main::{compose::{messages::Messages, write::Write} },
         ui_kit::icon_button::IconButton,
+        reusable::topbar::TopBar,
     },
     
     state::{Actions, LastMsgSent},
@@ -37,11 +38,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "compose",
+            TopBar {
+                account: cx.props.account.clone(),
+                on_call: move |_| {},
+            },
                 rsx!(
-                    TopBar {
-                        account: cx.props.account.clone(),
-                        on_call: move |_| {},
-                    },
                     (**show_warning).then(|| rsx!(
                         div {
                             class: "alpha-warning animate__animated animate__slideInDown",
