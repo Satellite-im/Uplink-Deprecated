@@ -1,9 +1,9 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-.request {
+.friend-request-list-item {
   align-items: center;
   display: flex;
-  gap: 16px;
+  gap: 0.75rem;
 
   .pfp {
     background: var(--theme-text-muted);
@@ -14,7 +14,6 @@
   }
 
   .who {
-    height: 40px;
     text-align: left;
     flex-grow: 1;
     min-width: 0;
@@ -30,7 +29,6 @@
   .request-controls {
     display: flex;
     flex-shrink: 0;
-    height: 40px;
-    gap: 16px;
+    gap: 0.25rem;
   }
 }

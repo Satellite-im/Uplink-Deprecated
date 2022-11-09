@@ -28,16 +28,11 @@ pub fn NavButton<'a>(cx: Scope<'a, ButtonProps<'a>>) -> Element<'a> {
         "inactive"
     };
 
-    cx.render(rsx!(
-        div {
-            class: "nav-button {class}",
-            Button {
-                on_pressed: move |_| cx.props.on_pressed.call(()),
-                disabled: cx.props.disabled,
-                text: cx.props.text.clone()
-            }
-        }
-    ))
+    cx.render(rsx!(Button {
+        on_pressed: move |_| cx.props.on_pressed.call(()),
+        disabled: cx.props.disabled,
+        text: cx.props.text.clone()
+    }))
 }
 
 #[derive(Props)]
@@ -57,7 +52,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         div {
-            class: "nav",
+            class: "settings-nav",
             NavButton {
                 text: String::from("General"),
                 active: NavEvent::General.eq(active_item),

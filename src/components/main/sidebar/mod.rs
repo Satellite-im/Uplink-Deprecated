@@ -76,62 +76,76 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             exts,
         }
         div {
-            class: "sidebar",
-            IconInput {
-                icon: Shape::Search,
-                placeholder: String::from("Search"),
-                value: String::from(""),
-                on_change: move |_| {},
-                on_enter: move |_| {},
-            },
-            config.developer.developer_mode.then(|| rsx! {
-                ExtensionPlaceholder {},
-            }),
-            Favorites {
-                account: cx.props.account.clone(),
-                messaging: cx.props.messaging.clone()
-            },
-            label {
-                style: "margin-bottom: 0;",
-                "{chatsdString}"
-            },
-            if has_chats {
-                rsx!(
+            class: "app-sidebar",
+            div {
+                class: "sidebar-content",
+                div {
+                    class: "sidebar-section",
+                    IconInput {
+                        icon: Shape::Search,
+                        placeholder: String::from("Search"),
+                        value: String::from(""),
+                        on_change: move |_| {},
+                        on_enter: move |_| {},
+                    },
+                },
+                config.developer.developer_mode.then(|| rsx! {
+                    ExtensionPlaceholder {},
+                }),
+                div {
+                    class: "sidebar-scroll",
                     div {
-                        class: "chat_wrap",
-                        div {
-                            class: "chats",
-                            // order the chats with most recent first (descending order)
-                            chats.iter().rev().map(|conv| {
-                                let key = conv.conversation.id();
-                                let conversation_info = conv.clone();
-                                let active_chat = active_chat.clone();
-                                rsx!(
-                                    chat::Chat {
-                                        key: "{key}",
-                                        account: cx.props.account.clone(),
-                                        conversation_info: conversation_info.clone(),
-                                        messaging: cx.props.messaging.clone(),
-                                        last_msg_sent: conv.last_msg_sent.clone(),
-                                        is_active: active_chat == Some(conversation_info.conversation.id()),
-                                        tx_chan: notifications_tx.clone(),
-                                        on_pressed: move |uuid| {
-                                            if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
-                                                active_chat.set(Some(uuid));
-                                            }
-                                        }
+                        class: "sidebar-section",
+                        Favorites {
+                            account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone()
+                        },
+                    },
+                    div {
+                        class: "sidebar-section",
+                        label {
+                            "{chatsdString}"
+                        },
+                        if has_chats {
+                            rsx!(
+                                div {
+                                    class: "chat_wrap",
+                                    div {
+                                        class: "chat-list",
+                                        // order the chats with most recent first (descending order)
+                                        chats.iter().rev().map(|conv| {
+                                            let key = conv.conversation.id();
+                                            let conversation_info = conv.clone();
+                                            let active_chat = active_chat.clone();
+                                            rsx!(
+                                                chat::Chat {
+                                                    key: "{key}",
+                                                    account: cx.props.account.clone(),
+                                                    conversation_info: conversation_info.clone(),
+                                                    messaging: cx.props.messaging.clone(),
+                                                    last_msg_sent: conv.last_msg_sent.clone(),
+                                                    is_active: active_chat == Some(conversation_info.conversation.id()),
+                                                    tx_chan: notifications_tx.clone(),
+                                                    on_pressed: move |uuid| {
+                                                        if *active_chat != Some(uuid) {
+                                                            state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
+                                                            active_chat.set(Some(uuid));
+                                                        }
+                                                    }
+                                                }
+                                            )
+                                        })
                                     }
-                                )
-                            })
-                        }
-                    }
-                )
-            } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
-            Profile {
-                account: cx.props.account.clone(),
-                show: *show_profile.clone(),
-                on_hide: move |_| show_profile.set(false),
+                                }
+                            )
+                        } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
+                        Profile {
+                            account: cx.props.account.clone(),
+                            show: *show_profile.clone(),
+                            on_hide: move |_| show_profile.set(false),
+                        },
+                    },
+                },
             },
             Nav {
                 account: cx.props.account.clone(),
@@ -155,6 +169,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     };
                 }
             }
-        }
-    })
+    }
+})
 }
+
+

@@ -1,44 +1,50 @@
-#friends {
-  #sidebar {
-    width: var(--sidebar-width);
-    height: 100%;
-    padding: 1rem;
-    border-right: 1px solid var(--theme-borders);
+.friends-sidebar {
+  .row {
+    display: flex;
+    align-items: center;
 
-    .row {
-      display: inline-flex;
-      align-items: center;
+    svg {
+      margin-right: 0.5rem;
+    }
+  }
 
-      svg {
-        margin-right: 0.5rem;
-      }
+  .root {
+    color: var(--theme-text-bright);
+    padding-left: 0;
+    display: flex;
+  }
+
+  .code {
+    width: 100%;
+
+    .button {
+      min-width: 100%;
+    }
+  }
+
+  .add {
+    width: 100%;
+    display: flex;
+
+    .icon-input {
+      flex: 1;
     }
 
-    .root {
-      color: var(--theme-text-bright);
-      padding-left: 0;
-      display: inline-flex;
+    .button {
+      margin-left: 1rem;
     }
+  }
 
-    .code {
-      width: 100%;
-      margin-bottom: 1rem;
-      .button {
-        min-width: 100%;
-      }
-    }
+  .scroll-container {
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
-    .add {
-      width: 100%;
-      display: inline-flex;
-      margin-bottom: 1rem;
-      .icon-input {
-        flex: 1;
-      }
-
-      .button {
-        margin-left: 1rem;
-      }
-    }
+  .friend-request-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }

@@ -1,5 +1,5 @@
-#welcome {
-  display: inline-flex;
+.welcome-container {
+  display: flex;
   flex-grow: 1;
   flex-direction: column;
   position: relative;

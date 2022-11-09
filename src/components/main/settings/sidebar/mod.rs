@@ -30,26 +30,35 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         div {
-            id: "settings_sidebar",
-            IconInput {
-                icon: Shape::Search,
-                placeholder: String::from("Search"),
-                value: String::from(""),
-                on_change: move |_| {},
-                on_enter: move |_| {},
-            },
-            config.developer.developer_mode.then(|| rsx! {
-                ExtensionPlaceholder {},
-            })
-            Nav {
-                on_pressed: move |ne| {
-                    cx.props.on_pressed.call(ne);
+            class: "app-sidebar",
+            div {
+                class: "sidebar-content",
+                div {
+                    class: "sidebar-section",
+                    IconInput {
+                        icon: Shape::Search,
+                        placeholder: String::from("Search"),
+                        value: String::from(""),
+                        on_change: move |_| {},
+                        on_enter: move |_| {},
+                    },
                 }
-                initial_value: initial_value,
-            },
-            config.developer.developer_mode.then(|| rsx! {
-                ExtensionPlaceholder {},
-            })
+                div {
+                class: "sidebar-scroll",
+                    config.developer.developer_mode.then(|| rsx! {
+                        ExtensionPlaceholder {},
+                    })
+                    Nav {
+                        on_pressed: move |ne| {
+                            cx.props.on_pressed.call(ne);
+                        }
+                        initial_value: initial_value,
+                    },
+                    config.developer.developer_mode.then(|| rsx! {
+                        ExtensionPlaceholder {},
+                    })
+                }
+            }
         },
     })
 }
