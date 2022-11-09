@@ -33,23 +33,6 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             Nav {
                 account: cx.props.account.clone(),
                 active: cx.props.active.clone(),
-                on_pressed: move | e: NavEvent | {
-                    match e {
-                        NavEvent::Home => {
-                            use_router(&cx).push_route("/main", None, None);
-                        },
-                        NavEvent::Files => {
-                            use_router(&cx).push_route("/main/files", None, None);
-                        },
-                        NavEvent::Friends => {
-                            use_router(&cx).push_route("/main/friends", None, None);
-                        },
-                        NavEvent::Profile => {},
-                        NavEvent::Settings => {
-                            use_router(&cx).push_route("/main/settings", None, None);
-                        },
-                    };
-                }
             }
         }
     })
