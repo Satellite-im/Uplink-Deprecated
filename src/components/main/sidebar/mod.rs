@@ -6,13 +6,8 @@ use warp::raygun::Message;
 
 use crate::{
     components::{
-        main::{
-            profile::Profile,
-            sidebar::{
-                favorites::Favorites,
-                nav::{Nav, NavEvent},
-            },
-        },
+        main::{profile::Profile, sidebar::favorites::Favorites},
+        reusable::nav::{Nav, NavEvent},
         ui_kit::{
             extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
             skeletal_chats::SkeletalChats,
@@ -26,7 +21,6 @@ use crate::{
 
 pub mod chat;
 pub mod favorites;
-pub mod nav;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -135,6 +129,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             },
             Nav {
                 account: cx.props.account.clone(),
+                active: NavEvent::Home,
                 on_pressed: move | e: NavEvent | {
                     show_profile.set(false);
                     match e {

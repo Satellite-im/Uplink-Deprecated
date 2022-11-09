@@ -18,7 +18,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "files",
-            sidebar::Sidebar { _account: cx.props.account.clone() },
+            sidebar::Sidebar { account: cx.props.account.clone() },
             div {
                 id: "content",
                 toolbar::Toolbar {

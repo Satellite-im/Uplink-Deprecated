@@ -7,6 +7,7 @@ use crate::{
         ui_kit::{extension_placeholder::ExtensionPlaceholder, icon_input::IconInput},
     },
     utils::config::Config,
+    Account,
 };
 
 use self::nav::NavEvent;
@@ -16,21 +17,23 @@ pub mod nav;
 #[derive(Props)]
 pub struct Props<'a> {
     on_pressed: EventHandler<'a, NavEvent>,
+    account: Account,
     initial_value: NavEvent,
 }
 
 #[allow(non_snake_case)]
 pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let initial_value =  match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile, 
-        NavEvent::Developer => NavEvent::Developer, 
+    let initial_value = match cx.props.initial_value {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
     let config = Config::load_config_or_default();
 
     cx.render(rsx! {
-        div {
-            id: "settings_sidebar",
+        crate::components::reusable::sidebar::Sidebar {
+            active: crate::components::reusable::nav::NavEvent::Home,
+            account: cx.props.account.clone(),
             IconInput {
                 icon: Shape::Search,
                 placeholder: String::from("Search"),
@@ -38,18 +41,12 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 on_change: move |_| {},
                 on_enter: move |_| {},
             },
-            config.developer.developer_mode.then(|| rsx! {
-                ExtensionPlaceholder {},
-            })
             Nav {
                 on_pressed: move |ne| {
                     cx.props.on_pressed.call(ne);
                 }
                 initial_value: initial_value,
             },
-            config.developer.developer_mode.then(|| rsx! {
-                ExtensionPlaceholder {},
-            })
         },
     })
 }

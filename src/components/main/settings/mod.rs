@@ -34,6 +34,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
         div {
             id: "settings",
             sidebar::SettingsSidebar {
+                account: cx.props.account.clone(),
                 on_pressed: move |ne| {
                     active_page.set(ne);
                 },
@@ -45,14 +46,6 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             },
             div {
                 id: "content",
-                div {
-                    style: "align-self: flex-end; padding: 1rem; padding-bottom: 0;",
-                    IconButton {
-                        on_pressed: move |_| use_router(&cx).push_route("/main", None, None),
-                        icon: Shape::X,
-                        state: icon_button::State::Secondary,
-                    },
-                },
                 div {
                     id: "page",
                     div {

@@ -1,9 +1,8 @@
 #files {
   #sidebar {
-    width: var(--sidebar-width);
-    height: 100%;
-    padding: 1rem;
-    border-right: 1px solid var(--theme-borders);
+    .tree_wrapper {
+      flex: 1;
+    }
 
     .tree_folder,
     .tree_item {
