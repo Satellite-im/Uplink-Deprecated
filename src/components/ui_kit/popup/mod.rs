@@ -31,7 +31,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         false => "",
     };
 
-    let render = cx.render(rsx!(
+    cx.render(rsx!(
         div {
             class: "popup-mask {hidden_class} {as_modal}",
             onclick: move |_| cx.props.on_dismiss.call(()),
@@ -96,7 +96,5 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    ));
-
-    render
+    ))
 }
