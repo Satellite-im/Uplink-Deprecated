@@ -1,0 +1,9 @@
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
+
+#settings_sidebar {
+  width: var(--sidebar-width);
+  height: calc(100% - 2rem);
+  padding: 1rem;
+  border-right: 1px solid var(--theme-borders);
+  text-align: center;
+}

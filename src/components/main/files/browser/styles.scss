@@ -6,7 +6,7 @@
     overflow-y: scroll;
     justify-content: flex-start;
     flex-wrap: wrap;
-    display: flex;
+    display: inline-flex;
     align-content: flex-start;
     &:hover {
       &::-webkit-scrollbar-thumb {

@@ -58,27 +58,24 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "app-container",
+            class: "main",
             rsx!(
                 Sidebar {
                     messaging: cx.props.messaging.clone(),
                     account: cx.props.account.clone(),
                 },
-                div {
-                    class: "app-main",
-                    if display_welcome {
-                        rsx!(
-                            Welcome {}
-                        )
-                    } else {
-                        rsx!(
-                            Compose {
-                                account: cx.props.account.clone(),
-                                messaging: cx.props.messaging.clone(),
-                            }
-                        )
-                    }
-                },
+                if display_welcome {
+                    rsx!(
+                        Welcome {}
+                    )
+                } else {
+                    rsx!(
+                        Compose {
+                            account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone(),
+                        }
+                    )
+                }
             )
         }
     })

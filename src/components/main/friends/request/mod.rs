@@ -37,7 +37,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         div {
-            class: "friend-request-list-item",
+            class: "request",
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(
