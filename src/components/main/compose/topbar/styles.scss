@@ -3,13 +3,11 @@
 .topbar {
   display: inline-flex;
   flex-direction: row;
-  height: 40px;
   padding: 1rem;
 
   .pfp {
     background: var(--theme-text-muted);
     border-radius: 20px;
-    height: 40px;
     width: 40px;
   }
 
@@ -24,7 +22,6 @@
     display: inline-flex;
     flex: 1;
     flex-direction: column;
-    height: 40px;
     padding: 0 1rem;
     text-align: left;
 

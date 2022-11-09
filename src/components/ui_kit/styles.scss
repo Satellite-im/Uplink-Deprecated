@@ -1,9 +1,6 @@
-// Fonts
 @import url("extra/assets/style/fonts.css");
-// Animate
 @import url("extra/assets/style/animate.min.css");
 
-// Globals
 :root {
   --heading-size: 18px;
   --subheading-size: 12pt;
@@ -14,6 +11,111 @@
   --padding: 2rem;
   --padding-small: 1rem;
   --sidebar-width: 300px;
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: theme("borderColor.DEFAULT", currentColor);
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -moz-tab-size: 4;
+  tab-size: 4;
+  height: 100%;
+}
+
+body {
+  line-height: inherit;
+  background: var(--theme-background);
+  color: var(--theme-text);
+  font-size: var(--text-size);
+  font-family: "Poppins", sans-serif;
+  height: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+h1 {
+  font-family: "Space Mono", monospace;
+  font-size: var(--heading-size);
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Mono", monospace;
+  font-size: var(--subheading-size);
+}
+
+hr {
+  height: 0;
+  color: var(--theme-borders);
+  border-top-width: 1px;
+  margin: 1rem 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+button,
+select {
+  text-transform: none;
+}
+
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  background-color: transparent;
+  background-image: none;
+}
+
+progress {
+  vertical-align: baseline;
+}
+
+::-webkit-inner-spin-button,
+::-webkit-outer-spin-button {
+  height: auto;
+}
+
+[type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit;
 }
 
 [contenteditable] {
@@ -31,33 +133,13 @@
   -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
   cursor: pointer;
 }
 
 .selectable {
   -webkit-user-select: text;
   user-select: text;
-}
-
-body,
-html {
-  background: var(--theme-background);
-  color: var(--theme-text);
-  font-family: "Poppins", sans-serif;
-  font-size: var(--text-size);
-  height: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-}
-
-hr {
-  border: none;
-  border-bottom: 1px solid var(--theme-borders);
-  margin: 1rem 0;
 }
 
 .pre-alpha {
@@ -124,32 +206,6 @@ label {
   opacity: 1;
   transition: 0.2s;
   font-size: 10pt;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: "Space Mono", monospace;
-  margin-bottom: 0;
-  font-size: var(--subheading-size);
-}
-
-h1 {
-  font-size: var(--heading-size);
-}
-
-p {
-  margin: 0;
-  font-size: var(--text-size);
-  color: var(--theme-text);
-  font-family: "Poppins", sans-serif;
-}
-
-h1 {
-  font-size: var(--heading-size);
 }
 
 .m-top {
