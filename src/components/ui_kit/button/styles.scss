@@ -5,7 +5,6 @@
   background-color: var(--theme-primary);
   border-radius: 20px;
   height: 40px;
-  min-width: 110px;
   text-align: center;
   border: none;
   gap: 8px;
@@ -15,67 +14,48 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: fit-content;
+
+  &-lg {
+    height: 52px;
+    border-radius: 26px;
+  }
+
+  &:not(:active):hover {
+    background-color: var(--theme-primary-light);
+  }
+
+  &-secondary {
+    background-color: var(--theme-secondary);
+
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
+  }
+
+  &-success {
+    background-color: var(--theme-green);
+
+    &:not(:active):hover {
+      background-color: var(--theme-light-green);
+    }
+  }
+
+  &-danger {
+    background-color: var(--theme-red);
+
+    &:not(:active):hover {
+      background-color: var(--theme-light-red);
+    }
+  }
+
+  &[disabled] {
+    cursor: default;
+    opacity: 0.5;
+  }
 
   svg {
     fill: transparent;
     stroke: var(--theme-text-bright);
     stroke-width: 2px;
   }
-}
-
-button:disabled,
-button[disabled] {
-  cursor: default;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.button:hover {
-  background-color: var(--theme-primary-light);
-}
-
-.button:active {
-  background-color: var(--theme-primary);
-}
-
-.button-secondary {
-  background-color: var(--theme-secondary);
-}
-
-.button-secondary:hover {
-  background-color: var(--theme-secondary-light);
-}
-
-.button-secondary:active {
-  background-color: var(--theme-secondary);
-}
-
-.button-lg {
-  height: 52px;
-  border-radius: 26px;
-}
-
-.button-success {
-  background-color: var(--theme-green);
-}
-
-.button-success:hover {
-  background-color: var(--theme-light-green);
-}
-
-.button-success:active {
-  background-color: var(--theme-green);
-}
-
-.button-danger {
-  background-color: var(--theme-red);
-}
-
-.button-danger:hover {
-  background-color: var(--theme-light-red);
-}
-
-.button-danger:active {
-  background-color: var(--theme-red);
 }
