@@ -19,6 +19,12 @@
     min-height: 0;
     gap: 1rem;
 
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     > .sidebar-section {
       margin: 0 1rem;
 
@@ -41,12 +47,6 @@
 
       &:last-child {
         padding-bottom: 1rem;
-      }
-
-      > .sidebar-section {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
       }
     }
   }
