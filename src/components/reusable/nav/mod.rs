@@ -19,15 +19,14 @@ pub enum NavEvent {
     Settings,
 }
 
-#[derive(Props)]
-pub struct Props<'a> {
+#[derive(Props, PartialEq)]
+pub struct Props {
     account: Account,
     active: NavEvent,
-    on_pressed: EventHandler<'a, NavEvent>,
 }
 
 #[allow(non_snake_case)]
-pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+pub fn Nav(cx: Scope<Props>) -> Element {
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
