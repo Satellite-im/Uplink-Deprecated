@@ -48,13 +48,11 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         size: crate::components::ui_kit::profile_picture::Size::Normal
                     },
                     div {
-                        class: "who",
-                        div {
-                            class: "top-row",
-                            h3 {
-                                "{display_username}"
-                            }
-                        },
+                        class: "topbar-user-info",
+                        h3 {
+                            class: "ellipsis",
+                            "{display_username}"
+                        }
                         div {
                             class: "user-info-inline",
                             ActivityIndicator {
@@ -73,12 +71,11 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                     },
                     div {
-                        class: "controls",
+                        class: "topbar-controls",
                         IconButton {
                             icon: Shape::Heart,
                             state: crate::components::ui_kit::icon_button::State::Secondary,
                             on_pressed: move |_| {
-
                             },
                         },
                         IconButton {
@@ -99,18 +96,14 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         }
         None => cx.render(rsx! {
             div {
-                class: "topbar",
+                class: "topbar-user-info",
                 PFPSkeleton {},
                 div {
-                    class: "who",
-                    div {
-                        class: "top-row",
-                        InlineSkeleton {}
-                    },
+                    InlineSkeleton {},
                     InlineSkeleton {}
                 },
                 div {
-                    class: "controls",
+                    class: "topbar-controls",
                     IconButton {
                         icon: Shape::Phone,
                         on_pressed: move |_| {
