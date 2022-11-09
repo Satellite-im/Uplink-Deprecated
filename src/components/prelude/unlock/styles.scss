@@ -42,20 +42,10 @@
   }
 
   .login-actions {
-    bottom: 2rem;
     display: flex;
-    max-height: 40px;
     position: fixed;
-    right: 2rem;
-    text-align: right;
-    z-index: 3;
-
-    div {
-      padding: 0.2rem 0.6rem;
-
-      &:last-of-type {
-        padding-right: 0;
-      }
-    }
+    bottom: 32px;
+    right: 32px;
+    gap: 16px;
   }
 }
