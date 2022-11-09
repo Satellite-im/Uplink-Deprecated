@@ -34,7 +34,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => String::from(""),
     };
 
-    let mut class = String::from("button");
+    let mut class = String::from("button ");
     class += match cx.props.large {
         Some(_) => "button-lg",
         None => "",

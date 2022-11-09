@@ -3,7 +3,6 @@ use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{main::settings::sidebar::nav::Nav, ui_kit::icon_input::IconInput},
-    utils::config::Config,
     Account,
 };
 
