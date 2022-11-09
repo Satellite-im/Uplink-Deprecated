@@ -52,12 +52,16 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                         icon: Shape::X,
                     },
                 }
-                match active_page.get() {
+                div {
+                    class: "settings-content",
+                    match active_page.get() {
                     NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
                     NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
                     NavEvent::Profile => rsx!(Profile { account: cx.props.account.clone() }),
                     _ => rsx!(Developer { account: cx.props.account.clone() }),
                 }
+                }
+
             }
         }
     })

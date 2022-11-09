@@ -1,7 +1,6 @@
 .settings-main {
   min-height: 0;
   display: flex;
-  padding: 0.75rem;
   flex-direction: column;
   border-bottom: 1px solid var(--theme-borders);
 
@@ -11,5 +10,11 @@
     padding: 0.75rem;
     border-bottom: 1px solid var(--theme-borders);
     justify-content: flex-end;
+  }
+
+  .settings-content {
+    flex-grow: 1;
+    padding: 0.75rem;
+    overflow-y: auto;
   }
 }
