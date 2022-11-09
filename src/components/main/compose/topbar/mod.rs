@@ -42,7 +42,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
             cx.render(rsx! {
                 div {
-                    class: "app-topbar",
+                    class: "topbar",
                     PFP {
                         src: profile_picture,
                         size: crate::components::ui_kit::profile_picture::Size::Normal

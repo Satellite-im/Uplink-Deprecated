@@ -184,7 +184,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     if show_skeleton {
         cx.render(rsx! {
             div {
-                class: "chat-list-item {active}",
+                class: "chat {active}",
                 onclick: move |_|{
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 } ,
@@ -199,7 +199,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     } else {
         cx.render(rsx! {
             div {
-                class: "chat-list-item {active}",
+                class: "chat {active}",
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },

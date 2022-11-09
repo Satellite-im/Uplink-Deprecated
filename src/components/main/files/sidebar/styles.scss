@@ -7,7 +7,7 @@
 
     .tree_folder,
     .tree_item {
-      display: flex;
+      display: inline-flex;
       flex-direction: column;
       width: 100%;
       padding-left: 0.25rem;
@@ -30,7 +30,7 @@
     }
 
     .row {
-      display: flex;
+      display: inline-flex;
       align-items: center;
 
       svg {
@@ -41,7 +41,7 @@
     .root {
       color: var(--theme-text-bright);
       padding-left: 0;
-      display: flex;
+      display: inline-flex;
     }
   }
 }

@@ -21,44 +21,35 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let initial_value = match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile,
-        NavEvent::Developer => NavEvent::Developer,
+    let initial_value =  match cx.props.initial_value {
+        NavEvent::Profile => NavEvent::Profile, 
+        NavEvent::Developer => NavEvent::Developer, 
         _ => NavEvent::General,
     };
     let config = Config::load_config_or_default();
 
     cx.render(rsx! {
         div {
-            class: "app-sidebar",
-            div {
-                class: "sidebar-content",
-                div {
-                    class: "sidebar-section",
-                    IconInput {
-                        icon: Shape::Search,
-                        placeholder: String::from("Search"),
-                        value: String::from(""),
-                        on_change: move |_| {},
-                        on_enter: move |_| {},
-                    },
+            id: "settings_sidebar",
+            IconInput {
+                icon: Shape::Search,
+                placeholder: String::from("Search"),
+                value: String::from(""),
+                on_change: move |_| {},
+                on_enter: move |_| {},
+            },
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
+            Nav {
+                on_pressed: move |ne| {
+                    cx.props.on_pressed.call(ne);
                 }
-                div {
-                class: "sidebar-scroll",
-                    config.developer.developer_mode.then(|| rsx! {
-                        ExtensionPlaceholder {},
-                    })
-                    Nav {
-                        on_pressed: move |ne| {
-                            cx.props.on_pressed.call(ne);
-                        }
-                        initial_value: initial_value,
-                    },
-                    config.developer.developer_mode.then(|| rsx! {
-                        ExtensionPlaceholder {},
-                    })
-                }
-            }
+                initial_value: initial_value,
+            },
+            config.developer.developer_mode.then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
         },
     })
 }
