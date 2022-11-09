@@ -19,6 +19,12 @@
     min-height: 0;
     gap: 1rem;
 
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
     > .sidebar-section {
       margin: 0 1rem;
 
@@ -42,19 +48,13 @@
       &:last-child {
         padding-bottom: 1rem;
       }
-
-      > .sidebar-section {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
     }
   }
 
   .chat-list {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
 
     &:hover {
       &::-webkit-scrollbar-thumb {
