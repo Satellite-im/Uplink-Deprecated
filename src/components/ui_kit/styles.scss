@@ -21,26 +21,23 @@
   border-style: solid;
   border-color: theme("borderColor.DEFAULT", currentColor);
   margin: 0;
-  padding: 0;
 }
 
-html {
-  line-height: 1.5;
-  -webkit-text-size-adjust: 100%;
-  -moz-tab-size: 4;
-  tab-size: 4;
+html,
+body {
   height: 100%;
+  width: 100;
+  overflow: hidden;
 }
 
 body {
-  line-height: inherit;
-  background: var(--theme-background);
+  line-height: 1.5;
   color: var(--theme-text);
   font-size: var(--text-size);
   font-family: "Poppins", sans-serif;
-  height: 100%;
-  overflow: hidden;
+  background: var(--theme-background);
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1 {
