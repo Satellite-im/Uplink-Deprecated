@@ -22,12 +22,12 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         div {
-            id: "sidebar app-sidebar",
+            id: "sidebar",
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
             div {
-                class: "children sidebar-content",
+                class: "children",
                 &cx.props.children
             },
             Nav {

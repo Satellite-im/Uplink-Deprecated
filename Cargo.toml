@@ -40,7 +40,7 @@ reqwest = "0.11.12"
 anyhow = "1.0"
 once_cell = "1.13"
 dioxus-heroicons = "0.1.4"
-dioxus-toast = { version = "0.1.5" }
+dioxus-toast = { git = "https://github.com/sdwoodbury/dioxus-toast"}
 clap = { version = "3.2", features = ["derive"] }
 toml = "0.5.9"
 tokio = { version = "1", features = ["full"] }

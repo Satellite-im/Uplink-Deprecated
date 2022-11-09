@@ -4,7 +4,8 @@ pub mod sidebar;
 
 use crate::{
     components::{
-        main::friends::{friend::Friend, sidebar::Sidebar},
+        main::friends::{self, friend::Friend},
+        reusable::{self, nav::NavEvent},
         ui_kit::icon_button::IconButton,
     },
     Account, Messaging,
@@ -32,39 +33,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         &cx,
         (friends, &cx.props.account.clone()),
         |(friends, mp)| async move {
-            // todo: use this commented out code somehow. i assume it's being saved for later.
-            // mp is of type Account
-            // let mut stream = match mp.subscribe() {
-            //     Ok(stream) => stream,
-            //     Err(_) => return,
-            // };
-
-            // while let Some(event) = stream.next().await {
-            //     match event {
-            //         warp::multipass::MultiPassEventKind::FriendRequestReceived { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRequestRejected { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRequestClosed { .. } => {
-            //             incoming.set(mp.list_incoming_request().unwrap_or_default());
-            //             outgoing.set(mp.list_incoming_request().unwrap_or_default());
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendAdded { did } => {
-            //             if mp.has_friend(&did).is_ok() {
-            //                 friends.needs_update();
-            //             }
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRemoved { did } => {
-            //             if mp.has_friend(&did).is_err() {
-            //                 friends.needs_update();
-            //             }
-            //         }
-            //         _ => {}
-            //     }
-            // }
-
             loop {
                 let friends_list: HashSet<_> =
                     HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
@@ -81,35 +49,20 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "friends-container app-container",
-            Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
+            reusable::sidebar::Sidebar { account: cx.props.account.clone(), active: NavEvent::Friends, friends::sidebar::Sidebar{account: cx.props.account.clone(), add_error: add_error.clone()}},
             div {
-                class: "friends-main app-main",
-                div {
-                    class: "toolbar",
-                    div {
-                        class: "controls",
-                        IconButton {
-                            icon: Shape::X,
-                            on_pressed: move |_| {
-                                use_router(&cx).push_route("/main", None, None);
-                            }
+                class: "friends-list",
+                friends.iter().map(|user| rsx!(
+                    Friend {
+                        account: cx.props.account.clone(),
+                        messaging: cx.props.messaging.clone(),
+                        friend: user.clone(),
+                        on_chat: move |_| {
+                            add_error.set("".into());
+                            use_router(&cx).push_route("/main", None, None);
                         }
                     }
-                },
-                div {
-                    class: "friends-list",
-                    friends.iter().map(|user| rsx!(
-                        Friend {
-                            account: cx.props.account.clone(),
-                            messaging: cx.props.messaging.clone(),
-                            friend: user.clone(),
-                            on_chat: move |_| {
-                                add_error.set("".into());
-                                use_router(&cx).push_route("/main", None, None);
-                            }
-                        }
-                    )),
-                }
+                )),
             }
         }
     })

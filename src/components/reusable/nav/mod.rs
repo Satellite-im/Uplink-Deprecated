@@ -51,7 +51,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             class: "nav",
             IconButton {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main", None, None);
+                    use_router(&cx).replace_route("/main", None, None);
                 },
                 state: if cx.props.active.eq(&NavEvent::Home) {
                     icon_button::State::Primary
@@ -62,7 +62,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             },
             IconButton {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main/files", None, None);
+                    use_router(&cx).replace_route("/main/files", None, None);
                 },
                 state: if cx.props.active.eq(&NavEvent::Files) {
                     icon_button::State::Primary
@@ -75,7 +75,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 class: "has_indicator",
                 IconButton {
                     on_pressed: move |_| {
-                        use_router(&cx).push_route("/main/friends", None, None);
+                        use_router(&cx).replace_route("/main/friends", None, None);
                     },
                     state: if cx.props.active.eq(&NavEvent::Friends) {
                         icon_button::State::Primary
@@ -92,7 +92,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             }
             IconButton {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main/settings", None, None);
+                    use_router(&cx).replace_route("/main/settings", None, None);
                 },
                 state: if cx.props.active.eq(&NavEvent::Settings) {
                     icon_button::State::Primary
