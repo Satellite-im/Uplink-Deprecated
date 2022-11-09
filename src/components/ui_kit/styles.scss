@@ -124,6 +124,12 @@ progress {
   --animate-duration: 0.15s;
 }
 
+.ellipsis {
+  text-overflow: ellipsis;
+  white-space: pre;
+  overflow: hidden;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
