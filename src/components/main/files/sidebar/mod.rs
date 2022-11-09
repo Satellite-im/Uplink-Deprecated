@@ -5,7 +5,6 @@ use dioxus_heroicons::{solid::Shape, Icon};
 
 use crate::{
     components::{
-        self,
         main::files::sidebar::usage::{Usage, UsageStats},
         reusable::nav::NavEvent,
     },
