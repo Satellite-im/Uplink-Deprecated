@@ -1,11 +1,11 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-.main {
-  display: flex;
-  flex-direction: row;
-  height: 100%;
-  text-align: center;
-  width: 100%;
-  -webkit-user-select: none;
+.app-container {
   user-select: none;
+}
+
+.app-main {
+  position: absolute;
+  inset: 0;
+  left: var(--sidebar-width);
 }

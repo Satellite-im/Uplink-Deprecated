@@ -59,84 +59,83 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
 
     cx.render(rsx!(
         div {
-            id: "sidebar",
+            class: "friends-sidebar app-sidebar",
             FindFriends { account: account.clone(), add_error: add_error.clone()},
             div {
-                class: "scroll_wrap",
-                div {
-                    class: "scrolling",
-                    (!incoming.is_empty()).then(|| rsx!(
-                        label {
-                        "{incomingRequestsLang}"
-                        },
-                        div {
-                            incoming.iter().map(|request| rsx!(
-                                FriendRequest {
-                                    account: account.clone(),
-                                    request: request.clone(),
-                                    on_accept: move |_| {
-                                        match account.clone()
-                                            .write()
-                                            .accept_request(&request.from())
-                                        {
-                                            Ok(_) => {
-                                                add_error.set("".into());
-                                            },
-                                            Err(_) => {
-                                                // TODO: Catch this and display it
-                                                println!("Error");
-                                            },
-                                        }
-                                    },
-                                    on_deny: move |_| {
-                                        match account.clone()
-                                            .write()
-                                            .deny_request(&request.from())
-                                        {
-                                            Ok(_) => {
-                                                add_error.set("".into());
-                                            },
-                                            Err(_) => {
-                                                // TODO: Catch this and display it
-                                                println!("Error");
-                                            },
-                                        }
-                                    },
-                                    deny_only: false,
-                                }
-                            )),
-                        }
-                    )),
-                    (!outgoing.is_empty()).then(|| rsx!(
-                        label {
-                            "{outgoingRequestsLang}"
-                        },
-                        div {
-                            outgoing.iter().map(|request| rsx!(
-                                FriendRequest {
-                                    account: account.clone(),
-                                    request: request.clone(),
-                                    on_deny:  move |_| {
-                                        match account.clone()
-                                            .write()
-                                            .close_request(&request.to())
-                                        {
-                                            Ok(_) => {
-                                                add_error.set("".into());
-                                            },
-                                            Err(_) => {
-                                                // TODO: Catch this and display it
-                                                println!("Error");
-                                            },
-                                        }
-                                    },
-                                    on_accept: move |_| {},
-                                    deny_only: true,
-                                }
-                            )),
-                        }
-                    )),
-                }
+                class: "scroll-container",
+                (!incoming.is_empty()).then(|| rsx!(
+                    label {
+                    "{incomingRequestsLang}"
+                    },
+                    div {
+                        class: "friend-request-list",
+                        incoming.iter().map(|request| rsx!(
+                            FriendRequest {
+                                account: account.clone(),
+                                request: request.clone(),
+                                on_accept: move |_| {
+                                    match account.clone()
+                                        .write()
+                                        .accept_request(&request.from())
+                                    {
+                                        Ok(_) => {
+                                            add_error.set("".into());
+                                        },
+                                        Err(_) => {
+                                            // TODO: Catch this and display it
+                                            println!("Error");
+                                        },
+                                    }
+                                },
+                                on_deny: move |_| {
+                                    match account.clone()
+                                        .write()
+                                        .deny_request(&request.from())
+                                    {
+                                        Ok(_) => {
+                                            add_error.set("".into());
+                                        },
+                                        Err(_) => {
+                                            // TODO: Catch this and display it
+                                            println!("Error");
+                                        },
+                                    }
+                                },
+                                deny_only: false,
+                            }
+                        )),
+                    }
+                )),
+                (!outgoing.is_empty()).then(|| rsx!(
+                    label {
+                        "{outgoingRequestsLang}"
+                    },
+                    div {
+                        class: "friend-request-list",
+                        outgoing.iter().map(|request| rsx!(
+                            FriendRequest {
+                                account: account.clone(),
+                                request: request.clone(),
+                                on_deny:  move |_| {
+                                    match account.clone()
+                                        .write()
+                                        .close_request(&request.to())
+                                    {
+                                        Ok(_) => {
+                                            add_error.set("".into());
+                                        },
+                                        Err(_) => {
+                                            // TODO: Catch this and display it
+                                            println!("Error");
+                                        },
+                                    }
+                                },
+                                on_accept: move |_| {},
+                                deny_only: true,
+                            }
+                        )),
+                    }
+                )),
             }
         }
     ))

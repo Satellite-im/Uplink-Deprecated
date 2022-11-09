@@ -2,12 +2,10 @@
 
 .nav {
   display: flex;
-  flex-direction: row;
   justify-content: space-evenly;
-  width: 100%;
-  min-height: fit-content;
-  -webkit-user-select: none; /* Safari */
-  user-select: none; /* Non-prefixed version, currently */
+  align-items: center;
+  height: var(--nav-height);
+  flex-shrink: 0;
 
   .has_indicator {
     position: relative;

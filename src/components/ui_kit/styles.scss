@@ -11,6 +11,11 @@
   --padding: 2rem;
   --padding-small: 1rem;
   --sidebar-width: 300px;
+  --nav-height: 48px;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 *,
@@ -239,7 +244,6 @@ label {
 label {
   font-size: var(--label-size);
   text-align: left;
-  margin: 1rem 0;
   font-family: "Space Mono", monospace;
   color: var(--theme-text-muted);
 }
