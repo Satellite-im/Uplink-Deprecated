@@ -28,16 +28,11 @@ pub fn NavButton<'a>(cx: Scope<'a, ButtonProps<'a>>) -> Element<'a> {
         "inactive"
     };
 
-    cx.render(rsx!(
-        div {
-            class: "nav-button {class}",
-            Button {
-                on_pressed: move |_| cx.props.on_pressed.call(()),
-                disabled: cx.props.disabled,
-                text: cx.props.text.clone()
-            }
-        }
-    ))
+    cx.render(rsx!(Button {
+        on_pressed: move |_| cx.props.on_pressed.call(()),
+        disabled: cx.props.disabled,
+        text: cx.props.text.clone()
+    }))
 }
 
 #[derive(Props)]
@@ -48,16 +43,16 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let initial_value =  match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile, 
-        NavEvent::Developer => NavEvent::Developer, 
+    let initial_value = match cx.props.initial_value {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
     let active_item = use_state(&cx, || initial_value);
 
     cx.render(rsx! {
         div {
-            class: "nav",
+            class: "settings-nav",
             NavButton {
                 text: String::from("General"),
                 active: NavEvent::General.eq(active_item),

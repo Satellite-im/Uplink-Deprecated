@@ -2,7 +2,7 @@
   background: var(--theme-foreground-dark);
   text-align: left;
   margin: 0.5rem 0;
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   overflow: hidden;
 
@@ -10,7 +10,7 @@
     min-width: 40px;
     padding: 1rem;
     background: var(--theme-background);
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
     align-items: center;
 
@@ -36,7 +36,7 @@
     .button {
       min-width: 100%;
       margin-top: 1rem;
-      display: inline-flex;
+      display: flex;
       justify-content: center;
       align-items: center;
     }

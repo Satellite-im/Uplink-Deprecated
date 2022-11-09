@@ -1,79 +1,99 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-.main {
-  .sidebar {
-    border-right: 1px solid var(--theme-borders);
-    display: inline-flex;
-    flex-direction: column;
-    height: 100%;
-    min-width: 300px;
-    padding: 1rem;
-    position: relative;
-    width: var(--sidebar-width);
+.app-sidebar {
+  border-right: 1px solid var(--theme-borders);
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-width);
 
-    .extension-renderer {
-      margin-top: 1rem;
+  .extension-renderer {
+    margin-top: 1rem;
+  }
+
+  > .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
+    gap: 1rem;
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
     }
 
-    .chats {
-      overflow-y: scroll;
-      overflow-x: hidden;
-      display: inline-flex;
-      flex: 1;
-      padding-top: 7px;
-      min-height: 0;
-      flex-direction: column;
-      position: absolute;
-      padding-right: 10px;
-      top: 0;
-      left: 0;
-      right: -10px;
-      bottom: 0;
-      padding-right: 0.9rem;
-      &:hover {
-        &::-webkit-scrollbar-thumb {
-          background: var(--theme-primary) !important;
-          opacity: 1;
-        }
+    > .sidebar-section {
+      margin: 0 1rem;
+
+      &:first-child {
+        margin-top: 1rem;
+      }
+
+      &:last-child {
+        margin-bottom: 1rem;
       }
     }
 
-    .chat_wrap {
-      position: relative;
-      flex: 1;
-      margin-bottom: 1rem;
+    > .sidebar-scroll {
+      overflow-y: auto;
+      padding: 0 1rem;
+      flex-grow: 1;
       display: flex;
-      max-height: 100%;
-      width: 100%;
-    }
-
-    .fill-vertical {
-      display: inline-flex;
       flex-direction: column;
-      flex: 1;
-      align-content: center;
-      align-items: center;
+      gap: 1rem;
+
+      &:last-child {
+        padding-bottom: 1rem;
+      }
     }
+  }
 
-    .favorites {
-      display: inline-flex;
-      -webkit-user-select: none; /* Safari */
-      user-select: none; /* Non-prefixed version, currently */
+  .chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 
-      .labeled {
-        margin-bottom: 10px;
-        padding: 0 0 0.75rem;
-        position: relative;
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: var(--theme-primary) !important;
+        opacity: 1;
+      }
+    }
+  }
 
-        span {
-          bottom: -10px;
-          color: var(--theme-text-muted);
-          font-size: var(--text-small);
-          left: 0;
-          position: absolute;
-          right: 0;
-          text-align: center;
-        }
+  .chat_wrap {
+    flex-grow: 1;
+  }
+
+  .fill-vertical {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    align-content: center;
+    align-items: center;
+  }
+
+  .favorites {
+    display: flex;
+    -webkit-user-select: none; /* Safari */
+    user-select: none; /* Non-prefixed version, currently */
+
+    .labeled {
+      margin-bottom: 10px;
+      padding: 0 0 0.75rem;
+      position: relative;
+
+      span {
+        bottom: -10px;
+        color: var(--theme-text-muted);
+        font-size: var(--text-small);
+        left: 0;
+        position: absolute;
+        right: 0;
+        text-align: center;
       }
     }
   }

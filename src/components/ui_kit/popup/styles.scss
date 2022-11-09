@@ -75,7 +75,7 @@
       top: 0;
       right: 0;
       z-index: 1;
-      display: inline-flex;
+      display: flex;
 
       .button {
         background: transparent;
@@ -104,7 +104,7 @@
     .title {
       text-align: left;
       align-content: center;
-      display: inline-flex;
+      display: flex;
       border-bottom: 1px solid var(--theme--borders);
       color: var(--theme-text);
 

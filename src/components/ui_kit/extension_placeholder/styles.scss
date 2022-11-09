@@ -2,7 +2,7 @@
 .mini-extension-renderer {
   width: calc(40px - 1rem);
   height: calc(40px - 1rem);
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;
@@ -23,7 +23,7 @@
 
 .extension-renderer {
   width: calc(100% - 1rem);
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-content: center;
   justify-content: center;

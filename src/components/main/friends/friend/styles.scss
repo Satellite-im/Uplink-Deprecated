@@ -2,10 +2,11 @@
 
 .friend {
   align-items: center;
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   width: 100%;
   margin-bottom: 0.5rem;
+  gap: 0.5rem;
 
   .pfp {
     background: var(--theme-text-muted);
@@ -15,14 +16,13 @@
   }
 
   .who {
-    flex: 1;
     height: 40px;
-    padding: 0 1rem;
     text-align: left;
+    flex-grow: 1;
   }
 
   .request-controls {
-    display: inline-flex;
+    display: flex;
     height: 40px;
     min-width: 42px;
 

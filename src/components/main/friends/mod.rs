@@ -7,7 +7,7 @@ use crate::{
         main::friends::{friend::Friend, sidebar::Sidebar},
         ui_kit::icon_button::IconButton,
     },
-    Account, Messaging, LANGUAGE,
+    Account, Messaging,
 };
 
 use dioxus::prelude::*;
@@ -80,10 +80,10 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            id: "friends",
+            class: "friends-container app-container",
             Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
             div {
-                id: "content",
+                class: "friends-main app-main",
                 div {
                     class: "toolbar",
                     div {

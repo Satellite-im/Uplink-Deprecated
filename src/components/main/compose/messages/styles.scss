@@ -1,19 +1,13 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .messages {
-  display: inline-flex;
+  display: flex;
   flex-direction: column-reverse;
-  height: 100%;
-  max-width: calc(100vw - 330px - 2rem);
-  min-width: 300px;
   overflow-x: hidden;
   overflow-y: scroll;
   padding: 0 1rem;
-  padding-right: calc(1rem - 10px);
-  margin-right: 5px;
-  position: relative;
-  width: calc(100% - 2rem);
-  padding-bottom: 1rem;
+  position: absolute;
+  inset: 0;
 
   &:hover {
     &::-webkit-scrollbar-thumb {
@@ -23,7 +17,7 @@
   }
 
   .encrypted-notif {
-    display: inline-flex;
+    display: flex;
     align-content: center;
     justify-content: center;
     background: var(--theme-background-light);
