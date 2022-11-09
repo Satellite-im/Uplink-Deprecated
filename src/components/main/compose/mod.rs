@@ -2,7 +2,6 @@ pub mod messages;
 pub mod msg;
 pub mod reply;
 pub mod sidebar;
-//pub mod topbar;
 pub mod write;
 
 use dioxus::prelude::*;
