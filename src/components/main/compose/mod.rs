@@ -1,6 +1,7 @@
 pub mod messages;
 pub mod msg;
 pub mod reply;
+pub mod sidebar;
 pub mod topbar;
 pub mod write;
 
@@ -13,6 +14,7 @@ use crate::{
         main::{compose::{messages::Messages, topbar::TopBar, write::Write} },
         ui_kit::icon_button::IconButton,
     },
+    
     state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };

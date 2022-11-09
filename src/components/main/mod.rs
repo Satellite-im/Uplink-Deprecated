@@ -1,5 +1,16 @@
+pub mod compose;
+pub mod files;
+pub mod friends;
+pub mod profile;
+pub mod settings;
+pub mod welcome;
+
 use crate::{
-    main::{compose::Compose, sidebar::Sidebar, welcome::Welcome},
+    components::reusable::{nav::NavEvent, sidebar::Sidebar},
+    main::{
+        compose::{sidebar::Sidebar as ComposeSidebar, Compose},
+        welcome::Welcome,
+    },
     state::{Actions, ConversationInfo},
     Account, Messaging, STATE,
 };
@@ -8,14 +19,6 @@ use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
 use warp::raygun::RayGun;
-
-pub mod compose;
-pub mod files;
-pub mod friends;
-pub mod profile;
-pub mod settings;
-pub mod sidebar;
-pub mod welcome;
 
 #[derive(Props, PartialEq)]
 pub struct Prop {
@@ -28,6 +31,8 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     let st = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
     let state = use_atom_ref(&cx, STATE);
+
+    // todo: put this in compose?
     let display_welcome = state.read().current_chat.is_none();
 
     use_future(&cx, (), |_| async move {
@@ -57,29 +62,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     });
 
     cx.render(rsx! {
-        div {
-            class: "app-container",
-            rsx!(
-                Sidebar {
-                    messaging: cx.props.messaging.clone(),
-                    account: cx.props.account.clone(),
-                },
-                div {
-                    class: "app-main",
-                    if display_welcome {
-                        rsx!(
-                            Welcome {}
-                        )
-                    } else {
-                        rsx!(
-                            Compose {
-                                account: cx.props.account.clone(),
-                                messaging: cx.props.messaging.clone(),
-                            }
-                        )
-                    }
-                },
-            )
+        Sidebar { account: cx.props.account.clone(), active: NavEvent::Home, ComposeSidebar{account: cx.props.account.clone(), messaging: cx.props.messaging.clone()} }
+        Compose {
+            account: cx.props.account.clone(),
+            messaging: cx.props.messaging.clone(),
         }
     })
 }
