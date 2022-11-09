@@ -3,15 +3,11 @@ pub mod request;
 pub mod sidebar;
 
 use crate::{
-    components::{
-        main::friends::{friend::Friend, sidebar::Sidebar},
-        ui_kit::icon_button::IconButton,
-    },
+    components::main::friends::{friend::Friend, sidebar::Sidebar},
     Account, Messaging,
 };
 
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 use std::{collections::HashSet, time::Duration};
 use warp::multipass::Friends;
 

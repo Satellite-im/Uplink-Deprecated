@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
         main::settings::pages::{developer::Developer, general::General, profile::Profile},
-        ui_kit::icon_button::{self, IconButton},
     },
     Account,
 };

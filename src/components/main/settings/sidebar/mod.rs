@@ -2,10 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
 use crate::{
-    components::{
-        main::settings::sidebar::nav::Nav,
-        ui_kit::{extension_placeholder::ExtensionPlaceholder, icon_input::IconInput},
-    },
+    components::{main::settings::sidebar::nav::Nav, ui_kit::icon_input::IconInput},
     utils::config::Config,
     Account,
 };
@@ -28,7 +25,6 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
-    let config = Config::load_config_or_default();
 
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
