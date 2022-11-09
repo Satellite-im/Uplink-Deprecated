@@ -95,14 +95,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 div {
                     class: "sidebar-scroll",
                     div {
-                        class: "sidebar-scroll-section",
+                        class: "sidebar-section",
                         Favorites {
                             account: cx.props.account.clone(),
                             messaging: cx.props.messaging.clone()
                         },
                     },
                     div {
-                        class: "sidebar-scroll-section",
+                        class: "sidebar-section",
                         label {
                             "{chatsdString}"
                         },
@@ -172,3 +172,5 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     }
 })
 }
+
+
