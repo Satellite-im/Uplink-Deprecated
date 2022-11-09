@@ -22,51 +22,41 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
-    let page_to_open_on_settings =  match cx.props.page_to_open {
-        NavEvent::Profile => NavEvent::Profile, 
-        NavEvent::Developer => NavEvent::Developer, 
+    let page_to_open_on_settings = match cx.props.page_to_open {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
- 
+
     let active_page = use_state(&cx, || page_to_open_on_settings);
 
     cx.render(rsx! {
         div {
-            id: "settings",
+            class: "app-container",
             sidebar::SettingsSidebar {
                 on_pressed: move |ne| {
                     active_page.set(ne);
                 },
                 initial_value: match active_page.get() {
-                    NavEvent::Profile => NavEvent::Profile, 
-                    NavEvent::Developer => NavEvent::Developer, 
+                    NavEvent::Profile => NavEvent::Profile,
+                    NavEvent::Developer => NavEvent::Developer,
                     _ => NavEvent::General,
                 },
             },
             div {
-                id: "content",
+                class: "app-main settings-main",
                 div {
-                    style: "align-self: flex-end; padding: 1rem; padding-bottom: 0;",
+                class: "toolbar",
                     IconButton {
                         on_pressed: move |_| use_router(&cx).push_route("/main", None, None),
                         icon: Shape::X,
-                        state: icon_button::State::Secondary,
                     },
-                },
-                div {
-                    id: "page",
-                    div {
-                        class: "wrapper",
-                        div {
-                            class: "content",
-                            match active_page.get() {
-                                NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
-                                NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
-                                NavEvent::Profile => rsx!(Profile { account: cx.props.account.clone() }),
-                                _ => rsx!(Developer { account: cx.props.account.clone() }),
-                            }
-                        }
-                    }
+                }
+                match active_page.get() {
+                    NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
+                    NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
+                    NavEvent::Profile => rsx!(Profile { account: cx.props.account.clone() }),
+                    _ => rsx!(Developer { account: cx.props.account.clone() }),
                 }
             }
         }

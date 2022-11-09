@@ -1,29 +1,5 @@
-#settings_sidebar {
-  .nav {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    position: unset;
-    width: 100%;
-    margin-top: 1rem;
-    .nav-button {
-      margin: 0.5rem 0;
-      .button {
-        background-color: transparent;
-        width: 100%;
-        max-width: 100%;
-        &:hover {
-          background-color: var(--theme-borders);
-        }
-      }
-      &.active {
-        .button {
-          background-color: var(--theme-primary);
-          &:hover {
-            background-color: var(--theme-primary-light);
-          }
-        }
-      }
-    }
-  }
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
