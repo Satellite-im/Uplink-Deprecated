@@ -34,7 +34,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => String::from(""),
     };
 
-    let mut class = String::from("");
+    let mut class = String::from("button");
     class += match cx.props.large {
         Some(_) => "button-lg",
         None => "",
@@ -52,7 +52,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(match cx.props.icon {
         Some(icon) => rsx! {
             button {
-                class: "button {class}",
+                class: "{class}",
                 onclick: move |evt| cx.props.on_pressed.call(evt),
                 disabled: "{disabled}",
                 Icon {
@@ -65,7 +65,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         },
         None => rsx! {
             button {
-                class: "button {class}",
+                class: "{class}",
                 disabled: "{disabled}",
                 onclick: move |evt| cx.props.on_pressed.call(evt),
                 "{text}"
