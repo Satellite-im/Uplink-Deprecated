@@ -21,9 +21,9 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let initial_value =  match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile, 
-        NavEvent::Developer => NavEvent::Developer, 
+    let initial_value = match cx.props.initial_value {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
     let config = Config::load_config_or_default();
