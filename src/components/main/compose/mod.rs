@@ -10,7 +10,7 @@ use warp::raygun::RayGun;
 
 use crate::{
     components::{
-        main::{compose::{messages::Messages, topbar::TopBar, write::Write} },
+        main::compose::{messages::Messages, topbar::TopBar, write::Write},
         ui_kit::icon_button::IconButton,
     },
     state::{Actions, LastMsgSent},

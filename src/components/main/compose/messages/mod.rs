@@ -43,7 +43,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         true
     });
 
-    if let Some(_) = should_reload.value() {
+    if should_reload.value().is_some() {
         cx.needs_update();
     };
 

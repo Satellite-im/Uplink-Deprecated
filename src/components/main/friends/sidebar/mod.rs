@@ -1,10 +1,9 @@
-
 use crate::{
     components::{
         main::friends::{ request::FriendRequest},
         ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
     },
-    Account,  LANGUAGE, TOAST_MANAGER,
+    Account, LANGUAGE, TOAST_MANAGER,
 };
 
 use arboard::Clipboard;
@@ -13,12 +12,12 @@ use dioxus::{
     events::{FormEvent, MouseData},
     prelude::*,
 };
-use dioxus_heroicons::{outline::Shape};
+use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
 
 use std::{collections::HashSet, time::Duration};
-use warp::multipass::Friends;
 use warp::crypto::DID;
+use warp::multipass::Friends;
 
 #[inline_props]
 #[allow(non_snake_case)]
@@ -148,7 +147,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let remote_friend = use_state(&cx, String::new);
-
 
     let l2 = l.clone();
     let codeCopied = { l.code_copied.to_string() };
