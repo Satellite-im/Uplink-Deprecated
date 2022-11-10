@@ -27,7 +27,6 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
-            active: crate::components::reusable::nav::NavEvent::Home,
             account: cx.props.account.clone(),
             IconInput {
                 icon: Shape::Search,

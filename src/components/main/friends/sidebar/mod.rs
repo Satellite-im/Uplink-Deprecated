@@ -2,7 +2,7 @@
 use crate::{
     components::{
         main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}, reusable::nav::NavEvent,
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
     },
     Account,  LANGUAGE, TOAST_MANAGER,
 };
@@ -59,7 +59,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
 
     cx.render(rsx!(
         crate::components::reusable::sidebar::Sidebar {
-            active: NavEvent::Home,
             account: cx.props.account.clone(),
             FindFriends { account: account.clone(), add_error: add_error.clone()},
             div {

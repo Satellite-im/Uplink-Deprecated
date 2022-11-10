@@ -1,10 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::{
-        reusable::nav::{Nav, NavEvent},
-        ui_kit::extension_placeholder::ExtensionPlaceholder,
-    },
+    components::{reusable::nav::Nav, ui_kit::extension_placeholder::ExtensionPlaceholder},
     utils::config::Config,
     Account,
 };
@@ -12,7 +9,6 @@ use crate::{
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
-    active: NavEvent,
     children: Element<'a>,
 }
 
@@ -32,7 +28,6 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             Nav {
                 account: cx.props.account.clone(),
-                active: cx.props.active.clone(),
             }
         }
     })

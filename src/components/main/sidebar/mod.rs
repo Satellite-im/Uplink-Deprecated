@@ -7,7 +7,7 @@ use warp::raygun::Message;
 use crate::{
     components::{
         main::{profile::Profile, sidebar::favorites::Favorites},
-        reusable::nav::{Nav, NavEvent},
+        reusable::nav::Nav,
         ui_kit::{
             extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
             skeletal_chats::SkeletalChats,
@@ -128,9 +128,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 on_hide: move |_| show_profile.set(false),
             },
             Nav {
-                account: cx.props.account.clone(),
-                active: NavEvent::Home,
-                
+                account: cx.props.account.clone(),                
             }
         }
     })

@@ -22,7 +22,6 @@ pub enum NavEvent {
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
-    active: NavEvent,
 }
 
 #[allow(non_snake_case)]
@@ -31,6 +30,19 @@ pub fn Nav(cx: Scope<Props>) -> Element {
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
     });
+
+    let route = use_route(&cx).last_segment();
+
+    let active = match route {
+        Some(r) => match r {
+            "main" => NavEvent::Home,
+            "files" => NavEvent::Files,
+            "friends" => NavEvent::Friends,
+            "settings" => NavEvent::Settings,
+            _ => NavEvent::Home,
+        },
+        None => todo!(),
+    };
 
     use_future(
         &cx,
@@ -53,7 +65,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 on_pressed: move |_| {
                     use_router(&cx).push_route("/main", None, None);
                 },
-                state: if cx.props.active.eq(&NavEvent::Home) {
+                state: if active.eq(&NavEvent::Home) {
                     icon_button::State::Primary
                 } else {
                     icon_button::State::Secondary
@@ -64,7 +76,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 on_pressed: move |_| {
                     use_router(&cx).push_route("/main/files", None, None);
                 },
-                state: if cx.props.active.eq(&NavEvent::Files) {
+                state: if active.eq(&NavEvent::Files) {
                     icon_button::State::Primary
                 } else {
                     icon_button::State::Secondary
@@ -77,7 +89,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                     on_pressed: move |_| {
                         use_router(&cx).push_route("/main/friends", None, None);
                     },
-                    state: if cx.props.active.eq(&NavEvent::Friends) {
+                    state: if active.eq(&NavEvent::Friends) {
                         icon_button::State::Primary
                     } else {
                         icon_button::State::Secondary
@@ -94,7 +106,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 on_pressed: move |_| {
                     use_router(&cx).push_route("/main/settings", None, None);
                 },
-                state: if cx.props.active.eq(&NavEvent::Settings) {
+                state: if active.eq(&NavEvent::Settings) {
                     icon_button::State::Primary
                 } else {
                     icon_button::State::Secondary

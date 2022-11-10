@@ -4,10 +4,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
 use crate::{
-    components::{
-        main::files::sidebar::usage::{Usage, UsageStats},
-        reusable::nav::NavEvent,
-    },
+    components::main::files::sidebar::usage::{Usage, UsageStats},
     Account,
 };
 
@@ -138,7 +135,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     // if multiple folders are desired under `Files`, this could render a list of `DirEntry`
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
-            active: NavEvent::Home,
             account: cx.props.account.clone(),
             Usage {
                 usage: UsageStats {
