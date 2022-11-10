@@ -10,6 +10,7 @@ use crate::{
 };
 use warp::multipass::Friends;
 
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum NavEvent {
     Home,
     Files,
@@ -18,20 +19,30 @@ pub enum NavEvent {
     Settings,
 }
 
-#[derive(Props)]
-pub struct Props<'a> {
+#[derive(Props, PartialEq)]
+pub struct Props {
     account: Account,
-    on_pressed: EventHandler<'a, NavEvent>,
 }
 
 #[allow(non_snake_case)]
-pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    // Total incoming request count
-
+pub fn Nav(cx: Scope<Props>) -> Element {
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
     });
+
+    let route = use_route(&cx).last_segment();
+
+    let active = match route {
+        Some(r) => match r {
+            "main" => NavEvent::Home,
+            "files" => NavEvent::Files,
+            "friends" => NavEvent::Friends,
+            "settings" => NavEvent::Settings,
+            _ => NavEvent::Home,
+        },
+        None => todo!(),
+    };
 
     use_future(
         &cx,
@@ -44,25 +55,6 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
                 tokio::time::sleep(std::time::Duration::from_millis(300)).await;
             }
-
-            // let mut stream = match multipass.subscribe() {
-            //     Ok(stream) => stream,
-            //     Err(_) => return,
-            // };
-
-            // while let Some(event) = stream.next().await {
-            //     match event {
-            //         warp::multipass::MultiPassEventKind::FriendRequestReceived { .. } => {
-            //             reqCount += 1;
-            //         }
-            //         warp::multipass::MultiPassEventKind::FriendRequestRejected { .. }
-            //         | warp::multipass::MultiPassEventKind::FriendRequestClosed { .. }
-            //         | warp::multipass::MultiPassEventKind::FriendAdded { .. } => {
-            //             reqCount -= 1;
-            //         }
-            //         _ => {}
-            //     }
-            // }
         },
     );
 
@@ -71,18 +63,37 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "nav",
             IconButton {
                 on_pressed: move |_| {
+                    use_router(&cx).push_route("/main", None, None);
+                },
+                state: if active.eq(&NavEvent::Home) {
+                    icon_button::State::Primary
+                } else {
+                    icon_button::State::Secondary
+                }
+                icon: Shape::Chat
+            },
+            IconButton {
+                on_pressed: move |_| {
                     use_router(&cx).push_route("/main/files", None, None);
                 },
-                state: icon_button::State::Secondary,
+                state: if active.eq(&NavEvent::Files) {
+                    icon_button::State::Primary
+                } else {
+                    icon_button::State::Secondary
+                },
                 icon: Shape::Folder
             },
             div {
                 class: "has_indicator",
                 IconButton {
                     on_pressed: move |_| {
-                        let _ = &cx.props.on_pressed.call(NavEvent::Friends);
+                        use_router(&cx).push_route("/main/friends", None, None);
                     },
-                    state: icon_button::State::Secondary,
+                    state: if active.eq(&NavEvent::Friends) {
+                        icon_button::State::Primary
+                    } else {
+                        icon_button::State::Secondary
+                    }
                     icon: Shape::Users
                 },
                 (*reqCount.get() > 0).then(|| rsx!(
@@ -93,16 +104,13 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
             IconButton {
                 on_pressed: move |_| {
-                    let _ = &cx.props.on_pressed.call(NavEvent::Profile);
-                },
-                state: icon_button::State::Secondary,
-                icon: Shape::UserCircle
-            },
-            IconButton {
-                on_pressed: move |_| {
                     use_router(&cx).push_route("/main/settings", None, None);
                 },
-                state: icon_button::State::Secondary,
+                state: if active.eq(&NavEvent::Settings) {
+                    icon_button::State::Primary
+                } else {
+                    icon_button::State::Secondary
+                },
                 icon: Shape::Cog
             },
         }

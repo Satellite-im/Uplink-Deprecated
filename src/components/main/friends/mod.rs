@@ -3,15 +3,11 @@ pub mod request;
 pub mod sidebar;
 
 use crate::{
-    components::{
-        main::friends::{friend::Friend, sidebar::Sidebar},
-        ui_kit::icon_button::IconButton,
-    },
+    components::main::friends::{friend::Friend, sidebar::Sidebar},
     Account, Messaging,
 };
 
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 use std::{collections::HashSet, time::Duration};
 use warp::multipass::Friends;
 
@@ -47,22 +43,10 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "friends-container app-container",
+            id: "friends",
             Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
             div {
-                class: "friends-main app-main",
-                div {
-                    class: "toolbar",
-                    div {
-                        class: "controls",
-                        IconButton {
-                            icon: Shape::X,
-                            on_pressed: move |_| {
-                                use_router(&cx).push_route("/main", None, None);
-                            }
-                        }
-                    }
-                },
+                id: "content",
                 div {
                     class: "friends-list",
                     friends.iter().map(|user| rsx!(

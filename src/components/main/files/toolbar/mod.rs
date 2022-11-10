@@ -30,15 +30,6 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     icon: Shape::Upload,
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
-            },
-            div {
-                id: "close",
-                IconButton {
-                    on_pressed: move |_| {
-                        use_router(&cx).push_route("/main", None, None);
-                    },
-                    icon: Shape::X
-                }
             }
         },
     })

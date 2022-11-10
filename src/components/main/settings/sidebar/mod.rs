@@ -2,11 +2,8 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
 use crate::{
-    components::{
-        main::settings::sidebar::nav::Nav,
-        ui_kit::{extension_placeholder::ExtensionPlaceholder, icon_input::IconInput},
-    },
-    utils::config::Config,
+    components::{main::settings::sidebar::nav::Nav, ui_kit::icon_input::IconInput},
+    Account,
 };
 
 use self::nav::NavEvent;
@@ -16,6 +13,7 @@ pub mod nav;
 #[derive(Props)]
 pub struct Props<'a> {
     on_pressed: EventHandler<'a, NavEvent>,
+    account: Account,
     initial_value: NavEvent,
 }
 
@@ -26,39 +24,23 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
-    let config = Config::load_config_or_default();
 
     cx.render(rsx! {
-        div {
-            class: "app-sidebar",
-            div {
-                class: "sidebar-content",
-                div {
-                    class: "sidebar-section",
-                    IconInput {
-                        icon: Shape::Search,
-                        placeholder: String::from("Search"),
-                        value: String::from(""),
-                        on_change: move |_| {},
-                        on_enter: move |_| {},
-                    },
+        crate::components::reusable::sidebar::Sidebar {
+            account: cx.props.account.clone(),
+            IconInput {
+                icon: Shape::Search,
+                placeholder: String::from("Search"),
+                value: String::from(""),
+                on_change: move |_| {},
+                on_enter: move |_| {},
+            },
+            Nav {
+                on_pressed: move |ne| {
+                    cx.props.on_pressed.call(ne);
                 }
-                div {
-                class: "sidebar-scroll",
-                    config.developer.developer_mode.then(|| rsx! {
-                        ExtensionPlaceholder {},
-                    })
-                    Nav {
-                        on_pressed: move |ne| {
-                            cx.props.on_pressed.call(ne);
-                        }
-                        initial_value: initial_value,
-                    },
-                    config.developer.developer_mode.then(|| rsx! {
-                        ExtensionPlaceholder {},
-                    })
-                }
-            }
+                initial_value: initial_value,
+            },
         },
     })
 }

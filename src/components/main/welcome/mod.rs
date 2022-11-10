@@ -12,7 +12,7 @@ pub fn Welcome(cx: Scope) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "welcome-container",
+            id: "welcome",
             img {
                 src: "extra/assets/img/uplink_muted.png"
             },
