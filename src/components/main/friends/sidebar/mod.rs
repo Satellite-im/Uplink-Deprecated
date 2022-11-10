@@ -2,7 +2,7 @@
 use crate::{
     components::{
         main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
     },
     Account,  LANGUAGE, TOAST_MANAGER,
 };
@@ -157,12 +157,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
     cx.render(rsx!(
         label {
             "{l.copy_friend_code}",
-        },
-        div {
-            class: "sidebar-section",
-            label {
-                "{l.copy_friend_code}",
-            },
+        }, 
             div {
                 class: "code",
                 Button {
@@ -187,15 +182,9 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     }
                 }
             }
-        },
         label {
             "{l.add_someone}",
         },
-        div {
-            class: "sidebar-section",
-            label {
-                "{l.add_someone}",
-            },
             div {
                 class: "add",
                 IconInput {
@@ -277,6 +266,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 class: "error_text",
                 "{add_error}"
             },
-        }
+        
     ))
 }
