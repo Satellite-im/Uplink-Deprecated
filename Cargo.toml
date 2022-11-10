@@ -57,6 +57,7 @@ mime = "0.3.16"
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
 warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
+warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
 arboard = "3.1.0"
 
 

@@ -16,10 +16,12 @@ use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
-use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
+use warp::{multipass::MultiPass, raygun::RayGun, constellation::Constellation, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
+use warp_fs_ipfs::config::FsIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
+
 
 use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
@@ -52,6 +54,7 @@ pub struct State {
     tesseract: Tesseract,
     account: Account,
     messaging: Messaging,
+    storage: Storage,
 }
 
 #[derive(Debug, Parser)]
@@ -127,12 +130,12 @@ fn main() {
         }
     };
 
-    let (account, messaging) = match warp::async_block_in_place_uncheck(initialization(
+    let (account, messaging, storage) = match warp::async_block_in_place_uncheck(initialization(
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
         opt.experimental_node,
     )) {
-        Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
+        Ok((i, c, s)) => (Account(i.clone()), Messaging(c.clone()), Storage(s.clone())),
         Err(_e) => todo!(),
     };
 
@@ -148,6 +151,7 @@ fn main() {
             tesseract,
             account,
             messaging,
+            storage,
         },
         |c| c.with_window(|_| window.with_menu(main_menu)),
     );
@@ -159,6 +163,7 @@ fn main() {
             tesseract,
             account,
             messaging,
+            storage,
         },
         |c| c.with_window(|_| window),
     );
@@ -172,6 +177,8 @@ async fn initialization(
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
         Arc<RwLock<Box<dyn RayGun>>>,
+        Arc<RwLock<Box<dyn Constellation>>>,
+
     ),
     warp::error::Error,
 > {
@@ -182,14 +189,19 @@ async fn initialization(
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
     let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-        Some(RgIpfsConfig::production(path)),
+        Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
     )
     .await
     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
-    Ok((account, messenging))
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(), 
+        Some(FsIpfsConfig::production(path)))
+        .await
+        .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+
+    Ok((account, messenging, storage))
 }
 
 #[allow(non_snake_case)]
@@ -276,6 +288,28 @@ impl DerefMut for Messaging {
 }
 
 impl PartialEq for Messaging {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.is_locked() == other.0.is_locked()
+    }
+}
+
+#[derive(Clone)]
+pub struct Storage(Arc<RwLock<Box<dyn Constellation>>>);
+
+impl Deref for Storage {
+    type Target = Arc<RwLock<Box<dyn Constellation>>>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Storage {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl PartialEq for Storage {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }
