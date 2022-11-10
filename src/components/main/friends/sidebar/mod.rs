@@ -2,7 +2,7 @@
 use crate::{
     components::{
         main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input_without_value::IconInputWithOutValue},
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
     },
     Account,  LANGUAGE, TOAST_MANAGER,
 };
@@ -198,7 +198,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             },
             div {
                 class: "add",
-                IconInputWithOutValue {
+                IconInput {
                     placeholder: l.add_placeholder.clone(),
                     icon: Shape::UserAdd,
                     on_change: move |evt: FormEvent| {
@@ -241,8 +241,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     icon: Shape::Plus,
                     on_pressed: move |e: UiEvent<MouseData>| {
                         e.cancel_bubble();
-
-                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));
+                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));           
                         match did {
                             Ok(d) => {
                                 match account.clone()
