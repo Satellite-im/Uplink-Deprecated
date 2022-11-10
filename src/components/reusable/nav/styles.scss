@@ -9,9 +9,6 @@
   -webkit-user-select: none; /* Safari */
   user-select: none; /* Non-prefixed version, currently */
 
-  .has_indicator {
-    position: relative;
-  }
   .button {
     svg {
       stroke: var(--theme-text-bright);

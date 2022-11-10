@@ -8,6 +8,7 @@ pub mod upload;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
+    storage: crate::Storage,
 }
 
 #[allow(non_snake_case)]

@@ -84,7 +84,13 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 icon: Shape::Folder
             },
             div {
-                class: "has_indicator",
+                class: {
+                    if active.eq(&NavEvent::Friends) {
+                        format_args!("has_indicator parent_active")
+                    } else {
+                        format_args!("has_indicator")
+                    }
+                },
                 IconButton {
                     on_pressed: move |_| {
                         use_router(&cx).push_route("/main/friends", None, None);
