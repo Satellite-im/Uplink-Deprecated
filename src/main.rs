@@ -231,7 +231,7 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
             Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
                 account: cx.props.account.clone(), 
