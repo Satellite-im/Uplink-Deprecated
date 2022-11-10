@@ -1,7 +1,7 @@
 use crate::{
     components::{
-        main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
+        main::friends::request::FriendRequest,
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
     },
     Account, LANGUAGE, TOAST_MANAGER,
 };
@@ -161,13 +161,12 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             IconInput {
                 placeholder: l.add_placeholder.clone(),
                 icon: Shape::UserAdd,
-                value: remote_friend.to_string(),
                 on_change: move |evt: FormEvent| {
                     add_error.set(String::new());
                     remote_friend.set(evt.value.clone());
                 },
                 on_enter: move |_| {
-                    let did = DID::try_from(remote_friend.clone().to_string());
+                    let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));    
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -203,7 +202,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
     
-                    let did = DID::try_from(remote_friend.clone().to_string());
+                    let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));    
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -255,8 +254,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                             position: Position::TopRight,
                             ..ToastInfo::simple(&codeCopied)
                         };
-                        let _id = toast.write().popup(single_toast);
-                        clipboard.set_text(ident.did_key().to_string()).unwrap();
+                        let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
+                        clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap();
                     }
                 }
             }
