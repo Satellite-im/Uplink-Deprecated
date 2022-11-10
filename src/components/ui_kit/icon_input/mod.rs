@@ -48,6 +48,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 },
                 input {
                     class: "input",
+                    r#type:"search",
                     placeholder: "{cx.props.placeholder}",
                     oninput: |e| cx.props.on_change.call(e),
                     onkeyup: |evt| {
