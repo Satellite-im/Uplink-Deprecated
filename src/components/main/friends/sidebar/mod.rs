@@ -193,7 +193,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                         remote_friend.set(evt.value.clone());
                     },
                     on_enter: move |_| {
-                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));                
+                        let _key_code = String::from("did:key:") + &(remote_friend.clone().to_string());
+                        let did = DID::try_from(_key_code);                
                         match did {
                             Ok(d) => {
                                 match account.clone()
@@ -228,7 +229,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     icon: Shape::Plus,
                     on_pressed: move |e: UiEvent<MouseData>| {
                         e.cancel_bubble();
-                        let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));           
+                        let _key_code = String::from("did:key:") + &(remote_friend.clone().to_string());
+                        let did = DID::try_from(_key_code);          
                         match did {
                             Ok(d) => {
                                 match account.clone()
