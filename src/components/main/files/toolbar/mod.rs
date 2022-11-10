@@ -13,7 +13,7 @@ pub struct Props<'a> {
 pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         toolbar::Toolbar {
-            controls: rsx! {
+            controls: cx.render(rsx! {
                 IconButton {
                     icon: Shape::Archive,
                     state: crate::components::ui_kit::icon_button::State::Secondary,
@@ -28,7 +28,7 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     icon: Shape::Upload,
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
-            },
+            }),
             div {}
         },
     })

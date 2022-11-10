@@ -11,7 +11,10 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         div {
             id: "toolbar",
-            &cx.props.children,
+            div {
+                id: "content",
+                &cx.props.children
+            },
             div {
                 id: "controls",
                 &cx.props.controls

@@ -1,9 +1,4 @@
 .topbar {
-  display: flex;
-  padding: 16px;
-  gap: 16px;
-  align-items: center;
-
   :not(.topbar-user-info) {
     flex-shrink: 0;
   }

@@ -1,9 +1,12 @@
 use crate::{
-    components::ui_kit::{
-        activity_indicator::ActivityIndicator,
-        icon_button::IconButton,
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    components::{
+        reusable::toolbar,
+        ui_kit::{
+            activity_indicator::ActivityIndicator,
+            icon_button::IconButton,
+            profile_picture::PFP,
+            skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+        },
     },
     utils::{self, config::Config},
     Account, STATE,
@@ -41,8 +44,27 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             let id = conversation_info.conversation.id();
 
             cx.render(rsx! {
-                div {
-                    class: "topbar",
+                toolbar::Toolbar {
+                    controls: cx.render(rsx! {
+                        IconButton {
+                            icon: Shape::Heart,
+                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+                            },
+                        },
+                        IconButton {
+                            icon: Shape::Phone,
+                            on_pressed: move |_| {
+                                cx.props.on_call.call(());
+                            },
+                        },
+                        IconButton {
+                            icon: Shape::VideoCamera,
+                            on_pressed: move |_| {
+                                cx.props.on_call.call(());
+                            },
+                        }
+                    }),
                     PFP {
                         src: profile_picture,
                         size: crate::components::ui_kit::profile_picture::Size::Normal
@@ -69,29 +91,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 ))
                             }
                         }
-                    },
-                    div {
-                        class: "topbar-controls",
-                        IconButton {
-                            icon: Shape::Heart,
-                            state: crate::components::ui_kit::icon_button::State::Secondary,
-                            on_pressed: move |_| {
-                            },
-                        },
-                        IconButton {
-                            icon: Shape::Phone,
-                            on_pressed: move |_| {
-                                cx.props.on_call.call(());
-                            },
-                        },
-                        IconButton {
-                            icon: Shape::VideoCamera,
-                            on_pressed: move |_| {
-                                cx.props.on_call.call(());
-                            },
-                        }
                     }
-                },
+                }
             })
         }
         None => cx.render(rsx! {
