@@ -188,7 +188,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 IconInput {
                     placeholder: l.add_placeholder.clone(),
                     icon: Shape::UserAdd,
-                    value: remote_friend.to_string(),
                     on_change: move |evt: FormEvent| {
                         add_error.set(String::new());
                         remote_friend.set(evt.value.clone());
