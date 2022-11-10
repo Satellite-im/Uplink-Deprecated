@@ -51,7 +51,9 @@ pub fn TextArea<'a>(
                 },
                 onkeyup: |e| {
                     if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
-                        on_submit.call(text.to_string());
+                        if !text.trim().is_empty() {
+                            on_submit.call(text.trim().to_string());
+                        }
                         text.set(String::from(""));
                         clearing_state.set(true);
                     }
