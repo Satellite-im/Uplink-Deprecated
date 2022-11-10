@@ -1,7 +1,7 @@
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::icon_button::IconButton;
+use crate::components::{reusable::toolbar, ui_kit::icon_button::IconButton};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -12,10 +12,8 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
-        div {
-            id: "toolbar",
-            div {
-                id: "controls",
+        toolbar::Toolbar {
+            controls: rsx! {
                 IconButton {
                     icon: Shape::Archive,
                     state: crate::components::ui_kit::icon_button::State::Secondary,
@@ -30,7 +28,8 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     icon: Shape::Upload,
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
-            }
+            },
+            div {}
         },
     })
 }

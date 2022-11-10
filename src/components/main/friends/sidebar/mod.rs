@@ -154,32 +154,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
 
     cx.render(rsx!(
         label {
-            "{l.copy_friend_code}",
-        },
-        div {
-            class: "code",
-            Button {
-                text: l.copy_code.to_string(),
-                icon: Shape::ClipboardCopy,
-                on_pressed: move |e: UiEvent<MouseData>| {
-                    e.cancel_bubble();
-    
-                    let mut clipboard = Clipboard::new().unwrap();
-                    if let Ok(ident) = account2
-                        .read()
-                        .get_own_identity()
-                    {
-                        let single_toast = ToastInfo {
-                            position: Position::TopRight,
-                            ..ToastInfo::simple(&codeCopied)
-                        };
-                        let _id = toast.write().popup(single_toast);
-                        clipboard.set_text(ident.did_key().to_string()).unwrap();
-                    }
-                }
-            }
-        },
-        label {
             "{l.add_someone}",
         },
         div {
@@ -203,7 +177,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 Ok(_) => {
                                     let single_toast = ToastInfo {
                                         position: Position::TopRight,
-                                        ..ToastInfo::simple(l2.request_sent.clone().as_ref())
+                                        ..ToastInfo::simple(l.request_sent.clone().as_ref())
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
@@ -212,15 +186,15 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 Err(e) => {
                                     remote_friend.set("".into());
                                     add_error.set(match e {
-                                        warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
-                                        warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
-                                        warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.clone(),
-                                        _ => l2.something_went_wrong.to_string()
+                                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
+                                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
+                                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.clone(),
+                                        _ => l.something_went_wrong.to_string()
                                     })
                                 },
                             };
                         },
-                        Err(_) => add_error.set(l2.invalid_code.clone()),
+                        Err(_) => add_error.set(l.invalid_code.clone()),
                     }
                 }
             }
@@ -239,7 +213,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 Ok(_) => {
                                     let single_toast = ToastInfo {
                                         position: Position::TopRight,
-                                        ..ToastInfo::simple(&l.request_sent)
+                                        ..ToastInfo::simple(&l2.request_sent)
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
@@ -248,17 +222,43 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 Err(e) => {
                                     remote_friend.set("".into());
                                     add_error.set(match e {
-                                        warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
-                                        warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
-                                        warp::error::Error::CannotSendSelfFriendRequest => l.add_self.to_string(),
-                                        _ => l.something_went_wrong.to_string()
+                                        warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
+                                        warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
+                                        warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.to_string(),
+                                        _ => l2.something_went_wrong.to_string()
                                     })
                                 },
                             };
                         },
-                        Err(_) => add_error.set(l.invalid_code.to_string()),
+                        Err(_) => add_error.set(l2.invalid_code.to_string()),
                     }
                 },
+            }
+        },
+        label {
+            "{l2.copy_friend_code}",
+        },
+        div {
+            class: "code",
+            Button {
+                text: l2.copy_code.to_string(),
+                icon: Shape::ClipboardCopy,
+                on_pressed: move |e: UiEvent<MouseData>| {
+                    e.cancel_bubble();
+    
+                    let mut clipboard = Clipboard::new().unwrap();
+                    if let Ok(ident) = account2
+                        .read()
+                        .get_own_identity()
+                    {
+                        let single_toast = ToastInfo {
+                            position: Position::TopRight,
+                            ..ToastInfo::simple(&codeCopied)
+                        };
+                        let _id = toast.write().popup(single_toast);
+                        clipboard.set_text(ident.did_key().to_string()).unwrap();
+                    }
+                }
             }
         },
         span {
