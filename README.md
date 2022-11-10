@@ -31,14 +31,20 @@ You'll need to install the required dependancies for your system in order to bui
 |Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
 |Arch|pacman -S gtk3 cmake protobuf|
 |MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init|
-|Windows|¯\\\_(ツ)\_/¯|
+|Windows|Install rust, git, cmake and protoc, see below|
 
 ## Building from source
 
 ### Linux
 // TODO
 ### Windows
-¯\\\_(ツ)\_/¯
+Install the following
+ - [rust](https://www.rust-lang.org/tools/install) obviously
+ - [git](https://gitforwindows.org/)
+ - [cmake](https://cmake.org/download/)
+ - [Protocol buffers](https://developers.google.com/protocol-buffers/docs/downloads) (protoc in your path) 
+
+Then clone this repo and run `cargo build`. That's it. You will have a .exe file at .\target\debug\uplink.exe. `cargo run` does the same and runs the exe so try that too.
 
 ### Mac
 // TODO
@@ -67,6 +73,10 @@ Please also read through the [Physical Testing Checklist](https://github.com/Sat
 ## Resetting Data
 
 It's often necessary to reset your account for development, to do so just delete any `.temp` and `.warp` files within this project. Note that on most *nix based systems the .warp file is stored in your home directory unless otherwise configured.
+
+## Troubleshooting
+
+If you see something about cmake or protoc then you likely need to install those and get them in your path. Often times just restarting your shell helps. Other errors are fixed with updating packages `cargo update` or getting the nightly `rustup update; rustup default nightly` or stable `rustup update; rustup default stable` version of rust.
 
 ## Contributions
 
