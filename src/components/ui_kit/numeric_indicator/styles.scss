@@ -1,11 +1,20 @@
 .numeric_indicator {
   background-color: var(--theme-primary);
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -5px;
+  right: -5px;
   padding: 2px;
   min-width: 12px;
   border-radius: 2px;
   font-size: var(--text-small);
   pointer-events: none;
+  text-align: center;
+}
+.has_indicator {
+  position: relative;
+  &.parent_active {
+    .numeric_indicator {
+      background: var(--theme-secondary);
+    }
+  }
 }
