@@ -236,6 +236,10 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 },
             }
         },
+        div {
+            class: "error_text",
+            "{add_error}"
+        },
         label {
             "{l2.copy_friend_code}",
         },
@@ -262,9 +266,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 }
             }
         },
-        span {
-            class: "error_text",
-            "{add_error}"
-        },
+    
     ))
 }
