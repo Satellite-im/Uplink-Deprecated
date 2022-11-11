@@ -5,6 +5,7 @@ pub fn make() -> Language {
         couldnt_send: String::from("Couldn't send friend request."),
         already_sent: String::from("You've already sent this request."),
         add_self: String::from("You cannot add yourself as a friend."),
+        friend_exist: String::from("You are already friends"),
         something_went_wrong: String::from("Something went wrong."),
         create_pin: String::from("Create a Pin"),
         enter_pin: String::from("Enter Pin"),

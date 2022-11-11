@@ -188,6 +188,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                         warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l.add_self.clone(),
+                                        warp::error::Error::FriendExist => l.friend_exist.to_string(),
                                         _ => l.something_went_wrong.to_string()
                                     })
                                 },
@@ -224,6 +225,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                         warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.to_string(),
+                                        warp::error::Error::FriendExist => l2.friend_exist.to_string(),
                                         _ => l2.something_went_wrong.to_string()
                                     })
                                 },
