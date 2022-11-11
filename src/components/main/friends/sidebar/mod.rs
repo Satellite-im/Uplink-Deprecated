@@ -180,10 +180,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
@@ -217,10 +215,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
