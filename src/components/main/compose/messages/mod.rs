@@ -155,13 +155,13 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         account: cx.props.account.clone(),
                         sender: message.sender(),
                         remote: is_remote,
-                        // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards. 
+                        // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
                         last:  is_first,
                         first: is_last,
                         middle: !is_last && !is_first,
                         on_reply: move |reply| {
                             if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                //TODO: Display error? 
+                                //TODO: Display error?
                             }
                         }
                     }

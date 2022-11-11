@@ -196,7 +196,7 @@ async fn initialization(
     .await
     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
-    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(), 
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(),
         Some(FsIpfsConfig::production(path)))
         .await
         .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
@@ -234,16 +234,16 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
             Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
-                account: cx.props.account.clone(), 
+                account: cx.props.account.clone(),
                 page_to_open: main::settings::sidebar::nav::NavEvent::General,
             }
             },
             Route { to: "/main/settings/profile", main::settings::Settings {
-                account: cx.props.account.clone(), 
+                account: cx.props.account.clone(),
                 page_to_open: main::settings::sidebar::nav::NavEvent::Profile,
             }
             },
-     
+
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
