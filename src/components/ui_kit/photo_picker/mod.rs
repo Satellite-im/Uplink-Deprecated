@@ -47,7 +47,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                         Some(path) => path,
                         None => return
                     };
-                  
+
                     let file = match std::fs::read(&path) {
                         Ok(image_vec) => image_vec,
                         Err(_) => vec![],

@@ -128,7 +128,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 on_hide: move |_| show_profile.set(false),
             },
             Nav {
-                account: cx.props.account.clone(),                
+                account: cx.props.account.clone(),
             }
         }
     })
