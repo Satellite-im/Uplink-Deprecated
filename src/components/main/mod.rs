@@ -29,7 +29,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     let rg = cx.props.messaging.clone();
     let state = use_atom_ref(&cx, STATE);
     let display_welcome = state.read().current_chat.is_none();
-
+    let hide_sidebar = match st.read().hide_sidebar {
+        false => "main-sidebar",
+        true => "main-chat",
+    };
     use_future(&cx, (), |_| async move {
         loop {
             if let Ok(list) = rg.list_conversations().await {
@@ -58,7 +61,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "main",
+            class: "main {hide_sidebar}",
             rsx!(
                 Sidebar {
                     messaging: cx.props.messaging.clone(),

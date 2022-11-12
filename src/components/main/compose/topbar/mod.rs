@@ -8,6 +8,7 @@ use crate::{
             skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
         },
     },
+    state::Actions,
     utils::{self, config::Config},
     Account, STATE,
 };
@@ -46,6 +47,16 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             cx.render(rsx! {
                 toolbar::Toolbar {
                     controls: cx.render(rsx! {
+                        div {
+                            class: "mobile-back-button",
+                            IconButton {
+                                icon: Shape::ArrowLeft,
+                                state: crate::components::ui_kit::icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    state.write().dispatch(Actions::HideSidebar(false));
+                                },
+                            },
+                        },
                         IconButton {
                             icon: Shape::Heart,
                             state: crate::components::ui_kit::icon_button::State::Secondary,
