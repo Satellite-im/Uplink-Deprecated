@@ -15,6 +15,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_storage = cx.props.storage.clone();
+
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (
             div {
@@ -27,16 +28,15 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             // println!("Evt {:?}", e);
                             let _p = e.data.value.clone();
                             let tempVal = file_storage.read().current_directory();
-                            let test = future::ready(file_storage.write().put("/", &_p));
-                            // let (ready, err ) = test.await;
 
-                            use_future(
-                                &cx,
-                                (),
-                                | () | async move {
-                                    let newval = future::ready(file_storage.write().put("/", &_p)).await;
-                                }
-                            )
+                            use_future(&cx, &cx.props.storage.clone(), |file_storage| async move {
+                                let mut _upload_file = match file_storage.write().put("/", &_p).await {
+                                    Ok(_) => println!("Ok"),
+                                    Err(error) => println!("Error {:?}", error),
+                                };
+                            });
+
+                            println!("Evt {:?}", tempVal);
                             // let mut _upload_file = match file_storage.write().put("/", &_p) {
                             //     Ok(v) => println!("Evt {:?}", v),
                             //     Err(e) => println!("Evt {:?}", e)
