@@ -166,7 +166,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     remote_friend.set(evt.value.clone());
                 },
                 on_enter: move |_| {
-                    let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));
+                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -180,14 +180,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l.add_self.clone(),
+                                        warp::error::Error::FriendExist => l.friend_exist.to_string(),
                                         _ => l.something_went_wrong.to_string()
                                     })
                                 },
@@ -202,7 +201,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
 
-                    let did = DID::try_from(String::from("did:key:") + &(remote_friend.clone().to_string()));
+                    let did = DID::try_from(format!("did:key:{}", remote_friend.clone())); 
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -216,14 +215,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.to_string(),
+                                        warp::error::Error::FriendExist => l2.friend_exist.to_string(),
                                         _ => l2.something_went_wrong.to_string()
                                     })
                                 },
@@ -233,6 +231,10 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     }
                 },
             }
+        },
+        div {
+            class: "error_text",
+            "{add_error}"
         },
         label {
             "{l2.copy_friend_code}",
@@ -260,9 +262,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 }
             }
         },
-        span {
-            class: "error_text",
-            "{add_error}"
-        },
+    
     ))
 }
