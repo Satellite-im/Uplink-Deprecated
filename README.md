@@ -68,7 +68,7 @@ You can specify a window title and a custom path for storage which is useful for
 
 To spawn multiple instances of the app execute the test script `test/physical/launch_physical_test.sh`. This will spawn two named windows with local cache files in a `.temp` directory.
 
-Please also read through the [Physical Testing Checklist](https://github.com/Satellite-im/Uplink/blob/dev/test/CHECKLIST.md) and ensure functionality before submitting a PR.
+Please also read through the [Physical Testing Checklist](https://github.com/Satellite-im/Uplink/blob/dev/docs/CHECKLIST.md) and ensure functionality before submitting a PR.
 
 ## Resetting Data
 

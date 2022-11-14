@@ -8,6 +8,7 @@ use crate::{
             skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
         },
     },
+    state::Actions,
     utils::{self, config::Config},
     Account, STATE,
 };
@@ -24,6 +25,7 @@ pub struct Props<'a> {
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
     let config = Config::load_config_or_default();
+    let mut favorites = state.read().favorites.clone();
 
     // Read their values from locks
     let mp = cx.props.account.clone();
@@ -43,13 +45,23 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
             let id = conversation_info.conversation.id();
 
+            let is_favorite = favorites.contains(&id);
+
             cx.render(rsx! {
                 toolbar::Toolbar {
                     controls: cx.render(rsx! {
                         IconButton {
                             icon: Shape::Heart,
-                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            state: match is_favorite {
+                                true => crate::components::ui_kit::icon_button::State::Filled,
+                                false => crate::components::ui_kit::icon_button::State::Secondary,
+                            },
                             on_pressed: move |_| {
+                                match is_favorite {
+                                    true => favorites.remove(&id),
+                                    false => favorites.insert(id),
+                                };
+                                state.write().dispatch(Actions::UpdateFavorites(favorites.clone()));
                             },
                         },
                         IconButton {
@@ -65,6 +77,16 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         }
                     }),
+                    div {
+                        class: "mobile-back-button",
+                        IconButton {
+                            icon: Shape::ArrowLeft,
+                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+                                state.write().dispatch(Actions::HideSidebar(false));
+                            },
+                        },
+                    },
                     PFP {
                         src: profile_picture,
                         size: crate::components::ui_kit::profile_picture::Size::Normal

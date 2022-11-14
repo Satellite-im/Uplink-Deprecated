@@ -1,9 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::{
-        main::settings::pages::{developer::Developer, general::General, profile::Profile},
-    },
+    components::main::settings::pages::{developer::Developer, general::General, profile::Profile},
     Account,
 };
 
@@ -20,12 +18,12 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
-    let page_to_open_on_settings =  match cx.props.page_to_open {
-        NavEvent::Profile => NavEvent::Profile, 
-        NavEvent::Developer => NavEvent::Developer, 
+    let page_to_open_on_settings = match cx.props.page_to_open {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
         _ => NavEvent::General,
     };
- 
+
     let active_page = use_state(&cx, || page_to_open_on_settings);
 
     cx.render(rsx! {
@@ -37,8 +35,8 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                     active_page.set(ne);
                 },
                 initial_value: match active_page.get() {
-                    NavEvent::Profile => NavEvent::Profile, 
-                    NavEvent::Developer => NavEvent::Developer, 
+                    NavEvent::Profile => NavEvent::Profile,
+                    NavEvent::Developer => NavEvent::Developer,
                     _ => NavEvent::General,
                 },
             },

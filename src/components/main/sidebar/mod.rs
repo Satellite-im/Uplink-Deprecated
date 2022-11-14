@@ -35,7 +35,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let state = use_atom_ref(&cx, STATE);
     let show_profile = use_state(&cx, || false);
-
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -110,6 +109,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
+                                            // on press, change state so CSS class flips to show the chat
+                                            state.write().dispatch(Actions::HideSidebar(true));
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
                                                 active_chat.set(Some(uuid));
@@ -128,7 +129,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 on_hide: move |_| show_profile.set(false),
             },
             Nav {
-                account: cx.props.account.clone(),                
+                account: cx.props.account.clone(),
             }
         }
     })

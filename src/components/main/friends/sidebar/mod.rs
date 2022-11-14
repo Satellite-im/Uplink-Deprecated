@@ -1,7 +1,7 @@
 use crate::{
     components::{
-        main::friends::{ request::FriendRequest},
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput}
+        main::friends::request::FriendRequest,
+        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
     },
     Account, LANGUAGE, TOAST_MANAGER,
 };
@@ -161,13 +161,12 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             IconInput {
                 placeholder: l.add_placeholder.clone(),
                 icon: Shape::UserAdd,
-                value: remote_friend.to_string(),
                 on_change: move |evt: FormEvent| {
                     add_error.set(String::new());
                     remote_friend.set(evt.value.clone());
                 },
                 on_enter: move |_| {
-                    let did = DID::try_from(remote_friend.clone().to_string());
+                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -181,14 +180,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l.add_self.clone(),
+                                        warp::error::Error::FriendExist => l.friend_exist.to_string(),
                                         _ => l.something_went_wrong.to_string()
                                     })
                                 },
@@ -202,8 +200,8 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 icon: Shape::Plus,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
-    
-                    let did = DID::try_from(remote_friend.clone().to_string());
+
+                    let did = DID::try_from(format!("did:key:{}", remote_friend.clone())); 
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -217,14 +215,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                     };
                                     let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
-                                    remote_friend.set("".into());
                                 }
                                 Err(e) => {
-                                    remote_friend.set("".into());
                                     add_error.set(match e {
                                         warp::error::Error::CannotSendFriendRequest => l2.couldnt_send.to_string(),
                                         warp::error::Error::FriendRequestExist => l2.already_sent.to_string(),
                                         warp::error::Error::CannotSendSelfFriendRequest => l2.add_self.to_string(),
+                                        warp::error::Error::FriendExist => l2.friend_exist.to_string(),
                                         _ => l2.something_went_wrong.to_string()
                                     })
                                 },
@@ -234,6 +231,10 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     }
                 },
             }
+        },
+        div {
+            class: "error_text",
+            "{add_error}"
         },
         label {
             "{l2.copy_friend_code}",
@@ -245,7 +246,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 icon: Shape::ClipboardCopy,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
-    
+
                     let mut clipboard = Clipboard::new().unwrap();
                     if let Ok(ident) = account2
                         .read()
@@ -255,15 +256,11 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                             position: Position::TopRight,
                             ..ToastInfo::simple(&codeCopied)
                         };
-                        let _id = toast.write().popup(single_toast);
-                        clipboard.set_text(ident.did_key().to_string()).unwrap();
+                        let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
+                        clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap();
                     }
                 }
             }
-        },
-        span {
-            class: "error_text",
-            "{add_error}"
         },
     ))
 }

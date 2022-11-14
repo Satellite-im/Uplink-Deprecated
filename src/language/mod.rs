@@ -12,6 +12,7 @@ pub struct Language {
     pub your_friends: String,
     pub already_sent: String,
     pub add_self: String,
+    pub friend_exist: String,
     pub something_went_wrong: String,
     pub create_pin: String,
     pub enter_pin: String,
