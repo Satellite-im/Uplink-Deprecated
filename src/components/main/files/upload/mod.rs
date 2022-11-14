@@ -25,26 +25,18 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "type": "file",
                         onchange: move |e| {
                             // println!("Evt {:?}", e);
-                            let _p = e.data.value.clone();
+                            let p = e.data.value.clone();
                             let tempVal = file_storage.read().current_directory();
-                            let test = future::ready(file_storage.write().put("/", &_p));
+                            // let test = future::ready(file_storage.write().put("/", &_p));
                             // let (ready, err ) = test.await;
+                            let filstotwo = file_storage.clone();
 
-                            use_future(
-                                &cx,
-                                (),
-                                | () | async move {
-                                    let newval = future::ready(file_storage.write().put("/", &_p)).await;
-                                }
-                            )
-                            // let mut _upload_file = match file_storage.write().put("/", &_p) {
-                            //     Ok(v) => println!("Evt {:?}", v),
-                            //     Err(e) => println!("Evt {:?}", e)
-                            // };
-
-                            // let _getFile = file_storage.read().select("/");
-                            // upload_file.set(_p);
-                            // println!("Evt {:?}", tempVal);
+                            use_future(&cx, (), | _ | async move {
+                                    let mut _upload_file = match filstotwo.write().put("/", &p).await {
+                                        Ok(_) => println!("OK"),
+                                        Err(error) => println!("Evt {:?}", &p)
+                                    };
+                                });
                         }
                     }
                 },
