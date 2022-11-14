@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fmt, fs};
+use std::{fs, collections::HashMap};
 use std::ffi::OsStr;
 use std::sync::Arc;
 use dioxus::prelude::*;
@@ -85,9 +85,7 @@ impl Extension {
 impl ExtensionManager {
     pub fn load_or_default() -> Self {
         match Self::load() {
-            Ok(instance) => {
-                instance
-            }
+            Ok(instance) => instance,
             Err(err) => {
                 error!("Failed to initialize ExtensionManager: {}", err);
                 Self::default()
@@ -114,7 +112,6 @@ impl ExtensionManager {
                     error!("Failed to load extension {:?}: {}", &path, err)
                 }
             }
-
         }
 
         Ok(Self {
