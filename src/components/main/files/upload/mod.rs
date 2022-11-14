@@ -2,15 +2,19 @@ use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use crate::components::ui_kit::icon_button::IconButton;
+use std::future;
+use warp::constellation::Constellation;
 
 #[derive(Props)]
 pub struct Props<'a> {
+    storage: crate::Storage,
     show: bool,
     on_hide: EventHandler<'a, MouseEvent>,
 }
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    let file_storage = cx.props.storage.clone();
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (
             div {
@@ -20,8 +24,27 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     input {
                         "type": "file",
                         onchange: move |e| {
-                            println!("Evt {:?}", e);
+                            // println!("Evt {:?}", e);
                             let _p = e.data.value.clone();
+                            let tempVal = file_storage.read().current_directory();
+                            let test = future::ready(file_storage.write().put("/", &_p));
+                            // let (ready, err ) = test.await;
+
+                            use_future(
+                                &cx,
+                                (),
+                                | () | async move {
+                                    let newval = future::ready(file_storage.write().put("/", &_p)).await;
+                                }
+                            )
+                            // let mut _upload_file = match file_storage.write().put("/", &_p) {
+                            //     Ok(v) => println!("Evt {:?}", v),
+                            //     Err(e) => println!("Evt {:?}", e)
+                            // };
+
+                            // let _getFile = file_storage.read().select("/");
+                            // upload_file.set(_p);
+                            // println!("Evt {:?}", tempVal);
                         }
                     }
                 },
