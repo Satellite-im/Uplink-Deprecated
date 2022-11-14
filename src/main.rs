@@ -1,10 +1,12 @@
+use fluent::{FluentBundle, FluentResource};
+use unic_langid::LanguageIdentifier;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
 use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::thread;
+use std::{thread, fs};
 use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
@@ -70,6 +72,29 @@ struct Opt {
 
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
+
+    let ftl_string = match fs::read_to_string("src/language/en_US.ftl") {
+        // If successful return the files text as `contents`.
+        // `c` is a local variable.
+        Ok(c) => c,
+        // Handle the `error` case.
+        Err(_) => {
+            // Write `msg` to `stderr`.
+            eprintln!("Could not read file");
+            // Exit the program with exit code `1`.
+            String::from("")
+        }
+    };
+
+    let res = FluentResource::try_new(ftl_string)
+        .expect("Failed to parse an FTL string.");
+    
+    // TODO: Make this dynamic
+    let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
+    let mut language = FluentBundle::new(vec![loc]);
+
+    language.add_resource(&res)
+        .expect("Failed to add FTL resources to the bundle.");
 
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
