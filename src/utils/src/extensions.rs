@@ -40,6 +40,7 @@ pub struct Extension {
     component: Component,
 }
 
+#[derive(Default)]
 #[allow(dead_code)]
 pub struct ExtensionManager {
     extensions: Extensions,
@@ -130,16 +131,13 @@ pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes
     if enable {
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
-        match extensions {
-            Some(items) => {
-                let mut nodes: Vec<LazyNodes> = vec![];
-                for extension in items {
-                    let Ext = extension.component;
-                    nodes.push(rsx!(div { Ext {} }));
-                }
-                return nodes;
+        if let Some(items) = extensions {
+            let mut nodes: Vec<LazyNodes> = vec![];
+            for extension in items {
+                let Ext = extension.component;
+                nodes.push(rsx!(div { Ext {} }));
             }
-            None => {}
+            return nodes;
         }
     }
 
