@@ -53,7 +53,6 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .unwrap_or_default();
 
     cx.render(rsx! {
-    "Profile"
         Popup {
             on_dismiss: |_| cx.props.on_hide.call(()),
             hidden: !cx.props.show,
