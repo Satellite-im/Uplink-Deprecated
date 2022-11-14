@@ -77,6 +77,16 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         }
                     }),
+                    div {
+                        class: "mobile-back-button",
+                        IconButton {
+                            icon: Shape::ArrowLeft,
+                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+                                state.write().dispatch(Actions::HideSidebar(false));
+                            },
+                        },
+                    },
                     PFP {
                         src: profile_picture,
                         size: crate::components::ui_kit::profile_picture::Size::Normal
