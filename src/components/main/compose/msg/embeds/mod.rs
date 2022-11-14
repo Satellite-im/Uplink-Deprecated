@@ -12,6 +12,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn LinkEmbed(cx: Scope<Props>) -> Element {
+    log::debug!("rendering LinkEmbed");
     cx.render(rsx! {
         if cx.props.meta.title.is_empty() {
             rsx! { span {""} }

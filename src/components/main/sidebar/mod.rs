@@ -30,6 +30,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
+    log::debug!("rendering main/Sidebar");
     let config = Config::load_config_or_default();
     let mp = cx.props.account.clone();
 
