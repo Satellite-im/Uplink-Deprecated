@@ -11,7 +11,7 @@ use warp::raygun::RayGun;
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::icon_button::IconButton,
+        ui_kit::icon_button::IconButton, ui_kit::typing_indicator::TypingIndicator,
     },
     state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
@@ -31,6 +31,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let warningMessage = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
+    let mut placeholder: Vec<String> = Vec::new();
+    placeholder.push("jimmy".to_string());
+    placeholder.push("Pam".to_string());
+    placeholder.push("nameincrediblylongsolongitbreaksouruihurrrrraaaah".to_string());
 
     cx.render(rsx! {
         div {
@@ -92,6 +96,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             }
                         },
                         on_upload: move |_| {}
+                    }
+                    TypingIndicator{
+                        users: placeholder
                     }
                 )
         }
