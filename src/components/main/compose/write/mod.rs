@@ -9,6 +9,7 @@ use crate::{
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use crate::extensions::{ExtensionType, get_renders};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -21,8 +22,10 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let config = Config::load_config_or_default();
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
     cx.render(rsx! {
         div { class: "write",
+            exts
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
