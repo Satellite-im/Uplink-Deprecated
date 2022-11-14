@@ -7,7 +7,7 @@ use ui_kit::{
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
 };
-use utils::extensions::BasicExtension;
+use utils::extensions::{ExtensionType, get_renders, BasicExtension};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -24,6 +24,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
+    let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
     cx.render(rsx! {
         div {
             class: "write",
@@ -38,6 +39,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                 })
             },
+            exts,
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
