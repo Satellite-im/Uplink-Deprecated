@@ -16,14 +16,24 @@
     flex-direction: column;
   }
 
+  .a-z-list {
+    flex-direction: column;
+    height: 100%;
+    float: right;
+    width: 16px;
+    margin-right: 12px;
+  }
+
+  ul {
+    list-style-type: none;
+    margin-right: 2px;
+  }
+
   .friends-separator {
-    // background: var(--theme-text-muted);
-    // border-radius: 2px;
     align-items: center;
     height: 12px;
     width: calc(100% - 5rem);
     margin: 4px 0px 16px 0px;
-    // padding: 0px 0px 6px 8px;
     text-align: left;
   }
 

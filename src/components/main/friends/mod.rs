@@ -68,9 +68,16 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                 id: "content",
                 div {
                     class: "friends-list",
+               
                     friends_grouped_per_first_letter.iter().map(|friends_per_char_list| {
                         rsx!(
-                            FriendListSeparatorPerChar {first_letter:  friends_per_char_list.first_letter_friends}, 
+                            div {
+                                class: "friends-separator",
+                                h5 {
+                                    id: "{friends_per_char_list.first_letter_friends}",
+                                    "{friends_per_char_list.first_letter_friends}"
+                                }
+                            }
                             friends_per_char_list.friends.iter().map(|user| {
                                 rsx!(
                                 Friend {
@@ -88,27 +95,38 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                         ),
                     )
                     }),
+               
+               }
             }
+            ul {
+                    li { a { href: "#A", "A", } }
+                    li {a { href: "#B", "B", } }
+                    li {a { href: "#C", "C", } }
+                    li {a { href: "#D", "D", } }
+                    li {a { href: "#E", "E", } }
+                    li {a { href: "#F", "F", } }
+                    li {a { href: "#G", "G", } }
+                    li {a { href: "#H", "H", } }
+                    li {a { href: "#I", "I", } }
+                    li {a { href: "#J", "J", } }
+                    li {a { href: "#K", "K", } }
+                    li {a { href: "#L", "L", } }
+                    li {a { href: "#M", "M", } }
+                    li {a { href: "#N", "N", } }
+                    li { a { href: "#O", "O", } }
+                    li { a { href: "#P", "P", } }
+                    li { a { href: "#Q", "Q", } }
+                    li { a { href: "#R", "R", } }
+                    li { a { href: "#S", "S", } }
+                    li { a { href: "#T", "T", } }
+                    li { a { href: "#U", "U", } }
+                    li { a { href: "#V", "V", } }
+                    li { a { href: "#W", "W", } }
+                    li { a { href: "#X", "X", } }
+                    li { a { href: "#Y", "Y", } }
+                    li { a { href: "#Z", "Z", } }
+                }
             }
-        }
     })
 }
 
-#[derive(PartialEq, Eq, Props)]
-pub struct PropsFriendSeparator {
-    first_letter: char,
-}
-
-#[allow(non_snake_case)]
-pub fn FriendListSeparatorPerChar(cx: Scope<PropsFriendSeparator>) -> Element {
-    let first_letter = cx.props.first_letter;
-
-     cx.render(rsx! {
-        div {
-            class: "friends-separator",
-            h5 {
-                "{first_letter}"
-            }
-        }
-    })
-}
