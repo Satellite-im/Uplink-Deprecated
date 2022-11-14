@@ -13,8 +13,7 @@ type InfoFn = unsafe fn() -> Box<ExtensionInfo>;
 
 type Extensions = HashMap<ExtensionType, Vec<Extension>>;
 
-static EXTENSION_MANAGER: Lazy<ExtensionManager> =
-    Lazy::new(|| ExtensionManager::load_or_default());
+static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(ExtensionManager::load_or_default);
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Copy)]
 pub enum ExtensionType {
@@ -38,6 +37,7 @@ pub struct Extension {
     component: Component,
 }
 
+#[derive(Default)]
 #[allow(dead_code)]
 pub struct ExtensionManager {
     extensions: Extensions,
@@ -51,15 +51,6 @@ impl Default for ExtensionInfo {
             author: Default::default(),
             description: Default::default(),
             location: ExtensionType::SidebarWidget,
-        }
-    }
-}
-
-impl Default for ExtensionManager {
-    fn default() -> Self {
-        Self {
-            extensions: HashMap::new(),
-            is_loaded: false,
         }
     }
 }
@@ -128,16 +119,13 @@ pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes
     if enable {
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
-        match extensions {
-            Some(items) => {
-                let mut nodes: Vec<LazyNodes> = vec![];
-                for extension in items {
-                    let Ext = extension.component;
-                    nodes.push(rsx!(div { Ext {} }));
-                }
-                return nodes;
+        if let Some(items) = extensions {
+            let mut nodes: Vec<LazyNodes> = vec![];
+            for extension in items {
+                let Ext = extension.component;
+                nodes.push(rsx!(div { Ext {} }));
             }
-            None => {}
+            return nodes;
         }
     }
 
