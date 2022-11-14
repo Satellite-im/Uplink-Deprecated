@@ -132,14 +132,15 @@ pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
         if let Some(items) = extensions {
-            let mut nodes: Vec<LazyNodes> = vec![];
-            for extension in items {
-                let Ext = extension.component;
-                nodes.push(rsx!(div { Ext {} }));
-            }
+            let nodes: Vec<LazyNodes> = items
+                .iter()
+                .map(|ext| {
+                    let Ext = ext.component;
+                    rsx!(div { Ext {} })
+                })
+                .collect();
             return nodes;
         }
     }
-
     vec![]
 }
