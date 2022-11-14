@@ -262,6 +262,5 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 }
             }
         },
-    
     ))
 }
