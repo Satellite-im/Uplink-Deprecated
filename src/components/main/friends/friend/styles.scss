@@ -1,38 +1,33 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .friend {
-    align-items: center;
+  align-items: center;
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 0.5rem;
+
+  .pfp {
+    background: var(--theme-text-muted);
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+  }
+
+  .who {
+    flex: 1;
+    height: 40px;
+    padding: 0 1rem;
+    text-align: left;
+  }
+
+  .request-controls {
     display: inline-flex;
-    flex-direction: row;
-    width: 100%;
+    height: 40px;
+    min-width: 42px;
 
-    .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
+    .control-wrap {
+      margin-left: 1rem;
     }
-
-    .who {
-        flex: 1;
-        height: 40px;
-        padding: 0 1rem;
-        text-align: left;
-
-        h3 {
-            font-size: var(--subheading-size);
-            margin: 0;
-            max-width: 100%;
-        }
-    }
-
-    .request-controls {
-        display: inline-flex;
-        height: 40px;
-        min-width: 42px;
-
-        .control-wrap {
-            margin-left: 1rem;
-        }
-    }
+  }
 }

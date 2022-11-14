@@ -1,0 +1,14 @@
+#sidebar {
+  position: relative;
+  border-right: 1px solid var(--theme-borders);
+  display: inline-flex;
+  flex-direction: column;
+  padding: 1rem;
+  height: 100%;
+  min-width: 300px;
+  width: var(--sidebar-width);
+
+  .children {
+    flex: 1;
+  }
+}

@@ -1,28 +1,28 @@
 // Activity Indicator
 
 .activity.inline {
-    display: inline-flex;
-    align-items: center;
+  display: inline-flex;
+  align-items: center;
 
-    p {
-        font-size: var(--text-size);
-        color: var(--theme-text-darker);
-        font-family: "Space Mono", monospace !important;
+  p {
+    font-size: var(--text-size);
+    color: var(--theme-text-darker);
+    font-family: "Space Mono", monospace !important;
+  }
+
+  .bubble {
+    height: 12px;
+    width: 12px;
+    background: var(--theme-text-muted);
+    border-radius: 6px;
+    margin-right: 0.5rem;
+
+    &.online {
+      background-color: var(--theme-green);
     }
 
-.bubble {
-        height: 12px;
-        width: 12px;
-        background: var(--theme-text-muted);
-        border-radius: 6px;
-        margin-right: 0.5rem;
-
-        &.online {
-            background-color: var(--theme-green);
-        }
-
-&.offline {
-            background-color: var(--theme-text-muted);
-        }
+    &.offline {
+      background-color: var(--theme-text-muted);
     }
+  }
 }

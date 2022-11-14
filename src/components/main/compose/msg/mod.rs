@@ -1,20 +1,22 @@
-use chrono_humanize::HumanTime;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
-use warp::{raygun::Message, crypto::DID};
+use warp::{crypto::DID, raygun::Message};
 
 use crate::{
     components::ui_kit::{
         icon_button::{self, IconButton},
-        icon_textarea::IconTextArea,
-        profile_picture::PFP
+        profile_picture::PFP,
+        textarea::TextArea,
     },
-    utils::{self, get_meta::{SiteMeta, get_meta}},
-    LANGUAGE, Account,
+    utils::{
+        self,
+        get_meta::{get_meta, SiteMeta},
+    },
+    Account, LANGUAGE,
 };
 
 pub mod embeds;
@@ -34,31 +36,26 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let finder = LinkFinder::new();
-    let content = cx.props.message.value().clone();
-    let joined_a = content.clone().join("\n");
+    let content = cx.props.message.value();
+    let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
-
-    let links: Vec<_> = finder
-        .links(&joined_b)
-        .collect();
-
-    let has_links = if links.len() > 0 { true } else { false };
+    let has_links = finder.links(&joined_b).next().is_some();
 
     // Parses links and grabs data like the title, favicon and description
-    let fetch_meta = use_future(&cx, &joined_a.clone(), |content| async move {
+    let fetch_meta = use_future(&cx, &joined_a, |content| async move {
         if has_links {
             let s = content.as_str();
 
-            let links: Vec<_> = finder
-                .links(s)
-                .collect();
+            let links: Vec<_> = finder.links(s).collect();
 
             let first_link = match links.first() {
                 Some(l) => l.as_str(),
-                None => ""
+                None => "",
             };
             get_meta(first_link).await
-        } else { Ok(SiteMeta::default()) }
+        } else {
+            Ok(SiteMeta::default())
+        }
     });
 
     let meta = match fetch_meta.value() {
@@ -72,9 +69,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // a button press can be used to clear it.
     let text = use_state(&cx, String::new);
     let value = cx.props.message.clone().value().join("\n");
-    let value3 = value.clone();
+
     let timestamp = cx.props.message.clone().date();
-    let ht = HumanTime::from(timestamp);
+    let ht = utils::display_msg_time(timestamp);
     let remote = match cx.props.remote {
         true => "remote",
         false => "local",
@@ -108,7 +105,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
-    let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+    let profile_picture =
+        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
 
@@ -116,13 +114,17 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     // and we therefore must enable it explicitly.
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
-    let parser = Parser::new_ext(&value3, options);
+    let parser = Parser::new_ext(&value, options);
 
     // Write to String buffer.
-    let mut html_output: String = String::with_capacity(value3.clone().len() * 3 / 2);
+    let mut html_output: String = String::with_capacity(value.len() * 3 / 2);
     html::push_html(&mut html_output, parser);
 
-    let (output1, output2, output3) = (html_output.clone(), html_output.clone(), html_output.clone());
+    let (output1, output2, output3) = (
+        html_output.clone(),
+        html_output.clone(),
+        html_output.clone(),
+    );
 
     cx.render(rsx! (
         div {
@@ -149,18 +151,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
-                            if profile_picture.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )
-                            } else {
-                                rsx!(PFP {
-                                    src: profile_picture,
-                                    size: crate::components::ui_kit::profile_picture::Size::Normal
-                                })
-                            }
+                            PFP {
+                                src: profile_picture,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            },
                             div {
                                 class: "value popout {first} {middle} {last}",
                                 div {
@@ -177,11 +171,11 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 icon: Shape::EmojiHappy,
                                 on_pressed: move |_| {}
                             },
-                            IconTextArea {
-                                icon: Shape::Reply,
+                            TextArea {
                                 placeholder: l.send_a_reply.to_string(),
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
+
                                     popout.set(false);
                                 },
                                 text: text.clone(),
@@ -203,22 +197,14 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!( if profile_picture2.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )   
-                                } else {
-                                    rsx!(PFP {
-                                        src: profile_picture2,
-                                        size: crate::components::ui_kit::profile_picture::Size::Normal
-                                    })
-                                } )
+                            rsx!(PFP {
+                                src: profile_picture2,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            })
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },
-                        div {
+                        div { // todo: don't duplicate this
                             class: "value {first} {middle} {last}",
                             onclick: |_| {
                                 popout.set(true);
@@ -231,7 +217,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output2}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
@@ -254,7 +240,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output3}",
-                                (has_links.clone()).then(|| rsx!{
+                                has_links.then(|| rsx!{
                                     LinkEmbed {
                                         meta: meta
                                     }
@@ -262,18 +248,10 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         },
                         if cx.props.last {
-                            rsx!( if profile_picture3.is_empty() {
-                                rsx! (
-                                    div {
-                                        class: "pfp"
-                                    }  
-                                )   
-                                } else {
-                                    rsx!(PFP {
-                                        src: profile_picture3,
-                                        size: crate::components::ui_kit::profile_picture::Size::Normal
-                                    })
-                                } )
+                            rsx!(PFP {
+                                src: profile_picture3,
+                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                            })
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },

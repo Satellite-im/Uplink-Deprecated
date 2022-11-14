@@ -16,13 +16,14 @@ use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
-use warp::{multipass::MultiPass, raygun::RayGun, sync::RwLock, tesseract::Tesseract};
+use warp::{multipass::MultiPass, raygun::RayGun, constellation::Constellation, sync::RwLock, tesseract::Tesseract};
 use warp_mp_ipfs::config::MpIpfsConfig;
+use warp_fs_ipfs::config::FsIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
 
+
 use crate::components::main;
-use crate::components::main::settings::sidebar::nav::NavEvent;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
@@ -53,6 +54,7 @@ pub struct State {
     tesseract: Tesseract,
     account: Account,
     messaging: Messaging,
+    storage: Storage,
 }
 
 #[derive(Debug, Parser)]
@@ -128,12 +130,12 @@ fn main() {
         }
     };
 
-    let (account, messaging) = match warp::async_block_in_place_uncheck(initialization(
+    let (account, messaging, storage) = match warp::async_block_in_place_uncheck(initialization(
         DEFAULT_PATH.read().clone(),
         tesseract.clone(),
         opt.experimental_node,
     )) {
-        Ok((i, c)) => (Account(i.clone()), Messaging(c.clone())),
+        Ok((i, c, s)) => (Account(i.clone()), Messaging(c.clone()), Storage(s.clone())),
         Err(_e) => todo!(),
     };
 
@@ -149,6 +151,7 @@ fn main() {
             tesseract,
             account,
             messaging,
+            storage,
         },
         |c| c.with_window(|_| window.with_menu(main_menu)),
     );
@@ -160,6 +163,7 @@ fn main() {
             tesseract,
             account,
             messaging,
+            storage,
         },
         |c| c.with_window(|_| window),
     );
@@ -173,6 +177,8 @@ async fn initialization(
     (
         Arc<RwLock<Box<dyn MultiPass>>>,
         Arc<RwLock<Box<dyn RayGun>>>,
+        Arc<RwLock<Box<dyn Constellation>>>,
+
     ),
     warp::error::Error,
 > {
@@ -183,14 +189,19 @@ async fn initialization(
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
     let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-        Some(RgIpfsConfig::production(path)),
+        Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
     )
     .await
     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
-    Ok((account, messenging))
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(),
+        Some(FsIpfsConfig::production(path)))
+        .await
+        .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+
+    Ok((account, messenging, storage))
 }
 
 #[allow(non_snake_case)]
@@ -208,15 +219,6 @@ fn App(cx: Scope<State>) -> Element {
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
     cx.render(rsx!(
-        div {
-            class: "markdown",
-            dangerous_inner_html: "
-                <link
-                    rel=\"stylesheet\"
-                    href=\"https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css\"
-                />
-            ",
-        },
         style {
             "{theme_colors}",
             "{css}"
@@ -229,11 +231,19 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
             Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
             Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone() } },
+            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
+            Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
-                    account: cx.props.account.clone(),
-                },
+                account: cx.props.account.clone(),
+                page_to_open: main::settings::sidebar::nav::NavEvent::General,
+            }
             },
+            Route { to: "/main/settings/profile", main::settings::Settings {
+                account: cx.props.account.clone(),
+                page_to_open: main::settings::sidebar::nav::NavEvent::Profile,
+            }
+            },
+
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
@@ -278,6 +288,28 @@ impl DerefMut for Messaging {
 }
 
 impl PartialEq for Messaging {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.is_locked() == other.0.is_locked()
+    }
+}
+
+#[derive(Clone)]
+pub struct Storage(Arc<RwLock<Box<dyn Constellation>>>);
+
+impl Deref for Storage {
+    type Target = Arc<RwLock<Box<dyn Constellation>>>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Storage {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl PartialEq for Storage {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }

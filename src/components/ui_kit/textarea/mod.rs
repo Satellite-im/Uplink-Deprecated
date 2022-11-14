@@ -1,10 +1,15 @@
+use crate::utils;
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
 
-// depends on javascript to resize the textarea
-// because this is used in multiple places, the javascript was moved outside this Element
+// for more information about this, see here: https://github.com/DioxusLabs/dioxus/issues/611
+// `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]
 #[allow(non_snake_case)]
+//TODO: Evaluate inner_html and `cx.use_hook(|_| " ").clone();` to determine if this is actually necessary
+#[allow(clippy::clone_double_ref)]
+//TODO: Like above but for `inner_html = " "`
+#[allow(unused_assignments)]
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
@@ -12,25 +17,52 @@ pub fn TextArea<'a>(
     placeholder: String,
 ) -> Element<'a> {
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
-    cx.render(rsx! {
-        textarea {
-            class: "input resizeable-textarea",
-            oninput: move |e| {
-                if !clearing_state.get() {
-                    text.set(e.value.clone());
-                } else {
-                    clearing_state.set(false);
-                }
+
+    let mut inner_html = cx.use_hook(|_| " ").clone();
+    if clearing_state.get() {
+        inner_html = "";
+        cx.needs_update();
+    }
+
+    let formatted = utils::wrap_in_markdown(text.as_ref());
+
+    let elm = rsx! {
+        div {
+            class: "textarea-wrap",
+            (text.is_empty()).then(|| rsx!{
+                span {
+                    class: "placeholder",
+                    "{placeholder}"
+                },
+            }),
+            div {
+                class: "shadow-input",
+                "dangerous_inner_html": "{formatted}"
             },
-            onkeydown: move |evt| {
-                if evt.key_code == KeyCode::Enter && !evt.shift_key {
-                    on_submit.call(text.to_string());
-                    text.set(String::from(""));
-                    clearing_state.set(true);
-                }
-            },
-            placeholder: "{placeholder}",
-            value: "{text}"
+            div {
+                class: "dynamic-input",
+                contenteditable: "true",
+                oninput: move |e| {
+                    if !clearing_state.get() {
+                        text.set(e.value.clone());
+                    } else {
+                        clearing_state.set(false);
+                    }
+                },
+                onkeyup: |e| {
+                    if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
+                        if !text.trim().is_empty() {
+                            on_submit.call(text.trim().to_string());
+                        }
+                        text.set(String::from(""));
+                        clearing_state.set(true);
+                    }
+                },
+                "dangerous_inner_html": "{inner_html}"
+            }
         }
-    })
+    };
+
+    clearing_state.set(false);
+    cx.render(elm)
 }

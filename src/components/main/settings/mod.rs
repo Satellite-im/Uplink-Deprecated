@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 
 use crate::{
     components::{
         main::settings::pages::{developer::Developer, general::General, profile::Profile},
-        ui_kit::icon_button::{self, IconButton},
     },
     Account,
 };
@@ -17,30 +15,35 @@ pub mod sidebar;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    page_to_open: NavEvent,
 }
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
-    let active_page = use_state(&cx, || NavEvent::Developer);
+    let page_to_open_on_settings =  match cx.props.page_to_open {
+        NavEvent::Profile => NavEvent::Profile,
+        NavEvent::Developer => NavEvent::Developer,
+        _ => NavEvent::General,
+    };
+
+    let active_page = use_state(&cx, || page_to_open_on_settings);
 
     cx.render(rsx! {
         div {
             id: "settings",
             sidebar::SettingsSidebar {
+                account: cx.props.account.clone(),
                 on_pressed: move |ne| {
                     active_page.set(ne);
+                },
+                initial_value: match active_page.get() {
+                    NavEvent::Profile => NavEvent::Profile,
+                    NavEvent::Developer => NavEvent::Developer,
+                    _ => NavEvent::General,
                 },
             },
             div {
                 id: "content",
-                div {
-                    style: "align-self: flex-end; padding: 1rem; padding-bottom: 0;",
-                    IconButton {
-                        on_pressed: move |_| use_router(&cx).push_route("/main", None, None),
-                        icon: Shape::X,
-                        state: icon_button::State::Secondary,
-                    },
-                },
                 div {
                     id: "page",
                     div {

@@ -7,7 +7,10 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 use futures::StreamExt;
-use warp::raygun::{Message, MessageEventKind, MessageOptions, RayGun, RayGunStream};
+use warp::{
+    crypto::DID,
+    raygun::{Message, MessageEventKind, MessageOptions, RayGun, RayGunStream},
+};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -26,13 +29,23 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let ident = cx.props.account.read().get_own_identity().unwrap();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
-    // this one is for the rsx! macro
-    let messages = list.clone();
+    // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
+    let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
 
     let current_chat = state
         .read()
         .current_chat
         .and_then(|x| state.read().all_chats.get(&x).cloned());
+
+    // periodically refresh message timestamps
+    let should_reload = use_future(&cx, (), |_| async move {
+        tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+        true
+    });
+
+    if should_reload.value().is_some() {
+        cx.needs_update();
+    };
 
     // restart the use_future when the current_chat changes
     use_future(&cx, &current_chat, |current_chat| async move {
@@ -114,48 +127,53 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     });
 
     let rg = cx.props.messaging.clone();
-    let mut prev_sender = "".to_string();
+    let senders: Vec<DID> = messages.iter().map(|msg| msg.sender()).collect();
+    // messages has already been reversed
+    let idx_range = 0..messages.len();
+    let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
+    let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
+
     cx.render(rsx! {
         div {
             class: "messages",
-            messages.read().iter().rev().map(|message| (rg.clone(), message)).map(|(mut rg, message)|{
+            messages.iter()
+                .zip(next_sender)
+                .zip(prev_sender)
+                .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
+            .map(|(mut rg, message, next_sender, prev_sender)|{
                 let message_id = message.id();
                 let conversation_id = message.conversation_id();
-                let msg_sender = message.sender().to_string();
-                let replied =  message.replied();
-                let i = ident.did_key().to_string();
-                let remote = i != msg_sender;
-                let last = prev_sender != msg_sender;
-                let middle = prev_sender == msg_sender;
-                let first = false;
-                let value = message.value().join("\n");
+                let msg_sender = message.sender();
+                let is_remote = ident.did_key() != msg_sender;
+                let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
+                let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
 
-                prev_sender = message.sender().to_string();
                 rsx!{
                     Msg {
                         // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
                         message: message.clone(),
                         account: cx.props.account.clone(),
                         sender: message.sender(),
-                        remote: remote,
-                        last: last,
-                        first: first,
-                        middle: middle,
+                        remote: is_remote,
+                        // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
+                        last:  is_first,
+                        first: is_last,
+                        middle: !is_last && !is_first,
                         on_reply: move |reply| {
                             if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                //TODO: Display error? 
+                                //TODO: Display error?
                             }
                         }
                     }
-                    match replied {
+                    match message.replied() {
                         Some(replied) => {
                             let r = cx.props.messaging.clone();
                             match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
                                 Ok(message) => {
                                     rsx!{
                                         Reply {
-                                            message: value,
-                                            is_remote: remote,
+                                            message: message.value().join("\n"),
+                                            is_remote: is_remote,
                                             account: cx.props.account.clone(),
                                             sender: message.sender(),
                                         }

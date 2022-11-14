@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::ui_kit::{ button::Button, icon_input::IconInput, photo_picker::PhotoPicker },
-    Account, LANGUAGE
+    components::ui_kit::{button::Button, icon_input::IconInput, photo_picker::PhotoPicker},
+    Account, LANGUAGE,
 };
+use dioxus::events::FormEvent;
 use dioxus_heroicons::outline::Shape;
-use dioxus::{events::FormEvent};
 use warp::multipass::identity::Identity;
 
 #[derive(Props, PartialEq)]
@@ -13,23 +13,21 @@ pub struct Props {
     account: Account,
 }
 
-
 #[allow(non_snake_case)]
 pub fn Profile(cx: Scope<Props>) -> Element {
-
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, String::new);
     let mp = cx.props.account.clone();
     let set_status = move |_: _| {
         let mp = mp.clone();
-            edit.set(false);
-            //TODO: Change to using `MultiPass::update_identity`
-            let mut my_identity = match mp.write().get_own_identity() {
-                Ok(me) => me,
-                Err(_) => Identity::default(),
-            };
-            my_identity.set_status_message(Some(status.to_string()));
+        edit.set(false);
+        //TODO: Change to using `MultiPass::update_identity`
+        let mut my_identity = match mp.write().get_own_identity() {
+            Ok(me) => me,
+            Err(_) => Identity::default(),
+        };
+        my_identity.set_status_message(Some(status.to_string()));
     };
 
     cx.render(rsx! {

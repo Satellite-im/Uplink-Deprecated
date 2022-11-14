@@ -1,18 +1,17 @@
 use crate::{
     components::ui_kit::{
+        profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-        profile_picture::PFP
     },
-    utils,
     state::{Actions, ConversationInfo, LastMsgSent},
-    Account, Messaging, LANGUAGE, STATE,
+    utils, Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
 use uuid::Uuid;
+use warp::crypto::DID;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
 use warp::raygun::{Message, MessageEventKind, RayGun, RayGunStream};
-use warp::crypto::DID;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -39,7 +38,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let online_status = use_state(&cx, || IdentityStatus::Offline).clone();
     let online_status2 = online_status.clone();
 
-    let last_msg_time = cx.props.last_msg_sent.clone().map(|x| x.display_time());
+    let last_msg_time = cx
+        .props
+        .last_msg_sent
+        .clone()
+        .map(|x| utils::display_msg_time(x.time));
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
     let tx_chan = cx.props.tx_chan.clone();
 
@@ -248,8 +251,6 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     }
 }
 
-
-
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, did: DID) -> Element {
@@ -257,23 +258,14 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
         IdentityStatus::Online => "online",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did.clone(), &account);
+    let profile_picture = utils::get_pfp_from_did(did.clone(), account);
 
     cx.render(rsx! {
         div {
             class: "pfp-container",
-
-            if profile_picture.is_empty() {
-                rsx! (
-                    div {
-                        class: "pfp"
-                    }  
-                )   
-            } else {
-                rsx!(PFP {
-                    src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
-                })
+            PFP {
+                src: profile_picture,
+                size: crate::components::ui_kit::profile_picture::Size::Normal
             },
             div {
                 class: "pfs {is_online}"

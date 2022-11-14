@@ -19,6 +19,4 @@ src/.styles.css
 .DS_Store
 
 src/.styles.css
-
-.vscode
-
+.vscode/launch.json

@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 use warp::crypto::DID;
 
-use crate::Account;
-use crate::utils;
 use crate::components::ui_kit::profile_picture::PFP;
+use crate::utils;
+use crate::Account;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -21,10 +21,12 @@ pub fn Reply(cx: Scope<Props>) -> Element {
         "local"
     };
 
-    let profile_picture = utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
-    let profile_picture2 = profile_picture.clone();
+    let profile_picture =
+        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
 
+    #[allow(unused_variables)]
     let box_right = "🭽";
+    #[allow(unused_variables)]
     let box_left = "🭾";
 
     #[cfg(target_os = "macos")]
@@ -39,54 +41,36 @@ pub fn Reply(cx: Scope<Props>) -> Element {
     #[cfg(target_os = "windows")]
     let box_right = "⎡";
 
-
     cx.render({
         rsx! {
             div {
                 class: "reply {class}",
-                (cx.props.is_remote).then(|| rsx! {
-                    p {
-                        class: "box-drawing left",
-                        "{box_right}"
-                    }
-                }),
-                (!cx.props.is_remote).then(|| rsx! {
-                    if profile_picture.is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }  
-                        )   
-                    } else {
-                        rsx!(PFP {
-                            src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
-                        })
-                    }
-                }),
+                if cx.props.is_remote {
+                    rsx!(p {
+                            class: "box-drawing left",
+                            "{box_right}"
+                    })
+                } else {
+                    let profile_picture = profile_picture.clone();
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                    })
+                }
                 p {
                     "{cx.props.message}",
                 },
-                (cx.props.is_remote).then(|| rsx! {
-                    if profile_picture2.clone().is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }  
-                        )   
-                        } else {
-                            rsx!(PFP {
-                                src: profile_picture2,
-                                size: crate::components::ui_kit::profile_picture::Size::Small
-                            })
-                        }
-                }),
-                (!cx.props.is_remote).then(|| rsx! {
-                    span {
+                if cx.props.is_remote {
+                    rsx!(PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Small
+                    })
+                } else {
+                    rsx!(span {
                         class: "box-drawing",
                         "{box_left}"
-                    }
-                })
+                    })
+                }
             }
         }
     })

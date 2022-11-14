@@ -6,16 +6,11 @@ use warp::raygun::Message;
 
 use crate::{
     components::{
-        main::{
-            friends::Friends,
-            profile::Profile,
-            sidebar::{
-                favorites::Favorites,
-                nav::{Nav, NavEvent},
-            },
-        },
+        main::{profile::Profile, sidebar::favorites::Favorites},
+        reusable::nav::Nav,
         ui_kit::{
-            button::Button, extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+            extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+            skeletal_chats::SkeletalChats,
         },
     },
     extensions::*,
@@ -26,7 +21,6 @@ use crate::{
 
 pub mod chat;
 pub mod favorites;
-pub mod nav;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -40,12 +34,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
-    let show_friends = use_state(&cx, || false);
     let show_profile = use_state(&cx, || false);
 
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    let friendString = l.friends.to_string();
-    let noactivechatdString = l.no_active_chats.to_string();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
 
@@ -103,12 +94,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     div {
                         class: "chat_wrap",
                         div {
-                            class: "gradient_mask"
-                        },
-                        div {
-                            class: "gradient_mask is_bottom"
-                        },
-                        div {
                             class: "chats",
                             // order the chats with most recent first (descending order)
                             chats.iter().rev().map(|conv| {
@@ -136,38 +121,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         }
                     }
                 )
-            } else {
-                rsx!(
-                    div {
-                        class: "fill-vertical",
-                        p {
-                            "{noactivechatdString}"
-                        },
-                        div {
-                            class: "m-bottom"
-                        },
-                        Button {
-                            icon: Shape::Plus,
-                            text: l.start_one.to_string(),
-                            on_pressed: move |_| show_friends.set(true),
-                        },
-                    }
-                )
-            },
-            (**show_friends).then(|| rsx!{
-                //TODO: this is a fix for now, but next milestone we should rework popups to
-                // de-render themselves after css hide animations are completed.
-                Friends {
-                    account: cx.props.account.clone(),
-                    messaging: cx.props.messaging.clone(),
-                    title: friendString,
-                    show: true,
-                    icon: Shape::Users,
-                    on_hide: move |_| {
-                        show_friends.set(false);
-                    },
-                }
-            }),
+            } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
             Profile {
                 account: cx.props.account.clone(),
                 show: *show_profile.clone(),
@@ -175,26 +129,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             },
             Nav {
                 account: cx.props.account.clone(),
-                on_pressed: move | e: NavEvent | {
-                    show_friends.set(false);
-                    show_profile.set(false);
-                    match e {
-                        NavEvent::Home => {
-                        },
-                        NavEvent::Files => {
-                            use_router(&cx).push_route("/main/files", None, None);
-                        },
-                        NavEvent::Friends => {
-                            show_friends.set(true);
-                        },
-                        NavEvent::Profile => {
-                            show_profile.set(true);
-                        },
-                        NavEvent::Settings => {
-                            use_router(&cx).push_route("/main/settings", None, None);
-                        },
-                    };
-                }
             }
         }
     })
