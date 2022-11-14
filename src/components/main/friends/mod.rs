@@ -33,26 +33,32 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     let friend_did_list = cx.props.account.list_friends().unwrap_or_default();
 
 
-    let mut username_did_vector: Vec<UsernameAndDID> = Vec::new();
+    let mut username_did: Vec<UsernameAndDID> = Vec::new();
+    let mut group_of_friends_with_same_first_username_letter: Vec<UsernameAndDID> = Vec::new();
     let mut friends_grouped_per_first_letter: Vec<FriendListAlpha> = Vec::new();
     let mut old_letter: char = 'A';
 
-
     for friend_did in friend_did_list.iter() {
         let _friend_username = utils::get_username_from_did(friend_did.clone(), &cx.props.account.clone());
-        let first_letter_friend_username =  _friend_username.to_uppercase().chars().next().unwrap();
-        let _friend = UsernameAndDID {username: _friend_username, did: friend_did.clone()};
+        let _friend_username_and_did = UsernameAndDID {username: _friend_username, did: friend_did.clone()};
+        username_did.push(_friend_username_and_did);
+    }
+    username_did.sort_by(|a, b| a.username.cmp(&b.username));
+
+    for _friend in username_did.iter() {
+        let first_letter_friend_username =  _friend.username.to_uppercase().chars().next().unwrap();
+
         if old_letter == first_letter_friend_username {
-            username_did_vector.push(_friend);
-        } else {
-            username_did_vector.sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
-            friends_grouped_per_first_letter.push(FriendListAlpha { first_letter_friends: old_letter, friends: username_did_vector.clone()});
-            username_did_vector = vec![];
-            username_did_vector.push(_friend);
+            group_of_friends_with_same_first_username_letter.push(_friend.clone());
+        } else if !group_of_friends_with_same_first_username_letter.is_empty() {
+            group_of_friends_with_same_first_username_letter.sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
+            friends_grouped_per_first_letter.push(FriendListAlpha { first_letter_friends: old_letter, friends: group_of_friends_with_same_first_username_letter.clone()});
+            group_of_friends_with_same_first_username_letter = vec![];
+            group_of_friends_with_same_first_username_letter.push(_friend.clone());
         }
         old_letter = first_letter_friend_username;
     }
-
+    
     cx.render(       
         rsx! {
         div {
