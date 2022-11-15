@@ -1,0 +1,27 @@
+name: Add Conflicts Label
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  
+jobs:
+    runs-on: 
+      macos-latest
+    steps:
+      - checkout
+      - run: brew update
+      - run: brew install protobuf
+      - run: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
+      - run: source ~/.cargo/env
+      - run: cargo --version
+      - run: rustup default stable
+      - run:
+          name: Make DMG
+          command: make dmg
+      - run:
+          name: Compress Artifacts (DMG)
+          command: zip -r dmg.zip target/release/macos/Uplink.DMG
+      - store_artifacts:
+          path: dmg.zip
+          destination: /macos/dmg.zip
+      - store_artifacts:
+          path: /macos
