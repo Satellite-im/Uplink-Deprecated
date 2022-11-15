@@ -140,15 +140,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 .zip(next_sender)
                 .zip(prev_sender)
                 .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
-            .map(|(mut rg, message, next_sender, prev_sender)|{
+            .map(|(mut rg, message, next_sender, prev_sender)|{ 
                 let message_id = message.id();
                 let conversation_id = message.conversation_id();
                 let msg_sender = message.sender();
                 let is_remote = ident.did_key() != msg_sender;
                 let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
                 let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
-
-                rsx!{
+                let mut rg2 = rg.clone();
+                rsx!(
                     Msg {
                         // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
                         message: message.clone(),
@@ -165,9 +165,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             }
                         },
                         on_typing_reply: move |typing| {
-                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.trigger_typing(conversation_id, typing)) {
+                            if let Err(_e) = warp::async_block_in_place_uncheck(rg2.indicate_typing(conversation_id, typing)) {
                             }
+                        }
                     }
+
                     match message.replied() {
                         Some(replied) => {
                             let r = cx.props.messaging.clone();
@@ -187,8 +189,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         },
                         _ => rsx!{ div {} }
                     }
-                }
+                )
             })
+        
             div {
                 class: "encrypted-notif",
                 Icon {

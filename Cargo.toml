@@ -54,10 +54,10 @@ rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"
 mime = "0.3.16"
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "bb8aadb67da6160f66995efbfe2b385e6c4f8245"}
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bb8aadb67da6160f66995efbfe2b385e6c4f8245" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bb8aadb67da6160f66995efbfe2b385e6c4f8245" }
-warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bb8aadb67da6160f66995efbfe2b385e6c4f8245" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch="feat/add-typing-indicator" }
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch="feat/add-typing-indicator" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch="feat/add-typing-indicator" }
+warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", branch="feat/add-typing-indicator" }
 arboard = "3.1.0"
 
 
