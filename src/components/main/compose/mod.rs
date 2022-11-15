@@ -98,7 +98,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         },
                         on_trigger_typing: move |typing: TypingIndicator| {
                             let mut rg = cx.props.messaging.clone();
-                            rg.indicate_typing(current_chat.unwrap(), typing);
+                            if let Some(id) = current_chat {
+                                println!("typing: {:?}", typing);
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.indicate_typing(id, typing)) {
+                                }
+                            }
                         },
                         on_upload: move |_| {}
                     }
