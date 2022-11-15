@@ -4,7 +4,7 @@ on:
     types: [opened, synchronize, reopened, edited]
   
 jobs:
-  add-label:
+  make-dmg:
     name: Make dmg
     runs-on: macos-latest
     continue-on-error: true
@@ -16,7 +16,9 @@ jobs:
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
-      - run: make dmg
+      - name: make dmg
+        run: make dmg
+        continue-on-error: true
       - run: zip -r dmg.zip target/release/macos/Uplink.DMG
       - uses: actions/upload-artifact@v2
         with:
