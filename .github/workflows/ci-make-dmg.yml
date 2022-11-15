@@ -4,24 +4,20 @@ on:
     types: [opened, synchronize, reopened, edited]
   
 jobs:
-    runs-on: 
-      macos-latest
+  add-label:
+    name: Make dmg
+    runs-on: macos-latest
     steps:
-      - checkout
+      - uses: actions/checkout@v2
       - run: brew update
       - run: brew install protobuf
       - run: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
-      - run:
-          name: Make DMG
-          command: make dmg
-      - run:
-          name: Compress Artifacts (DMG)
-          command: zip -r dmg.zip target/release/macos/Uplink.DMG
-      - store_artifacts:
-          path: dmg.zip
-          destination: /macos/dmg.zip
-      - store_artifacts:
+      - run: make dmg
+      - run: zip -r dmg.zip target/release/macos/Uplink.DMG
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Uplink.DMG
           path: /macos
