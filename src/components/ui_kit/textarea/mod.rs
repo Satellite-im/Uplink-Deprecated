@@ -1,7 +1,7 @@
 use crate::utils;
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
-
+use warp::raygun::TypingIndicator;
 // for more information about this, see here: https://github.com/DioxusLabs/dioxus/issues/611
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
 #[inline_props]
@@ -13,6 +13,7 @@ use dioxus_html::KeyCode;
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
+    on_trigger_typing: EventHandler<'a, TypingIndicator>,
     text: UseState<String>,
     placeholder: String,
 ) -> Element<'a> {
@@ -53,10 +54,16 @@ pub fn TextArea<'a>(
                     if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
                         if !text.trim().is_empty() {
                             on_submit.call(text.trim().to_string());
+                            on_trigger_typing.call(TypingIndicator::NotTyping);
+
                         }
                         text.set(String::from(""));
                         clearing_state.set(true);
+                    } else {
+                        on_trigger_typing.call(TypingIndicator::Typing);
+
                     }
+
                 },
                 "dangerous_inner_html": "{inner_html}"
             }
