@@ -7,6 +7,7 @@ jobs:
   add-label:
     name: Make dmg
     runs-on: macos-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - run: brew update
