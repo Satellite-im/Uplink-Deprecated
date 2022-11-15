@@ -13,7 +13,7 @@ use dioxus_html::KeyCode;
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
-    on_trigger_typing: EventHandler<'a, ()>,
+    _on_trigger_typing: EventHandler<'a, ()>,
     text: UseState<String>,
     placeholder: String,
 ) -> Element<'a> {
