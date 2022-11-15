@@ -25,6 +25,7 @@ pub struct Prop {
 
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
+    log::debug!("rendering Main");
     let st = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
     let state = use_atom_ref(&cx, STATE);
@@ -49,6 +50,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                     current_conversations.insert(item.id(), to_insert);
                 }
                 if current_conversations != st.read().all_chats {
+                    log::debug!("modifying chats");
                     st.write()
                         .dispatch(Actions::AddRemoveConversations(current_conversations));
                 }

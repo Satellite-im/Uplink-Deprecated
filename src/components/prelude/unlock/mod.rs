@@ -22,6 +22,7 @@ pub struct UnlockProps {
 
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
+    log::debug!("rendering Unlock");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
 

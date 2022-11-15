@@ -15,6 +15,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Reply(cx: Scope<Props>) -> Element {
+    log::debug!("rendering compose/Reply");
     let class = if cx.props.is_remote {
         "remote"
     } else {

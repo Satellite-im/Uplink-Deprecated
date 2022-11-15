@@ -18,6 +18,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Settings");
     let page_to_open_on_settings = match cx.props.page_to_open {
         NavEvent::Profile => NavEvent::Profile,
         NavEvent::Developer => NavEvent::Developer,

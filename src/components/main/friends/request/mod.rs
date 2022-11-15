@@ -23,6 +23,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering FriendRequest");
     let mp = cx.props.account.clone();
 
     let did = if cx.props.deny_only {

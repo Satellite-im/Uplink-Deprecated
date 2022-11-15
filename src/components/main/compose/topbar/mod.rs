@@ -23,6 +23,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering compose/TopBar");
     let state = use_atom_ref(&cx, STATE);
     let config = Config::load_config_or_default();
     let mut favorites = state.read().favorites.clone();
