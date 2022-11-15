@@ -1,4 +1,4 @@
-name: Add Conflicts Label
+name: Make dmg
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
