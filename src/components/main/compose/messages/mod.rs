@@ -167,7 +167,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         on_typing_reply: move |typing| {
                             if let Err(_e) = warp::async_block_in_place_uncheck(rg.trigger_typing(conversation_id, typing)) {
                             }
-                    },
+                    }
                     match message.replied() {
                         Some(replied) => {
                             let r = cx.props.messaging.clone();

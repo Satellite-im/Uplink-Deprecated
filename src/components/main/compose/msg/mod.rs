@@ -32,6 +32,7 @@ pub struct Props<'a> {
     last: bool,
     on_reply: EventHandler<'a, String>,
     on_typing_reply: EventHandler<'a, TypingIndicator>,
+    children: Vec<Element<'a>>,
 }
 
 #[allow(non_snake_case)]
