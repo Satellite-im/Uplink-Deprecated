@@ -179,7 +179,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                     popout.set(false);
                                 },
-                                _on_trigger_typing:  |_| {},
+                                on_trigger_typing:  |_| {},
                                 text: text.clone(),
                             },
                             IconButton {
