@@ -4,7 +4,7 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
-use warp::{crypto::DID, raygun::Message};
+use warp::{crypto::DID, raygun::Message, raygun::TypingIndicator};
 
 use crate::{
     components::ui_kit::{
@@ -31,6 +31,7 @@ pub struct Props<'a> {
     middle: bool,
     last: bool,
     on_reply: EventHandler<'a, String>,
+    on_typing_reply: EventHandler<'a, TypingIndicator>,
 }
 
 #[allow(non_snake_case)]
@@ -173,6 +174,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             TextArea {
                                 placeholder: l.send_a_reply.to_string(),
+                                on_trigger_typing: move |e| {
+                                    cx.props.on_typing_reply.call(TypingIndicator::Typing);
+                                },
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
 

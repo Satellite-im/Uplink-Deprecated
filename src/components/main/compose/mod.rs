@@ -4,10 +4,6 @@ pub mod reply;
 pub mod topbar;
 pub mod write;
 
-use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
-use warp::raygun::RayGun;
-
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
@@ -16,6 +12,10 @@ use crate::{
     state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
 };
+use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use warp::raygun::RayGun;
+use warp::raygun::TypingIndicator;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -90,6 +90,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                     //TODO: Handle error
                                 };
                             }
+                        },
+                        on_trigger_typing: move |typing: TypingIndicator| {
+                            let mut rg = cx.props.messaging.clone();
+                            rg.indicate_typing(current_chat.unwrap(), typing);
                         },
                         on_upload: move |_| {}
                     }
