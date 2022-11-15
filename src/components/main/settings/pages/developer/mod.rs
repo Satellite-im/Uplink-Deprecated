@@ -19,6 +19,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Developer(cx: Scope<Props>) -> Element {
+    log::debug!("rendering settings/pages/Developer");
     let mut config = Config::load_config_or_default();
     let c = config.clone();
 

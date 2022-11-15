@@ -27,6 +27,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Nav(cx: Scope<Props>) -> Element {
+    log::debug!("rendering reusable Nav");
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
@@ -72,6 +73,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             "Friend Request".to_owned(),
                         );
                     }
+                    log::debug!("updating friend request count");
                     reqCount.set(list.len());
                 }
                 tokio::time::sleep(std::time::Duration::from_millis(300)).await;

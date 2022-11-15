@@ -30,12 +30,12 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
+    log::debug!("rendering main/Sidebar");
     let config = Config::load_config_or_default();
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
     let show_profile = use_state(&cx, || false);
-
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -114,6 +114,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
+                                            // on press, change state so CSS class flips to show the chat
+                                            state.write().dispatch(Actions::HideSidebar(true));
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
                                                 active_chat.set(Some(uuid));

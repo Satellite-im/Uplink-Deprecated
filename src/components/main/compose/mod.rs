@@ -25,6 +25,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Compose(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Compose");
     let state = use_atom_ref(&cx, STATE);
     let current_chat = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
