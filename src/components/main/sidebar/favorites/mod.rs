@@ -17,6 +17,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Favorites(cx: Scope<Props>) -> Element {
+    log::debug!("rendering main/sidebar/Favorites");
     let state = use_atom_ref(&cx, STATE);
     let state2 = state.clone();
     let state3 = state2.clone();
@@ -139,6 +140,7 @@ pub fn ConversationList<'a>(
     all_chats: HashMap<Uuid, ConversationInfo>,
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
+    log::debug!("rendering ConversationList");
     cx.render(rsx!(
        div {
         class: "add-favorites",

@@ -19,6 +19,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Friends(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Friends");
     let add_error = use_state(&cx, String::new);
     let friends = use_state(&cx, || {
         HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
@@ -33,6 +34,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                     HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
 
                 if *friends != friends_list {
+                    log::debug!("updating friends list ");
                     friends.set(friends_list);
                 }
 

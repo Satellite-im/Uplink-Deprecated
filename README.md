@@ -78,6 +78,10 @@ It's often necessary to reset your account for development, to do so just delete
 
 If you see something about cmake or protoc then you likely need to install those and get them in your path. Often times just restarting your shell helps. Other errors are fixed with updating packages `cargo update` or getting the nightly `rustup update; rustup default nightly` or stable `rustup update; rustup default stable` version of rust.
 
+## Debugging
+- run uplink as follows: `RUST_LOG=debug target/debug/uplink`
+- in another terminal (by default `~/.warp/logs`), tail the log file, follow it, and grep for `uplink`: `tail -f <file_name> | grep uplink`
+
 ## Contributions
 
 All contributions are welcome! Please keep in mind we're still a relatively small team and any work done to make sure contributions don't cause bugs or issues in the application is much appreciated.

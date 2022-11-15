@@ -1,13 +1,15 @@
-use fluent::{FluentBundle, FluentResource};
-use unic_langid::LanguageIdentifier;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
-use std::ops::{Deref, DerefMut};
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::{thread, fs};
+use fluent::{FluentBundle, FluentResource};
+use std::{
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+    sync::Arc,
+    thread,
+};
 use tracing_subscriber::EnvFilter;
+use unic_langid::LanguageIdentifier;
 
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -88,14 +90,14 @@ fn main() {
         }
     };
 
-    let res = FluentResource::try_new(ftl_string)
-        .expect("Failed to parse an FTL string.");
-    
+    let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
     // TODO: Make this dynamic
     let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
     let mut language = FluentBundle::new(vec![loc]);
 
-    language.add_resource(&res)
+    language
+        .add_resource(&res)
         .expect("Failed to add FTL resources to the bundle.");
 
     let mut main_menu = Menu::new();

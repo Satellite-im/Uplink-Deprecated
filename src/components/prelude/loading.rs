@@ -16,6 +16,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Loading(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Loading");
     let config = Config::load_config_or_default();
     let window = use_window(&cx);
     let loaded = use_state(&cx, || false);

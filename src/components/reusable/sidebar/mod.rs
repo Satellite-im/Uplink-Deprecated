@@ -14,6 +14,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering reusable Sidebar");
     let config = Config::load_config_or_default();
 
     cx.render(rsx! {

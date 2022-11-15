@@ -12,6 +12,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
+    log::debug!("rendering ActivityIndicator");
     let status = use_state(&cx, || IdentityStatus::Offline);
 
     let account = cx.props.account.clone();
@@ -21,6 +22,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
         loop {
             if let Ok(current_status) = account.identity_status(&remote_did) {
                 if *status != current_status {
+                    log::debug!("Updating activity indicator");
                     status.set(current_status);
                 }
             }

@@ -28,6 +28,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering main/sidebar/Chat");
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
@@ -106,6 +107,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             loop {
                 if let Ok(current_status) = account.identity_status(&remote_did) {
                     if *online_status.current() != current_status {
+                        log::debug!("updating online_status ");
                         online_status.set(current_status);
                     }
                 }
@@ -121,6 +123,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         |(mut conversation_info, is_active)| async move {
             if is_active {
                 if *unread_count.current() != 0 {
+                    log::debug!("sidebar/chat exiting future ");
                     unread_count.set(0);
                 }
                 // very important: don't open two message streams - if this is the active chat, the messages Element will read the stream and this
@@ -130,6 +133,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
             let num_unread_messages = conversation_info.num_unread_messages;
             if *unread_count.current() != num_unread_messages {
+                log::debug!("updating num_unread_messages ");
                 unread_count.set(num_unread_messages);
             }
 
@@ -163,6 +167,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 {
                     match rg.get_message(conversation_id, message_id).await {
                         Ok(msg) => {
+                            log::debug!("sidebar/chat streamed a message");
                             tx_chan.send(msg.clone());
                             unread_count.modify(|x| x + 1);
                             // will silently remain zero if you only use *unread_count
