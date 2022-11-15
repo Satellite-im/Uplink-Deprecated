@@ -7,7 +7,8 @@ pub mod write;
 use crate::{
     components::{
         main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::icon_button::IconButton, ui_kit::typing_indicator::TypingIndicator,
+        ui_kit::icon_button::IconButton,
+        ui_kit::typing_indicator::TypingIndicator,
     },
     state::{Actions, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
