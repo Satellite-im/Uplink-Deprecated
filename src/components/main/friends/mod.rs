@@ -39,12 +39,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
     });
 
-    if friends.len() > 0 {
-        // First odered friends list
-        let new_friends_list = order_friend_list(&friends, &cx.props.account.clone());
-        friends_grouped_per_first_letter.set(new_friends_list);
-    }
-
     use_future(
         &cx,
         (
@@ -59,12 +53,14 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
                 if *friends != friends_list {
                     log::debug!("updating friends list ");
-                    let new_friends_list = order_friend_list(&friends_list, &mp);
-                    friends_grouped_per_first_letter.set(new_friends_list);
                     friends.set(friends_list);
                 }
+                if friends.len() > 0 {
+                    let new_friends_list = order_friend_list(&friends, &mp);
+                    friends_grouped_per_first_letter.set(new_friends_list);
+                }
 
-                tokio::time::sleep(Duration::from_millis(300)).await;
+                tokio::time::sleep(Duration::from_millis(1000)).await;
             }
         },
     );
@@ -154,6 +150,7 @@ fn order_friend_list(
         };
         username_did.push(_friend_username_and_did);
     }
+
     username_did.sort_by(|a, b| a.username.cmp(&b.username));
 
     let mut old_letter: char = username_did[0]
@@ -163,7 +160,11 @@ fn order_friend_list(
         .next()
         .unwrap();
 
-    for _friend in username_did.iter() {
+    for (_friend, is_last_friend) in username_did
+        .iter()
+        .enumerate()
+        .map(|(i, f)| (f, i == username_did.len() - 1))
+    {
         let first_letter_friend_username = _friend.username.to_uppercase().chars().next().unwrap();
 
         if old_letter == first_letter_friend_username {
@@ -171,14 +172,31 @@ fn order_friend_list(
         } else if !group_of_friends_with_same_first_username_letter.is_empty() {
             group_of_friends_with_same_first_username_letter
                 .sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
+
             friends_grouped_per_first_letter.push(FriendListAlpha {
                 first_letter_friends: old_letter,
                 friends: group_of_friends_with_same_first_username_letter.clone(),
             });
+
             group_of_friends_with_same_first_username_letter = vec![];
             group_of_friends_with_same_first_username_letter.push(_friend.clone());
         }
+
         old_letter = first_letter_friend_username;
+
+        if is_last_friend {
+            if group_of_friends_with_same_first_username_letter.is_empty() {
+                group_of_friends_with_same_first_username_letter.push(_friend.clone());
+            }
+
+            group_of_friends_with_same_first_username_letter
+                .sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
+
+            friends_grouped_per_first_letter.push(FriendListAlpha {
+                first_letter_friends: old_letter,
+                friends: group_of_friends_with_same_first_username_letter.clone(),
+            });
+        }
     }
     friends_grouped_per_first_letter
 }
