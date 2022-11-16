@@ -172,7 +172,7 @@ fn order_friend_list(
                 &mut friends_grouped_per_first_letter,
                 old_letter,
             );
-            group_of_friends_with_same_first_username_letter = vec![];
+            group_of_friends_with_same_first_username_letter.clear();
         }
 
         old_letter = first_letter_friend_username;
