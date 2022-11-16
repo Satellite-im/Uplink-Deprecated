@@ -1,9 +1,10 @@
+use std::path::Path;
+
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use crate::components::ui_kit::icon_button::IconButton;
-use std::future;
-use warp::constellation::Constellation;
+use rfd::FileDialog;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -22,38 +23,35 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 id: "upload",
                 div {
                     id: "content",
-                    IconButton {
-                        on_pressed: move |e| {
-                            println!("Test close {:?}", e);
-                            cx.props.on_hide.call(e);
-                        },
-                        state: crate::components::ui_kit::icon_button::State::Secondary,
-                        icon: Shape::X
-                    },
                     input {
                         "type": "file",
-                      
-                        onchange: move |e| {
-                            println!("Evt test test {:?}", e);
-                            let p = e.data.value.clone();
-                            let tempVal = file_storage.read().current_directory();
+                        onclick: move |_| {
+                            // let _p = e.data.value.clone();
 
-                            use_future(&cx, &cx.props.storage.clone(), |file_storage| async move {
-                                let mut _upload_file = match file_storage.write().put("/", &p).await {
+
+                            // println!("Evt {:?}", tempVal);
+
+                            // let _getFile = file_storage.read().select("/");
+                            // upload_file.set(_p);
+                            // println!("Evt {:?}", tempVal);
+                            
+                            let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
+                                Some(path) => path,
+                                None => return
+                            };
+                            let tempVal = &file_storage.read().current_directory();
+
+
+                            let local_path = Path::new(&file_path).to_string_lossy().to_string();
+
+                            use_future(&cx, &file_storage, |file_storage| async move {
+                                let mut _upload_file = match file_storage.write().put("/", &local_path).await {
                                     Ok(_) => println!("Ok"),
                                     Err(error) => println!("Error {:?}", error),
                                 };
                             });
 
-                            println!("Evt {:?}", tempVal);
-                            // let mut _upload_file = match file_storage.write().put("/", &_p) {
-                            //     Ok(v) => println!("Evt {:?}", v),
-                            //     Err(e) => println!("Evt {:?}", e)
-                            // };
-
-                            // let _getFile = file_storage.read().select("/");
-                            // upload_file.set(_p);
-                            // println!("Evt {:?}", tempVal);
+                            println!("{:?}", tempVal);
                         }
                     }
                 },
@@ -61,8 +59,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     id: "close",
                     IconButton {
                         on_pressed: move |e| {
-                            println!("Test close {:?}", e);
-
                             cx.props.on_hide.call(e);
                         },
                         state: crate::components::ui_kit::icon_button::State::Secondary,
