@@ -84,3 +84,7 @@ long_description = ""
 
 [target.'cfg(windows)'.build-dependencies]
 winres = "0.1.12"
+
+
+[workspace]
+members = ["src/extensions/native/audio-factory"]

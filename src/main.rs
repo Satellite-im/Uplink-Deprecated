@@ -3,6 +3,7 @@ use core::time;
 use dioxus::desktop::tao;
 use fluent::{FluentBundle, FluentResource};
 use std::{
+    fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
     sync::Arc,
