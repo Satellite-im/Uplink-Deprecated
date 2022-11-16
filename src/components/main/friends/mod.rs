@@ -2,6 +2,8 @@ pub mod friend;
 pub mod request;
 pub mod sidebar;
 
+use std::{collections::HashSet, time::Duration};
+
 use crate::{
     components::main::friends::{friend::Friend, sidebar::Sidebar},
     utils, Account, Messaging,
@@ -10,12 +12,13 @@ use crate::{
 use dioxus::prelude::*;
 use warp::multipass::Friends;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 struct UsernameAndDID {
     username: String,
     did: warp::crypto::DID,
 }
 
+#[derive(PartialEq)]
 struct FriendListAlpha {
     first_letter_friends: char,
     friends: Vec<UsernameAndDID>,
@@ -31,41 +34,36 @@ pub struct Props {
 pub fn Friends(cx: Scope<Props>) -> Element {
     log::debug!("rendering Friends");
     let add_error = use_state(&cx, String::new);
-    let friend_did_list = cx.props.account.list_friends().unwrap_or_default();
+    let friends_grouped_per_first_letter = use_state(&cx, || Vec::new());
+    let friends = use_state(&cx, || {
+        HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
+    });
 
-    let mut username_did: Vec<UsernameAndDID> = Vec::new();
-    let mut group_of_friends_with_same_first_username_letter: Vec<UsernameAndDID> = Vec::new();
-    let mut friends_grouped_per_first_letter: Vec<FriendListAlpha> = Vec::new();
-    let mut old_letter: char = 'A';
+    use_future(
+        &cx,
+        (
+            friends,
+            &cx.props.account.clone(),
+            friends_grouped_per_first_letter,
+        ),
+        |(friends, mp, friends_grouped_per_first_letter)| async move {
+            let new_friends_list = order_friend_list(&friends, &mp);
+            friends_grouped_per_first_letter.set(new_friends_list);
+            loop {
+                let friends_list: HashSet<_> =
+                    HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
 
-    for friend_did in friend_did_list.iter() {
-        let _friend_username =
-            utils::get_username_from_did(friend_did.clone(), &cx.props.account.clone());
-        let _friend_username_and_did = UsernameAndDID {
-            username: _friend_username,
-            did: friend_did.clone(),
-        };
-        username_did.push(_friend_username_and_did);
-    }
-    username_did.sort_by(|a, b| a.username.cmp(&b.username));
+                if *friends != friends_list {
+                    log::debug!("updating friends list ");
+                    let new_friends_list = order_friend_list(&friends_list, &mp);
+                    friends_grouped_per_first_letter.set(new_friends_list);
+                    friends.set(friends_list);
+                }
 
-    for _friend in username_did.iter() {
-        let first_letter_friend_username = _friend.username.to_uppercase().chars().next().unwrap();
-
-        if old_letter == first_letter_friend_username {
-            group_of_friends_with_same_first_username_letter.push(_friend.clone());
-        } else if !group_of_friends_with_same_first_username_letter.is_empty() {
-            group_of_friends_with_same_first_username_letter
-                .sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
-            friends_grouped_per_first_letter.push(FriendListAlpha {
-                first_letter_friends: old_letter,
-                friends: group_of_friends_with_same_first_username_letter.clone(),
-            });
-            group_of_friends_with_same_first_username_letter = vec![];
-            group_of_friends_with_same_first_username_letter.push(_friend.clone());
-        }
-        old_letter = first_letter_friend_username;
-    }
+                tokio::time::sleep(Duration::from_millis(300)).await;
+            }
+        },
+    );
 
     cx.render(rsx! {
         div {
@@ -135,4 +133,43 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                 }
             }
     })
+}
+
+fn order_friend_list(
+    friend_did_list: &HashSet<warp::crypto::DID>,
+    account: &Account,
+) -> Vec<FriendListAlpha> {
+    let mut username_did: Vec<UsernameAndDID> = Vec::new();
+    let mut group_of_friends_with_same_first_username_letter: Vec<UsernameAndDID> = Vec::new();
+    let mut friends_grouped_per_first_letter: Vec<FriendListAlpha> = Vec::new();
+    let mut old_letter: char = 'A';
+
+    for friend_did in friend_did_list.iter() {
+        let _friend_username = utils::get_username_from_did(friend_did.clone(), account);
+        let _friend_username_and_did = UsernameAndDID {
+            username: _friend_username,
+            did: friend_did.clone(),
+        };
+        username_did.push(_friend_username_and_did);
+    }
+    username_did.sort_by(|a, b| a.username.cmp(&b.username));
+
+    for _friend in username_did.iter() {
+        let first_letter_friend_username = _friend.username.to_uppercase().chars().next().unwrap();
+
+        if old_letter == first_letter_friend_username {
+            group_of_friends_with_same_first_username_letter.push(_friend.clone());
+        } else if !group_of_friends_with_same_first_username_letter.is_empty() {
+            group_of_friends_with_same_first_username_letter
+                .sort_by(|a, b| a.username.to_lowercase().cmp(&b.username.to_lowercase()));
+            friends_grouped_per_first_letter.push(FriendListAlpha {
+                first_letter_friends: old_letter,
+                friends: group_of_friends_with_same_first_username_letter.clone(),
+            });
+            group_of_friends_with_same_first_username_letter = vec![];
+            group_of_friends_with_same_first_username_letter.push(_friend.clone());
+        }
+        old_letter = first_letter_friend_username;
+    }
+    friends_grouped_per_first_letter
 }
