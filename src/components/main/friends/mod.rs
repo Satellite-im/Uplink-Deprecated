@@ -39,9 +39,11 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
     });
 
-    // First odered friends list
-    let new_friends_list = order_friend_list(&friends, &cx.props.account.clone());
-    friends_grouped_per_first_letter.set(new_friends_list);
+    if friends.len() > 0 {
+        // First odered friends list
+        let new_friends_list = order_friend_list(&friends, &cx.props.account.clone());
+        friends_grouped_per_first_letter.set(new_friends_list);
+    }
 
     use_future(
         &cx,
@@ -143,7 +145,6 @@ fn order_friend_list(
     let mut username_did: Vec<UsernameAndDID> = Vec::new();
     let mut group_of_friends_with_same_first_username_letter: Vec<UsernameAndDID> = Vec::new();
     let mut friends_grouped_per_first_letter: Vec<FriendListAlpha> = Vec::new();
-    let mut old_letter: char = 'A';
 
     for friend_did in friend_did_list.iter() {
         let _friend_username = utils::get_username_from_did(friend_did.clone(), account);
@@ -154,6 +155,13 @@ fn order_friend_list(
         username_did.push(_friend_username_and_did);
     }
     username_did.sort_by(|a, b| a.username.cmp(&b.username));
+
+    let mut old_letter: char = username_did[0]
+        .username
+        .to_uppercase()
+        .chars()
+        .next()
+        .unwrap();
 
     for _friend in username_did.iter() {
         let first_letter_friend_username = _friend.username.to_uppercase().chars().next().unwrap();
