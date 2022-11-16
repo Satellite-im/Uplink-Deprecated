@@ -10,12 +10,9 @@
   .blurmask {
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
-    background: var(--theme-semi-transparent);
-    bottom: 0;
-    left: 0;
+    transition: blur 0.2s;
     position: absolute;
-    right: 0;
-    top: 0;
+    inset: 0 0 0 0;
     z-index: 90;
   }
 
@@ -43,5 +40,12 @@
     .button {
       height: 30px;
     }
+  }
+}
+
+// Not all browsers/webviews support backdrop filter
+@supports not (backdrop-filter: none) {
+  .blurmask {
+    background-color: rgba(0, 0, 0, 0.5);
   }
 }
