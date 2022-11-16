@@ -124,16 +124,18 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     }
                 }
                 | MessageEventKind::TypingIndicatorAdded {
-                    conversation_id: Uuid,
-                    did_key: DID,
+                    conversation_id,
+                    did_key,
                 } => {
-                    
+                    if current_chat.conversation.id() == conversation_id {
+                    }
                 }
                 | MessageEventKind::TypingIndicatorRemoved {
-                    conversation_id: Uuid,
-                    did_key: DID,
+                    conversation_id,
+                    did_key,
                 } => {
-                    
+                    if current_chat.conversation.id() == conversation_id {
+                    }
                 }
                 _ => {}
             }
