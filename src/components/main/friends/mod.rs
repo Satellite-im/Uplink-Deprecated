@@ -75,7 +75,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                 id: "content",
                 div {
                     class: "friends-list",
-
                     friends_grouped_per_first_letter.iter().map(|friends_per_char_list| {
                         rsx!(
                             div {
@@ -91,6 +90,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                                     account: cx.props.account.clone(),
                                     messaging: cx.props.messaging.clone(),
                                     friend: user.did.clone(),
+                                    friend_username: user.username.clone(),
                                     on_chat: move |_| {
                                         add_error.set("".into());
                                         use_router(&cx).push_route("/main", None, None);
