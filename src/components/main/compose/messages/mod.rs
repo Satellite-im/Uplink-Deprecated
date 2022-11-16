@@ -84,6 +84,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 },
             }
         };
+
+
         let messages = rg
             .get_messages(current_chat.conversation.id(), MessageOptions::default())
             .await
@@ -120,6 +122,18 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             }
                         }
                     }
+                }
+                | MessageEventKind::TypingIndicatorAdded {
+                    conversation_id: Uuid,
+                    did_key: DID,
+                } => {
+                    
+                }
+                | MessageEventKind::TypingIndicatorRemoved {
+                    conversation_id: Uuid,
+                    did_key: DID,
+                } => {
+                    
                 }
                 _ => {}
             }
