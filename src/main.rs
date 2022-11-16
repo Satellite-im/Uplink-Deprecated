@@ -16,12 +16,14 @@ use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
-use warp::{multipass::MultiPass, raygun::RayGun, constellation::Constellation, sync::RwLock, tesseract::Tesseract};
-use warp_mp_ipfs::config::MpIpfsConfig;
+use warp::{
+    constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
+    tesseract::Tesseract,
+};
 use warp_fs_ipfs::config::FsIpfsConfig;
+use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
-
 
 use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
@@ -178,7 +180,6 @@ async fn initialization(
         Arc<RwLock<Box<dyn MultiPass>>>,
         Arc<RwLock<Box<dyn RayGun>>>,
         Arc<RwLock<Box<dyn Constellation>>>,
-
     ),
     warp::error::Error,
 > {
@@ -188,10 +189,12 @@ async fn initialization(
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
-    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(),
-        Some(FsIpfsConfig::production(&path)))
-        .await
-        .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
+        account.clone(),
+        Some(FsIpfsConfig::production(&path)),
+    )
+    .await
+    .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
 
     let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(path)),
@@ -199,8 +202,8 @@ async fn initialization(
         Some(storage.clone()),
         None,
     )
-        .await
-        .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
+    .await
+    .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
     Ok((account, messaging, storage))
 }

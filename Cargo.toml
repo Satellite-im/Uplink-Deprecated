@@ -54,10 +54,10 @@ rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"
 mime = "0.3.16"
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "10ae48051e981e203670d4f910d023a2c181cdc5"}
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "10ae48051e981e203670d4f910d023a2c181cdc5" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "10ae48051e981e203670d4f910d023a2c181cdc5" }
-warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "10ae48051e981e203670d4f910d023a2c181cdc5" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/message-attachment"}
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/message-attachment" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/message-attachment" }
+warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/message-attachment" }
 
 arboard = "3.1.0"
 

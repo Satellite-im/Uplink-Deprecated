@@ -1,8 +1,9 @@
+use crate::Messaging;
 use dioxus::prelude::*;
 use dioxus_html::on::MouseEvent;
-use warp::constellation::file::File;
-use crate::Messaging;
+use futures::StreamExt;
 use rfd::FileDialog;
+use warp::constellation::file::File;
 use warp::raygun::{Message, RayGunAttachment};
 
 // Remember: owned props must implement PartialEq!
@@ -36,20 +37,37 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
 
             async move {
                 match save_path {
-                    Some(path) => {
-                        if let Err(e) = rg.download(
-                            conversation_id,
-                            id,
-                            name,
-                            path,
-                        ).await {
-                            println!("Error: {:?}", e);
-                        } else {
-                            println!("File downloaded");
+                    Some(path) => match rg.download(conversation_id, id, name, path).await {
+                        Ok(mut stream) => {
+                            while let Some(progress) = stream.next().await {
+                                match progress {
+                                    warp::constellation::Progression::CurrentProgress {
+                                        ..
+                                    } => {}
+                                    warp::constellation::Progression::ProgressComplete {
+                                        name,
+                                        total,
+                                    } => {
+                                        println!(
+                                            "{name} downloaded with {} bytes written",
+                                            total.unwrap_or_default()
+                                        );
+                                    }
+                                    warp::constellation::Progression::ProgressFailed {
+                                        name,
+                                        error,
+                                        ..
+                                    } => {
+                                        println!("{name} failed to download with error: {error:?}")
+                                    }
+                                }
+                            }
                         }
-
-                    }
-                    _ => {}
+                        Err(e) => println!("Error: {:?}", e),
+                    },
+                    None => {
+                        println!("Path not provided");
+                    },
                 }
             }
         });
