@@ -54,7 +54,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             PushNotification(
                 display_username,
                 msg.value().join("\n"),
-                "Usual Notification".to_owned(),
+                crate::utils::sounds::Sounds::Notification,
             );
         }
     });

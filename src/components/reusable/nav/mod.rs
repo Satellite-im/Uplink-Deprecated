@@ -1,4 +1,4 @@
-use crate::utils::{get_username_from_did, notifications::PushNotification};
+use crate::utils::notifications::PushNotification;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
@@ -58,21 +58,11 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         // We display a notification if the list length is increased (incoming request appended).
                         // We do not display a notification if the list length is decreased (incoming request is rejected).
 
-                        // TODO: Display sender name of incoming friend request
-                        let most_recent_friend_request = list.last().unwrap().from(); // This returns a FriendRequest struct
-                                                                                      // TODO: Get username from DID: get_username_from_did(most_recent_friend_request, &mp);
-                                                                                      // Where &mp is a lifetime. In other file it is usually: let mp = &cx.props.account.clone();
-                                                                                      // Lifetime issue:
-                                                                                      // lifetime may not live long enough
-                                                                                      // returning this value requires that `'1` must outlive `'static`
-
-                        let _username =  // does this address the TODO? 
-                            get_username_from_did(most_recent_friend_request, &multipass);
                         PushNotification(
                             "New Friend Request".to_owned(),
                             "Come see who it is!".to_owned(),
                             // format!("{:#?} sent a friend request", most_recent_friend_request),
-                            "Friend Request".to_owned(),
+                            crate::utils::sounds::Sounds::FriendReq,
                         );
                     }
                     log::debug!("updating friend request count");
