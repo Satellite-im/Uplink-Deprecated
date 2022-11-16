@@ -22,15 +22,24 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 id: "upload",
                 div {
                     id: "content",
+                    IconButton {
+                        on_pressed: move |e| {
+                            println!("Test close {:?}", e);
+                            cx.props.on_hide.call(e);
+                        },
+                        state: crate::components::ui_kit::icon_button::State::Secondary,
+                        icon: Shape::X
+                    },
                     input {
                         "type": "file",
+                      
                         onchange: move |e| {
-                            // println!("Evt {:?}", e);
-                            let _p = e.data.value.clone();
+                            println!("Evt test test {:?}", e);
+                            let p = e.data.value.clone();
                             let tempVal = file_storage.read().current_directory();
 
                             use_future(&cx, &cx.props.storage.clone(), |file_storage| async move {
-                                let mut _upload_file = match file_storage.write().put("/", &_p).await {
+                                let mut _upload_file = match file_storage.write().put("/", &p).await {
                                     Ok(_) => println!("Ok"),
                                     Err(error) => println!("Error {:?}", error),
                                 };
@@ -52,6 +61,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     id: "close",
                     IconButton {
                         on_pressed: move |e| {
+                            println!("Test close {:?}", e);
+
                             cx.props.on_hide.call(e);
                         },
                         state: crate::components::ui_kit::icon_button::State::Secondary,
