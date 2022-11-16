@@ -8,6 +8,7 @@ use crate::{
 
 #[allow(non_snake_case)]
 pub fn Welcome(cx: Scope) -> Element {
+    log::debug!("rendering Welcome");
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {

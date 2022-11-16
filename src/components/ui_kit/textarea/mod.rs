@@ -13,9 +13,11 @@ use dioxus_html::KeyCode;
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
+    on_trigger_typing: EventHandler<'a, ()>,
     text: UseState<String>,
     placeholder: String,
 ) -> Element<'a> {
+    log::debug!("rendering TextArea");
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
 
     let mut inner_html = cx.use_hook(|_| " ").clone();

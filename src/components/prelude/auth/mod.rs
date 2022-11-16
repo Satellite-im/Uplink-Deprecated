@@ -21,6 +21,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Auth(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Auth");
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 

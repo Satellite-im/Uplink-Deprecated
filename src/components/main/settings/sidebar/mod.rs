@@ -19,6 +19,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering SettingsSidebar");
     let initial_value = match cx.props.initial_value {
         NavEvent::Profile => NavEvent::Profile,
         NavEvent::Developer => NavEvent::Developer,
