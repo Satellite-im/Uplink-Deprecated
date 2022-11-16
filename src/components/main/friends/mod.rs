@@ -39,6 +39,10 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         HashSet::from_iter(cx.props.account.list_friends().unwrap_or_default())
     });
 
+    // First odered friends list
+    let new_friends_list = order_friend_list(&friends, &cx.props.account.clone());
+    friends_grouped_per_first_letter.set(new_friends_list);
+
     use_future(
         &cx,
         (
@@ -47,8 +51,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
             friends_grouped_per_first_letter,
         ),
         |(friends, mp, friends_grouped_per_first_letter)| async move {
-            let new_friends_list = order_friend_list(&friends, &mp);
-            friends_grouped_per_first_letter.set(new_friends_list);
             loop {
                 let friends_list: HashSet<_> =
                     HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
@@ -104,32 +106,32 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                }
             }
             ul {
-                    li { a { href: "#A", "A", } }
-                    li {a { href: "#B", "B", } }
-                    li {a { href: "#C", "C", } }
-                    li {a { href: "#D", "D", } }
-                    li {a { href: "#E", "E", } }
-                    li {a { href: "#F", "F", } }
-                    li {a { href: "#G", "G", } }
-                    li {a { href: "#H", "H", } }
-                    li {a { href: "#I", "I", } }
-                    li {a { href: "#J", "J", } }
-                    li {a { href: "#K", "K", } }
-                    li {a { href: "#L", "L", } }
-                    li {a { href: "#M", "M", } }
-                    li {a { href: "#N", "N", } }
-                    li { a { href: "#O", "O", } }
-                    li { a { href: "#P", "P", } }
-                    li { a { href: "#Q", "Q", } }
-                    li { a { href: "#R", "R", } }
-                    li { a { href: "#S", "S", } }
-                    li { a { href: "#T", "T", } }
-                    li { a { href: "#U", "U", } }
-                    li { a { href: "#V", "V", } }
-                    li { a { href: "#W", "W", } }
-                    li { a { href: "#X", "X", } }
-                    li { a { href: "#Y", "Y", } }
-                    li { a { href: "#Z", "Z", } }
+                li { a { href: "#A", prevent_default: "onclick", "A", } }
+                li { a { href: "#B", prevent_default: "onclick", "B", } }
+                li { a { href: "#C", prevent_default: "onclick", "C", } }
+                li { a { href: "#D", prevent_default: "onclick", "D", } }
+                li { a { href: "#E", prevent_default: "onclick", "E", } }
+                li { a { href: "#F", prevent_default: "onclick", "F", } }
+                li { a { href: "#G", prevent_default: "onclick", "G", } }
+                li { a { href: "#H", prevent_default: "onclick", "H", } }
+                li { a { href: "#I", prevent_default: "onclick", "I", } }
+                li { a { href: "#J", prevent_default: "onclick", "J", } }
+                li { a { href: "#K", prevent_default: "onclick", "K", } }
+                li { a { href: "#L", prevent_default: "onclick", "L", } }
+                li { a { href: "#M", prevent_default: "onclick", "M", } }
+                li { a { href: "#N", prevent_default: "onclick", "N", } }
+                li { a { href: "#O", prevent_default: "onclick", "O", } }
+                li { a { href: "#P", prevent_default: "onclick", "P", } }
+                li { a { href: "#Q", prevent_default: "onclick", "Q", } }
+                li { a { href: "#R", prevent_default: "onclick", "R", } }
+                li { a { href: "#S", prevent_default: "onclick", "S", } }
+                li { a { href: "#T", prevent_default: "onclick", "T", } }
+                li { a { href: "#U", prevent_default: "onclick", "U", } }
+                li { a { href: "#V", prevent_default: "onclick", "V", } }
+                li { a { href: "#W", prevent_default: "onclick", "W", } }
+                li { a { href: "#X", prevent_default: "onclick", "X", } }
+                li { a { href: "#Y", prevent_default: "onclick", "Y", } }
+                li { a { href: "#Z", prevent_default: "onclick", "Z", } }
                 }
             }
     })
