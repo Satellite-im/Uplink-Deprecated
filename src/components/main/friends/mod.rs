@@ -97,7 +97,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             )
-
                         }
                         ),
                     )
@@ -106,32 +105,32 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                }
             }
             ul {
-                li { a { href: "#A", prevent_default: "onclick", "A", } }
-                li { a { href: "#B", prevent_default: "onclick", "B", } }
-                li { a { href: "#C", prevent_default: "onclick", "C", } }
-                li { a { href: "#D", prevent_default: "onclick", "D", } }
-                li { a { href: "#E", prevent_default: "onclick", "E", } }
-                li { a { href: "#F", prevent_default: "onclick", "F", } }
-                li { a { href: "#G", prevent_default: "onclick", "G", } }
-                li { a { href: "#H", prevent_default: "onclick", "H", } }
-                li { a { href: "#I", prevent_default: "onclick", "I", } }
-                li { a { href: "#J", prevent_default: "onclick", "J", } }
-                li { a { href: "#K", prevent_default: "onclick", "K", } }
-                li { a { href: "#L", prevent_default: "onclick", "L", } }
-                li { a { href: "#M", prevent_default: "onclick", "M", } }
-                li { a { href: "#N", prevent_default: "onclick", "N", } }
-                li { a { href: "#O", prevent_default: "onclick", "O", } }
-                li { a { href: "#P", prevent_default: "onclick", "P", } }
-                li { a { href: "#Q", prevent_default: "onclick", "Q", } }
-                li { a { href: "#R", prevent_default: "onclick", "R", } }
-                li { a { href: "#S", prevent_default: "onclick", "S", } }
-                li { a { href: "#T", prevent_default: "onclick", "T", } }
-                li { a { href: "#U", prevent_default: "onclick", "U", } }
-                li { a { href: "#V", prevent_default: "onclick", "V", } }
-                li { a { href: "#W", prevent_default: "onclick", "W", } }
-                li { a { href: "#X", prevent_default: "onclick", "X", } }
-                li { a { href: "#Y", prevent_default: "onclick", "Y", } }
-                li { a { href: "#Z", prevent_default: "onclick", "Z", } }
+                li { a { href: "#A", prevent_default: "onclick", rel: "noopener noreferrer", "A", } }
+                li { a { href: "#B", prevent_default: "onclick", rel: "noopener noreferrer", "B", } }
+                li { a { href: "#C", prevent_default: "onclick", rel: "noopener noreferrer", "C", } }
+                li { a { href: "#D", prevent_default: "onclick", rel: "noopener noreferrer", "D", } }
+                li { a { href: "#E", prevent_default: "onclick", rel: "noopener noreferrer", "E", } }
+                li { a { href: "#F", prevent_default: "onclick", rel: "noopener noreferrer", "F", } }
+                li { a { href: "#G", prevent_default: "onclick", rel: "noopener noreferrer", "G", } }
+                li { a { href: "#H", prevent_default: "onclick", rel: "noopener noreferrer", "H", } }
+                li { a { href: "#I", prevent_default: "onclick", rel: "noopener noreferrer", "I", } }
+                li { a { href: "#J", prevent_default: "onclick", rel: "noopener noreferrer", "J", } }
+                li { a { href: "#K", prevent_default: "onclick", rel: "noopener noreferrer", "K", } }
+                li { a { href: "#L", prevent_default: "onclick", rel: "noopener noreferrer", "L", } }
+                li { a { href: "#M", prevent_default: "onclick", rel: "noopener noreferrer", "M", } }
+                li { a { href: "#N", prevent_default: "onclick", rel: "noopener noreferrer", "N", } }
+                li { a { href: "#O", prevent_default: "onclick", rel: "noopener noreferrer", "O", } }
+                li { a { href: "#P", prevent_default: "onclick", rel: "noopener noreferrer", "P", } }
+                li { a { href: "#Q", prevent_default: "onclick", rel: "noopener noreferrer", "Q", } }
+                li { a { href: "#R", prevent_default: "onclick", rel: "noopener noreferrer", "R", } }
+                li { a { href: "#S", prevent_default: "onclick", rel: "noopener noreferrer", "S", } }
+                li { a { href: "#T", prevent_default: "onclick", rel: "noopener noreferrer", "T", } }
+                li { a { href: "#U", prevent_default: "onclick", rel: "noopener noreferrer", "U", } }
+                li { a { href: "#V", prevent_default: "onclick", rel: "noopener noreferrer", "V", } }
+                li { a { href: "#W", prevent_default: "onclick", rel: "noopener noreferrer", "W", } }
+                li { a { href: "#X", prevent_default: "onclick", rel: "noopener noreferrer", "X", } }
+                li { a { href: "#Y", prevent_default: "onclick", rel: "noopener noreferrer", "Y", } }
+                li { a { href: "#Z", prevent_default: "onclick", rel: "noopener noreferrer", "Z", } }
                 }
             }
     })

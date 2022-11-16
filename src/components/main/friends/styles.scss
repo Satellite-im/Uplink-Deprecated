@@ -24,9 +24,32 @@
     margin-right: 12px;
   }
 
+  @media only screen and (max-height: 569px) {
+    ul {
+      font-size: 12px;
+    }
+  }
+
+  @media only screen and (min-height: 570px) {
+    ul {
+      font-size: 14px;
+    }
+  }
+
+  @media only screen and (min-height: 650px) {
+    ul {
+      font-size: 16px;
+    }
+  }
+
   ul {
     list-style-type: none;
     margin-right: 2px;
+    padding: 8px 8px 8px 0px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   .friends-separator {
