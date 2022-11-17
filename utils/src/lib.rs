@@ -8,7 +8,7 @@ use std::{
 use warp::{multipass::MultiPass, sync::RwLock};
 
 #[derive(Clone)]
-pub struct Account(Arc<RwLock<Box<dyn MultiPass>>>);
+pub struct Account(pub Arc<RwLock<Box<dyn MultiPass>>>);
 
 impl Deref for Account {
     type Target = Arc<RwLock<Box<dyn MultiPass>>>;

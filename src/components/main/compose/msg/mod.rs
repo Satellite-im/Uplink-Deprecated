@@ -4,11 +4,7 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
-use ui_kit::{
-    icon_button::{self, IconButton},
-    profile_picture::PFP,
-    textarea::TextArea,
-};
+use ui_kit::{icon_button::IconButton, profile_picture::PFP, textarea::TextArea};
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
