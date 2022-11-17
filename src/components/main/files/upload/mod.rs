@@ -32,7 +32,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 None => return
                             };
 
-                            let local_path = Path::new(&file_path).to_string_lossy().to_string();
 
                             let filename = std::path::Path::new(&file_path)
                             .file_name()
@@ -41,12 +40,15 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             .unwrap()
                             .to_string();
 
-                            use_future(&cx, (&file_storage, &local_path), |(file_storage, local_path)| async move {
-                                let mut _upload_file = match file_storage.write().put(format!("/{}", filename).as_str(), &local_path).await {
-                                    Ok(success) => println!("File Uploaded: {:?}", success),
-                                    Err(error) => println!("Error upload file: {:?}", error),
+                            use_future(&cx, &file_storage, |file_storage| async move {
+                                let local_path = Path::new(&file_path).to_string_lossy().to_string();
+
+                                 match file_storage.write().put(&filename, &local_path).await {
+                                    Ok(_) => println!("{:?} file uploaded", &filename),
+                                    Err(error) => println!("Error to upload file: {:?}, error: {:?}", &filename, error),
                                 };
                             });
+
                         }
                     }
                 },
