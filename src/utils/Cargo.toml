@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 soloud = "1.0.2"
 notify-rust = "4.5.10"
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "9945f8b36f48b2743f55f263d918db7893521e98"}

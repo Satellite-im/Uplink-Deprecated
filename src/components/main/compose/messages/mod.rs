@@ -153,7 +153,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
                     rsx! {
                         Msg {
-                            key: "{message_id}-reply",
+                            // key: "{message_id}-reply",
                             message: message.clone(),
                             account: cx.props.account.clone(),
                             sender: message.sender(),
@@ -175,7 +175,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     Ok(message) => {
                                         rsx!{
                                             Reply {
-                                                key: "{message_id}-reply",
+                                                // key: "{message_id}-reply",
                                                 message: message.value().join("\n"),
                                                 is_remote: is_remote,
                                                 account: cx.props.account.clone(),
@@ -183,15 +183,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                             }
                                         }
                                     },
-                                    Err(_) => { rsx!{ span { key: "1", "Something went wrong" } } }
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
                                 }
                             },
-                            _ => rsx!{ div { key: "2", } }
+                            _ => rsx!{ div {  } }
                         }
                     }
                 }),
             div {
-                key: "encrypted-notification-0001",
+                // key: "encrypted-notification-0001",
                 class: "encrypted-notif",
                 Icon {
                     icon: Shape::LockClosed

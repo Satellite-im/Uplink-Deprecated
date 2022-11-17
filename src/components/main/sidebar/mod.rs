@@ -5,10 +5,7 @@ use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
-    components::{
-        main::{profile::Profile, sidebar::favorites::Favorites},
-        reusable::nav::Nav,
-    },
+    components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
     extensions::*,
     state::{Actions, ConversationInfo},
     utils_internal::{self, config::Config},
@@ -37,7 +34,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
-    let show_profile = use_state(&cx, || false);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
