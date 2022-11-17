@@ -37,6 +37,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                 },
                 browser::FileBrowser {
                     account: cx.props.account.clone(),
+                    storage: cx.props.storage.clone(),
                     show_new_folder: **show_new_folder
                 }
             },

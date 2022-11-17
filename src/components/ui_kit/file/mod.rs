@@ -9,7 +9,7 @@ pub struct Props {
     name: String,
     state: State,
     kind: String,
-    size: u64,
+    size: usize,
 }
 
 #[allow(non_snake_case)]
@@ -25,7 +25,7 @@ pub fn File(cx: Scope<Props>) -> Element {
             Icon { icon: Shape::Document },
             p { "{cx.props.name}" },
             label {
-                "{cx.props.size} MiB"
+                "{cx.props.size} bytes"
             }
         }
     })
