@@ -15,6 +15,12 @@
   justify-content: center;
   align-items: center;
 
+  svg {
+    fill: transparent;
+    stroke: var(--theme-text-bright);
+    stroke-width: 2px;
+  }
+
   &-lg {
     height: 52px;
     border-radius: 26px;
@@ -29,6 +35,19 @@
 
     &:not(:active):hover {
       background-color: var(--theme-secondary-light);
+    }
+  }
+
+  &-filled {
+    background-color: var(--theme-secondary);
+
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
+
+    svg {
+      fill: var(--theme-blue);
+      stroke: none;
     }
   }
 
@@ -51,11 +70,5 @@
   &[disabled] {
     cursor: default;
     opacity: 0.5;
-  }
-
-  svg {
-    fill: transparent;
-    stroke: var(--theme-text-bright);
-    stroke-width: 2px;
   }
 }

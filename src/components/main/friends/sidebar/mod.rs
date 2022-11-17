@@ -22,6 +22,7 @@ use warp::multipass::Friends;
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Element {
+    log::debug!("rendering friends/Sidebar");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let incomingRequestsLang = { l.incoming_requests.to_string() };
     let outgoingRequestsLang = { l.outgoing_requests.to_string() };
@@ -44,10 +45,12 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                     HashSet::from_iter(account.read().list_outgoing_request().unwrap_or_default());
 
                 if *incoming != incoming_list {
+                    log::debug!("updating incoming friend requests ");
                     incoming.set(incoming_list);
                 }
 
                 if *outgoing != outgoing_list {
+                    log::debug!("updating outgoing friend requests ");
                     outgoing.set(outgoing_list);
                 }
 

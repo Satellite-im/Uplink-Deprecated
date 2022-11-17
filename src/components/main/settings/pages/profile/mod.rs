@@ -15,6 +15,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Profile(cx: Scope<Props>) -> Element {
+    log::debug!("rendering settings/pages/Profile");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let edit = use_state(&cx, || false);
     let status = use_state(&cx, String::new);

@@ -1,10 +1,12 @@
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
-use std::ops::{Deref, DerefMut};
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::thread;
+use std::{
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+    sync::Arc,
+    thread,
+};
 use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};
@@ -16,12 +18,14 @@ use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 use utils::config::Config;
-use warp::{multipass::MultiPass, raygun::RayGun, constellation::Constellation, sync::RwLock, tesseract::Tesseract};
-use warp_mp_ipfs::config::MpIpfsConfig;
+use warp::{
+    constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
+    tesseract::Tesseract,
+};
 use warp_fs_ipfs::config::FsIpfsConfig;
+use warp_mp_ipfs::config::MpIpfsConfig;
 use warp_rg_ipfs::config::RgIpfsConfig;
 use warp_rg_ipfs::Persistent;
-
 
 use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
@@ -178,7 +182,6 @@ async fn initialization(
         Arc<RwLock<Box<dyn MultiPass>>>,
         Arc<RwLock<Box<dyn RayGun>>>,
         Arc<RwLock<Box<dyn Constellation>>>,
-
     ),
     warp::error::Error,
 > {
@@ -196,10 +199,12 @@ async fn initialization(
     .await
     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
-    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(account.clone(),
-        Some(FsIpfsConfig::production(path)))
-        .await
-        .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
+        account.clone(),
+        Some(FsIpfsConfig::production(path)),
+    )
+    .await
+    .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
 
     Ok((account, messenging, storage))
 }
