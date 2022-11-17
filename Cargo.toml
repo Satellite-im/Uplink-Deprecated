@@ -31,6 +31,8 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
+dioxus-heroicons = "0.1.4"
+dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
 dioxus-html = "0.2.1"
 notify-rust = "4.5.10"
 sir = { version = "0.2.2", features = ["dioxus"] }
@@ -42,8 +44,6 @@ select = "0.5.0"
 reqwest = "0.11.12"
 anyhow = "1.0"
 once_cell = "1.13"
-dioxus-heroicons = "0.1.4"
-dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
 clap = { version = "3.2", features = ["derive"] }
 toml = "0.5.9"
 tokio = { version = "1", features = ["full"] }
@@ -56,6 +56,7 @@ soloud = "1.0.2"
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"
 mime = "0.3.16"
+ui_kit = { path = "ui_kit" }
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
@@ -87,4 +88,4 @@ winres = "0.1.12"
 
 
 [workspace]
-members = ["src/extensions/native/audio-factory"]
+members = ["src/extensions/native/audio-factory", "ui_kit"]

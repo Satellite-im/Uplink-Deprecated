@@ -1,5 +1,4 @@
-use crate::components::ui_kit::icon_button::IconButton;
-use crate::Account;
+use crate::{icon_button::IconButton, Account};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use mime::*;

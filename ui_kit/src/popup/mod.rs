@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::icon_button::IconButton;
+use crate::icon_button::IconButton;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -12,7 +12,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    log::debug!("rendering Popup");
     let full = use_state(&cx, || false);
     let modal = use_state(&cx, || false);
     let show_children = use_state(&cx, || true);

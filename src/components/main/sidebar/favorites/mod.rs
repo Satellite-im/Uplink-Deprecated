@@ -1,12 +1,11 @@
 use crate::{
-    components::ui_kit::{icon_button::IconButton, profile_picture::PFP},
     state::{Actions, ConversationInfo},
     utils, Account, Messaging, LANGUAGE, STATE,
 };
-
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
+use ui_kit::{icon_button::IconButton, profile_picture::PFP};
 use uuid::Uuid;
 
 #[derive(Props, PartialEq)]
@@ -118,7 +117,7 @@ pub fn FavoriteChat<'a>(
                     class: "pfp",
                     PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                        size: ui_kit::profile_picture::Size::Normal
                     },
                 },
                 div {
@@ -155,7 +154,7 @@ pub fn ConversationList<'a>(
                         class: "pfp",
                         PFP {
                             src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
+                            size: ui_kit::profile_picture::Size::Normal
                         },
                     }
                     span {

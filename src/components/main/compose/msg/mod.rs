@@ -4,14 +4,14 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
+use ui_kit::{
+    icon_button::{self, IconButton},
+    profile_picture::PFP,
+    textarea::TextArea,
+};
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        profile_picture::PFP,
-        textarea::TextArea,
-    },
     utils::{
         self,
         get_meta::{get_meta, SiteMeta},
@@ -154,7 +154,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             PFP {
                                 src: profile_picture,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             },
                             div {
                                 class: "value popout {first} {middle} {last}",
@@ -184,7 +184,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             IconButton {
                                 icon: Shape::ArrowRight,
-                                state: icon_button::State::Secondary,
+                                state: ui_kit::icon_button::State::Secondary,
                                 on_pressed: move |_| {
                                     cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
@@ -201,7 +201,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         if cx.props.last {
                             rsx!(PFP {
                                 src: profile_picture2,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             })
                         } else {
                             rsx!( div { class: "pfp-void" } )
@@ -252,7 +252,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         if cx.props.last {
                             rsx!(PFP {
                                 src: profile_picture3,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             })
                         } else {
                             rsx!( div { class: "pfp-void" } )

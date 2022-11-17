@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
-use crate::{components::ui_kit::switch::Switch, utils::config::Config, Account};
+use crate::{utils::config::Config, Account};
+use ui_kit::switch::Switch;
 
 #[derive(Props, PartialEq)]
 pub struct Props {

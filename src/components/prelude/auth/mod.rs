@@ -4,14 +4,12 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use dioxus_heroicons::Icon;
 use sir::css;
-
-use crate::{
-    components::ui_kit::{
-        button::{self, Button},
-        icon_input::IconInput,
-    },
-    Account, LANGUAGE, WINDOW_SUFFIX_NAME,
+use ui_kit::{
+    button::{self, Button},
+    icon_input::IconInput,
 };
+
+use crate::{Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]

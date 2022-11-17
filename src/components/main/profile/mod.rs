@@ -1,10 +1,8 @@
-use crate::{
-    components::ui_kit::{badge::Badge, button::Button, popup::Popup},
-    utils, Account, LANGUAGE,
-};
+use crate::{utils, Account, LANGUAGE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use std::collections::HashSet;
+use ui_kit::{badge::Badge, button::Button, popup::Popup};
 use warp::crypto::DID;
 
 #[derive(Props)]

@@ -1,8 +1,8 @@
-use crate::components::ui_kit::icon_button;
 use crate::utils::get_meta::SiteMeta;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use open;
+use ui_kit::icon_button;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]

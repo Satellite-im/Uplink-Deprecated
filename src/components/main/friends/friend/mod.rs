@@ -1,14 +1,14 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{
+    activity_indicator::ActivityIndicator,
+    icon_button::IconButton,
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
-    components::ui_kit::{
-        activity_indicator::ActivityIndicator,
-        icon_button::IconButton,
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
     state::{Actions, ConversationInfo},
     utils, Account, Messaging, STATE,
 };
@@ -42,7 +42,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )} else {rsx!(
                 rsx!(PFP {
                     src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                    size: ui_kit::profile_picture::Size::Normal
                 })
             )},
             div {

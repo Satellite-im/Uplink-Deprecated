@@ -1,7 +1,5 @@
-use crate::{
-    components::ui_kit::loader::Loader, utils::config::Config, Account, LANGUAGE,
-    WINDOW_SUFFIX_NAME,
-};
+use crate::{utils::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
+use ui_kit::loader::Loader;
 use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
 use dioxus::prelude::*;

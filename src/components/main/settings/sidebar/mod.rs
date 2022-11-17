@@ -1,12 +1,9 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{
-    components::{main::settings::sidebar::nav::Nav, ui_kit::icon_input::IconInput},
-    Account,
-};
-
 use self::nav::NavEvent;
+use crate::{components::main::settings::sidebar::nav::Nav, Account};
+use ui_kit::icon_input::IconInput;
 
 pub mod nav;
 

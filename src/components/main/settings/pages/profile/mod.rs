@@ -1,11 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::{
-    components::ui_kit::{button::Button, icon_input::IconInput, photo_picker::PhotoPicker},
-    Account, LANGUAGE,
-};
+use crate::{Account, LANGUAGE};
 use dioxus::events::FormEvent;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{button::Button, icon_input::IconInput, photo_picker::PhotoPicker};
 use warp::multipass::identity::Identity;
 
 #[derive(Props, PartialEq)]

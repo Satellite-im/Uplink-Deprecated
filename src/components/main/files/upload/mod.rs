@@ -1,7 +1,7 @@
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::icon_button::IconButton;
+use ui_kit::icon_button::IconButton;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -31,7 +31,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         on_pressed: move |e| {
                             cx.props.on_hide.call(e);
                         },
-                        state: crate::components::ui_kit::icon_button::State::Secondary,
+                        state: ui_kit::icon_button::State::Secondary,
                         icon: Shape::X
                     }
                 }

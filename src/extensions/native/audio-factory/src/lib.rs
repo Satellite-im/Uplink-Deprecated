@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use uplink::components::ui_kit::icon_button::{self, IconButton};
 
 #[derive(PartialEq, Eq, Props)]
 pub struct Props {
@@ -23,8 +24,8 @@ pub struct ControlProps {
 
 pub fn ExtAudioFactoryControl(cx: Scope<ControlProps>) -> Element {
     cx.render(rsx! {
-        div {
-            "todo"
+        IconButton {
+
         }
     })
 }

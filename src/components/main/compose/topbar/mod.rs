@@ -1,19 +1,17 @@
 use crate::{
-    components::{
-        reusable::toolbar,
-        ui_kit::{
-            activity_indicator::ActivityIndicator,
-            icon_button::IconButton,
-            profile_picture::PFP,
-            skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-        },
-    },
+    components::reusable::toolbar,
     state::Actions,
     utils::{self, config::Config},
     Account, STATE,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{
+    activity_indicator::ActivityIndicator,
+    icon_button::IconButton,
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -54,8 +52,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         IconButton {
                             icon: Shape::Heart,
                             state: match is_favorite {
-                                true => crate::components::ui_kit::icon_button::State::Filled,
-                                false => crate::components::ui_kit::icon_button::State::Secondary,
+                                true => ui_kit::icon_button::State::Filled,
+                                false => ui_kit::icon_button::State::Secondary,
                             },
                             on_pressed: move |_| {
                                 match is_favorite {
@@ -82,7 +80,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         class: "mobile-back-button",
                         IconButton {
                             icon: Shape::ArrowLeft,
-                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            state: ui_kit::icon_button::State::Secondary,
                             on_pressed: move |_| {
                                 state.write().dispatch(Actions::HideSidebar(false));
                             },
@@ -90,7 +88,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                     PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                        size: ui_kit::profile_picture::Size::Normal
                     },
                     div {
                         class: "topbar-user-info",

@@ -1,13 +1,13 @@
 use crate::{
-    components::ui_kit::{
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
     state::{Actions, ConversationInfo, LastMsgSent},
     utils, Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
+use ui_kit::{
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 use uuid::Uuid;
 use warp::crypto::DID;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
@@ -270,7 +270,7 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
             class: "pfp-container",
             PFP {
                 src: profile_picture,
-                size: crate::components::ui_kit::profile_picture::Size::Normal
+                size: ui_kit::profile_picture::Size::Normal
             },
             div {
                 class: "pfs {is_online}"

@@ -1,0 +1,19 @@
+[package]
+name = "ui_kit"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
+dioxus-heroicons = "0.1.4"
+dioxus-html = "0.2.1"
+sir = { version = "0.2.2", features = ["dioxus"] }
+tokio = { version = "1", features = ["full"] }
+rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
+base64 = "0.13.1"
+mime = "0.3.16"
+regex = "1.6.0"
+
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}

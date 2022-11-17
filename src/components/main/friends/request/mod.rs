@@ -1,16 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use warp::multipass::identity::FriendRequest;
-
-use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
-    utils, Account,
+use crate::{utils, Account};
+use ui_kit::{
+    icon_button::{self, IconButton},
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
+use warp::multipass::identity::FriendRequest;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -44,7 +41,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             )} else {rsx!(
                 rsx!(PFP {
                     src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                    size: ui_kit::profile_picture::Size::Normal
                 })
              )}
             div {

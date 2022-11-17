@@ -8,15 +8,15 @@ use crate::{
     components::{
         main::{profile::Profile, sidebar::favorites::Favorites},
         reusable::nav::Nav,
-        ui_kit::{
-            extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
-            skeletal_chats::SkeletalChats,
-        },
     },
     extensions::*,
     state::{Actions, ConversationInfo},
     utils::{self, config::Config, notifications::PushNotification},
     Account, Messaging, LANGUAGE, STATE,
+};
+use ui_kit::{
+    extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+    skeletal_chats::SkeletalChats,
 };
 
 pub mod chat;
