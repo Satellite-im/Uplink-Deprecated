@@ -184,7 +184,6 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                     popout.set(false);
                                 },
-                                on_trigger_typing:  |_| {},
                                 text: text.clone(),
                             },
                             IconButton {
