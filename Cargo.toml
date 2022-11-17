@@ -56,8 +56,8 @@ soloud = "1.0.2"
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"
 mime = "0.3.16"
-ui_kit = { path = "ui_kit" }
-utils = { path = "utils" }
+ui_kit = { path = "src/ui_kit" }
+utils = { path = "src/utils" }
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "bf09de21042ca2c90575aaa03409070c612dfdb0" }
@@ -89,4 +89,4 @@ winres = "0.1.12"
 
 
 [workspace]
-members = ["src/extensions/native/audio-factory", "ui_kit", "utils"]
+members = ["src/extensions/native/audio-factory", "src/ui_kit", "src/utils"]

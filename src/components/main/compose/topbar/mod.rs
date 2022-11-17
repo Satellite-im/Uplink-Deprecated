@@ -1,10 +1,11 @@
 use crate::{
     components::reusable::toolbar,
     state::Actions,
-    utils::{self, config::Config},
+    utils_internal::{self, config::Config},
     STATE,
 };
 
+use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -13,7 +14,6 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use ::utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -41,8 +41,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     match opt {
         Some(conversation_info) => {
             let (display_did, display_username) =
-                utils::get_username_from_conversation(conversation_info, &mp);
-            let profile_picture = utils::get_pfp_from_did(display_did.clone(), &mp);
+                utils_internal::get_username_from_conversation(conversation_info, &mp);
+            let profile_picture = utils_internal::get_pfp_from_did(display_did.clone(), &mp);
 
             let id = conversation_info.conversation.id();
 

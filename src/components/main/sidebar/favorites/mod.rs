@@ -1,7 +1,8 @@
 use crate::{
     state::{Actions, ConversationInfo},
-    utils, Account, Messaging, LANGUAGE, STATE,
+    utils_internal, Messaging, LANGUAGE, STATE,
 };
+use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
@@ -100,12 +101,13 @@ pub fn FavoriteChat<'a>(
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
     let conversation_id = conversation_info.conversation.id();
-    let (did, conversation_name) = utils::get_username_from_conversation(conversation_info, mp);
+    let (did, conversation_name) =
+        utils_internal::get_username_from_conversation(conversation_info, mp);
     let has_unread = match conversation_info.num_unread_messages > 0 {
         true => "has-unread",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did, mp);
+    let profile_picture = utils_internal::get_pfp_from_did(did, mp);
 
     cx.render(rsx! {
         div {
@@ -144,8 +146,8 @@ pub fn ConversationList<'a>(
        div {
         class: "add-favorites",
         all_chats.iter().map(|(uuid, conv)| {
-            let (did, name) = utils::get_username_from_conversation(conv, mp);
-            let profile_picture = utils::get_pfp_from_did(did, mp);
+            let (did, name) = utils_internal::get_username_from_conversation(conv, mp);
+            let profile_picture = utils_internal::get_pfp_from_did(did, mp);
             cx.render(rsx!(
                 div {
                     class: "to-add",

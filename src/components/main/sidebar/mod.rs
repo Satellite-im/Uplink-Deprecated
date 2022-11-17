@@ -11,7 +11,8 @@ use crate::{
     },
     extensions::*,
     state::{Actions, ConversationInfo},
-    utils::{self, config::Config}, Messaging, LANGUAGE, STATE,
+    utils_internal::{self, config::Config},
+    Messaging, LANGUAGE, STATE,
 };
 
 use ::utils::{notifications::PushNotification, Account};
@@ -51,7 +52,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
-            let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
+            let display_username = utils_internal::get_username_from_did(msg.sender().clone(), &mp);
             PushNotification(display_username, msg.value().join("\n"));
         }
     });

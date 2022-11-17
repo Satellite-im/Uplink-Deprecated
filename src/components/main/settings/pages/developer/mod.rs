@@ -8,7 +8,8 @@ use ui_kit::{
     switch::Switch,
 };
 
-use crate::{utils::config::Config, Account};
+use crate::utils_internal::config::Config;
+use ::utils::Account;
 
 #[derive(Props, PartialEq)]
 pub struct Props {

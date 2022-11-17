@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use warp::crypto::DID;
 
-use crate::utils;
+use crate::utils_internal;
 use crate::Account;
 use ui_kit::profile_picture::PFP;
 
@@ -23,7 +23,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
     };
 
     let profile_picture =
-        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+        utils_internal::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
 
     #[allow(unused_variables)]
     let box_right = "🭽";

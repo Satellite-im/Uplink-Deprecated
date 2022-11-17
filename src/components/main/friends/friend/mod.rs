@@ -10,7 +10,7 @@ use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     state::{Actions, ConversationInfo},
-    utils, Messaging, STATE,
+    utils_internal, Messaging, STATE,
 };
 use ::utils::Account;
 
@@ -30,10 +30,10 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
 
-    let username = utils::get_username_from_did(cx.props.friend.clone(), &mp);
+    let username = utils_internal::get_username_from_did(cx.props.friend.clone(), &mp);
     let show_skeleton = username.is_empty();
 
-    let profile_picture = utils::get_pfp_from_did(cx.props.friend.clone(), &mp);
+    let profile_picture = utils_internal::get_pfp_from_did(cx.props.friend.clone(), &mp);
 
     cx.render(rsx! {
         div {

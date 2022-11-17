@@ -12,6 +12,7 @@ use std::{
 use tracing_subscriber::EnvFilter;
 use unic_langid::LanguageIdentifier;
 
+use crate::utils_internal::config::Config;
 use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -21,7 +22,6 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
-use crate::utils::config::Config;
 
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
@@ -39,7 +39,7 @@ pub mod components;
 pub mod extensions;
 pub mod language;
 pub mod themes;
-pub mod utils;
+pub mod utils_internal;
 
 use tao::window::WindowBuilder;
 

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{utils::config::Config, Account};
+use crate::{utils_internal::config::Config, Account};
 use ui_kit::switch::Switch;
 
 #[derive(Props, PartialEq)]

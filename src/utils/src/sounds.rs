@@ -11,7 +11,7 @@ pub fn Play(sound: Sounds) {
     let mut wav = audio::Wav::default();
     match sound {
         Sounds::Notification => wav
-            .load_mem(include_bytes!("../../extra/assets/sounds/Ponderous.ogg"))
+            .load_mem(include_bytes!("../../../extra/assets/sounds/Ponderous.ogg"))
             .unwrap(),
         Sounds::General => {}
     };

@@ -1,4 +1,4 @@
-use crate::{utils::config::Config, LANGUAGE};
+use crate::{utils_internal::config::Config, LANGUAGE};
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{

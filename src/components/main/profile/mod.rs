@@ -1,4 +1,4 @@
-use crate::{utils, Account, LANGUAGE};
+use crate::{utils_internal, Account, LANGUAGE};
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use std::collections::HashSet;
@@ -47,8 +47,9 @@ pub fn Profile<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         }
     });
     let status = my_identity.status_message().unwrap_or_default();
-    let profile_picture = utils::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone())
-        .unwrap_or_default();
+    let profile_picture =
+        utils_internal::get_pfp_from_did(my_identity.did_key(), &cx.props.account.clone())
+            .unwrap_or_default();
 
     cx.render(rsx! {
         Popup {
