@@ -1,0 +1,25 @@
+name: Make dmg
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  
+jobs:
+  make-dmg:
+    name: Make dmg
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - run: brew update
+      - run: brew install protobuf
+      - run: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
+      - run: source ~/.cargo/env
+      - run: cargo --version
+      - run: rustup default stable
+      - name: make dmg
+        run: make dmg
+        continue-on-error: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Uplink.DMG
+          path: /macos
