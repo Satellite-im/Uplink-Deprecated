@@ -10,8 +10,9 @@ use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     state::{Actions, ConversationInfo},
-    utils, Account, Messaging, STATE,
+    utils, Messaging, STATE,
 };
+use ::utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {

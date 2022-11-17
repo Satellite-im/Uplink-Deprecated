@@ -1,0 +1,8 @@
+[ui_tips]
+auto_unpin = "Enabling auto unpinning of old unused files can help save your storage space!"
+
+[loading]
+tips = [
+    "Don't give anyone your money and expect to be certain you'll ever get it back.",
+    "Never share your recovery phrase with anyone, unless you plan on giving your account to them."
+]

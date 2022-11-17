@@ -12,8 +12,9 @@ use warp::raygun::RayGun;
 use crate::{
     components::main::compose::{messages::Messages, topbar::TopBar, write::Write},
     state::{Actions, LastMsgSent},
-    Account, Messaging, LANGUAGE, STATE,
+    Messaging, LANGUAGE, STATE,
 };
+use ::utils::Account;
 
 #[derive(PartialEq, Props)]
 pub struct Props {

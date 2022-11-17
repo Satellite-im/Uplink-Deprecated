@@ -1,10 +1,3 @@
-use std::{
-    ops::{Deref, DerefMut},
-    sync::Arc,
-};
-
-use warp::{multipass::MultiPass, sync::RwLock};
-
 pub mod activity_indicator;
 pub mod badge;
 pub mod button;
@@ -28,25 +21,3 @@ pub mod switch;
 pub mod textarea;
 pub mod tooltip;
 pub mod utils;
-
-#[derive(Clone)]
-pub struct Account(Arc<RwLock<Box<dyn MultiPass>>>);
-
-impl Deref for Account {
-    type Target = Arc<RwLock<Box<dyn MultiPass>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Account {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Account {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
-}

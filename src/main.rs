@@ -12,6 +12,7 @@ use std::{
 use tracing_subscriber::EnvFilter;
 use unic_langid::LanguageIdentifier;
 
+use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_toast::ToastManager;
@@ -20,7 +21,8 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
-use utils::config::Config;
+use crate::utils::config::Config;
+
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -278,28 +280,6 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
-}
-
-#[derive(Clone)]
-pub struct Account(Arc<RwLock<Box<dyn MultiPass>>>);
-
-impl Deref for Account {
-    type Target = Arc<RwLock<Box<dyn MultiPass>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Account {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Account {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
 }
 
 #[derive(Clone)]

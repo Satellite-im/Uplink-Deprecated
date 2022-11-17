@@ -4,7 +4,7 @@ use warp::{
     multipass::{identity::IdentityStatus, IdentityInformation},
 };
 
-use crate::Account;
+use utils::Account;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
