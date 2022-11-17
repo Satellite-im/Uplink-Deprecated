@@ -31,6 +31,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                     }
                 },
                 upload::Upload {
+                    storage: cx.props.storage.clone(),
                     show: **show_upload,
                     on_hide: move |_| show_upload.set(false),
                 },
