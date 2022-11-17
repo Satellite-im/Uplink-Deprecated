@@ -37,6 +37,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    log::debug!("rendering compose/Msg");
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
     let joined_a = content.join("\n");
@@ -183,6 +184,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                     popout.set(false);
                                 },
+                                on_trigger_typing:  |_| {},
                                 text: text.clone(),
                             },
                             IconButton {

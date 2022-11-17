@@ -20,6 +20,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Messages");
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity
@@ -93,6 +94,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
         //This is to prevent the future updating the state and causing a rerender
         if *list.read() != messages {
+            log::debug!("updating messages list ");
             *list.write() = messages;
         }
 
@@ -109,6 +111,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     if current_chat.conversation.id() == conversation_id {
                         match rg.get_message(conversation_id, message_id).await {
                             Ok(message) => {
+                                log::debug!("compose/messages streamed a new message ");
                                 list.write().push(message.clone());
                                 // todo: add message to chats sidebar
                                 current_chat.last_msg_sent =

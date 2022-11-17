@@ -1,10 +1,12 @@
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
-use std::ops::{Deref, DerefMut};
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::thread;
+use std::{
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+    sync::Arc,
+    thread,
+};
 use tracing_subscriber::EnvFilter;
 
 use dioxus::router::{Route, Router};

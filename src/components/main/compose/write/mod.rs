@@ -19,6 +19,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering compose/Write");
     let config = Config::load_config_or_default();
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();

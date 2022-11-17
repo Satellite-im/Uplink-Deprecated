@@ -21,6 +21,7 @@ pub struct Props<'a> {
 // todo: stop re-rendering this element (and the parent element) on every keystroke
 #[allow(non_snake_case)]
 pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    log::debug!("rendering IconInput");
     cx.render(match &cx.props.value {
         Some(value) => rsx! {
             div {

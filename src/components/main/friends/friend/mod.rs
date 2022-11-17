@@ -23,6 +23,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    log::debug!("rendering Friend");
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
