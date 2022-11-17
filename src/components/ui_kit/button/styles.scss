@@ -1,74 +1,74 @@
 // Buttons
 .button {
-	user-select: none;
-	cursor: pointer;
-	background-color: var(--theme-primary);
-	border-radius: 20px;
-	height: 40px;
-	text-align: center;
-	border: none;
-	gap: 8px;
-	color: var(--theme-text-bright);
-	stroke: var(--theme-text-bright);
-	padding: 0 2rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  user-select: none;
+  cursor: pointer;
+  background-color: var(--theme-primary);
+  border-radius: 20px;
+  height: 40px;
+  text-align: center;
+  border: none;
+  gap: 8px;
+  color: var(--theme-text-bright);
+  stroke: var(--theme-text-bright);
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-	svg {
-		fill: transparent;
-		stroke: var(--theme-text-bright);
-		stroke-width: 2px;
-	}
+  svg {
+    fill: transparent;
+    stroke: var(--theme-text-bright);
+    stroke-width: 2px;
+  }
 
-	&-lg {
-		height: 52px;
-		border-radius: 26px;
-	}
+  &-lg {
+    height: 52px;
+    border-radius: 26px;
+  }
 
-	&:not(:active):hover {
-		background-color: var(--theme-primary-light);
-	}
+  &:not(:active):hover {
+    background-color: var(--theme-primary-light);
+  }
 
-	&-secondary {
-		background-color: var(--theme-secondary);
+  &-secondary {
+    background-color: var(--theme-secondary);
 
-		&:not(:active):hover {
-			background-color: var(--theme-secondary-light);
-		}
-	}
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
+  }
 
-	&-filled {
-		background-color: var(--theme-secondary);
+  &-filled {
+    background-color: var(--theme-secondary);
 
-		&:not(:active):hover {
-			background-color: var(--theme-secondary-light);
-		}
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
 
-		svg {
-			fill: var(--theme-blue);
-			stroke: none;
-		}
-	}
+    svg {
+      fill: var(--theme-blue);
+      stroke: none;
+    }
+  }
 
-	&-success {
-		background-color: var(--theme-green);
+  &-success {
+    background-color: var(--theme-green);
 
-		&:not(:active):hover {
-			background-color: var(--theme-light-green);
-		}
-	}
+    &:not(:active):hover {
+      background-color: var(--theme-light-green);
+    }
+  }
 
-	&-danger {
-		background-color: var(--theme-red);
+  &-danger {
+    background-color: var(--theme-red);
 
-		&:not(:active):hover {
-			background-color: var(--theme-light-red);
-		}
-	}
+    &:not(:active):hover {
+      background-color: var(--theme-light-red);
+    }
+  }
 
-	&[disabled] {
-		cursor: default;
-		opacity: 0.5;
-	}
+  &[disabled] {
+    cursor: default;
+    opacity: 0.5;
+  }
 }
