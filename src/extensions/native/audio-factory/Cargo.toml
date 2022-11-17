@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
-uplink = { path = "../../../../" }
+ui_kit = { path = "../../../ui_kit" }
+dioxus-heroicons = "0.1.4"

@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
-use uplink::components::ui_kit::icon_button::{self, IconButton};
+use dioxus_heroicons::outline::Shape;
+use ui_kit::icon_button::IconButton;
 
 #[derive(PartialEq, Eq, Props)]
 pub struct Props {
@@ -25,7 +26,8 @@ pub struct ControlProps {
 pub fn ExtAudioFactoryControl(cx: Scope<ControlProps>) -> Element {
     cx.render(rsx! {
         IconButton {
-
+            icon: Shape::Cog,
+            on_pressed: move |_| {} //cx.props.on_pressed.call()
         }
     })
 }
