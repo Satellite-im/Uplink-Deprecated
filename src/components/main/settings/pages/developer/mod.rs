@@ -2,15 +2,14 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::crypto::DID;
 
-use crate::{
-    components::ui_kit::{
-        button::{Button, State},
-        extension_placeholder::ExtensionPlaceholder,
-        switch::Switch,
-    },
-    utils::config::Config,
-    Account,
+use ui_kit::{
+    button::{Button, State},
+    extension_placeholder::ExtensionPlaceholder,
+    switch::Switch,
 };
+
+use crate::utils_internal::config::Config;
+use ::utils::Account;
 
 #[derive(Props, PartialEq)]
 pub struct Props {

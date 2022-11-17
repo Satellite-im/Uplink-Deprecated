@@ -6,7 +6,7 @@
   flex-direction: column;
   position: relative;
   min-width: 0;
-
+  margin-right: 5px;
   .blurmask {
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
@@ -34,7 +34,6 @@
     align-content: center;
     align-items: center;
     border-bottom: 1px solid var(--theme-borders);
-    border-top: 1px solid var(--theme-borders);
     display: inline-flex;
     flex-direction: row;
     justify-content: space-evenly;

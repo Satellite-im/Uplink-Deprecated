@@ -5,6 +5,7 @@ div.favorites {
   flex-direction: row;
   align-items: center;
   z-index: 1;
+  overflow-x: scroll;
 
   .labeled,
   .favorites-container {
@@ -15,7 +16,8 @@ div.favorites {
 
   .favorites-container {
     margin-left: 1rem;
-    max-width: 40px;
+    min-width: 40px;
+    max-width: 50px;
     text-overflow: ellipsis;
     overflow-x: hidden;
     display: inline-block;

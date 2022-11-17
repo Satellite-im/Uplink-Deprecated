@@ -3,7 +3,7 @@ use std::{path::Path};
 use dioxus::{events::MouseEvent, prelude::*, core::to_owned};
 use dioxus_heroicons::outline::Shape;
 
-use crate::components::ui_kit::icon_button::IconButton;
+use ui_kit::icon_button::IconButton;
 use rfd::FileDialog;
 
 #[derive(Props)]
@@ -93,7 +93,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         on_pressed: move |e| {
                             cx.props.on_hide.call(e);
                         },
-                        state: crate::components::ui_kit::icon_button::State::Secondary,
+                        state: ui_kit::icon_button::State::Secondary,
                         icon: Shape::X
                     }
                 }

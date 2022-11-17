@@ -23,7 +23,7 @@
   <key>CFBundleVersion</key>
   <string>1</string>
   <key>CFBundleIconFile</key>
-  <string>warp_gui.icns</string>
+  <string>uplink.icns</string>
   <key>NSHighResolutionCapable</key>
   <true/>
   <key>NSMainNibFile</key>

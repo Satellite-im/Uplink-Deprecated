@@ -12,7 +12,6 @@ use warp::raygun::RayGun;
 pub mod compose;
 pub mod files;
 pub mod friends;
-pub mod profile;
 pub mod settings;
 pub mod sidebar;
 pub mod welcome;

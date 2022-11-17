@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 use warp::crypto::DID;
 
-use crate::components::ui_kit::profile_picture::PFP;
-use crate::utils;
+use crate::utils_internal;
 use crate::Account;
+use ui_kit::profile_picture::PFP;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -23,7 +23,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
     };
 
     let profile_picture =
-        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+        utils_internal::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
 
     #[allow(unused_variables)]
     let box_right = "🭽";
@@ -55,7 +55,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                     let profile_picture = profile_picture.clone();
                     rsx!(PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                        size: ui_kit::profile_picture::Size::Normal
                     })
                 }
                 p {
@@ -64,7 +64,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                 if cx.props.is_remote {
                     rsx!(PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Small
+                        size: ui_kit::profile_picture::Size::Small
                     })
                 } else {
                     rsx!(span {
