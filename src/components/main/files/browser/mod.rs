@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use dioxus::prelude::*;
 
 use crate::components::ui_kit::{
@@ -36,6 +34,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 .to_str()
                 .unwrap()
                 .to_string();
+
                 rsx!( File {
                     name: file.name(),
                     state: State::Secondary,
