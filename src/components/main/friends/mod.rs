@@ -33,8 +33,8 @@ pub struct Props {
 pub fn Friends(cx: Scope<Props>) -> Element {
     log::debug!("rendering Friends");
     let add_error = use_state(&cx, String::new);
-    let friends_grouped_per_first_letter = use_state(&cx, || Vec::new());
-    let friends = use_state(&cx, || HashSet::new());
+    let friends_grouped_per_first_letter = use_state(&cx, Vec::new);
+    let friends = use_state(&cx, HashSet::new);
 
     use_future(
         &cx,
@@ -48,9 +48,10 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                 let friends_list: HashSet<_> =
                     HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
 
-                if *friends != friends_list && friends_list.len() > 0 {
+                if *friends != friends_list && !friends_list.is_empty() {
                     log::debug!("updating friends list ");
-                    let new_friends_list = order_friend_list(&friends_list, &mp);
+                    let new_friends_list =
+                        order_friend_list(&friends_list, &mp).unwrap_or_default();
                     friends_grouped_per_first_letter.set(new_friends_list);
                     friends.set(friends_list);
                 }
@@ -115,7 +116,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 fn order_friend_list(
     friend_did_list: &HashSet<warp::crypto::DID>,
     account: &Account,
-) -> Vec<FriendListAlpha> {
+) -> Option<Vec<FriendListAlpha>> {
     let mut username_did: Vec<UsernameAndDID> = Vec::new();
     let mut group_of_friends_with_same_first_username_letter: Vec<UsernameAndDID> = Vec::new();
     let mut friends_grouped_per_first_letter: Vec<FriendListAlpha> = Vec::new();
@@ -133,12 +134,12 @@ fn order_friend_list(
     username_did.sort_by(|a, b| a.username.cmp(&b.username));
 
     // Get the first letter username that start the list
-    let mut old_letter: char = username_did[0]
+    let mut old_letter: char = username_did
+        .first()?
         .username
         .to_uppercase()
         .chars()
-        .next()
-        .unwrap();
+        .next()?;
 
     // Group friends per first username letter
     for (_friend, is_last_friend) in username_did
@@ -146,7 +147,7 @@ fn order_friend_list(
         .enumerate()
         .map(|(i, f)| (f, i == username_did.len() - 1))
     {
-        let first_letter_friend_username = _friend.username.to_uppercase().chars().next().unwrap();
+        let first_letter_friend_username = _friend.username.to_uppercase().chars().next()?;
 
         if old_letter != first_letter_friend_username {
             sort_friends_and_add_on_friend_list_alpha(
@@ -168,7 +169,7 @@ fn order_friend_list(
             );
         }
     }
-    friends_grouped_per_first_letter
+    Some(friends_grouped_per_first_letter)
 }
 
 fn sort_friends_and_add_on_friend_list_alpha(
