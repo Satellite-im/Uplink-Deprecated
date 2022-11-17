@@ -26,12 +26,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     input {
                         "type": "file",
                         onclick: move |_| {
-                                            
-                            let file_path = match FileDialog::new().set_directory(".").pick_file() {
+                            // TODO(Files): Remove filter to upload other kind of files          
+                            let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
                                 Some(path) => path,
                                 None => return
                             };
-
 
                             let filename = std::path::Path::new(&file_path)
                             .file_name()
