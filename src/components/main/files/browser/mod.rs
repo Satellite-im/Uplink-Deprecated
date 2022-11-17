@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use dioxus::prelude::*;
 
 use crate::components::ui_kit::{
@@ -28,10 +30,16 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )),
             files.iter().map(|file| {
+                let file_extension = std::path::Path::new(&file.name())
+                .extension()
+                .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                .to_str()
+                .unwrap()
+                .to_string();
                 rsx!( File {
                     name: file.name(),
                     state: State::Secondary,
-                    kind: String::from("png"),
+                    kind: file_extension,
                     size: file.size(),
                 })
             }),
