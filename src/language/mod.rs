@@ -41,7 +41,7 @@ pub struct Language {
     pub unknown: String,
     pub location: String,
     pub badges: String,
-    pub save_status: String,
+    pub save: String,
     pub status_placeholder: String,
     pub friends: String,
     pub edit_profile: String,
@@ -55,6 +55,7 @@ pub struct Language {
     pub start_one: String,
     pub auth_tooltip: String,
     pub new_friend_request: String,
+    pub edit: String,
 }
 
 impl Language {

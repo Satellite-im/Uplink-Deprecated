@@ -40,7 +40,7 @@ pub fn make() -> Language {
         unknown: String::from("Unknown"),
         location: String::from("Location"),
         badges: String::from("Badges"),
-        save_status: String::from("Save Status"),
+        save: String::from("Save"),
         status_placeholder: String::from("Some status message..."),
         friends: String::from("Friends"),
         edit_profile: String::from("Edit Profile"),
@@ -55,5 +55,6 @@ pub fn make() -> Language {
         start_one: String::from("Start one"),
         auth_tooltip: String::from("Only four to six characters allowed"),
         new_friend_request: String::from("New Friend Request"),
+        edit: String::from("Edit"),
     }
 }
