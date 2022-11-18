@@ -101,6 +101,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
         background: var(--theme-background);
         padding: 1rem;
         position: absolute;
+        z-index: 5;
         border-radius: 8px;
         left: 1rem;
         right: 1rem;
