@@ -65,6 +65,7 @@ warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "9945f8b36f
 warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "9945f8b36f48b2743f55f263d918db7893521e98" }
 arboard = "3.1.0"
 
+audio-factory = { path = "src/extensions/native/audio-factory" }
 
 [build-dependencies]
 glob = "0.3.0"

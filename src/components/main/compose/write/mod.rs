@@ -1,4 +1,5 @@
 use crate::{utils_internal::config::Config, LANGUAGE};
+use audio_factory::ExtAudioFactoryControl;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -39,6 +40,10 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     SmallExtensionPlaceholder {}
                 }
             })
+            div {
+                class: "chatbar_extensions",
+                ExtAudioFactoryControl {}
+            },
             div {
                 id: "send",
                 IconButton {
