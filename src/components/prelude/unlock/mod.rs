@@ -3,16 +3,14 @@ use dioxus::router::use_router;
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::css;
+use ui_kit::{
+    icon_button::{self, IconButton},
+    pin::Pin,
+    tooltip::{ArrowPosition, Tooltip},
+};
 use warp::tesseract::Tesseract;
 
-use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        pin::Pin,
-        tooltip::{ArrowPosition, Tooltip},
-    },
-    LANGUAGE,
-};
+use crate::LANGUAGE;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]

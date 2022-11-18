@@ -1,5 +1,4 @@
 #usage {
-  width: calc(100% - 1rem);
   padding: 0.5rem;
   border-radius: 4px;
   border: 1px solid var(--theme-borders);
@@ -14,8 +13,8 @@
   }
   #usage_bar_bg {
     background: var(--theme-background-light);
-    width: calc(100% - 1rem);
     z-index: 0;
+    width: calc(100% - 1rem);
   }
   #usage_text {
     margin-top: 16px;

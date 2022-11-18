@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::ui_kit::button::Button;
+use ui_kit::button::Button;
 
 #[derive(PartialEq, Eq)]
 pub enum NavEvent {

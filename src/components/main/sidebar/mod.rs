@@ -5,18 +5,17 @@ use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
-    components::{
-        main::{profile::Profile, sidebar::favorites::Favorites},
-        reusable::nav::Nav,
-        ui_kit::{
-            extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
-            skeletal_chats::SkeletalChats,
-        },
-    },
+    components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
     extensions::*,
     state::{Actions, ConversationInfo},
-    utils::{self, config::Config, notifications::PushNotification},
-    Account, Messaging, LANGUAGE, STATE,
+    utils_internal::{self, config::Config},
+    Messaging, LANGUAGE, STATE,
+};
+
+use ::utils::{notifications::PushNotification, Account};
+use ui_kit::{
+    extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+    skeletal_chats::SkeletalChats,
 };
 
 pub mod chat;
@@ -35,7 +34,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
-    let show_profile = use_state(&cx, || false);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -50,7 +48,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
-            let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
+            let display_username = utils_internal::get_username_from_did(msg.sender().clone(), &mp);
             PushNotification(display_username, msg.value().join("\n"));
         }
     });
@@ -124,11 +122,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     }
                 )
             } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
-            Profile {
-                account: cx.props.account.clone(),
-                show: *show_profile.clone(),
-                on_hide: move |_| show_profile.set(false),
-            },
             Nav {
                 account: cx.props.account.clone(),
             }

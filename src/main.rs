@@ -1,14 +1,19 @@
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
+use fluent::{FluentBundle, FluentResource};
 use std::{
+    fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
     sync::Arc,
     thread,
 };
 use tracing_subscriber::EnvFilter;
+use unic_langid::LanguageIdentifier;
 
+use crate::utils_internal::config::Config;
+use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_toast::ToastManager;
@@ -17,7 +22,7 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
-use utils::config::Config;
+
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -34,7 +39,7 @@ pub mod components;
 pub mod extensions;
 pub mod language;
 pub mod themes;
-pub mod utils;
+pub mod utils_internal;
 
 use tao::window::WindowBuilder;
 
@@ -74,6 +79,29 @@ struct Opt {
 
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
+
+    let ftl_string = match fs::read_to_string("src/language/en_US.ftl") {
+        // If successful return the files text as `contents`.
+        // `c` is a local variable.
+        Ok(c) => c,
+        // Handle the `error` case.
+        Err(_) => {
+            // Write `msg` to `stderr`.
+            eprintln!("Could not read file");
+            // Exit the program with exit code `1`.
+            String::from("")
+        }
+    };
+
+    let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
+    // TODO: Make this dynamic
+    let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
+    let mut language = FluentBundle::new(vec![loc]);
+
+    language
+        .add_resource(&res)
+        .expect("Failed to add FTL resources to the bundle.");
 
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
@@ -252,28 +280,6 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
-}
-
-#[derive(Clone)]
-pub struct Account(Arc<RwLock<Box<dyn MultiPass>>>);
-
-impl Deref for Account {
-    type Target = Arc<RwLock<Box<dyn MultiPass>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Account {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Account {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
 }
 
 #[derive(Clone)]

@@ -4,15 +4,11 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
+use ui_kit::{icon_button::IconButton, profile_picture::PFP, textarea::TextArea};
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        profile_picture::PFP,
-        textarea::TextArea,
-    },
-    utils::{
+    utils_internal::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
@@ -72,7 +68,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let value = cx.props.message.clone().value().join("\n");
 
     let timestamp = cx.props.message.clone().date();
-    let ht = utils::display_msg_time(timestamp);
+    let ht = utils_internal::display_msg_time(timestamp);
     let remote = match cx.props.remote {
         true => "remote",
         false => "local",
@@ -107,7 +103,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     };
 
     let profile_picture =
-        utils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+        utils_internal::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
 
@@ -154,7 +150,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             PFP {
                                 src: profile_picture,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             },
                             div {
                                 class: "value popout {first} {middle} {last}",
@@ -184,7 +180,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             IconButton {
                                 icon: Shape::ArrowRight,
-                                state: icon_button::State::Secondary,
+                                state: ui_kit::icon_button::State::Secondary,
                                 on_pressed: move |_| {
                                     cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
@@ -201,7 +197,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         if cx.props.last {
                             rsx!(PFP {
                                 src: profile_picture2,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             })
                         } else {
                             rsx!( div { class: "pfp-void" } )
@@ -252,7 +248,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         if cx.props.last {
                             rsx!(PFP {
                                 src: profile_picture3,
-                                size: crate::components::ui_kit::profile_picture::Size::Normal
+                                size: ui_kit::profile_picture::Size::Normal
                             })
                         } else {
                             rsx!( div { class: "pfp-void" } )

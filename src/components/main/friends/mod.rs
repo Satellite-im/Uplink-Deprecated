@@ -9,8 +9,10 @@ use std::{
 
 use crate::{
     components::main::friends::{friend::Friend, sidebar::Sidebar},
-    utils, Account, Messaging,
+    Account, Messaging,
 };
+
+use crate::utils_internal::get_username_from_did;
 
 use dioxus::prelude::*;
 
@@ -120,7 +122,7 @@ fn order_friend_list(
     let mut total_friends_list: Vec<UsernameAndDID> = friend_did_list
         .iter()
         .map(|did| {
-            let _friend_username = utils::get_username_from_did(did.clone(), account);
+            let _friend_username = get_username_from_did(did.clone(), account);
             UsernameAndDID {
                 username: _friend_username,
                 did: did.clone(),

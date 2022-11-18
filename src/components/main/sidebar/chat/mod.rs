@@ -1,13 +1,13 @@
 use crate::{
-    components::ui_kit::{
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
     state::{Actions, ConversationInfo, LastMsgSent},
-    utils, Account, Messaging, LANGUAGE, STATE,
+    utils_internal, Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
+use ui_kit::{
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 use uuid::Uuid;
 use warp::crypto::DID;
 use warp::multipass::{identity::IdentityStatus, IdentityInformation};
@@ -43,7 +43,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .props
         .last_msg_sent
         .clone()
-        .map(|x| utils::display_msg_time(x.time));
+        .map(|x| utils_internal::display_msg_time(x.time));
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
     let tx_chan = cx.props.tx_chan.clone();
 
@@ -263,14 +263,14 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
         IdentityStatus::Online => "online",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did.clone(), account);
+    let profile_picture = utils_internal::get_pfp_from_did(did.clone(), account);
 
     cx.render(rsx! {
         div {
             class: "pfp-container",
             PFP {
                 src: profile_picture,
-                size: crate::components::ui_kit::profile_picture::Size::Normal
+                size: ui_kit::profile_picture::Size::Normal
             },
             div {
                 class: "pfs {is_online}"

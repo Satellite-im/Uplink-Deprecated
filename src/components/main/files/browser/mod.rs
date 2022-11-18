@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::components::ui_kit::{
+use ui_kit::{
     file::File,
     folder::{Folder, State},
     new_folder::NewFolder,

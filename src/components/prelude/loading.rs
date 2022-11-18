@@ -1,12 +1,10 @@
-use crate::{
-    components::ui_kit::loader::Loader, utils::config::Config, Account, LANGUAGE,
-    WINDOW_SUFFIX_NAME,
-};
+use crate::{utils_internal::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
 use dioxus::prelude::*;
 use dioxus::router::use_router;
 use futures::StreamExt;
+use ui_kit::loader::Loader;
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]

@@ -1,7 +1,5 @@
 pub mod config;
 pub mod get_meta;
-pub mod notifications;
-pub mod sounds;
 
 use crate::{state::ConversationInfo, Account};
 
