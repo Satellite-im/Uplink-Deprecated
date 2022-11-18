@@ -42,12 +42,12 @@ fn format_file_size(file_size: usize) -> String {
     let size_formatted = size_f64 / base_1024.powf(i);
 
     let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    return format!(
+    format!(
         "{size:.*} {size_suffix}",
         1,
         size = size_formatted,
         size_suffix = file_size_suffix
-    );
+    )
 }
 
 fn format_file_name_to_show(cx: Scope<Props>) -> String {
@@ -64,7 +64,7 @@ fn format_file_name_to_show(cx: Scope<Props>) -> String {
             Some(name_sliced) => format!(
                 "{}...{}.{}",
                 name_sliced,
-                file_name_without_extension[file_name_without_extension.len() - 3..].to_string(),
+                &file_name_without_extension[file_name_without_extension.len() - 3..].to_string(),
                 cx.props.kind
             ),
             None => file_name.clone(),
