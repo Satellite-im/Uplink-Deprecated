@@ -49,7 +49,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
             let display_username = utils_internal::get_username_from_did(msg.sender().clone(), &mp);
-            PushNotification(display_username, msg.value().join("\n"));
+            PushNotification(
+                display_username,
+                msg.value().join("\n"),
+                ::utils::sounds::Sounds::Notification,
+            );
         }
     });
 

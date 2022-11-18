@@ -54,6 +54,7 @@ pub struct Language {
     pub no_active_chats: String,
     pub start_one: String,
     pub auth_tooltip: String,
+    pub new_friend_request: String,
 }
 
 impl Language {
