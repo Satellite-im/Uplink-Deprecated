@@ -2,7 +2,6 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
 use super::folder::State;
-
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]
 pub struct Props {
@@ -40,10 +39,15 @@ fn format_file_size(file_size: usize) -> String {
     let size_f64: f64 = file_size as f64;
 
     let i = (size_f64.log10() / base_1024.log10()).floor();
-    let size_formatted = (size_f64 / base_1024.powf(i)).floor();
+    let size_formatted = size_f64 / base_1024.powf(i);
 
     let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    return format!("{} {}", size_formatted, file_size_suffix);
+    return format!(
+        "{size:.*} {size_suffix}",
+        1,
+        size = size_formatted,
+        size_suffix = file_size_suffix
+    );
 }
 
 fn format_file_name_to_show(cx: Scope<Props>) -> String {
