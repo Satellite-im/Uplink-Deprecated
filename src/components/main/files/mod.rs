@@ -1,11 +1,14 @@
 use dioxus::prelude::*;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
-use crate::main::files::{
-    browser::FileBrowser,
-    sidebar::usage::{Usage, UsageStats},
-    toolbar::Toolbar,
-    upload::Upload,
+use crate::{
+    components::reusable::nav::Nav,
+    main::files::{
+        browser::FileBrowser,
+        sidebar::usage::{Usage, UsageStats},
+        toolbar::Toolbar,
+        upload::Upload,
+    },
 };
 pub mod browser;
 pub mod sidebar;
@@ -64,6 +67,12 @@ pub fn Files(cx: Scope<Props>) -> Element {
                     FileBrowser {
                         account: cx.props.account.clone(),
                         show_new_folder: **show_new_folder
+                    }
+                    span {
+                        class: "hidden-on-desktop mobile-nav",
+                        Nav {
+                            account: cx.props.account.clone(),
+                        }
                     }
                 ),
             },
