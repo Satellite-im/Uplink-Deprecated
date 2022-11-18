@@ -92,7 +92,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         );
                         log::debug!("updating friend request count");
                         let count = *(reqCount.get()) + 1;
-                        // Note, this will increase the counter. Maybe use a seperate task to check the list or use other events to decrease it
+                        // Note, this will increase the counter. Maybe use a separate task to check the list or use other events to decrease it
                         reqCount.set(count);
                     }
                     MultiPassEventKind::FriendRequestRejected { .. } => {
