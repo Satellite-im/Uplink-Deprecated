@@ -51,6 +51,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
         (reqCount, &multipass),
         |(reqCount, mut multipass)| async move {
             // Used to make sure everything is initalized before proceeding.
+            let new_friend_request_notification = l.new_friend_request.to_string().to_owned();
 
             let mut stream = loop {
                 match multipass.subscribe() {
@@ -83,7 +84,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             None => from.to_string(),
                         };
                         PushNotification(
-                            l.new_friend_request.to_string().to_owned(),
+                            new_friend_request_notification.clone(),
                             // "New Friend Request".to_owned(),
                             format!("{} sent a friend request", name_or_did),
                             // "Come see who it is!".to_owned(),
@@ -116,58 +117,9 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         };
                         reqCount.set(count);
                     }
-                    // left this commented out to allow for one to determine the logic here
-                    // MultiPassEventKind::FriendRequestClosed { from, .. } => {
-                    //     log::debug!("updating friend request count");
-                    //     let count = *(reqCount.get()) - 1;
-                    //     reqCount.set(count);
-                    // }
-                    // left commented out in the event one wants to use different logic or changes here
-                    // MultiPassEventKind::FriendAdded { did } => {
-                    //     let name_or_did = match multipass
-                    //         .get_identity(did.clone().into())
-                    //         .ok()
-                    //         .and_then(|list| list.first().cloned())
-                    //         .map(|id| id.username())
-                    //     {
-                    //         Some(name) => name,
-                    //         None => did.to_string(),
-                    //     };
-
-                    //     PushNotification(
-                    //         "New Friend".to_owned(),
-                    //         format!("You are now friends with {name_or_did}"),
-                    //         // format!("{:#?} sent a friend request", most_recent_friend_request),
-                    //         crate::utils::sounds::Sounds::FriendReq,
-                    //     );
-                    //     log::debug!("updating friend request count");
-                    //     let count = *(reqCount.get()) - 1;
-                    //     reqCount.set(count);
-                    // }
                     _ => {}
                 }
             }
-
-            // loop {
-            //     let list = multipass.list_incoming_request().unwrap_or_default();
-            //     if list.len() != *reqCount.get() {
-            //         // If list is updated, we update the request count
-            //         if list.len() > *reqCount.get() {
-            //             // We display a notification if the list length is increased (incoming request appended).
-            //             // We do not display a notification if the list length is decreased (incoming request is rejected).
-
-            //             PushNotification(
-            //                 "New Friend Request".to_owned(),
-            //                 "Come see who it is!".to_owned(),
-            //                 // format!("{:#?} sent a friend request", most_recent_friend_request),
-            //                 crate::utils::sounds::Sounds::FriendReq,
-            //             );
-            //         }
-
-            //         reqCount.set(list.len());
-            //     }
-            //     tokio::time::sleep(std::time::Duration::from_millis(300)).await;
-            // }
         },
     );
 
