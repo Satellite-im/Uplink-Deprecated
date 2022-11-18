@@ -100,6 +100,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                 let key = conv.conversation.id();
                                 let conversation_info = conv.clone();
                                 let active_chat = active_chat.clone();
+                                // todo: get typing indicator from global state
                                 rsx!(
                                     chat::Chat {
                                         key: "{key}",
@@ -109,6 +110,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         last_msg_sent: conv.last_msg_sent.clone(),
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         tx_chan: notifications_tx.clone(),
+                                        // todo: add a prop to indicate typing (if desired)
                                         on_pressed: move |uuid| {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
