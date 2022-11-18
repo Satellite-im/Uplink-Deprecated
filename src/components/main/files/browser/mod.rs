@@ -14,19 +14,25 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let file_storage = cx.props.storage.clone();
-    let root_directory = &file_storage.read().root_directory();
-    let files = use_state(&cx, || HashSet::from_iter(root_directory.get_items()));
+    let files = use_ref(&cx, HashSet::new);
+    let files_sorted = use_state(&cx, Vec::new);
 
     use_future(
         &cx,
-        (files, &file_storage.read().root_directory()),
-        |(files, root_directory)| async move {
+        (files, files_sorted, &file_storage.read().root_directory()),
+        |(files, files_sorted, root_directory)| async move {
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(root_directory.get_items());
 
-                if *files != files_updated {
+                if *files.read() != files_updated {
                     log::debug!("updating files list");
-                    files.set(files_updated);
+                    *files.write_silent() = files_updated.clone();
+
+                    let mut total_files_list: Vec<_> = files_updated.iter().cloned().collect();
+
+                    total_files_list.sort_by(|a, b| b.modified().cmp(&a.modified()));
+
+                    files_sorted.set(total_files_list);
                 }
 
                 tokio::time::sleep(Duration::from_secs(1)).await;
@@ -42,7 +48,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     state: State::Primary
                 }
             )),
-            files.iter().map(|file| {
+            files_sorted.iter().map(|file| {
                 let file_extension = std::path::Path::new(&file.name())
                 .extension()
                 .unwrap_or_else(|| std::ffi::OsStr::new(""))
