@@ -135,7 +135,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     // if multiple folders are desired under `Files`, this could render a list of `DirEntry`
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
-            account: cx.props.account.clone(),
+        account: cx.props.account.clone(),
             Usage {
                 usage: UsageStats {
                     available: 1256,
@@ -144,9 +144,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     percent_free: 75,
                 }
             },
-            label {
-                class: "m-top-sm",
-                "Files"
+            div {
+                id: "files-label",
+                label {
+                    "Files"
+                },
             },
             div {
                 class: "tree_wrapper",
