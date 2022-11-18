@@ -30,7 +30,6 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             TextArea {
                 on_submit: |val| cx.props.on_submit.call(val),
-                on_trigger_typing: |_| {},
                 text: text.clone(),
                 placeholder: l.chatbar_placeholder.to_string()
             }

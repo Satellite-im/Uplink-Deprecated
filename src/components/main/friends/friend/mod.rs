@@ -13,13 +13,14 @@ use crate::{
     state::{Actions, ConversationInfo},
     Messaging, STATE,
 };
-use ::utils::Account;
+use utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
     messaging: Messaging,
     friend: DID,
+    friend_username: String,
     on_chat: EventHandler<'a, ()>,
 }
 
@@ -31,7 +32,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
 
-    let username = iutils::get_username_from_did(cx.props.friend.clone(), &mp);
+    let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
 
     let profile_picture = iutils::get_pfp_from_did(cx.props.friend.clone(), &mp);

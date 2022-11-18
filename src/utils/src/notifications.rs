@@ -1,15 +1,14 @@
+use crate::sounds::{Play, Sounds};
 use notify_rust::Notification;
-
-use crate::sounds;
 
 // Implementation to create and push new notifications
 #[allow(non_snake_case)]
-pub fn PushNotification(title: String, content: String) {
+pub fn PushNotification(title: String, content: String, notification_sound: Sounds) {
     let summary = format!("Uplink - {}", title);
     let _n = Notification::new()
         .summary(summary.as_ref())
-        .body(content.as_ref())
+        .body(&content)
         .show();
     // Play notification sound
-    sounds::Play(sounds::Sounds::Notification);
+    Play(notification_sound);
 }
