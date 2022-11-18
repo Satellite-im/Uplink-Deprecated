@@ -1,7 +1,8 @@
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
+use ui_kit::icon_button::IconButton;
 
-use crate::components::{reusable::toolbar, ui_kit::icon_button::IconButton};
+use crate::components::reusable::toolbar;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -16,12 +17,12 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             controls: cx.render(rsx! {
                 IconButton {
                     icon: Shape::Archive,
-                    state: crate::components::ui_kit::icon_button::State::Secondary,
+                    state: ui_kit::icon_button::State::Secondary,
                     on_pressed: move |_| {}
                 },
                 IconButton {
                     icon: Shape::FolderAdd,
-                    state: crate::components::ui_kit::icon_button::State::Secondary,
+                    state: ui_kit::icon_button::State::Secondary,
                     on_pressed: move |e| cx.props.on_new_folder.call(e)
                 },
                 IconButton {

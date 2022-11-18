@@ -31,7 +31,6 @@
         width: 40px;
         /*this is required to prevent a message from squashing the circle/profile picture*/
         min-width: 40px;
-        margin: 0.25rem 0 0.5rem 0.7rem;
       }
 
       /* the is_online status associated with the profile picture */
@@ -68,7 +67,6 @@
       .top-row {
         display: inline-flex;
         flex-direction: row;
-        margin-right: 1em;
 
         h3 {
           margin: 0;
@@ -95,7 +93,7 @@
       .unread-count {
         background: var(--theme-primary);
         max-height: fit-content;
-        padding: 0.2rem 0.5rem;
+        padding: 0 0.25rem;
         border-radius: 2px;
         margin-left: 0.5rem;
 

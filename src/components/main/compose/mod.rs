@@ -6,16 +6,15 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::icon_button::IconButton;
 use warp::raygun::RayGun;
 
 use crate::{
-    components::{
-        main::compose::{messages::Messages, topbar::TopBar, write::Write},
-        ui_kit::icon_button::IconButton,
-    },
+    components::main::compose::{messages::Messages, topbar::TopBar, write::Write},
     state::{Actions, LastMsgSent},
-    Account, Messaging, LANGUAGE, STATE,
+    Messaging, LANGUAGE, STATE,
 };
+use ::utils::Account;
 
 #[derive(PartialEq, Props)]
 pub struct Props {

@@ -1,14 +1,11 @@
-use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        small_extension_placeholder::SmallExtensionPlaceholder,
-        textarea::TextArea,
-    },
-    utils::config::Config,
-    LANGUAGE,
-};
+use crate::{utils_internal::config::Config, LANGUAGE};
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{
+    icon_button::{self, IconButton},
+    small_extension_placeholder::SmallExtensionPlaceholder,
+    textarea::TextArea,
+};
 
 #[derive(Props)]
 pub struct Props<'a> {

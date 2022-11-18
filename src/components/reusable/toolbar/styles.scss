@@ -1,7 +1,7 @@
 #toolbar {
   min-height: 0;
   display: inline-flex;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   width: 100%;
   flex-direction: row;
   border-bottom: 1px solid var(--theme-borders);
@@ -11,7 +11,7 @@
     line-height: 1;
     display: inline-flex;
     .pfp {
-      margin-right: 1rem;
+      margin-right: 0.5rem;
     }
     .activity.inline {
       margin-top: 0.5rem;

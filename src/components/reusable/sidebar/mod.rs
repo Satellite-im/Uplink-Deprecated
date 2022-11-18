@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
+use ui_kit::extension_placeholder::ExtensionPlaceholder;
 
-use crate::{
-    components::{reusable::nav::Nav, ui_kit::extension_placeholder::ExtensionPlaceholder},
-    utils::config::Config,
-    Account,
-};
+use crate::{components::reusable::nav::Nav, utils_internal::config::Config};
+use ::utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {

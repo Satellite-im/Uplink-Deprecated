@@ -1,10 +1,4 @@
-use crate::{
-    components::{
-        main::friends::request::FriendRequest,
-        ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput},
-    },
-    Account, LANGUAGE, TOAST_MANAGER,
-};
+use crate::{components::main::friends::request::FriendRequest, Account, LANGUAGE, TOAST_MANAGER};
 
 use arboard::Clipboard;
 use dioxus::{
@@ -14,6 +8,7 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
+use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;

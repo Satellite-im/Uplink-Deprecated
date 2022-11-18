@@ -1,13 +1,11 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-
-use crate::{
-    components::ui_kit::{
-        icon_button::{self, IconButton},
-        numeric_indicator::NumericIndicator,
-    },
-    Account,
+use ui_kit::{
+    icon_button::{self, IconButton},
+    numeric_indicator::NumericIndicator,
 };
+
+use crate::Account;
 use warp::multipass::Friends;
 
 #[derive(PartialEq, Eq, Clone, Copy)]

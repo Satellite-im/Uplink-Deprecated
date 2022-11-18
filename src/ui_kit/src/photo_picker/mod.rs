@@ -1,9 +1,9 @@
-use crate::components::ui_kit::icon_button::IconButton;
-use crate::Account;
+use crate::icon_button::IconButton;
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use mime::*;
 use rfd::FileDialog;
+use utils::Account;
 use warp::multipass::identity::IdentityUpdate;
 
 #[derive(PartialEq, Props)]
