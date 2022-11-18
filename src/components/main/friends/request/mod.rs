@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::utils_internal;
+use crate::iutils;
 use ::utils::Account;
 
 use ui_kit::{
@@ -31,9 +31,9 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.props.request.from()
     };
 
-    let username = utils_internal::get_username_from_did(did.clone(), &mp);
+    let username = iutils::get_username_from_did(did.clone(), &mp);
     let show_skeleton = username.is_empty();
-    let profile_picture = utils_internal::get_pfp_from_did(did, &mp);
+    let profile_picture = iutils::get_pfp_from_did(did, &mp);
 
     cx.render(rsx! {
         div {

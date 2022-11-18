@@ -14,6 +14,7 @@ pub mod photo_picker;
 pub mod pin;
 pub mod popup;
 pub mod profile_picture;
+pub mod select;
 pub mod skeletal_chats;
 pub mod skeletons;
 pub mod small_extension_placeholder;

@@ -12,7 +12,7 @@ use std::{
 use tracing_subscriber::EnvFilter;
 use unic_langid::LanguageIdentifier;
 
-use crate::utils_internal::config::Config;
+use crate::iutils::config::Config;
 use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -37,9 +37,9 @@ use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
 pub mod extensions;
+pub mod iutils;
 pub mod language;
 pub mod themes;
-pub mod utils_internal;
 
 use tao::window::WindowBuilder;
 

@@ -1,6 +1,7 @@
 use crate::{
+    iutils,
     state::{Actions, ConversationInfo, LastMsgSent},
-    utils_internal, Account, Messaging, LANGUAGE, STATE,
+    Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
@@ -43,7 +44,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         .props
         .last_msg_sent
         .clone()
-        .map(|x| utils_internal::display_msg_time(x.time));
+        .map(|x| iutils::display_msg_time(x.time));
     let last_msg_sent = cx.props.last_msg_sent.clone().map(|x| x.value);
     let tx_chan = cx.props.tx_chan.clone();
 
@@ -263,7 +264,7 @@ pub fn ChatPfp(cx: Scope, status: UseState<IdentityStatus>, account: Account, di
         IdentityStatus::Online => "online",
         _ => "",
     };
-    let profile_picture = utils_internal::get_pfp_from_did(did.clone(), account);
+    let profile_picture = iutils::get_pfp_from_did(did.clone(), account);
 
     cx.render(rsx! {
         div {

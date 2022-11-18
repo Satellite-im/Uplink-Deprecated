@@ -1,7 +1,7 @@
 use crate::{
     components::reusable::toolbar,
+    iutils::{self, config::Config},
     state::Actions,
-    utils_internal::{self, config::Config},
     STATE,
 };
 
@@ -41,8 +41,8 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     match opt {
         Some(conversation_info) => {
             let (display_did, display_username) =
-                utils_internal::get_username_from_conversation(conversation_info, &mp);
-            let profile_picture = utils_internal::get_pfp_from_did(display_did.clone(), &mp);
+                iutils::get_username_from_conversation(conversation_info, &mp);
+            let profile_picture = iutils::get_pfp_from_did(display_did.clone(), &mp);
 
             let id = conversation_info.conversation.id();
 

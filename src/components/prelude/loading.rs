@@ -1,4 +1,4 @@
-use crate::{utils_internal::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
+use crate::{iutils::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
 use dioxus::prelude::*;
