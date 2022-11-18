@@ -1,10 +1,8 @@
+use std::{collections::HashSet, time::Duration};
+
 use dioxus::prelude::*;
 
-use ui_kit::{
-    file::File,
-    folder::{Folder, State},
-    new_folder::NewFolder,
-};
+use ui_kit::{file::File, folder::State, new_folder::NewFolder};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -17,7 +15,24 @@ pub struct Props {
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let file_storage = cx.props.storage.clone();
     let root_directory = &file_storage.read().root_directory();
-    let files = root_directory.get_items();
+    let files = use_state(&cx, || HashSet::from_iter(root_directory.get_items()));
+
+    use_future(
+        &cx,
+        (files, &file_storage.read().root_directory()),
+        |(files, root_directory)| async move {
+            loop {
+                let files_updated: HashSet<_> = HashSet::from_iter(root_directory.get_items());
+
+                if *files != files_updated {
+                    log::debug!("updating files list");
+                    files.set(files_updated);
+                }
+
+                tokio::time::sleep(Duration::from_millis(300)).await;
+            }
+        },
+    );
 
     cx.render(rsx! {
         div {
@@ -42,34 +57,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     size: file.size(),
                 })
             }),
-            // Folder {
-            //     name: String::from("New Folder"),
-            //     state: State::Secondary,
-            //     children: 3
-            // },
-            // Folder {
-            //     name: String::from("Examples"),
-            //     state: State::Secondary,
-            //     children: 12
-            // },
-            // Folder {
-            //     name: String::from("Logs"),
-            //     state: State::Secondary,
-            //     children: 3941
-            // },
-
-            // File {
-            //     name: String::from("Hello World"),
-            //     state: State::Secondary,
-            //     kind: String::from("txt"),
-            //     size: 0
-            // },
-            // File {
-            //     name: String::from("Cache.zip"),
-            //     state: State::Secondary,
-            //     kind: String::from("archive/zip"),
-            //     size: 1
-            // }
         },
     })
 }

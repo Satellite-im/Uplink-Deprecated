@@ -21,16 +21,29 @@ pub fn File(cx: Scope<Props>) -> Element {
 
     let file_name = format_file_name_to_show(cx);
 
+    let file_size = format_file_size(cx.props.size);
+
     cx.render(rsx! {
         div {
             class: "folder {class}",
             Icon { icon: Shape::Document },
             p { "{file_name}" },
             label {
-                "{cx.props.size} bytes"
+                "{file_size}"
             }
         }
     })
+}
+
+fn format_file_size(file_size: usize) -> String {
+    let base_1024: f64 = 1024.0;
+    let size_f64: f64 = file_size as f64;
+
+    let i = (size_f64.log10() / base_1024.log10()).floor();
+    let size_formatted = (size_f64 / base_1024.powf(i)).floor();
+
+    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
+    return format!("{} {}", size_formatted, file_size_suffix);
 }
 
 fn format_file_name_to_show(cx: Scope<Props>) -> String {
@@ -47,7 +60,7 @@ fn format_file_name_to_show(cx: Scope<Props>) -> String {
             Some(name_sliced) => format!(
                 "{}...{}.{}",
                 name_sliced,
-                file_name_without_extension[file_name_without_extension.len() - 2..].to_string(),
+                file_name_without_extension[file_name_without_extension.len() - 3..].to_string(),
                 cx.props.kind
             ),
             None => file_name.clone(),
