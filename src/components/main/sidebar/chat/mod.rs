@@ -1,10 +1,12 @@
+use std::collections::HashSet;
+
 use crate::{
     components::ui_kit::{
         profile_picture::PFP,
         skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
     },
     state::{Actions, ConversationInfo, LastMsgSent},
-    utils, Account, Messaging, LANGUAGE, STATE,
+    utils, Account, Messaging, LANGUAGE, STATE, TYPING_STATE,
 };
 use dioxus::prelude::*;
 use futures::stream::StreamExt;
@@ -29,6 +31,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering main/sidebar/Chat");
+    let typing_state = use_atom_ref(&cx, TYPING_STATE).clone();
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
@@ -160,12 +163,11 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             };
 
             while let Some(event) = stream.next().await {
-                if let MessageEventKind::MessageReceived {
-                    conversation_id,
-                    message_id,
-                } = event
-                {
-                    match rg.get_message(conversation_id, message_id).await {
+                match event {
+                    MessageEventKind::MessageReceived {
+                        conversation_id,
+                        message_id,
+                    } => match rg.get_message(conversation_id, message_id).await {
                         Ok(msg) => {
                             log::debug!("sidebar/chat streamed a message");
                             tx_chan.send(msg.clone());
@@ -180,7 +182,29 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         Err(_e) => {
                             // todo: possibly log errorv
                         }
-                    };
+                    },
+                    MessageEventKind::TypingIndicatorAdded {
+                        conversation_id,
+                        did_key,
+                    } => match typing_state.write().state.get_mut(&conversation_id) {
+                        Some(list) => {
+                            list.insert(did_key);
+                        }
+                        None => {
+                            let mut s = HashSet::new();
+                            s.insert(did_key);
+                            typing_state.write().state.insert(conversation_id, s);
+                        }
+                    },
+                    MessageEventKind::TypingIndicatorRemoved {
+                        conversation_id,
+                        did_key,
+                    } => {
+                        if let Some(list) = typing_state.write().state.get_mut(&conversation_id) {
+                            list.remove(&did_key);
+                        }
+                    }
+                    _ => {}
                 }
             }
         },

@@ -15,7 +15,7 @@ use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::PersistedState;
+use state::{PersistedState, TypingState};
 use themes::Theme;
 use utils::config::Config;
 use warp::{
@@ -52,6 +52,8 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
+
+static TYPING_STATE: AtomRef<TypingState> = |_| TypingState::default();
 
 #[derive(PartialEq, Props)]
 pub struct State {

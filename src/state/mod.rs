@@ -5,9 +5,17 @@ use std::{
     collections::{HashMap, HashSet},
 };
 use uuid::Uuid;
-use warp::raygun::Conversation;
+use warp::{crypto::DID, raygun::Conversation};
 
 use crate::DEFAULT_PATH;
+
+/// used for the typing indicator
+/// todo: possibly change the structure
+#[derive(Default)]
+pub struct TypingState {
+    // conversation, list of participants who are typing
+    pub state: HashMap<Uuid, HashSet<DID>>,
+}
 
 pub enum Actions {
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
