@@ -9,6 +9,7 @@ use ui_kit::{
     select::Select,
     switch::Switch,
 };
+use utils::extensions::{BasicExtension, Extension, ExtensionType};
 
 #[derive(Props)]
 pub struct OptionProps<'a> {
@@ -322,35 +323,47 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
     })
 }
 
-#[allow(non_snake_case)]
-pub fn ExtAudioFactoryControl(cx: Scope) -> Element {
-    let styles = css!(
-        "
-        
-        "
-    );
-    // TODO: Icon should be a record icon, it should turn red and become a ovular shape like a normal button which includes the duration of the recording and turns the icon red
+pub struct AudioFactory;
 
-    let factory_visible = use_state(&cx, || false);
-
-    cx.render(rsx! {
-        div {
-            id: "audio-factory",
-            class: "{styles}",
-            (factory_visible).then(|| rsx! {
-                ExtAudioFactory {
-                    debug: false
-                }
-            }),
-            IconButton {
-                icon: Shape::Film,
-                state: if **factory_visible {
-                    icon_button::State::Primary
-                } else {
-                    icon_button::State::Secondary
-                }
-                on_pressed: move |_| factory_visible.set(!factory_visible)
-            }
+impl BasicExtension for AudioFactory {
+    fn info() -> Extension {
+        Extension {
+            name: String::from("AudioFactory"),
+            author: String::from("matt@satellite.im"),
+            description: String::from("Record audio to disc, compress and share after recording."),
+            location: ExtensionType::ChatbarIcon,
         }
-    })
+    }
+
+    fn render(cx: Scope) -> dioxus::prelude::Element {
+        let styles = css!(
+            "
+            
+            "
+        );
+
+        // TODO: Icon should be a record icon, it should turn red and become a ovular shape like a normal button which includes the duration of the recording and turns the icon red
+        let factory_visible = use_state(&cx, || false);
+
+        cx.render(rsx! {
+            div {
+                id: "audio-factory",
+                class: "{styles}",
+                (factory_visible).then(|| rsx! {
+                    ExtAudioFactory {
+                        debug: false
+                    }
+                }),
+                IconButton {
+                    icon: Shape::Film,
+                    state: if **factory_visible {
+                        icon_button::State::Primary
+                    } else {
+                        icon_button::State::Secondary
+                    }
+                    on_pressed: move |_| factory_visible.set(!factory_visible)
+                }
+            }
+        })
+    }
 }

@@ -1,5 +1,5 @@
 use crate::{iutils::config::Config, LANGUAGE};
-use audio_factory::ExtAudioFactoryControl;
+use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -7,6 +7,7 @@ use ui_kit::{
     small_extension_placeholder::SmallExtensionPlaceholder,
     textarea::TextArea,
 };
+use utils::extensions::BasicExtension;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -41,7 +42,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             })
             div {
                 class: "chatbar_extensions",
-                ExtAudioFactoryControl {}
+                AudioFactory::render()
             },
             div {
                 id: "send",

@@ -7,7 +7,8 @@ edition = "2021"
 
 [dependencies]
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
-ui_kit = { path = "../../../ui_kit" }
+ui_kit = { path = "../../../src/ui_kit" }
+utils = { path = "../../../src/utils" }
 dioxus-heroicons = "0.1.4"
 sir = "0.2.2"
 fs2 = "0.4.3"
