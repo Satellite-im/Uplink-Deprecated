@@ -30,7 +30,7 @@ You'll need to install the required dependancies for your system in order to bui
 |--|--|
 |Debian & Ubuntu|apt get -y libgtk-3-dev clang libavcodec-dev libavformat-dev libavutil-dev pkg-config libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
 |Arch|pacman -S gtk3 cmake protobuf|
-|MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init  gstreamer     gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services --with-orc --with-libogg --with-opus --with-pango --with-theora --with-libvorbis --with-libvpx --enable-gtk3|
+|MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services --with-orc --with-libogg --with-opus --with-pango --with-theora --with-libvorbis --with-libvpx --enable-gtk3|
 |Windows|Install rust, git, cmake, llvm, ffmpeg, and protoc, see below|
 
 ## Building from source

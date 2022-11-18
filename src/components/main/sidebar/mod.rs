@@ -7,7 +7,7 @@ use warp::raygun::Message;
 use crate::{
     components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
     extensions::*,
-    iutils::{self, config::Config},
+    iutils::config::Config,
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,
 };
@@ -48,7 +48,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
-            let display_username = utils_internal::get_username_from_did(msg.sender().clone(), &mp);
+            let display_username = crate::iutils::get_username_from_did(msg.sender().clone(), &mp);
             PushNotification(
                 display_username,
                 msg.value().join("\n"),

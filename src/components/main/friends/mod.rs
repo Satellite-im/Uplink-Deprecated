@@ -12,7 +12,7 @@ use crate::{
     Account, Messaging,
 };
 
-use crate::utils_internal::get_username_from_did;
+use crate::iutils::get_username_from_did;
 
 use dioxus::prelude::*;
 
