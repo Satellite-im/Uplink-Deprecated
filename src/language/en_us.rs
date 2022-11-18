@@ -54,5 +54,6 @@ pub fn make() -> Language {
         no_active_chats: String::from("No active chats, yet..."),
         start_one: String::from("Start one"),
         auth_tooltip: String::from("Only four to six characters allowed"),
+        new_friend_request: String::from("New Friend Request"),
     }
 }

@@ -7,7 +7,7 @@ use ui_kit::{
     numeric_indicator::NumericIndicator,
 };
 
-use crate::Account;
+use crate::{Account, LANGUAGE};
 use warp::multipass::{Friends, FriendsEvent, MultiPass, MultiPassEventKind};
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -27,6 +27,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Nav(cx: Scope<Props>) -> Element {
     log::debug!("rendering reusable Nav");
+    let l = use_atom_ref(&cx, LANGUAGE).read();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
@@ -50,6 +51,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
         (reqCount, &multipass),
         |(reqCount, mut multipass)| async move {
             // Used to make sure everything is initalized before proceeding.
+
             let mut stream = loop {
                 match multipass.subscribe() {
                     Ok(stream) => break stream,
@@ -81,6 +83,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             None => from.to_string(),
                         };
                         PushNotification(
+                            // l.new_friend_request.to_string().to_owned(),
                             "New Friend Request".to_owned(),
                             format!("{} sent a friend request", name_or_did),
                             // "Come see who it is!".to_owned(),

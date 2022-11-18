@@ -52,7 +52,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             PushNotification(
                 display_username,
                 msg.value().join("\n"),
-                crate::utils::sounds::Sounds::Notification,
+                ::utils::sounds::Sounds::Notification,
             );
         }
     });
