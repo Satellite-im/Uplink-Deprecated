@@ -1,4 +1,4 @@
-use crate::{utils_internal::config::Config, LANGUAGE};
+use crate::{iutils::config::Config, LANGUAGE};
 use audio_factory::ExtAudioFactoryControl;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;

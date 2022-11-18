@@ -18,6 +18,7 @@ pub struct OptionProps<'a> {
     children: Element<'a>,
 }
 
+#[allow(non_snake_case)]
 fn AudioOption<'a>(cx: Scope<'a, OptionProps<'a>>) -> Element<'a> {
     let styles = css!(
         "
@@ -297,7 +298,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                                 children: cx.render(rsx! {
                                     Select {
                                         on_change: move |_v| {},
-                                        options: vec![String::from("FLAC"), String::from("MP3"), String::from("OGG")]
+                                        options: vec![String::from("FFV1"), String::from("FAAC"), String::from("HEVC"), String::from("AAC"), String::from("Ape"), String::from("AIFF"), String::from("FLAC"), String::from("MP3"), String::from("MP4"), String::from("Opus"), String::from("Ogg Vorbis"), String::from("Speex"), String::from("Wav"), String::from("WavPack")]
                                     }
                                 })
                             },
@@ -327,6 +328,7 @@ pub fn ExtAudioFactoryControl(cx: Scope) -> Element {
         
         "
     );
+    // TODO: Icon should be a record icon, it should turn red and become a ovular shape like a normal button which includes the duration of the recording and turns the icon red
 
     let factory_visible = use_state(&cx, || false);
 
