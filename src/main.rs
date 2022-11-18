@@ -36,7 +36,6 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
-pub mod extensions;
 pub mod iutils;
 pub mod language;
 pub mod themes;

@@ -1,11 +1,15 @@
-use std::{collections::HashMap, fmt, fs};
+use std::{collections::HashMap, fmt, fs, path::PathBuf};
 
-use crate::DEFAULT_PATH;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
+use once_cell::sync::Lazy;
+use warp::sync::RwLock;
 
 type Render = unsafe fn() -> Box<fn(Scope) -> Element>;
 type Info = unsafe fn() -> Box<Extension>;
+
+static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
+    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug)]
 pub enum ExtensionType {
@@ -16,10 +20,10 @@ pub enum ExtensionType {
 #[allow(dead_code)]
 #[derive(Clone, Debug)]
 pub struct Extension {
-    name: String,
-    author: String,
-    description: String,
-    location: ExtensionType,
+    pub name: String,
+    pub author: String,
+    pub description: String,
+    pub location: ExtensionType,
 }
 
 impl Default for Extension {

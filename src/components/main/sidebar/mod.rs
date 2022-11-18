@@ -1,12 +1,12 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
+use utils::extensions::{get_renders, ExtensionType};
 use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
     components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
-    extensions::*,
     iutils::config::Config,
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,

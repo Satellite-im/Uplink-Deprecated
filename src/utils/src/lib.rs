@@ -1,5 +1,7 @@
+pub mod extensions;
 pub mod notifications;
 pub mod sounds;
+
 use std::{
     ops::{Deref, DerefMut},
     sync::Arc,
