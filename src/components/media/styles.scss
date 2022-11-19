@@ -1,0 +1,40 @@
+#media-container {
+  width: 100%;
+  background: var(--theme-background);
+  display: inline-flex;
+  flex-direction: column;
+  min-height: 200px;
+  max-height: calc(100% - 12rem);
+  border-bottom: 1px solid var(--theme-borders);
+  overflow-y: hidden;
+  resize: vertical;
+  justify-content: center;
+  position: relative;
+
+  &.fullscreen {
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: unset;
+    height: 100%;
+    resize: none;
+  }
+
+  #media-content {
+    flex: 1;
+    overflow: hidden;
+    overflow-y: scroll;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+  }
+
+  .media-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+}
