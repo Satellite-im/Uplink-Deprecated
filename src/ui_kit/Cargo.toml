@@ -17,4 +17,4 @@ mime = "0.3.16"
 regex = "1.6.0"
 utils = { path = "../utils" }
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "9945f8b36f48b2743f55f263d918db7893521e98"}
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "e47e7fd1349f14231d676141f918b6c090dbf2c1"}
