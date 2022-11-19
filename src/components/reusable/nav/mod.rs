@@ -74,15 +74,13 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 match event {
                     MultiPassEventKind::FriendRequestReceived { from } => {
                         // Use to show the name or did of who its from
-                        let name_or_did = match multipass
+                        let name_or_did = multipass
                             .get_identity(from.clone().into())
                             .ok()
                             .and_then(|list| list.first().cloned())
                             .map(|id| id.username())
-                        {
-                            Some(name) => name,
-                            None => from.to_string(),
-                        };
+                            .unwrap_or_else(|| from.to_string());
+
                         PushNotification(
                             new_friend_request_notification.clone(),
                             // "New Friend Request".to_owned(),
@@ -91,31 +89,28 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             ::utils::sounds::Sounds::FriendReq,
                         );
                         log::debug!("updating friend request count");
-                        let count = *(reqCount.get()) + 1;
                         // Note, this will increase the counter. Maybe use a separate task to check the list or use other events to decrease it
-                        reqCount.set(count);
+                        reqCount.with_mut(|count| *count += 1);
                     }
-                    MultiPassEventKind::FriendRequestRejected { .. } => {
+                    MultiPassEventKind::IncomingFriendRequestRejected { .. } => {
                         log::debug!("updating friend request count");
-                        let count = if *(reqCount.get()) == 0 {
-                            log::debug!("reject friend request");
-                            0
-                        } else {
-                            log::debug!("reject friend request");
-                            *(reqCount.get()) - 1
-                        };
-                        reqCount.set(count);
+                        if *(reqCount.get()) != 0 {
+                            log::debug!("close friend request");
+                            reqCount.with_mut(|count| *count -= 1);
+                        }
                     }
-                    MultiPassEventKind::FriendRequestClosed { .. } => {
+                    MultiPassEventKind::IncomingFriendRequestClosed { .. } => {
                         log::debug!("updating friend request count");
-                        let count = if *(reqCount.get()) == 0 {
+                        if *(reqCount.get()) != 0 {
                             log::debug!("close friend request");
-                            0
-                        } else {
-                            log::debug!("close friend request");
-                            *(reqCount.get()) - 1
-                        };
-                        reqCount.set(count);
+                            reqCount.with_mut(|count| *count -= 1);
+                        }
+                    }
+                    MultiPassEventKind::FriendAdded { .. } => {
+                        log::debug!("updating friend request count");
+                        if *(reqCount.get()) != 0 {
+                            reqCount.with_mut(|count| *count -= 1);
+                        }
                     }
                     _ => {}
                 }
