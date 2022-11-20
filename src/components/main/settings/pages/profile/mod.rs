@@ -14,27 +14,31 @@ pub struct Props {
     account: Account,
 }
 
+#[inline_props]
 #[allow(non_snake_case)]
-pub fn Profile(cx: Scope<Props>) -> Element {
+pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
     log::debug!("rendering settings/pages/Profile");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2= l.clone();
-    let edit_status = use_state(&cx, || false);
-    let edit_user_name = use_state(&cx, || false);
-    let account = cx.props.account.clone();
-    let identity = account.read().get_own_identity().unwrap();
+
+    let account2 = account.clone();
+    let identity = account2.read().get_own_identity().unwrap();
+
     let user_name = identity.username();
     let user_name_state = use_state(&cx, || user_name.clone());
+    let edit_user_name_state = use_state(&cx, || false);
+
     let status_msg = identity.status_message();
     let status_msg_state = use_state(&cx, || match status_msg.clone() {
         Some(msg) => msg,
         None => String::new(),
     });
+    let edit_status_msg_state = use_state(&cx, || false);
 
     let update_user_name = move |_| {
         // user name can't be none
         // unfinished
-        edit_user_name.set(false);
+        edit_user_name_state.set(false);
     };
 
     let update_status_msg = move |_| {
@@ -46,7 +50,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
       {
           println!("Failed in updating status message:{}", e);
       }
-      edit_status.set(false);
+      edit_status_msg_state.set(false);
   };
 
     cx.render(rsx! {
@@ -67,7 +71,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     label {
                         "User Name"
                     },
-                    if **edit_user_name {rsx! (
+                    if **edit_user_name_state {rsx! (
                         div {
                             class: "change-profile",
                             div{
@@ -94,7 +98,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                                     text: l.edit.to_string(),
                                     state: button::State::Secondary,
                                     on_pressed: move |_| {
-                                        edit_user_name.set(true);
+                                        edit_user_name_state.set(true);
                                     },
                             },
                         },)
@@ -104,7 +108,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                     label {
                         "Status Message"
                     },
-                if **edit_status {rsx! (
+                if **edit_status_msg_state {rsx! (
                     div {
                         class: "change-profile",
                         div{
@@ -131,7 +135,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                         text: l2.edit.to_string(),
                         state: button::State::Secondary,
                                 on_pressed: move |_| {
-                                    edit_status.set(true);
+                                    edit_status_msg_state.set(true);
                                 },
                             },
                         },)
