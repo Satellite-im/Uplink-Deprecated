@@ -31,6 +31,7 @@ pub struct PersistedState {
     pub favorites: HashSet<Uuid>,
     // show sidebar boolean, used with in mobile view
     pub hide_sidebar: bool,
+    pub total_unreads: u32,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -76,6 +77,15 @@ impl PartialOrd for ConversationInfo {
     }
 }
 
+pub fn total_notifications(s: &PersistedState) -> u32 {
+    let mut count = 0;
+    for convo in s.all_chats.iter() {
+        let convo_count = convo.1.clone().num_unread_messages;
+        count += convo_count;
+    }
+    count
+}
+
 impl PersistedState {
     pub fn load_or_inital() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
@@ -96,15 +106,6 @@ impl PersistedState {
         }
     }
 
-    pub fn total_notifications(self) -> u32 {
-        let mut count = 0;
-        for convo in self.all_chats.iter() {
-            let convo_count = convo.1.clone().num_unread_messages;
-            count += convo_count;
-        }
-        count
-    }
-
     pub fn dispatch(&mut self, action: Actions) {
         let next = match action {
             Actions::AddRemoveConversations(new_chats) => {
@@ -114,12 +115,12 @@ impl PersistedState {
                     .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
-
                 PersistedState {
                     current_chat: self.current_chat,
                     all_chats: new_chats,
                     favorites,
                     hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
                 }
             }
             Actions::ChatWith(info) => PersistedState {
@@ -127,6 +128,7 @@ impl PersistedState {
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
                 hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
             },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
@@ -134,6 +136,7 @@ impl PersistedState {
                     all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
                 };
                 // overwrite the existing entry
                 next.all_chats.insert(info.conversation.id(), info);
@@ -144,12 +147,14 @@ impl PersistedState {
                 all_chats: self.all_chats.clone(),
                 favorites,
                 hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
             },
             Actions::HideSidebar(slide_bar_bool) => PersistedState {
                 current_chat: self.current_chat,
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
                 hide_sidebar: slide_bar_bool,
+                total_unreads: self.total_unreads,
             },
             Actions::SendNotification(title, content, sound) => {
                 let _ = PushNotification(title, content, sound);
@@ -158,6 +163,7 @@ impl PersistedState {
                     all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
                 }
             }
         };
