@@ -76,6 +76,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                                     placeholder: "type user name".to_string(),
                                     // value: user_name_state.to_string(),
                                     on_change: move |e: FormEvent| user_name_state.set(e.value.clone()),
+                                    on_enter:move|_|{},
                                 },
                             },         
                             Button {
@@ -112,6 +113,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                                 placeholder: "type".to_string(),
                                 // value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
+                                on_enter:move|_|{},
                             },
                         },              
                         Button {

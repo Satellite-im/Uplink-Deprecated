@@ -1,7 +1,4 @@
-use dioxus::{
-    events::{FormEvent, KeyboardData, MouseEvent},
-    prelude::*,
-};
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_elements::KeyCode;
 
 use crate::context_menu::{ContextItem, ContextMenu};
@@ -16,7 +13,7 @@ pub enum State {
 pub struct Props<'a> {
     placeholder: String,
     on_change: EventHandler<'a, FormEvent>,
-    // on_enter: EventHandler<'a, ()>,
+    on_enter: EventHandler<'a, ()>,
     #[props(optional)]
     value: Option<String>,
 }
@@ -47,18 +44,18 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         },
                     })
                 },
-        cx.render(match &cx.props.value {
-            Some(value) => rsx!(input {
-                class: "input",
-                placeholder: "{cx.props.placeholder}",
-                value: "{value}",
-                oninput: |evt| cx.props.on_change.call(evt),
-                // onkeyup: move |evt| {
-                //     if evt.key_code == KeyCode::Enter {
-                //         cx.props.on_enter.call(())
-                //     }
-                // }
-            }),
+    cx.render(match &cx.props.value {
+        Some(value) => rsx!(input {
+            class: "input",
+            placeholder: "{cx.props.placeholder}",
+            value: "{value}",
+            oninput: |evt| cx.props.on_change.call(evt),
+            onkeyup: |evt| {
+                if evt.key_code == KeyCode::Enter {
+                    cx.props.on_enter.call(())
+                }
+            }
+        }),
             None => rsx! {
                 input {
                     class: "input",
