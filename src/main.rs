@@ -55,7 +55,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
+static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 #[derive(PartialEq, Props)]
 pub struct State {
