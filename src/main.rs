@@ -218,7 +218,7 @@ async fn initialization(
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
-    let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+    let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
@@ -233,7 +233,7 @@ async fn initialization(
     .await
     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
 
-    Ok((account, messenging, storage))
+    Ok((account, messaging, storage))
 }
 
 #[allow(non_snake_case)]
