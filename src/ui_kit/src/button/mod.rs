@@ -7,6 +7,7 @@ pub enum State {
     Success,
     Danger,
     Secondary,
+    Transparent,
 }
 
 #[derive(Props)]
@@ -44,6 +45,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             State::Success => "button-success",
             State::Danger => "button-danger",
             State::Secondary => "button-secondary",
+            State::Transparent => "button-transparent",
             _ => " ",
         },
         None => "",

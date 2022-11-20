@@ -10,7 +10,10 @@ use ui_kit::icon_button::IconButton;
 use warp::raygun::RayGun;
 
 use crate::{
-    components::main::compose::{messages::Messages, topbar::TopBar, write::Write},
+    components::{
+        main::compose::{messages::Messages, topbar::TopBar, write::Write},
+        media::MediaContainer,
+    },
     state::{Actions, LastMsgSent},
     Messaging, LANGUAGE, STATE,
 };
@@ -31,6 +34,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let warningMessage = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
+    let show_media = use_state(&cx, || false);
 
     cx.render(rsx! {
         div {
@@ -38,7 +42,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                 rsx!(
                     TopBar {
                         account: cx.props.account.clone(),
-                        on_call: move |_| {},
+                        on_call: move |_| {
+                            show_media.set(!show_media);
+                        },
                     },
                     (**show_warning).then(|| rsx!(
                         div {
@@ -52,6 +58,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             }
                         },
                     )),
+                    (**show_media).then(|| rsx! {
+                        MediaContainer {}
+                    }),
                     div {
                         class: "messages-container",
                         Messages {
