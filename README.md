@@ -24,7 +24,7 @@ Guidelines for contributing are located in the [`CONTRIBUTING.md`](CONTRIBUTING.
 
 ## Prerequisites
 
-You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system. Mac setup depends on [Homebrew](https://brew.sh).
+You'll need to install the required dependencies for your system in order to build and develop on Uplink. See the table below for help installing them on your system. Mac setup depends on [Homebrew](https://brew.sh).
 
 |Distribution|Commands|
 |--|--|
