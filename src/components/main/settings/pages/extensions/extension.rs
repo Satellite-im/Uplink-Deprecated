@@ -1,4 +1,6 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::{outline::Shape, Icon};
+use ui_kit::switch::Switch;
 use utils::extensions::Extension;
 
 #[derive(Props, PartialEq)]
@@ -13,9 +15,35 @@ pub fn ExtensionOptions(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "extension",
-            "{cx.props.extension.name}",
-            "{cx.props.extension.author}",
-            "{cx.props.extension.description}"
+            div {
+                class: "header",
+                div {
+                    class: "icon",
+                    Icon {
+                        icon: Shape::Chip
+                    }
+                },
+                div {
+                    class: "details",
+                    h2 {
+                        "{cx.props.extension.name}",
+                    }
+                    p {
+                        "{cx.props.extension.author}",
+                    }
+                }
+                div {
+                    class: "toggle",
+                    Switch {
+                        active: true,
+                        on_change: move |_| {}
+                    }
+                }
+            }
+            p {
+                class: "desc",
+                "{cx.props.extension.description}"
+            }
         }
     })
 }
