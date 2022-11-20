@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-
+use sir::css;
 use crate::{Account, LANGUAGE};
 use dioxus::events::FormEvent;
 use ui_kit::{
@@ -27,6 +27,13 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
     let user_name = identity.username();
     let user_name_state = use_state(&cx, || user_name.clone());
     let edit_user_name_state = use_state(&cx, || false);
+    let user_name_error = use_state(&cx, String::new);
+    let user_name_error_class = if user_name_error.is_empty() {
+        css!("opacity: 0")
+    } else {
+            "error_text"
+        };
+
 
     let status_msg = identity.status_message();
     let status_msg_state = use_state(&cx, || match status_msg.clone() {
@@ -78,9 +85,29 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                 class: "input-profile",
                                 Input {
                                     placeholder: "type user name".to_string(),
-                                    // value: user_name_state.to_string(),
-                                    on_change: move |e: FormEvent| user_name_state.set(e.value.clone()),
-                                    on_enter:move|_|{},
+                                    value: user_name_state.to_string(),
+                                    on_change: move |e: FormEvent| {
+                                        user_name_error.set("".into());
+                                        user_name_state.set(e.value.clone());
+                                    },
+                                    on_enter:move|_|{
+                                        let user_name_text = user_name_state.trim();
+                                        if user_name_text != user_name{
+                                            if user_name_text.is_empty(){
+                                                user_name_error.set("Username is required".into())
+                                            }else if user_name_text.len() <4 {
+                                                user_name_error.set("Username should be at least 4 characters".into())
+                                            }else{
+                                                if let Err(e) =  account.write().update_identity(IdentityUpdate::set_username(
+                                                    user_name_text.to_string()))
+                                                    {
+                                                    println!("Failed in updating status message:{}", e);
+                                                    }
+                                                    edit_user_name_state.set(false);
+                                            }  
+
+                                        }
+                                    },
                                 },
                             },         
                             Button {
@@ -91,8 +118,8 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                     )} else {rsx! (
                         div{
                             class: "change-profile",
-                             span {
-                            "username"
+                            span {
+                                "{user_name}"
                         },
                            Button {
                                     text: l.edit.to_string(),
@@ -102,6 +129,10 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                     },
                             },
                         },)
+                    },
+                    p {
+                        class: "{user_name_error_class}",
+                        "{user_name_error}"
                     },
                 }
                 div{
@@ -117,7 +148,15 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                 placeholder: "type".to_string(),
                                 // value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
-                                on_enter:move|_|{},
+                                on_enter:move|_|{
+                                    //TODO: add if msg changed here and on_pressed
+                                    if let Err(e) =  account.write().update_identity(IdentityUpdate::set_status_message(
+                                        Some(status_msg_state.to_string(),)))
+                                        {
+                                        println!("Failed in updating status message:{}", e);
+                                        }
+                                    edit_status_msg_state.set(false);
+                                },
                             },
                         },              
                         Button {
@@ -129,7 +168,7 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                     div{
                         class: "change-profile",
                         span {
-                            status_msg
+                         status_msg
                         },
                        Button {
                         text: l2.edit.to_string(),
