@@ -46,7 +46,7 @@ pub fn make() -> Language {
         edit_profile: String::from("Edit Profile"),
         about: String::from("About"),
         no_about_message: String::from("No about message set yet..."),
-        developement: String::from("Development"),
+        development: String::from("Development"),
         search: String::from("Search"),
         favorites: String::from("Favorites"),
         new_chat: String::from("New"),
