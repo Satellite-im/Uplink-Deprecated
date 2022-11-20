@@ -46,7 +46,7 @@ pub struct Language {
     pub friends: String,
     pub edit_profile: String,
     pub no_about_message: String,
-    pub developement: String,
+    pub development: String,
     pub search: String,
     pub favorites: String,
     pub new_chat: String,
