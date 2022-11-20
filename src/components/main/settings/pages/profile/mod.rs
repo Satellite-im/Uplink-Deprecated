@@ -146,7 +146,7 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                             class: "input-profile",
                             Input {
                                 placeholder: "type".to_string(),
-                                // value: status_msg_state.to_string(),
+                                value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
                                 on_enter:move|_|{
                                     //TODO: add if msg changed here and on_pressed
