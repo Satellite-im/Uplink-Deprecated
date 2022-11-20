@@ -1,5 +1,6 @@
 #files {
   #sidebar {
+    padding: 0 1rem 1rem 1rem;
     .tree_wrapper {
       flex: 1;
     }
@@ -42,5 +43,9 @@
       padding-left: 0;
       display: inline-flex;
     }
+  }
+  #files-label {
+    margin-top: 1.5rem;
+    margin-bottom: -1rem;
   }
 }

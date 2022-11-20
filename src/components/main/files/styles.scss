@@ -11,4 +11,26 @@
     display: inline-flex;
     flex-direction: column;
   }
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .mobile-usage {
+    justify-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+    flex-grow: 3;
+  }
+
+  .top-container {
+    margin-bottom: 0.2rem;
+    border-bottom: 1px solid var(--theme-borders);
+  }
+  .mobile-nav {
+    margin: 1rem;
+  }
 }

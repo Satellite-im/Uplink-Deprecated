@@ -16,17 +16,29 @@ pub struct UsageStats {
 #[allow(non_snake_case)]
 pub fn Usage(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
-        label {
-            "Usage"
-        },
         div {
-            id: "usage",
-            div { id: "usage_bar", style: "width:{cx.props.usage.percent_free}%;" },
-            div { id: "usage_bar_bg" },
-            p {
-                id: "usage_text",
-                "{cx.props.usage.available}mb free."
-            }
-        },
+            div {
+                id: "usage",
+                div {
+                    id: "usage_bar",
+                    style: "width:{cx.props.usage.percent_free}%;",
+                    (cx.props.usage.percent_free > 60).then(||  rsx!{
+                        span {
+                            class: "usage-available-text",
+                            "{cx.props.usage.available} MB Free",
+                        }
+                    })
+                },
+                div {
+                    id: "usage_bar_bg",
+                    (cx.props.usage.percent_free <= 59).then(||  rsx!{
+                        span {
+                            class: "usage-available-text",
+                            "{cx.props.usage.available} MB Free",
+                        }
+                    })
+                },
+            },
+        }
     })
 }
