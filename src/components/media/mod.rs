@@ -24,9 +24,17 @@ pub fn MediaContainer(cx: Scope) -> Element {
             div {
                 class: "media-toggle",
                 IconButton {
-                    icon: if **fullscreen { Shape::MinusCircle } else { Shape::ArrowsExpand },
-                    state: ui_kit::icon_button::State::Secondary,
+                    icon: if **fullscreen { Shape::Minus } else { Shape::ArrowsExpand },
+                    state: ui_kit::icon_button::State::Transparent,
                     on_pressed: move |_| fullscreen.set(!fullscreen),
+                }
+            },
+            div {
+                class: "settings-toggle",
+                IconButton {
+                    icon: Shape::Cog,
+                    state: ui_kit::icon_button::State::Transparent,
+                    on_pressed: move |_| {},
                 }
             },
             div {

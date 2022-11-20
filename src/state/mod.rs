@@ -4,6 +4,7 @@ use std::{
     cmp::{Ord, Ordering},
     collections::{HashMap, HashSet},
 };
+use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -15,6 +16,7 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    SendNotification(String, String, Sounds),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -94,6 +96,15 @@ impl PersistedState {
         }
     }
 
+    pub fn total_notifications(self) -> u32 {
+        let mut count = 0;
+        for convo in self.all_chats.iter() {
+            let convo_count = convo.1.clone().num_unread_messages;
+            count += convo_count;
+        }
+        count
+    }
+
     pub fn dispatch(&mut self, action: Actions) {
         let next = match action {
             Actions::AddRemoveConversations(new_chats) => {
@@ -140,6 +151,15 @@ impl PersistedState {
                 favorites: self.favorites.clone(),
                 hide_sidebar: slide_bar_bool,
             },
+            Actions::SendNotification(title, content, sound) => {
+                let _ = PushNotification(title, content, sound);
+                PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                }
+            }
         };
         // only save while there's a lock on PersistedState
         next.save();

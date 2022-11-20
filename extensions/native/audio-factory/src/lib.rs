@@ -24,20 +24,21 @@ fn AudioOption<'a>(cx: Scope<'a, OptionProps<'a>>) -> Element<'a> {
     let styles = css!(
         "
         display: inline-flex;
+        flex-wrap: wrap;
         border: 1px solid var(--theme-borders);
         border-radius: 4px;
         margin-bottom: 0.5rem;
         padding: 0.5rem 1rem;
         width: 100%;
+        justify-content: center;
 
         & {
             .info {
                 display: inline-flex;
                 flex: 1;
-                min-width: 0;
+                min-width: 200px;
                 text-align: left;
                 align-items: center;
-
                 .icon {
                     display: inline-flex;
                     align-items: center;
@@ -50,8 +51,12 @@ fn AudioOption<'a>(cx: Scope<'a, OptionProps<'a>>) -> Element<'a> {
             }
 
             .control {
+                margin: 1rem 0;
                 display: inline-flex;
                 align-items: center;
+                width: 20%;
+                min-width: 200px;
+                justify-content: center;
                 .switch {
                     margin: 0 !important;
                 }
@@ -139,6 +144,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                 pointer-events: none;
             }
         }
+
         .progress {
             height: 0.5rem;
             border-radius: 0.25rem 0 0.25 0;
@@ -316,6 +322,28 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                                 }
                             })
                         },
+                        AudioOption {
+                            title: String::from("Record Output"),
+                            text: String::from("Records any sounds outputted to your headphones on their own track."),
+                            icon: Shape::Cog,
+                            children: cx.render(rsx! {
+                                Switch {
+                                    active: true,
+                                    on_change: move |_| {}
+                                }
+                            })
+                        },
+                        AudioOption {
+                            title: String::from("Record System Sounds"),
+                            text: String::from("When enabled, notifications and other system sounds will be saved."),
+                            icon: Shape::Cog,
+                            children: cx.render(rsx! {
+                                Switch {
+                                    active: false,
+                                    on_change: move |_| {}
+                                }
+                            })
+                        },
                     }
                 })
             }
@@ -330,7 +358,7 @@ impl BasicExtension for AudioFactory {
         Extension {
             name: String::from("AudioFactory"),
             author: String::from("matt@satellite.im"),
-            description: String::from("Record audio to disc, compress and share after recording."),
+            description: String::from("Audio Factory allows you to record all in app audio to different audio tracks. You can additionally change the format, compress and convert."),
             location: ExtensionType::ChatbarIcon,
         }
     }

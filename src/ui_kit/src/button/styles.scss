@@ -46,8 +46,20 @@
     }
 
     svg {
-      fill: var(--theme-blue);
+      fill: var(--theme-text);
       stroke: none;
+    }
+  }
+
+  &-transparent {
+    background-color: transparent;
+
+    &:not(:active):hover {
+      background-color: transparent;
+    }
+
+    svg {
+      stroke: var(--theme-text);
     }
   }
 

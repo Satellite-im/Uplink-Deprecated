@@ -267,15 +267,12 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::General,
-            }
-            },
+                page_to_open: main::settings::sidebar::nav::Route::General,
+            }},
             Route { to: "/main/settings/profile", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::Profile,
-            }
-            },
-
+                page_to_open: main::settings::sidebar::nav::Route::Profile,
+            }},
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))

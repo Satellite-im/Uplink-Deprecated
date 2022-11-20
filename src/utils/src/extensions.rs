@@ -18,7 +18,7 @@ pub enum ExtensionType {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Extension {
     pub name: String,
     pub author: String,

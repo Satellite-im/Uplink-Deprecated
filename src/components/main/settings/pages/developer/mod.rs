@@ -1,3 +1,5 @@
+use std::fs;
+
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use warp::crypto::DID;
@@ -27,92 +29,132 @@ pub fn Developer(cx: Scope<Props>) -> Element {
     } else {
         DID::default().to_string()
     };
+
+    let cache_path = dirs::home_dir()
+        .unwrap_or_default()
+        .join(".warp")
+        .into_os_string()
+        .into_string()
+        .unwrap_or_default();
+
     cx.render(rsx! {
         div {
             id: "page_developer",
-        div {
+            class: "padded",
+            div {
                 class: "item",
-        div {
+                    div {
                     class: "description",
-        label {
+                    label {
                         "Developer Mode"
                     },
-        p {
+                    p {
                         "Enabling developer mode adds logging and displays helpful debug information on the UI."
                     }
                 },
-        div {
+                div {
                     class: "interactive",
-        Switch {
+                    Switch {
                         active: config.developer.developer_mode,
-        on_change: move |_| {
+                        on_change: move |_| {
                             config.developer.developer_mode = !config.developer.developer_mode;
                             let _ = config.save();
                         }
                     }
                 }
             }
-        div {
+            div {
                 class: "item",
-        div {
+                div {
                     class: "description",
-        label {
+                    label {
+                        "Open Cache"
+                    },
+                    p {
+                        "Open the cache in your default file browser."
+                    }
+                },
+                div {
+                    class: "interactive",
+                    Button {
+                        icon: Shape::FolderOpen,
+                        disabled: false,
+                        text: String::from("Open Cache"),
+                        on_pressed: move |_| {
+                            let _ = opener::open(&cache_path);
+                        },
+                    }
+                }
+            }
+            div {
+                class: "item",
+                div {
+                    class: "description",
+                    label {
                         "Extract Cache"
                     },
-        p {
+                    p {
                         "Zips and downloads your cache folder for sharing with other developers or migration to another device."
                     }
                 },
-        div {
+                div {
                     class: "interactive",
-        Button {
+                    Button {
                         icon: Shape::Download,
-        disabled: true,
-        text: String::from("Download"),
-        on_pressed: move |_| {},
-        }
+                        disabled: true,
+                        text: String::from("Download"),
+                        on_pressed: move |_| {},
+                    }
                 }
             }
-        div {
+            div {
                 class: "item",
-        div {
+                div {
                     class: "description",
-        label {
+                    label {
                         "Reset Cache"
                     },
-        p {
+                    p {
                         "Removes your cache and reloads the app, this is useful for testing new accounts quickly."
                     }
                 },
-        div {
+                div {
                     class: "interactive",
-        Button {
+                    Button {
                         icon: Shape::Trash,
-        state: State::Secondary,
-        text: String::from("Reset"),
-        on_pressed: move |_| {},
-        }
+                        state: State::Secondary,
+                        text: String::from("Reset"),
+                        on_pressed: move |_| {
+                            let c = dirs::home_dir()
+                                .unwrap_or_default()
+                                .join(".warp")
+                                .into_os_string()
+                                .into_string()
+                                .unwrap_or_default();
+                            let _ = fs::remove_dir_all(c);
+                        },
+                    }
                 }
             }
-        div {
+            div {
                 class: "item",
-        div {
+                div {
                     class: "description",
-        label {
+                    label {
                         "DIDKey"
                     },
-        p {
+                    p {
                         class: "selectable",
-        "{did}"
+                        "{did}"
                     }
                 },
-        div {
+                div {
                     class: "interactive",
-        }
+                }
             }
-        (c.developer.developer_mode).then(|| rsx! {
-            ExtensionPlaceholder {},
-        })
-        },
+            (c.developer.developer_mode).then(|| rsx! {
+                ExtensionPlaceholder {},
+            })
+        }
     })
 }
