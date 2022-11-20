@@ -50,7 +50,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
         &cx,
         (reqCount, &multipass),
         |(reqCount, mut multipass)| async move {
-            // Used to make sure everything is initalized before proceeding.
+            // Used to make sure everything is initialized before proceeding.
             let new_friend_request_notification = l.new_friend_request.to_string().to_owned();
 
             let mut stream = loop {
