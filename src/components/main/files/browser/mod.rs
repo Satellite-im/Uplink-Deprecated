@@ -3,6 +3,7 @@ use std::{collections::HashSet, time::Duration};
 use dioxus::prelude::*;
 
 use ui_kit::{file::File, folder::State, new_folder::NewFolder};
+use warp::constellation::item::ItemType;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -48,7 +49,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     state: State::Primary
                 }
             )),
-            files_sorted.iter().map(|file| {
+            files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
                 let file_extension = std::path::Path::new(&file.name())
                 .extension()
                 .unwrap_or_else(|| std::ffi::OsStr::new(""))
