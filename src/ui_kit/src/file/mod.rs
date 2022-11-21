@@ -25,11 +25,17 @@ pub fn File(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "folder {class}",
-            Icon { icon: Shape::Document },
-            p { "{file_name}" },
-            label {
-                "{file_size}"
-            }
+            button {
+                class: "button-files file",
+                onclick: move |_| {
+                    println!("Clicking on file");
+                },
+                Icon { icon: Shape::Document},
+                p { "{file_name}" },
+                label {
+                    "{file_size}"
+                }
+            },
         }
     })
 }
