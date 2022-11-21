@@ -1,4 +1,4 @@
-use crate::utils_internal::get_meta::SiteMeta;
+use crate::iutils::get_meta::SiteMeta;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use open;

@@ -2,6 +2,7 @@ use soloud::*;
 
 pub enum Sounds {
     Notification,
+    FriendReq,
     General,
 }
 
@@ -12,6 +13,9 @@ pub fn Play(sound: Sounds) {
     match sound {
         Sounds::Notification => wav
             .load_mem(include_bytes!("../../../extra/assets/sounds/Ponderous.ogg"))
+            .unwrap(),
+        Sounds::FriendReq => wav
+            .load_mem(include_bytes!("../../../extra/assets/sounds/Success.ogg"))
             .unwrap(),
         Sounds::General => {}
     };

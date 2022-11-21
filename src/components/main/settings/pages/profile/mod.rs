@@ -32,6 +32,7 @@ pub fn Profile(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "page_profile",
+            class: "padded",
             div {
                 class: "profile_header",
                 div {
@@ -50,26 +51,25 @@ pub fn Profile(cx: Scope<Props>) -> Element {
                 },
                 div {
                     class: "change-status",
-                div {
-                    class: "input_status",
-                    IconInput {
-                        icon: Shape::PencilAlt,
-                        placeholder: status.to_string(),
-                        value: status.to_string(),
-                        on_change: move |e: FormEvent| status.set(e.value.clone()),
-                        on_enter: set_status
+                    div {
+                        class: "input_status",
+                        IconInput {
+                            icon: Shape::PencilAlt,
+                            placeholder: status.to_string(),
+                            value: status.to_string(),
+                            on_change: move |e: FormEvent| status.set(e.value.clone()),
+                            on_enter: set_status
+                        },
                     },
-                },
-                div {
-                    Button {
-                        text: l.save_status.to_string(),
-                        icon: Shape::Check,
-                        on_pressed: move |_| {},
+                    div {
+                        Button {
+                            text: l.save_status.to_string(),
+                            icon: Shape::Check,
+                            on_pressed: move |_| {},
+                        }
                     }
                 }
-
             }
-            },
         }
     })
 }

@@ -11,7 +11,52 @@
     min-width: 0;
     height: 100%;
     display: inline-flex;
+    overflow-x: hidden;
+    overflow-y: scroll;
     flex-direction: column;
+  }
+
+  .a-z-list {
+    flex-direction: column;
+    height: 100%;
+    float: right;
+    width: 16px;
+    margin-right: 12px;
+  }
+
+  @media only screen and (max-height: 569px) {
+    ul {
+      font-size: 12px;
+    }
+  }
+
+  @media only screen and (min-height: 570px) {
+    ul {
+      font-size: 14px;
+    }
+  }
+
+  @media only screen and (min-height: 650px) {
+    ul {
+      font-size: 16px;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    margin-right: 2px;
+    padding: 8px 8px 8px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .friends-separator {
+    align-items: center;
+    height: 12px;
+    width: calc(100% - 5rem);
+    margin: 4px 0px 16px 0px;
+    text-align: left;
   }
 
   .friends-list {

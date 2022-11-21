@@ -1,4 +1,5 @@
-use crate::{utils_internal::config::Config, LANGUAGE};
+use crate::{iutils::config::Config, LANGUAGE};
+use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -6,6 +7,7 @@ use ui_kit::{
     small_extension_placeholder::SmallExtensionPlaceholder,
     textarea::TextArea,
 };
+use utils::extensions::BasicExtension;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -29,7 +31,6 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             TextArea {
                 on_submit: |val| cx.props.on_submit.call(val),
-                on_trigger_typing: |_| {},
                 text: text.clone(),
                 placeholder: l.chatbar_placeholder.to_string()
             }
@@ -39,6 +40,10 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     SmallExtensionPlaceholder {}
                 }
             })
+            div {
+                class: "chatbar_extensions",
+                AudioFactory::render()
+            },
             div {
                 id: "send",
                 IconButton {

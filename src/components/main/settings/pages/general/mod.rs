@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{utils_internal::config::Config, Account};
+use crate::{iutils::config::Config, Account};
 use ui_kit::switch::Switch;
 
 #[derive(Props, PartialEq)]
@@ -16,22 +16,23 @@ pub fn General(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "page_general",
-        div {
+            class: "padded",
+            div {
                 class: "item",
-        div {
+                div {
                     class: "description",
-        label {
+                    label {
                         "Splash Screen"
                     },
-        p {
+                    p {
                         "Disabling the splash screen can sometimes make for a faster startup."
                     }
                 },
-        div {
+                div {
                     class: "interactive",
-        Switch {
+                    Switch {
                         active: config.general.show_splash,
-        on_change: move |_| {
+                        on_change: move |_| {
                             config.general.show_splash = !config.general.show_splash;
                             let _ = config.save();
                         }

@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use ui_kit::extension_placeholder::ExtensionPlaceholder;
 
-use crate::{components::reusable::nav::Nav, utils_internal::config::Config};
+use crate::{components::reusable::nav::Nav, iutils::config::Config};
 use ::utils::Account;
 
 #[derive(Props)]

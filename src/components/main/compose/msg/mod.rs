@@ -8,7 +8,7 @@ use ui_kit::{icon_button::IconButton, profile_picture::PFP, textarea::TextArea};
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
-    utils_internal::{
+    iutils::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
@@ -68,7 +68,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let value = cx.props.message.clone().value().join("\n");
 
     let timestamp = cx.props.message.clone().date();
-    let ht = utils_internal::display_msg_time(timestamp);
+    let ht = iutils::display_msg_time(timestamp);
     let remote = match cx.props.remote {
         true => "remote",
         false => "local",
@@ -103,7 +103,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     };
 
     let profile_picture =
-        utils_internal::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
+        iutils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
     let profile_picture2 = profile_picture.clone();
     let profile_picture3 = profile_picture.clone();
 
@@ -175,7 +175,6 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                     popout.set(false);
                                 },
-                                on_trigger_typing:  |_| {},
                                 text: text.clone(),
                             },
                             IconButton {

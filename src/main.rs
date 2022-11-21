@@ -12,7 +12,7 @@ use std::{
 use tracing_subscriber::EnvFilter;
 use unic_langid::LanguageIdentifier;
 
-use crate::utils_internal::config::Config;
+use crate::iutils::config::Config;
 use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
@@ -36,10 +36,9 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
-pub mod extensions;
+pub mod iutils;
 pub mod language;
 pub mod themes;
-pub mod utils_internal;
 
 use tao::window::WindowBuilder;
 
@@ -56,7 +55,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
+static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -219,7 +218,7 @@ async fn initialization(
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
-    let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+    let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
@@ -234,7 +233,7 @@ async fn initialization(
     .await
     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
 
-    Ok((account, messenging, storage))
+    Ok((account, messaging, storage))
 }
 
 #[allow(non_snake_case)]
@@ -268,15 +267,12 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::General,
-            }
-            },
+                page_to_open: main::settings::sidebar::nav::Route::General,
+            }},
             Route { to: "/main/settings/profile", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::Profile,
-            }
-            },
-
+                page_to_open: main::settings::sidebar::nav::Route::Profile,
+            }},
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
