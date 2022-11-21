@@ -42,12 +42,16 @@ fn format_file_size(file_size: usize) -> String {
     let size_formatted = size_f64 / base_1024.powf(i);
 
     let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    format!(
+    let mut size_formatted_string = format!(
         "{size:.*} {size_suffix}",
         1,
         size = size_formatted,
         size_suffix = file_size_suffix
-    )
+    );
+    if size_formatted_string.contains(".0") {
+        size_formatted_string = size_formatted_string.replace(".0", "");
+    }
+    size_formatted_string
 }
 
 fn format_file_name_to_show(cx: Scope<Props>) -> String {
