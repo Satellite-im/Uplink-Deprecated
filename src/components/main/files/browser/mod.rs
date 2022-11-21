@@ -1,19 +1,46 @@
+use std::{collections::HashSet, time::Duration};
+
 use dioxus::prelude::*;
 
-use ui_kit::{
-    file::File,
-    folder::{Folder, State},
-    new_folder::NewFolder,
-};
+use ui_kit::{file::File, folder::State, new_folder::NewFolder};
+use warp::constellation::item::ItemType;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
+    storage: crate::Storage,
     show_new_folder: bool,
 }
 
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
+    let file_storage = cx.props.storage.clone();
+    let files = use_ref(&cx, HashSet::new);
+    let files_sorted = use_state(&cx, Vec::new);
+
+    use_future(
+        &cx,
+        (files, files_sorted, &file_storage.read().root_directory()),
+        |(files, files_sorted, root_directory)| async move {
+            loop {
+                let files_updated: HashSet<_> = HashSet::from_iter(root_directory.get_items());
+
+                if *files.read() != files_updated {
+                    log::debug!("updating files list");
+                    *files.write_silent() = files_updated.clone();
+
+                    let mut total_files_list: Vec<_> = files_updated.iter().cloned().collect();
+
+                    total_files_list.sort_by(|a, b| b.modified().cmp(&a.modified()));
+
+                    files_sorted.set(total_files_list);
+                }
+
+                tokio::time::sleep(Duration::from_secs(1)).await;
+            }
+        },
+    );
+
     cx.render(rsx! {
         div {
             id: "browser",
@@ -22,33 +49,21 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     state: State::Primary
                 }
             )),
-            Folder {
-                name: String::from("New Folder"),
-                state: State::Secondary,
-                children: 3
-            },
-            Folder {
-                name: String::from("Examples"),
-                state: State::Secondary,
-                children: 12
-            },
-            Folder {
-                name: String::from("Logs"),
-                state: State::Secondary,
-                children: 3941
-            },
-            File {
-                name: String::from("Hello World"),
-                state: State::Secondary,
-                kind: String::from("txt"),
-                size: 0
-            },
-            File {
-                name: String::from("Cache.zip"),
-                state: State::Secondary,
-                kind: String::from("archive/zip"),
-                size: 1
-            }
+            files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
+                let file_extension = std::path::Path::new(&file.name())
+                .extension()
+                .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                .to_str()
+                .unwrap()
+                .to_string();
+
+                rsx!( File {
+                    name: file.name(),
+                    state: State::Secondary,
+                    kind: file_extension,
+                    size: file.size(),
+                })
+            }),
         },
     })
 }

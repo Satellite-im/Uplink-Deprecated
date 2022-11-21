@@ -47,9 +47,9 @@ pub fn Files(cx: Scope<Props>) -> Element {
                             on_hide: move |_| show_upload.set(false),
                         },
                     },
-
                     FileBrowser {
                         account: cx.props.account.clone(),
+                        storage: cx.props.storage.clone(),
                         show_new_folder: **show_new_folder
                     }
                     span {
