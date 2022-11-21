@@ -1,51 +1,47 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .compose {
-    display: inline-flex;
+  display: inline-flex;
+  flex-grow: 1;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+
+  .blurmask {
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    background: var(--theme-semi-transparent);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 90;
+  }
+
+  .messages-container {
     flex: 1;
-    flex-direction: column;
+    overflow: hidden;
     position: relative;
+  }
 
-    .blurmask {
-        -webkit-backdrop-filter: blur(5px);
-        backdrop-filter: blur(5px);
-        background: var(--theme-semi-transparent);
-        bottom: 0;
-        left: 0;
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 90;
+  .writer-container {
+    display: inline-flex;
+    width: 100%;
+  }
+
+  .alpha-warning {
+    align-content: center;
+    align-items: center;
+    border-bottom: 1px solid var(--theme-borders);
+    border-top: 1px solid var(--theme-borders);
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 0.5rem 0.5rem;
+
+    .button {
+      height: 30px;
     }
-
-    .messages-container {
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-        padding-bottom: 2.5rem;
-    }
-
-    .scroll-fit-gradient-mask {
-        width: calc(100% - 15px);
-    }
-
-    .writer-container {
-        display: inline-flex;
-        width: 100%;
-    }
-
-    .alpha-warning {
-        align-content: center;
-        align-items: center;
-        border-bottom: 1px solid var(--theme-borders);
-        border-top: 1px solid var(--theme-borders);
-        display: inline-flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        padding: .5rem .5rem;
-
-        .button {
-            height: 30px;
-        }
-    }
+  }
 }

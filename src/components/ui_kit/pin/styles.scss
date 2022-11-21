@@ -1,29 +1,29 @@
 // Pin Entry
 
 .pin {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    transition: 0.2s;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transition: 0.2s;
 }
 
 .pin span {
-    display: inline-block;
-    height: 16px;
-    width: 16px;
-    background: var(--theme-foreground);
-    border-radius: 8px;
-    transition: 0.2s;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background: var(--theme-foreground);
+  border-radius: 8px;
+  transition: 0.2s;
 }
 
 .pin span.active {
-    background: var(--theme-primary);
+  background: var(--theme-primary);
 }
 
 .pin span.error {
-    background: var(--theme-red);
+  background: var(--theme-red);
 }
 
 .shake {
-    animation: shake 0.3s;
+  animation: shake 0.3s;
 }

@@ -1,13 +1,13 @@
+use crate::components::ui_kit::icon_button;
+use crate::utils::get_meta::SiteMeta;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use open;
-use crate::components::ui_kit::icon_button;
-use crate::utils::get_meta::SiteMeta;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]
 pub struct Props {
-    meta: SiteMeta
+    meta: SiteMeta,
 }
 
 #[allow(non_snake_case)]

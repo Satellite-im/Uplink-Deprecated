@@ -1,24 +1,24 @@
 // Icon Input
 .icon-input {
-    position: relative;
+  position: relative;
 }
 
 .icon-input .input {
-    padding-left: 40px;
+  padding-left: 40px;
 }
 
 .icon-input svg {
-    position: absolute;
-    z-index: 2;
-    stroke: var(--theme-placeholder);
-    top: 11px;
-    left: 10px;
-    fill: transparent;
+  position: absolute;
+  z-index: 2;
+  stroke: var(--theme-placeholder);
+  top: 11px;
+  left: 10px;
+  fill: transparent;
 }
 
 // TODO: This works but scss is unhappy.
 .icon-input svg {
-    &:focus {
-        stroke: var(--theme-primary) !important;
-    }
+  &:focus {
+    stroke: var(--theme-primary) !important;
+  }
 }

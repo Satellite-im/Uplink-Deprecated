@@ -1,9 +1,12 @@
 use crate::{
-    components::ui_kit::{
-        profile_picture::PFP,
-        activity_indicator::ActivityIndicator,
-        icon_button::IconButton,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+    components::{
+        reusable::toolbar,
+        ui_kit::{
+            activity_indicator::ActivityIndicator,
+            icon_button::IconButton,
+            profile_picture::PFP,
+            skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+        },
     },
     utils::{self, config::Config},
     Account, STATE,
@@ -35,34 +38,43 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     match opt {
         Some(conversation_info) => {
             let (display_did, display_username) =
-                utils::get_username_from_conversation(conversation_info, &mp.clone());
+                utils::get_username_from_conversation(conversation_info, &mp);
             let profile_picture = utils::get_pfp_from_did(display_did.clone(), &mp);
 
             let id = conversation_info.conversation.id();
 
             cx.render(rsx! {
-                div {
-                    class: "topbar",
-                    if profile_picture.is_empty() {
-                        rsx! (
-                            div {
-                                class: "pfp"
-                            }  
-                        )   
-                    } else {
-                        rsx!(PFP {
-                            src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
-                        })
+                toolbar::Toolbar {
+                    controls: cx.render(rsx! {
+                        IconButton {
+                            icon: Shape::Heart,
+                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+                            },
+                        },
+                        IconButton {
+                            icon: Shape::Phone,
+                            on_pressed: move |_| {
+                                cx.props.on_call.call(());
+                            },
+                        },
+                        IconButton {
+                            icon: Shape::VideoCamera,
+                            on_pressed: move |_| {
+                                cx.props.on_call.call(());
+                            },
+                        }
+                    }),
+                    PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
                     },
                     div {
-                        class: "who",
-                        div {
-                            class: "top-row",
-                            h3 {
-                                "{display_username}"
-                            }
-                        },
+                        class: "topbar-user-info",
+                        h3 {
+                            class: "ellipsis",
+                            "{display_username}"
+                        }
                         div {
                             class: "user-info-inline",
                             ActivityIndicator {
@@ -79,33 +91,20 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 ))
                             }
                         }
-                    },
-                    div {
-                        class: "controls",
-                        IconButton {
-                            icon: Shape::Phone,
-                            on_pressed: move |_| {
-                                cx.props.on_call.call(());
-                            },
-                        }
                     }
-                },
+                }
             })
         }
         None => cx.render(rsx! {
             div {
-                class: "topbar",
+                class: "topbar-user-info",
                 PFPSkeleton {},
                 div {
-                    class: "who",
-                    div {
-                        class: "top-row",
-                        InlineSkeleton {}
-                    },
+                    InlineSkeleton {},
                     InlineSkeleton {}
                 },
                 div {
-                    class: "controls",
+                    class: "topbar-controls",
                     IconButton {
                         icon: Shape::Phone,
                         on_pressed: move |_| {

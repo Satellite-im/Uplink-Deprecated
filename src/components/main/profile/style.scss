@@ -1,70 +1,77 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .profile {
-    display: inline-flex;
-    flex-direction: column;
+  display: inline-flex;
+  flex-direction: column;
+  width: 100%;
+
+  .background {
+    background: var(--theme-text-muted);
+    border-radius: 8px 8px 0 0;
+    height: 140px;
+    margin-bottom: 40px;
+    position: relative;
     width: 100%;
+    justify-content: center;
+    align-items: center;
 
-    .background {
-        background: var(--theme-text-muted);
-        border-radius: 8px 8px 0 0;
-        height: 140px;
-        margin-bottom: 40px;
-        position: relative;
-        width: 100%;
+    .profile-photo {
+      background: var(--theme-text-muted);
+      border: 2px solid var(--theme-foreground);
+      border-radius: 80px;
+      bottom: -41px;
+      height: 80px;
+      left: calc(50% - 41px);
+      position: absolute;
+      width: 80px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 
-        .profile-photo {
-            background: var(--theme-text-muted);
-            border: 2px solid var(--theme-foreground);
-            border-radius: 80px;
-            bottom: -41px;
-            height: 80px;
-            left: calc(50% - 41px);
-            position: absolute;
-            width: 80px;
-
-        }
+  .profile-body {
+    width: 100%;
+    button {
+      display: inline-flex;
     }
 
-    .profile-body {
-        width: 100%;
-
-        .small-did {
-            font-size: 8pt;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-left: .5rem;
-        }
-        .status {
-            color: var(--theme-text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .change-status {
-            padding: 1rem;
-        }
-
-        .button {
-            margin-bottom: 1rem;
-        }
-
-        .meta {
-            display: inline-flex;
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-
-            .badges,
-            .location,
-            .friend-count {
-                width: 33.33%;
-            }
-        }
-
-        .about {
-            p {
-                color: var(--theme-text-muted);
-            }
-        }
+    .small-did {
+      font-size: 8pt;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-left: 0.5rem;
     }
+    .status {
+      color: var(--theme-text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .change-status {
+      padding: 1rem;
+    }
+
+    .button {
+      margin-bottom: 1rem;
+    }
+
+    .meta {
+      display: inline-flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+
+      .badges,
+      .location,
+      .friend-count {
+        width: 33.33%;
+      }
+    }
+
+    .about {
+      p {
+        color: var(--theme-text-muted);
+      }
+    }
+  }
 }

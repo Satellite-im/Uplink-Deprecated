@@ -41,18 +41,10 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             if show_skeleton {rsx!(
                 PFPSkeleton {}
             )} else {rsx!(
-                if profile_picture.is_empty() {
-                rsx! (
-                    div {
-                        class: "pfp"
-                    }  
-                )   
-                } else {
-                    rsx!(PFP {
-                        src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
-                    })
-                }
+                rsx!(PFP {
+                    src: profile_picture,
+                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                })
              )}
             div {
                 class: "who",

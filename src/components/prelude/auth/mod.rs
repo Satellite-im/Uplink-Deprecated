@@ -1,8 +1,8 @@
 use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
-use dioxus_heroicons::Icon;
 use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::Icon;
 use sir::css;
 
 use crate::{
@@ -34,7 +34,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     };
 
     let mp = cx.props.account.clone();
-    let new_account = move |_| {
+    let new_account = move || {
         let username = username.trim();
         if username.is_empty() {
             error.set("Username is required".into())
@@ -49,31 +49,9 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 }
                 Err(_) => error.set("Unexpected error has occurred".into()),
             }
-            
         }
     };
-
-    let mp2 = cx.props.account.clone();
-    let new_account_2 = move |_| {
-        let username = username.trim();
-        if username.is_empty() {
-            error.set("Username is required".into())
-        } else {
-            match mp2.write().create_identity(Some(username), None) {
-                Ok(_) => {
-                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/loading", None, None);
-                }
-                Err(warp::error::Error::InvalidLength { .. }) => {
-                    error.set("Username length is invalid".into())
-                }
-                Err(e) => {
-                    println!("{}", e);
-                    error.set("Unexpected error has occurred".into())
-                }
-            }
-        }
-    };
+    let new_account2 = new_account.clone();
 
     cx.render(rsx! {
         div {
@@ -99,8 +77,8 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 }
                             }
                     },
-        
-                    
+
+
                     div { class: "m-bottom" },
                     div {
                         class: "full-width",
@@ -121,7 +99,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
 
                                 username.set(evt.value.clone());
                             },
-                            on_enter: new_account_2,
+                            on_enter: move |_| new_account(),
                         },
                         p {
                             class: "{error_class}",
@@ -135,7 +113,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 true => button::State::Primary,
                                 false => button::State::Secondary,
                             },
-                            on_pressed: new_account,
+                            on_pressed:  move |_| new_account2(),
                         }
                     }
                 }

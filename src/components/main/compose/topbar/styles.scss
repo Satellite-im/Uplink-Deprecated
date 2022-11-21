@@ -1,46 +1,21 @@
-// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
-
 .topbar {
-    display: inline-flex;
-    flex-direction: row;
-    height: 40px;
-    padding: 1rem;
+  :not(.topbar-user-info) {
+    flex-shrink: 0;
+  }
 
-    .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
+  &-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  &-user-info {
+    flex-grow: 1;
+    text-align: left;
+    min-width: 0;
+
+    .did {
+      color: var(--theme-text-darker);
+      font-size: var(--text-small);
     }
-
-    .who {
-        display: inline-flex;
-        flex: 1;
-        flex-direction: column;
-        height: 40px;
-        padding: 0 1rem;
-        text-align: left;
-
-        .top-row {
-            display: inline-flex;
-            flex-direction: row;
-
-            h3 {
-                margin: 0;
-            }
-        }
-
-        .user-info-inline {
-            align-items: center;
-            display: inline-flex;
-        }
-
-        .did {
-            align-self: center;
-            color: var(--theme-text-darker);
-            font-size: var(--text-small);
-            margin-left: 1rem;
-            padding-top: 4px;
-        }
-    }
+  }
 }

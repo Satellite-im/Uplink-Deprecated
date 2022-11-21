@@ -1,5 +1,5 @@
 use crate::{
-    components::ui_kit::icon_button::IconButton,
+    components::ui_kit::{icon_button::IconButton, profile_picture::PFP},
     state::{Actions, ConversationInfo},
     utils, Account, Messaging, LANGUAGE, STATE,
 };
@@ -100,11 +100,13 @@ pub fn FavoriteChat<'a>(
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
     let conversation_id = conversation_info.conversation.id();
-    let (_, conversation_name) = utils::get_username_from_conversation(conversation_info, mp);
+    let (did, conversation_name) = utils::get_username_from_conversation(conversation_info, mp);
     let has_unread = match conversation_info.num_unread_messages > 0 {
         true => "has-unread",
         _ => "",
     };
+    let profile_picture = utils::get_pfp_from_did(did, mp);
+
     cx.render(rsx! {
         div {
             class: "favorites-container",
@@ -112,7 +114,11 @@ pub fn FavoriteChat<'a>(
             div {
                 class: "profile-wrapper",
                 div {
-                    class: "pfp"
+                    class: "pfp",
+                    PFP {
+                        src: profile_picture,
+                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                    },
                 },
                 div {
                     class: "pfs {has_unread}"
@@ -137,13 +143,18 @@ pub fn ConversationList<'a>(
        div {
         class: "add-favorites",
         all_chats.iter().map(|(uuid, conv)| {
-            let (_, name) = utils::get_username_from_conversation(conv, mp);
+            let (did, name) = utils::get_username_from_conversation(conv, mp);
+            let profile_picture = utils::get_pfp_from_did(did, mp);
             cx.render(rsx!(
                 div {
                     class: "to-add",
                     onclick: move |_| on_pressed.call(*uuid),
                     div {
                         class: "pfp",
+                        PFP {
+                            src: profile_picture,
+                            size: crate::components::ui_kit::profile_picture::Size::Normal
+                        },
                     }
                     span {
                         "{name}"

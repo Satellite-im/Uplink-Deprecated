@@ -3,7 +3,10 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
-use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
+use crate::{
+    components::main::files::sidebar::usage::{Usage, UsageStats},
+    Account,
+};
 
 pub mod usage;
 
@@ -96,9 +99,13 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
     })
 }
 
-#[inline_props]
+#[derive(Props, PartialEq)]
+pub struct Props {
+    account: Account,
+}
+
 #[allow(non_snake_case)]
-pub fn Sidebar(cx: Scope, _account: crate::Account) -> Element {
+pub fn Sidebar(cx: Scope<Props>) -> Element {
     // TODO: This should be generated based on actual content later.
     // We will create reusable components for a folder and just pass children as data and render
     // recursively automatically.
@@ -127,9 +134,8 @@ pub fn Sidebar(cx: Scope, _account: crate::Account) -> Element {
 
     // if multiple folders are desired under `Files`, this could render a list of `DirEntry`
     cx.render(rsx! {
-        div {
-            id: "sidebar",
-            class: "tree",
+        crate::components::reusable::sidebar::Sidebar {
+            account: cx.props.account.clone(),
             Usage {
                 usage: UsageStats {
                     available: 1256,

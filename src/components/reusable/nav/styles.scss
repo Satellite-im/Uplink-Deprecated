@@ -1,0 +1,25 @@
+// Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
+
+.nav {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 100%;
+  min-height: fit-content;
+  -webkit-user-select: none; /* Safari */
+  user-select: none; /* Non-prefixed version, currently */
+
+  .button {
+    svg {
+      stroke: var(--theme-text-bright);
+    }
+  }
+
+  .button-secondary {
+    background: none;
+
+    svg {
+      stroke: var(--theme-text-muted);
+    }
+  }
+}

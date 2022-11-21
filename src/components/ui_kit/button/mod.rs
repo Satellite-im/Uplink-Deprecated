@@ -34,16 +34,16 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => String::from(""),
     };
 
-    let mut class = String::from("");
+    let mut class = String::from("button ");
     class += match cx.props.large {
-        Some(_) => "button button-lg ",
-        None => "button ",
+        Some(_) => "button-lg",
+        None => "",
     };
     class += match cx.props.state.as_ref() {
         Some(state) => match state {
-            State::Success => "button-success ",
-            State::Danger => "button-danger ",
-            State::Secondary => "button-secondary ",
+            State::Success => "button-success",
+            State::Danger => "button-danger",
+            State::Secondary => "button-secondary",
             _ => " ",
         },
         None => "",
@@ -51,28 +51,24 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     cx.render(match cx.props.icon {
         Some(icon) => rsx! {
-            div {
-                button {
-                    class: "{class}",
-                    onclick: move |evt| cx.props.on_pressed.call(evt),
-                    disabled: "{disabled}",
-                    Icon {
-                        icon: icon,
-                    },
-                    span {
-                        "{text}"
-                    }
+            button {
+                class: "{class}",
+                onclick: move |evt| cx.props.on_pressed.call(evt),
+                disabled: "{disabled}",
+                Icon {
+                    icon: icon,
+                },
+                span {
+                    "{text}"
                 }
             }
         },
         None => rsx! {
-            div {
-                button {
-                    class: "{class}",
-                    disabled: "{disabled}",
-                    onclick: move |evt| cx.props.on_pressed.call(evt),
-                    "{text}"
-                }
+            button {
+                class: "{class}",
+                disabled: "{disabled}",
+                onclick: move |evt| cx.props.on_pressed.call(evt),
+                "{text}"
             }
         },
     })

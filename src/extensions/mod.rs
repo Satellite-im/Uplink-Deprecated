@@ -1,10 +1,10 @@
-use std::{fs, collections::HashMap};
-use std::ffi::OsStr;
-use std::sync::Arc;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
 use once_cell::sync::Lazy;
-use tracing::log::{info, error};
+use std::ffi::OsStr;
+use std::sync::Arc;
+use std::{collections::HashMap, fs};
+use tracing::log::{error, info};
 
 use crate::DEFAULT_PATH;
 
@@ -13,9 +13,7 @@ type InfoFn = unsafe fn() -> Box<ExtensionInfo>;
 
 type Extensions = HashMap<ExtensionType, Vec<Extension>>;
 
-static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(
-    || ExtensionManager::load_or_default()
-);
+static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(ExtensionManager::load_or_default);
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Copy)]
 pub enum ExtensionType {
@@ -39,6 +37,7 @@ pub struct Extension {
     component: Component,
 }
 
+#[derive(Default)]
 #[allow(dead_code)]
 pub struct ExtensionManager {
     extensions: Extensions,
@@ -52,15 +51,6 @@ impl Default for ExtensionInfo {
             author: Default::default(),
             description: Default::default(),
             location: ExtensionType::SidebarWidget,
-        }
-    }
-}
-
-impl Default for ExtensionManager {
-    fn default() -> Self {
-        Self {
-            extensions: HashMap::new(),
-            is_loaded: false,
         }
     }
 }
@@ -84,9 +74,7 @@ impl Extension {
 impl ExtensionManager {
     pub fn load_or_default() -> Self {
         match Self::load() {
-            Ok(instance) => {
-                instance
-            }
+            Ok(instance) => instance,
             Err(err) => {
                 error!("Failed to initialize ExtensionManager: {}", err);
                 Self::default()
@@ -113,7 +101,6 @@ impl ExtensionManager {
                     error!("Failed to load extension {:?}: {}", &path, err)
                 }
             }
-
         }
 
         Ok(Self {
@@ -132,18 +119,16 @@ pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes
     if enable {
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
-        match extensions {
-            Some(items) => {
-                let mut nodes: Vec<LazyNodes> = vec![];
-                for extension in items {
-                    let Ext = extension.component;
-                    nodes.push(rsx!(div { Ext {} }));
-                }
-                return nodes;
-            }
-            None => {}
+        if let Some(items) = extensions {
+            let nodes: Vec<LazyNodes> = items
+                .iter()
+                .map(|ext| {
+                    let Ext = ext.component;
+                    rsx!(div { Ext {} })
+                })
+                .collect();
+            return nodes;
         }
     }
-
     vec![]
 }

@@ -8,6 +8,7 @@ pub mod upload;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
+    storage: crate::Storage,
 }
 
 #[allow(non_snake_case)]
@@ -18,7 +19,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "files",
-            sidebar::Sidebar { _account: cx.props.account.clone() },
+            sidebar::Sidebar { account: cx.props.account.clone() },
             div {
                 id: "content",
                 toolbar::Toolbar {

@@ -1,0 +1,39 @@
+#friends {
+  #sidebar {
+    .row {
+      display: inline-flex;
+      align-items: center;
+
+      svg {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .root {
+      color: var(--theme-text-bright);
+      padding-left: 0;
+      display: inline-flex;
+    }
+
+    .code {
+      width: 100%;
+      margin-bottom: 1rem;
+      .button {
+        min-width: 100%;
+      }
+    }
+
+    .add {
+      width: 100%;
+      display: inline-flex;
+      margin-bottom: 1rem;
+      .icon-input {
+        flex: 1;
+      }
+
+      .button {
+        margin-left: 1rem;
+      }
+    }
+  }
+}
