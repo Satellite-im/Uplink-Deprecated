@@ -1,6 +1,7 @@
 use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use emoji_selector::EmojiSelector;
 use ui_kit::button::Button;
 use utils::extensions::{BasicExtension, Extension};
 
@@ -16,6 +17,7 @@ pub fn Extensions(cx: Scope) -> Element {
 
     let mut extensions: Vec<Extension> = Vec::new();
     extensions.push(AudioFactory::info());
+    extensions.push(EmojiSelector::info());
 
     let extensions_path = dirs::home_dir()
         .unwrap_or_default()

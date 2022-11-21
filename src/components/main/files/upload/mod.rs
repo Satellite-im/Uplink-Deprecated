@@ -32,8 +32,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 None => return
                             };
 
-
-
                             let filename = std::path::Path::new(&file_path)
                             .file_name()
                             .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -57,6 +55,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             Err(error) => {
                                                 match &error {
                                                     warp::error::Error::DuplicateName => {
+
                                                         let file_name_without_extension = std::path::Path::new(&filename.clone())
                                                         .with_extension("")
                                                         .to_str()

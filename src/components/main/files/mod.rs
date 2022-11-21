@@ -2,13 +2,11 @@ use dioxus::prelude::*;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
-    components::reusable::nav::Nav,
-    main::files::{
-        browser::FileBrowser,
-        sidebar::usage::{Usage, UsageStats},
-        toolbar::Toolbar,
-        upload::Upload,
+    components::{
+        main::files::toolbar::usage::{Usage, UsageStats},
+        reusable::nav::Nav,
     },
+    main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
 };
 pub mod browser;
 pub mod sidebar;
@@ -35,20 +33,6 @@ pub fn Files(cx: Scope<Props>) -> Element {
                 rsx!(
                     div {
                         class: "flex-row top-container",
-                        div {
-                            class: "mobile-usage",
-                            span {
-                                class: "hidden-on-desktop",
-                                Usage {
-                                    usage: UsageStats {
-                                        available: 1256,
-                                        total: 123456,
-                                        used: 122200,
-                                        percent_free: 61,
-                                    }
-                                },
-                            }
-                        },
                         Toolbar {
                             on_new_folder: move |_| {
                                 show_new_folder.set(true);
@@ -63,9 +47,9 @@ pub fn Files(cx: Scope<Props>) -> Element {
                             on_hide: move |_| show_upload.set(false),
                         },
                     },
-
                     FileBrowser {
                         account: cx.props.account.clone(),
+                        storage: cx.props.storage.clone(),
                         show_new_folder: **show_new_folder
                     }
                     span {

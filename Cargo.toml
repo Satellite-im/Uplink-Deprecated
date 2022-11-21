@@ -65,8 +65,11 @@ warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "47802992ee
 warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "47802992ee4b4acdbb4e1b5f090ab10cdacb6067" }
 warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "47802992ee4b4acdbb4e1b5f090ab10cdacb6067" }
 arboard = "3.1.0"
+fs2 = "0.4.3"
+humansize = "2.0.0"
 
 audio-factory = { path = "extensions/native/audio-factory" }
+emoji-selector = { path = "extensions/native/emoji-selector" }
 
 [build-dependencies]
 glob = "0.3.0"
