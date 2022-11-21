@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use regex::RegexSet;
 use sir::css;
 use crate::{Account, LANGUAGE};
 use dioxus::events::FormEvent;
@@ -7,7 +8,7 @@ use ui_kit::{
     input::Input,
     photo_picker::PhotoPicker,
 };
-use warp::multipass::identity::IdentityUpdate;
+use warp::multipass::identity::{IdentityUpdate, Identifier};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -91,26 +92,46 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                         user_name_state.set(e.value.clone());
                                     },
                                     on_enter:move|_|{
-                                        let user_name_text = user_name_state.trim();
-                                        if user_name_text != user_name{
-                                            if user_name_text.is_empty(){
-                                                user_name_error.set("Username is required".into())
-                                            }else if user_name_text.len() <4 {
-                                                user_name_error.set("Username should be at least 4 characters".into())
-                                            }else{
-                                                if let Err(e) =  account.write().update_identity(IdentityUpdate::set_username(
-                                                    user_name_text.to_string()))
-                                                    {
-                                                    println!("Failed in updating status message:{}", e);
-                                                    }
-                                                    edit_user_name_state.set(false);
-                                            }  
+                                let user_name_text = user_name_state.trim();
 
+                                if user_name_text != user_name{
+                                        if user_name_text.is_empty(){
+                                                user_name_error.set("Username is required".into())
+                                        }else if user_name_text.len() < 4 ||user_name_text.len() > 32  {
+                                                user_name_error.set("Username needs to be between 4 and 32 characters long".into())
+                                        }else{
+                                        let user_name_regex_set = RegexSet::new(&[
+                                                    r"@",
+                                                    r"\p{Emoji}",
+                                         ]).unwrap();
+                                                    
+                                        let matches: Vec<_> = user_name_regex_set.matches(user_name_text).into_iter().collect();
+
+                                        if matches.contains(&0){
+                                            user_name_error.set("@ is not allowed in username".into());
+                                        } else if matches.contains(&1){
+                                            user_name_error.set("emoji is not allowed in username".into());
+                                        } else {
+                                        //TODO: check if username already exists
+                                          let return_result =  account.write().get_identity(Identifier::user_name(user_name_text));
+
+                                         match return_result {
+                                            Ok(user) => println!("user: {:?}",user.iter()),
+                                            Err(e) => println!("error: {}",e),
+                                         }
+                                            // if let Err(e) =  account.write().update_identity(IdentityUpdate::set_username(
+                                            //     user_name_text.to_string()))
+                                            //     {
+                                            //     println!("Failed in updating status message:{}", e);
+                                            //     }
+                                            //     edit_user_name_state.set(false);
                                         }
-                                    },
-                                },
-                            },         
-                            Button {
+                                    }
+                                }
+                            },
+                        },
+                    },
+                    Button {
                                 text: l.save.to_string(),
                                 on_pressed: update_user_name
                             }
