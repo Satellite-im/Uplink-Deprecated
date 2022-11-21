@@ -1,0 +1,13 @@
+[package]
+name = "emoji-selector"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
+ui_kit = { path = "../../../src/ui_kit" }
+utils = { path = "../../../src/utils" }
+
+# gstreamer = "0.19.2"

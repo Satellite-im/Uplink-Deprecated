@@ -2,7 +2,11 @@ use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 
-use crate::components::reusable::toolbar;
+use crate::components::{
+    main::files::toolbar::usage::{Usage, UsageStats},
+    reusable::toolbar,
+};
+pub mod usage;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -30,7 +34,14 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
             }),
-            div {}
+            Usage {
+                usage: UsageStats {
+                    available: 1256,
+                    total: 123456,
+                    used: 122200,
+                    percent_free: 75,
+                }
+            },
         },
     })
 }

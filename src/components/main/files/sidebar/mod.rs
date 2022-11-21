@@ -3,12 +3,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
-use crate::{
-    components::main::files::sidebar::usage::{Usage, UsageStats},
-    Account,
-};
-
-pub mod usage;
+use crate::Account;
 
 #[derive(Eq, PartialEq, Clone)]
 pub struct Directory {
@@ -136,14 +131,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
         account: cx.props.account.clone(),
-            Usage {
-                usage: UsageStats {
-                    available: 1256,
-                    total: 123456,
-                    used: 122200,
-                    percent_free: 75,
-                }
-            },
             div {
                 id: "files-label",
                 label {
