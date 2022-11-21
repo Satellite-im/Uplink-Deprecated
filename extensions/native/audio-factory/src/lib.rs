@@ -114,6 +114,9 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
         bottom: 80px;
         max-height: 60vh;
         overflow-y: scroll;
+        @media only screen and (min-width: 900px) {
+            left: 50%;
+        }
         &:hover {
             &::-webkit-scrollbar-thumb {
                 background: var(--theme-primary) !important;
@@ -356,7 +359,7 @@ pub struct AudioFactory;
 impl BasicExtension for AudioFactory {
     fn info() -> Extension {
         Extension {
-            name: String::from("AudioFactory"),
+            name: String::from("Audio Factory"),
             author: String::from("matt@satellite.im"),
             description: String::from("Audio Factory allows you to record all in app audio to different audio tracks. You can additionally change the format, compress and convert."),
             location: ExtensionType::ChatbarIcon,
