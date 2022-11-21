@@ -1,6 +1,6 @@
 use std::{collections::HashSet, time::Duration};
 
-use dioxus::prelude::*;
+use dioxus::{core::to_owned, prelude::*};
 
 use ui_kit::{file::File, folder::State, new_folder::NewFolder};
 use warp::constellation::item::ItemType;
@@ -50,6 +50,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
+
                 let file_extension = std::path::Path::new(&file.name())
                 .extension()
                 .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -57,12 +58,33 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 .unwrap()
                 .to_string();
 
-                rsx!( File {
-                    name: file.name(),
-                    state: State::Secondary,
-                    kind: file_extension,
-                    size: file.size(),
-                })
+                rsx!(
+                    button {
+                        class: "button-files file",
+                        onclick: move |_| {
+                            let file_storage = cx.props.storage.clone();
+                            let file_name = file.name();
+
+                            cx.spawn({
+                                to_owned![file_storage, file_name];
+                                async move {
+                                let mut write_storage = file_storage.write();
+
+                                    match write_storage.remove(&file_name, true).await {
+                                        Ok(_) => println!("{file_name} is deleted"),
+                                        Err(e) => println!("Error deleting file: {e}"),
+                                    };
+                                }
+                            });
+                        },
+                        File {
+                            name: file.name(),
+                            state: State::Secondary,
+                            kind: file_extension,
+                            size: file.size(),
+                        }
+                    }
+                )
             }),
         },
     })

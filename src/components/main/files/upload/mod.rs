@@ -25,7 +25,9 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     id: "content",
                     input {
                         "type": "file",
-                        onclick: move |_| {
+                        onclick: move |dragged| {
+                            println!("{:?}", dragged);
+
                             // TODO(Files): Remove filter to upload other kind of files          
                             let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
                                 Some(path) => path,
