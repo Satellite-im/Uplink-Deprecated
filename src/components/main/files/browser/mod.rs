@@ -45,8 +45,12 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         div {
             id: "browser",
             (cx.props.show_new_folder).then(|| rsx!(
-                NewFolder {
-                    state: State::Primary
+                button {
+                    class: "button-files file",
+                    onclick: move |_| {},
+                    NewFolder {
+                        state: State::Primary
+                    }
                 }
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
@@ -64,7 +68,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         onclick: move |_| {
                             let file_storage = cx.props.storage.clone();
                             let file_name = file.name();
-
                             cx.spawn({
                                 to_owned![file_storage, file_name];
                                 async move {
