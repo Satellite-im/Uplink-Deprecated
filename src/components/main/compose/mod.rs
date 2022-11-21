@@ -34,7 +34,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let warningMessage = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
-    let show_media = use_state(&cx, || false);
+    let show_media = use_state(&cx, || true);
 
     cx.render(rsx! {
         div {
@@ -59,7 +59,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         },
                     )),
                     (**show_media).then(|| rsx! {
-                        MediaContainer {}
+                        MediaContainer {
+                            account: cx.props.account.clone(),
+                        }
                     }),
                     div {
                         class: "messages-container",
