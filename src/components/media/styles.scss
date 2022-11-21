@@ -29,12 +29,11 @@
 
     #media-content {
       flex: 1;
-      margin-top: 12px;
       display: flex;
       flex-flow: row wrap;
       justify-content: center;
       align-content: center;
-      gap: 8px;
+      gap: 1rem;
     }
 
     .media-toggle {

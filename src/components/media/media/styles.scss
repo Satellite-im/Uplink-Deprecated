@@ -21,14 +21,14 @@
 
     .pfp-container {
       .pfp {
-        height: 80px;
-        width: 80px;
+        height: 40px;
+        width: 40px;
       }
     }
 
     .placeholder {
       position: absolute;
-      font-size: 2rem;
+      font-size: var(--text-size);
     }
   }
 
