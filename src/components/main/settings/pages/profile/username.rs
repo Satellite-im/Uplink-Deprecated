@@ -17,8 +17,8 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    let l2= l.clone();
-    let l3= l.clone();
+    let l2 = l.clone();
+    let l3 = l.clone();
     let identity = account.read().get_own_identity().unwrap();
     let username = identity.username();
     let username2 = username.clone();
@@ -60,7 +60,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                         let matches = username_regex_set.matches(username_text);
                                         if matches.matched(0) {
                                             username_error.set(l2.username_error_at_sign.to_string())
-                                        } else if matches.matched(1){                                
+                                        } else if matches.matched(1){
                                             username_error.set(l2.username_error_illegal.to_string())
                                         } else {
                                             if let Err(e) = account
@@ -93,7 +93,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                     let matches = username_regex_set.matches(username_text);
                                     if matches.matched(0) {
                                         username_error.set(l3.username_error_at_sign.to_string())
-                                    } else if matches.matched(1){                                
+                                    } else if matches.matched(1){
                                         username_error.set(l3.username_error_illegal.to_string())
                                     } else {
                                         if let Err(e) = account
