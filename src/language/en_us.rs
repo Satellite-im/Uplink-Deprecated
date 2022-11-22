@@ -41,7 +41,19 @@ pub fn make() -> Language {
         location: String::from("Location"),
         badges: String::from("Badges"),
         save: String::from("Save"),
-        status_placeholder: String::from("Some status message..."),
+        edit: String::from("Edit"),
+        username: String::from("User Name"),
+        username_placeholder: String::from("Digit your username..."),
+
+        username_error_required: String::from("Username is required"),
+        username_error_length: String::from(
+            "Username needs to be between 4 and 32 characters long",
+        ),
+        username_error_at_sign: String::from("@ is not allowed in username"),
+        username_error_illegal: String::from("Illegal input in username"),
+        status_msg: String::from("Status Message"),
+        status_placeholder: String::from("Digit your status message..."),
+        status_error_length: String::from("status message needs to be less than 128 characters"),
         friends: String::from("Friends"),
         edit_profile: String::from("Edit Profile"),
         about: String::from("About"),
@@ -55,6 +67,5 @@ pub fn make() -> Language {
         start_one: String::from("Start one"),
         auth_tooltip: String::from("Only four to six characters allowed"),
         new_friend_request: String::from("New Friend Request"),
-        edit: String::from("Edit"),
     }
 }

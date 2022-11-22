@@ -42,7 +42,16 @@ pub struct Language {
     pub location: String,
     pub badges: String,
     pub save: String,
+    pub edit: String,
+    pub username: String,
+    pub username_placeholder: String,
+    pub username_error_required: String,
+    pub username_error_length: String,
+    pub username_error_at_sign: String,
+    pub username_error_illegal: String,
+    pub status_msg: String,
     pub status_placeholder: String,
+    pub status_error_length: String,
     pub friends: String,
     pub edit_profile: String,
     pub no_about_message: String,
@@ -55,7 +64,6 @@ pub struct Language {
     pub start_one: String,
     pub auth_tooltip: String,
     pub new_friend_request: String,
-    pub edit: String,
 }
 
 impl Language {
