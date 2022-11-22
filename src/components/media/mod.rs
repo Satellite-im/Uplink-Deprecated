@@ -3,10 +3,11 @@ use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 use utils::Account;
 
-use crate::components::media::{controls::Controls, media::Media};
+use crate::components::media::{controls::Controls, media::Media, time::Time};
 
 pub mod controls;
 pub mod media;
+pub mod time;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -61,6 +62,9 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
             }
             Controls {}
+            Time {
+                start_time: 0
+            }
         }
     })
 }
