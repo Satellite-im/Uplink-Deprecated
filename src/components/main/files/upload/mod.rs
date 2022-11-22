@@ -8,6 +8,9 @@ use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
 
 use warp::constellation::Constellation;
+
+use crate::Storage;
+
 #[derive(Props)]
 pub struct Props<'a> {
     storage: crate::Storage,
@@ -51,7 +54,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                     loop {
                                         match file_storage.put(&filename_to_save, &local_path).await {
-                                            Ok(_) => {                                                      
+                                            Ok(_) => {                                 
+                                                update_thumbnail(file_storage, filename_to_save.clone()).await;                 
                                                 println!("{:?} file uploaded", &filename_to_save); 
                                                 break;
                                             },
@@ -84,43 +88,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             },
                                         };
                                     }
-
-                                    println!("Arrive here 1");
-
-                                    let item =  file_storage.root_directory().get_item(&filename_to_save).unwrap();
-                                    println!("Arrive here 2 {:?}", item);
-
-                                    let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
-
-                                    //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
-                                    let mime = match parts_of_filename.last() {
-                                        Some(m) => {
-                                            match *m {
-                                                "png" => IMAGE_PNG.to_string(),
-                                                "jpg" => IMAGE_JPEG.to_string(),
-                                                "jpeg" => IMAGE_JPEG.to_string(),
-                                                "svg" => IMAGE_SVG.to_string(),
-                                                &_ => "".to_string(),
-                                            }
-                                        },
-                                        None =>  "".to_string(),
-                                    };
-                                    println!("Arrive here 3");
-                                    let file =  file_storage.get_buffer(&filename_to_save).await.unwrap_or_default();
-
-                                    let image = match &file.len() {
-                                        0 => "".to_string(),
-                                        _ => {
-                                            let prefix = format!("data:{};base64,", mime);
-                                            let base64_image = base64::encode(&file);
-                                            let img = prefix + base64_image.as_str();
-                                            img
-                                        }
-                                    };
-
-                                    item.set_thumbnail(&image);
-
-                                    println!("Thumbnail: {:?}", item.thumbnail());
+                                    
+                                    
                                 }
                             });
                         }
@@ -139,4 +108,39 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         ))
     })
+}
+
+
+async fn update_thumbnail(file_storage: Storage, filename_to_save: String) {
+    let item =  file_storage.root_directory().get_item(&filename_to_save).unwrap();
+    let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
+
+    //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
+    let mime = match parts_of_filename.last() {
+        Some(m) => {
+            match *m {
+                "png" => IMAGE_PNG.to_string(),
+                "jpg" => IMAGE_JPEG.to_string(),
+                "jpeg" => IMAGE_JPEG.to_string(),
+                "svg" => IMAGE_SVG.to_string(),
+                &_ => "".to_string(),
+            }
+        },
+        None =>  "".to_string(),
+    };
+    
+    let file =  file_storage.get_buffer(&filename_to_save).await.unwrap_or_default();
+
+    let image = match &file.len() {
+        0 => "".to_string(),
+        _ => {
+            let prefix = format!("data:{};base64,", mime);
+            let base64_image = base64::encode(&file);
+            let img = prefix + base64_image.as_str();
+            img
+        }
+    };
+
+    item.set_thumbnail(&image);
+    println!("Thumbnail setted: {:?}", item.thumbnail());
 }

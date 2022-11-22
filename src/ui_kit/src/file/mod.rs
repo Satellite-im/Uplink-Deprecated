@@ -9,6 +9,7 @@ pub struct Props {
     state: State,
     kind: String,
     size: usize,
+    thumbnail: String,
 }
 
 #[allow(non_snake_case)]

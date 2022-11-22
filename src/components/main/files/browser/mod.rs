@@ -74,8 +74,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                 let mut write_storage = file_storage.write();
 
                                     match write_storage.remove(&file_name, true).await {
-                                        Ok(_) => println!("{file_name} is deleted"),
-                                        Err(e) => println!("Error deleting file: {e}"),
+                                        Ok(_) => println!("{file_name} was deleted."),
+                                        Err(error) => println!("Error deleting file: {error}"),
                                     };
                                 }
                             });
@@ -85,6 +85,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             state: State::Secondary,
                             kind: file_extension,
                             size: file.size(),
+                            thumbnail: file.thumbnail(),
                         }
                     }
                 )
