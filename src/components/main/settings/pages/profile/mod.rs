@@ -25,12 +25,12 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
     let account2 = account.clone();
     let identity = account2.read().get_own_identity().unwrap();
 
-    let user_name = identity.username();
-    let user_name2 = user_name.clone();
-    let user_name_state = use_state(&cx, || user_name.clone());
-    let edit_user_name_state = use_state(&cx, || false);
-    let user_name_error = use_state(&cx, String::new);
-    let user_name_error_class = if user_name_error.is_empty() {
+    let username = identity.username();
+    let username2 = username.clone();
+    let username_state = use_state(&cx, || username.clone());
+    let edit_username_state = use_state(&cx, || false);
+    let username_error = use_state(&cx, String::new);
+    let username_error_class = if username_error.is_empty() {
         css!("opacity: 0")
     } else {
             "error_text"
@@ -52,30 +52,30 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
         };
 
 
-    fn update_user_name(user_name_state:&UseState<String>, user_name:&String,user_name_error:&UseState<String>,account:&Account,edit_user_name_state:&UseState<bool>){
-        let user_name_text = user_name_state.trim();
-        if user_name_text != *user_name{
-                if user_name_text.is_empty(){
-                        user_name_error.set("Username is required".into())
-                }else if user_name_text.len() < 4 ||user_name_text.len() > 32  {
-                        user_name_error.set("Username needs to be between 4 and 32 characters long".into())
+    fn update_username(username_state:&UseState<String>, username:&String,username_error:&UseState<String>,account:&Account,edit_username_state:&UseState<bool>){
+        let username_text = username_state.trim();
+        if username_text != *username{
+                if username_text.is_empty(){
+                        username_error.set("Username is required".into())
+                }else if username_text.len() < 4 ||username_text.len() > 32  {
+                        username_error.set("Username needs to be between 4 and 32 characters long".into())
                 }else{
-                let user_name_regex_set = RegexSet::new(&[
+                let username_regex_set = RegexSet::new(&[
                             r"@",
                             r"\p{Emoji_Presentation}",
                  ]).unwrap();
-                let matches = user_name_regex_set.matches(user_name_text);
+                let matches = username_regex_set.matches(username_text);
                 if matches.matched(0){
-                    user_name_error.set("@ is not allowed in username".into());
+                    username_error.set("@ is not allowed in username".into());
                 } else if matches.matched(1){
-                    user_name_error.set("emoji is not allowed in username".into());    
+                    username_error.set("emoji is not allowed in username".into());    
                 } else {
                     if let Err(e) =  account.write().update_identity(IdentityUpdate::set_username(
-                        user_name_text.to_string()))
+                        username_text.to_string()))
                         {
                         println!("Failed in updating status message:{}", e);
                         }
-                        edit_user_name_state.set(false);
+                        edit_username_state.set(false);
                 }
             }
         }
@@ -120,27 +120,27 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                     label {
                         "User Name"
                     },
-                    if **edit_user_name_state {rsx! (
+                    if **edit_username_state {rsx! (
                         div {
                             class: "change-profile",
                             div{
                                 class: "input-profile",
                                 Input {
                                     placeholder: "type user name".to_string(),
-                                    value: user_name_state.to_string(),
+                                    value: username_state.to_string(),
                                     on_change: move |e: FormEvent| {
-                                        user_name_error.set("".into());
-                                        user_name_state.set(e.value.clone());
+                                        username_error.set("".into());
+                                        username_state.set(e.value.clone());
                                     },
                                     on_enter:move|_|{
-                                        update_user_name(user_name_state,&user_name,user_name_error,account,edit_user_name_state);
+                                        update_username(username_state,&username,username_error,account,edit_username_state);
                             },
                         },
                     },
                     Button {
                                 text: l.save.to_string(),
                                 on_pressed: move |_|{
-                                    update_user_name(user_name_state,&user_name2,user_name_error,account,edit_user_name_state);
+                                    update_username(username_state,&username2,username_error,account,edit_username_state);
                                 }
                             }
                         },
@@ -148,20 +148,20 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                         div{
                             class: "change-profile",
                             span {
-                                "{user_name}"
+                                "{username}"
                         },
                            Button {
                                     text: l.edit.to_string(),
                                     state: button::State::Secondary,
                                     on_pressed: move |_| {
-                                        edit_user_name_state.set(true);
+                                        edit_username_state.set(true);
                                     },
                             },
                         },)
                     },
                     p {
-                        class: "{user_name_error_class}",
-                        "{user_name_error}"
+                        class: "{username_error_class}",
+                        "{username_error}"
                     },
                 }
                 div{
@@ -178,14 +178,14 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                 value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
                                 on_enter:move|_|{
-                                    update_status_msg(status_msg_state,&status_msg,user_name_error,account,edit_status_msg_state);
+                                    update_status_msg(status_msg_state,&status_msg,status_msg_error,account,edit_status_msg_state);
                                     }   
                                 },
                             },
                             Button {
                                 text: l2.save.to_string(),
                               on_pressed: move |_|{
-                                  update_status_msg(status_msg_state,&status_msg2,user_name_error,account,edit_status_msg_state);
+                                  update_status_msg(status_msg_state,&status_msg2,status_msg_error,account,edit_status_msg_state);
                               }
                           },
                         },              
