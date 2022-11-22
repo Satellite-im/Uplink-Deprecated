@@ -1,17 +1,17 @@
 #toolbar {
   min-height: 0;
   display: inline-flex;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   width: 100%;
   flex-direction: row;
-  border-bottom: 1px solid var(--theme-borders);
+  // border-bottom: 1px solid var(--theme-borders);
 
   #content {
     flex: 1;
     line-height: 1;
     display: inline-flex;
     .pfp {
-      margin-right: 1rem;
+      margin-right: 0.5rem;
     }
     .activity.inline {
       margin-top: 0.5rem;
@@ -23,8 +23,7 @@
     height: 100%;
     max-width: fit-content;
     display: inline-flex;
-
-    .button {
+    .icon-button {
       margin-left: 0.25rem;
       padding: 0 0.25rem;
     }

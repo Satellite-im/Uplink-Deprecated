@@ -1,13 +1,12 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{
-    components::ui_kit::button::{self, Button},
-    LANGUAGE,
-};
+use crate::LANGUAGE;
+use ui_kit::button::{self, Button};
 
 #[allow(non_snake_case)]
 pub fn Welcome(cx: Scope) -> Element {
+    log::debug!("rendering Welcome");
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     cx.render(rsx! {

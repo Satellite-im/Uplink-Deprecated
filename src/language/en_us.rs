@@ -46,7 +46,7 @@ pub fn make() -> Language {
         edit_profile: String::from("Edit Profile"),
         about: String::from("About"),
         no_about_message: String::from("No about message set yet..."),
-        developement: String::from("Development"),
+        development: String::from("Development"),
         search: String::from("Search"),
         favorites: String::from("Favorites"),
         new_chat: String::from("New"),
@@ -54,5 +54,6 @@ pub fn make() -> Language {
         no_active_chats: String::from("No active chats, yet..."),
         start_one: String::from("Start one"),
         auth_tooltip: String::from("Only four to six characters allowed"),
+        new_friend_request: String::from("New Friend Request"),
     }
 }

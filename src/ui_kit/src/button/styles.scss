@@ -1,0 +1,86 @@
+// Buttons
+.button {
+  user-select: none;
+  cursor: pointer;
+  background-color: var(--theme-primary);
+  border-radius: 20px;
+  height: 40px;
+  text-align: center;
+  border: none;
+  gap: 8px;
+  color: var(--theme-text-bright);
+  stroke: var(--theme-text-bright);
+  padding: 0 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    fill: transparent;
+    stroke: var(--theme-text-bright);
+    stroke-width: 2px;
+  }
+
+  &-lg {
+    height: 52px;
+    border-radius: 26px;
+  }
+
+  &:not(:active):hover {
+    background-color: var(--theme-primary-light);
+  }
+
+  &-secondary {
+    background-color: var(--theme-secondary);
+
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
+  }
+
+  &-filled {
+    background-color: var(--theme-secondary);
+
+    &:not(:active):hover {
+      background-color: var(--theme-secondary-light);
+    }
+
+    svg {
+      fill: var(--theme-text);
+      stroke: none;
+    }
+  }
+
+  &-transparent {
+    background-color: transparent;
+
+    &:not(:active):hover {
+      background-color: transparent;
+    }
+
+    svg {
+      stroke: var(--theme-text);
+    }
+  }
+
+  &-success {
+    background-color: var(--theme-green);
+
+    &:not(:active):hover {
+      background-color: var(--theme-light-green);
+    }
+  }
+
+  &-danger {
+    background-color: var(--theme-red);
+
+    &:not(:active):hover {
+      background-color: var(--theme-light-red);
+    }
+  }
+
+  &[disabled] {
+    cursor: default;
+    opacity: 0.5;
+  }
+}

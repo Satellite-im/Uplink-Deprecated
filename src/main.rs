@@ -1,12 +1,19 @@
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
-use std::ops::{Deref, DerefMut};
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::thread;
+use fluent::{FluentBundle, FluentResource};
+use std::{
+    fs,
+    ops::{Deref, DerefMut},
+    path::PathBuf,
+    sync::Arc,
+    thread,
+};
 use tracing_subscriber::EnvFilter;
+use unic_langid::LanguageIdentifier;
 
+use crate::iutils::config::Config;
+use ::utils::Account;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_toast::ToastManager;
@@ -15,7 +22,7 @@ use once_cell::sync::Lazy;
 use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
-use utils::config::Config;
+
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -29,10 +36,9 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
-pub mod extensions;
+pub mod iutils;
 pub mod language;
 pub mod themes;
-pub mod utils;
 
 use tao::window::WindowBuilder;
 
@@ -49,7 +55,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_inital();
+static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -72,6 +78,29 @@ struct Opt {
 
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
+
+    let ftl_string = match fs::read_to_string("src/language/en_US.ftl") {
+        // If successful return the files text as `contents`.
+        // `c` is a local variable.
+        Ok(c) => c,
+        // Handle the `error` case.
+        Err(_) => {
+            // Write `msg` to `stderr`.
+            eprintln!("Could not read file");
+            // Exit the program with exit code `1`.
+            String::from("")
+        }
+    };
+
+    let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
+
+    // TODO: Make this dynamic
+    let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
+    let mut language = FluentBundle::new(vec![loc]);
+
+    language
+        .add_resource(&res)
+        .expect("Failed to add FTL resources to the bundle.");
 
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
@@ -189,7 +218,7 @@ async fn initialization(
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
-    let messenging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+    let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
@@ -204,7 +233,7 @@ async fn initialization(
     .await
     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
 
-    Ok((account, messenging, storage))
+    Ok((account, messaging, storage))
 }
 
 #[allow(non_snake_case)]
@@ -238,40 +267,15 @@ fn App(cx: Scope<State>) -> Element {
             Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             Route { to: "/main/settings", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::General,
-            }
-            },
+                page_to_open: main::settings::sidebar::nav::Route::General,
+            }},
             Route { to: "/main/settings/profile", main::settings::Settings {
                 account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::NavEvent::Profile,
-            }
-            },
-
+                page_to_open: main::settings::sidebar::nav::Route::Profile,
+            }},
             Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
         }
     ))
-}
-
-#[derive(Clone)]
-pub struct Account(Arc<RwLock<Box<dyn MultiPass>>>);
-
-impl Deref for Account {
-    type Target = Arc<RwLock<Box<dyn MultiPass>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Account {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Account {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
 }
 
 #[derive(Clone)]

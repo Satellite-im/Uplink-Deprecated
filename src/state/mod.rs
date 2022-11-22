@@ -4,6 +4,7 @@ use std::{
     cmp::{Ord, Ordering},
     collections::{HashMap, HashSet},
 };
+use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -14,6 +15,8 @@ pub enum Actions {
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
+    HideSidebar(bool),
+    SendNotification(String, String, Sounds),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -26,6 +29,9 @@ pub struct PersistedState {
     /// a list of favorited conversations.
     /// Uuid is for Conversation and can be used to look things up in all_chats
     pub favorites: HashSet<Uuid>,
+    // show sidebar boolean, used with in mobile view
+    pub hide_sidebar: bool,
+    pub total_unreads: u32,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -71,8 +77,17 @@ impl PartialOrd for ConversationInfo {
     }
 }
 
+pub fn total_notifications(s: &PersistedState) -> u32 {
+    let mut count = 0;
+    for convo in s.all_chats.iter() {
+        let convo_count = convo.1.clone().num_unread_messages;
+        count += convo_count;
+    }
+    count
+}
+
 impl PersistedState {
-    pub fn load_or_inital() -> Self {
+    pub fn load_or_initial() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => Default::default(),
@@ -100,23 +115,28 @@ impl PersistedState {
                     .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
-
                 PersistedState {
                     current_chat: self.current_chat,
                     all_chats: new_chats,
                     favorites,
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
                 }
             }
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
+                hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
             },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
                     current_chat: self.current_chat,
                     all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
                 };
                 // overwrite the existing entry
                 next.all_chats.insert(info.conversation.id(), info);
@@ -126,7 +146,26 @@ impl PersistedState {
                 current_chat: self.current_chat,
                 all_chats: self.all_chats.clone(),
                 favorites,
+                hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
             },
+            Actions::HideSidebar(slide_bar_bool) => PersistedState {
+                current_chat: self.current_chat,
+                all_chats: self.all_chats.clone(),
+                favorites: self.favorites.clone(),
+                hide_sidebar: slide_bar_bool,
+                total_unreads: self.total_unreads,
+            },
+            Actions::SendNotification(title, content, sound) => {
+                let _ = PushNotification(title, content, sound);
+                PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
+                }
+            }
         };
         // only save while there's a lock on PersistedState
         next.save();

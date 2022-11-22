@@ -1,11 +1,13 @@
 use dioxus::prelude::*;
 
 use crate::{
-    components::main::settings::pages::{developer::Developer, general::General, profile::Profile},
+    components::main::settings::pages::{
+        developer::Developer, extensions::Extensions, general::General, profile::Profile,
+    },
     Account,
 };
 
-use self::sidebar::nav::NavEvent;
+use self::sidebar::nav::Route;
 
 pub mod pages;
 pub mod sidebar;
@@ -13,15 +15,16 @@ pub mod sidebar;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
-    page_to_open: NavEvent,
+    page_to_open: Route,
 }
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Settings");
     let page_to_open_on_settings = match cx.props.page_to_open {
-        NavEvent::Profile => NavEvent::Profile,
-        NavEvent::Developer => NavEvent::Developer,
-        _ => NavEvent::General,
+        Route::Profile => Route::Profile,
+        Route::Developer => Route::Developer,
+        _ => Route::General,
     };
 
     let active_page = use_state(&cx, || page_to_open_on_settings);
@@ -35,9 +38,9 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                     active_page.set(ne);
                 },
                 initial_value: match active_page.get() {
-                    NavEvent::Profile => NavEvent::Profile,
-                    NavEvent::Developer => NavEvent::Developer,
-                    _ => NavEvent::General,
+                    Route::Profile => Route::Profile,
+                    Route::Developer => Route::Developer,
+                    _ => Route::General,
                 },
             },
             div {
@@ -49,9 +52,10 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                         div {
                             class: "content",
                             match active_page.get() {
-                                NavEvent::General => rsx!(General { account: cx.props.account.clone() }),
-                                NavEvent::Developer => rsx!(Developer { account: cx.props.account.clone() }),
-                                NavEvent::Profile => rsx!(Profile { account: cx.props.account.clone() }),
+                                Route::General => rsx!(General { account: cx.props.account.clone() }),
+                                Route::Developer => rsx!(Developer { account: cx.props.account.clone() }),
+                                Route::Profile => rsx!(Profile { account: cx.props.account.clone() }),
+                                Route::Extensions => rsx!(Extensions {}),
                                 _ => rsx!(Developer { account: cx.props.account.clone() }),
                             }
                         }

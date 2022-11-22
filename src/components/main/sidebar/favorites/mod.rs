@@ -1,12 +1,13 @@
 use crate::{
-    components::ui_kit::{icon_button::IconButton, profile_picture::PFP},
+    iutils,
     state::{Actions, ConversationInfo},
-    utils, Account, Messaging, LANGUAGE, STATE,
+    Messaging, LANGUAGE, STATE,
 };
-
+use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
+use ui_kit::{icon_button::IconButton, profile_picture::PFP};
 use uuid::Uuid;
 
 #[derive(Props, PartialEq)]
@@ -17,6 +18,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Favorites(cx: Scope<Props>) -> Element {
+    log::debug!("rendering main/sidebar/Favorites");
     let state = use_atom_ref(&cx, STATE);
     let state2 = state.clone();
     let state3 = state2.clone();
@@ -100,12 +102,12 @@ pub fn FavoriteChat<'a>(
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
     let conversation_id = conversation_info.conversation.id();
-    let (did, conversation_name) = utils::get_username_from_conversation(conversation_info, mp);
+    let (did, conversation_name) = iutils::get_username_from_conversation(conversation_info, mp);
     let has_unread = match conversation_info.num_unread_messages > 0 {
         true => "has-unread",
         _ => "",
     };
-    let profile_picture = utils::get_pfp_from_did(did, mp);
+    let profile_picture = iutils::get_pfp_from_did(did, mp);
 
     cx.render(rsx! {
         div {
@@ -117,7 +119,7 @@ pub fn FavoriteChat<'a>(
                     class: "pfp",
                     PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                        size: ui_kit::profile_picture::Size::Normal
                     },
                 },
                 div {
@@ -139,12 +141,13 @@ pub fn ConversationList<'a>(
     all_chats: HashMap<Uuid, ConversationInfo>,
     on_pressed: EventHandler<'a, Uuid>,
 ) -> Element<'a> {
+    log::debug!("rendering ConversationList");
     cx.render(rsx!(
        div {
         class: "add-favorites",
         all_chats.iter().map(|(uuid, conv)| {
-            let (did, name) = utils::get_username_from_conversation(conv, mp);
-            let profile_picture = utils::get_pfp_from_did(did, mp);
+            let (did, name) = iutils::get_username_from_conversation(conv, mp);
+            let profile_picture = iutils::get_pfp_from_did(did, mp);
             cx.render(rsx!(
                 div {
                     class: "to-add",
@@ -153,7 +156,7 @@ pub fn ConversationList<'a>(
                         class: "pfp",
                         PFP {
                             src: profile_picture,
-                            size: crate::components::ui_kit::profile_picture::Size::Normal
+                            size: ui_kit::profile_picture::Size::Normal
                         },
                     }
                     span {

@@ -1,12 +1,10 @@
-use crate::{
-    components::ui_kit::loader::Loader, utils::config::Config, Account, LANGUAGE,
-    WINDOW_SUFFIX_NAME,
-};
+use crate::{iutils::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 use dioxus::core::to_owned;
 use dioxus::desktop::use_window;
 use dioxus::prelude::*;
 use dioxus::router::use_router;
 use futures::StreamExt;
+use ui_kit::loader::Loader;
 
 // Remember: owned props must implement PartialEq!
 #[derive(Props, PartialEq)]
@@ -16,6 +14,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Loading(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Loading");
     let config = Config::load_config_or_default();
     let window = use_window(&cx);
     let loaded = use_state(&cx, || false);

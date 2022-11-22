@@ -1,5 +1,12 @@
 #!/bin/sh
-COUNT=$(gum input --placeholder "instance count")
+
+if ! [ -x "$(command -v gum)" ]; then
+  echo 'Gum not installed, spawning two instances.' >&2
+  COUNT=2
+else
+  COUNT=$(gum input --placeholder "instance count")
+fi
+
 # Build a debug bin
 cargo build
 

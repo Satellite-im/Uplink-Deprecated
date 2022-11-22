@@ -24,14 +24,14 @@ Guidelines for contributing are located in the [`CONTRIBUTING.md`](CONTRIBUTING.
 
 ## Prerequisites
 
-You'll need to install the required dependancies for your system in order to build and develop on Uplink. See the table below for help installing them on your system. Mac setup depends on [Homebrew](https://brew.sh).
+You'll need to install the required dependencies for your system in order to build and develop on Uplink. See the table below for help installing them on your system. Mac setup depends on [Homebrew](https://brew.sh).
 
 |Distribution|Commands|
 |--|--|
-|Debian & Ubuntu|apt get -y libgtk-3-dev  libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
+|Debian & Ubuntu|apt get -y libgtk-3-dev clang libavcodec-dev libavformat-dev libavutil-dev pkg-config libwebkit2gtk-4.0-dev libappindicator3-dev protobuf-compiler|
 |Arch|pacman -S gtk3 cmake protobuf|
-|MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init|
-|Windows|Install rust, git, cmake and protoc, see below|
+|MacOS [Homebrew](https://brew.sh)|xcode-select --install, brew install protobuf cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services --with-orc --with-libogg --with-opus --with-pango --with-theora --with-libvorbis --with-libvpx --enable-gtk3|
+|Windows|Install rust, git, cmake, llvm, ffmpeg, and protoc, see below|
 
 ## Building from source
 
@@ -77,6 +77,10 @@ It's often necessary to reset your account for development, to do so just delete
 ## Troubleshooting
 
 If you see something about cmake or protoc then you likely need to install those and get them in your path. Often times just restarting your shell helps. Other errors are fixed with updating packages `cargo update` or getting the nightly `rustup update; rustup default nightly` or stable `rustup update; rustup default stable` version of rust.
+
+## Debugging
+- run uplink as follows: `RUST_LOG=debug target/debug/uplink`
+- in another terminal (by default `~/.warp/logs`), tail the log file, follow it, and grep for `uplink`: `tail -f <file_name> | grep uplink`
 
 ## Contributions
 

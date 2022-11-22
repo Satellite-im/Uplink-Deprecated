@@ -1,37 +1,41 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{
+    activity_indicator::ActivityIndicator,
+    icon_button::IconButton,
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
-    components::ui_kit::{
-        activity_indicator::ActivityIndicator,
-        icon_button::IconButton,
-        profile_picture::PFP,
-        skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-    },
+    iutils,
     state::{Actions, ConversationInfo},
-    utils, Account, Messaging, STATE,
+    Messaging, STATE,
 };
+use utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
     messaging: Messaging,
     friend: DID,
+    friend_username: String,
     on_chat: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+    log::debug!("rendering Friend");
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
 
-    let username = utils::get_username_from_did(cx.props.friend.clone(), &mp);
+    let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
 
-    let profile_picture = utils::get_pfp_from_did(cx.props.friend.clone(), &mp);
+    let profile_picture = iutils::get_pfp_from_did(cx.props.friend.clone(), &mp);
 
     cx.render(rsx! {
         div {
@@ -41,7 +45,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )} else {rsx!(
                 rsx!(PFP {
                     src: profile_picture,
-                    size: crate::components::ui_kit::profile_picture::Size::Normal
+                    size: ui_kit::profile_picture::Size::Normal
                 })
             )},
             div {

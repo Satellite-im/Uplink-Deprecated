@@ -1,9 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::components::ui_kit::button::Button;
+use ui_kit::button::Button;
 
 #[derive(PartialEq, Eq)]
-pub enum NavEvent {
+pub enum Route {
     General,
     Privacy,
     AudioVideo,
@@ -42,16 +42,17 @@ pub fn NavButton<'a>(cx: Scope<'a, ButtonProps<'a>>) -> Element<'a> {
 
 #[derive(Props)]
 pub struct Props<'a> {
-    on_pressed: EventHandler<'a, NavEvent>,
-    initial_value: NavEvent,
+    on_pressed: EventHandler<'a, Route>,
+    initial_value: Route,
 }
 
 #[allow(non_snake_case)]
 pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering settings/sidebar/Nav ");
     let initial_value = match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile,
-        NavEvent::Developer => NavEvent::Developer,
-        _ => NavEvent::General,
+        Route::Profile => Route::Profile,
+        Route::Developer => Route::Developer,
+        _ => Route::General,
     };
     let active_item = use_state(&cx, || initial_value);
 
@@ -60,56 +61,56 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             class: "column_navigation",
             NavButton {
                 text: String::from("General"),
-                active: NavEvent::General.eq(active_item),
+                active: Route::General.eq(active_item),
                 disabled: false,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::General);
-                    cx.props.on_pressed.call(NavEvent::General);
+                    active_item.set(Route::General);
+                    cx.props.on_pressed.call(Route::General);
                 }
             },
             NavButton {
                 text: String::from("Profile"),
-                active: NavEvent::Profile.eq(active_item),
+                active: Route::Profile.eq(active_item),
                 disabled: false,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::Profile);
-                    cx.props.on_pressed.call(NavEvent::Profile);
+                    active_item.set(Route::Profile);
+                    cx.props.on_pressed.call(Route::Profile);
                 }
             },
             NavButton {
                 text: String::from("Privacy"),
-                active: NavEvent::Privacy.eq(active_item),
+                active: Route::Privacy.eq(active_item),
                 disabled: true,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::Privacy);
-                    cx.props.on_pressed.call(NavEvent::Privacy);
+                    active_item.set(Route::Privacy);
+                    cx.props.on_pressed.call(Route::Privacy);
                 }
             },
             NavButton {
                 text: String::from("AudioVideo"),
-                active: NavEvent::AudioVideo.eq(active_item),
+                active: Route::AudioVideo.eq(active_item),
                 disabled: true,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::AudioVideo);
-                    cx.props.on_pressed.call(NavEvent::AudioVideo);
+                    active_item.set(Route::AudioVideo);
+                    cx.props.on_pressed.call(Route::AudioVideo);
                 }
             },
             NavButton {
                 text: String::from("Extensions"),
-                active: NavEvent::Extensions.eq(active_item),
-                disabled: true,
+                active: Route::Extensions.eq(active_item),
+                disabled: false,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::Extensions);
-                    cx.props.on_pressed.call(NavEvent::Extensions);
+                    active_item.set(Route::Extensions);
+                    cx.props.on_pressed.call(Route::Extensions);
                 }
             },
             NavButton {
                 text: String::from("Developer"),
-                active: NavEvent::Developer.eq(active_item),
+                active: Route::Developer.eq(active_item),
                 disabled: false,
                 on_pressed: |_| {
-                    active_item.set(NavEvent::Developer);
-                    cx.props.on_pressed.call(NavEvent::Developer);
+                    active_item.set(Route::Developer);
+                    cx.props.on_pressed.call(Route::Developer);
                 }
             }
         }

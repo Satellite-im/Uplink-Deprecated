@@ -1,22 +1,21 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
+use utils::extensions::{get_renders, ExtensionType};
 use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
-    components::{
-        main::{profile::Profile, sidebar::favorites::Favorites},
-        reusable::nav::Nav,
-        ui_kit::{
-            extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
-            skeletal_chats::SkeletalChats,
-        },
-    },
-    extensions::*,
+    components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
+    iutils::config::Config,
     state::{Actions, ConversationInfo},
-    utils::{self, config::Config, notifications::PushNotification},
-    Account, Messaging, LANGUAGE, STATE,
+    Messaging, LANGUAGE, STATE,
+};
+
+use ::utils::{notifications::PushNotification, Account};
+use ui_kit::{
+    extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+    skeletal_chats::SkeletalChats,
 };
 
 pub mod chat;
@@ -30,12 +29,11 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Sidebar(cx: Scope<Props>) -> Element {
+    log::debug!("rendering main/Sidebar");
     let config = Config::load_config_or_default();
     let mp = cx.props.account.clone();
 
     let state = use_atom_ref(&cx, STATE);
-    let show_profile = use_state(&cx, || false);
-
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
@@ -50,8 +48,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
-            let display_username = utils::get_username_from_did(msg.sender().clone(), &mp);
-            PushNotification(display_username, msg.value().join("\n"));
+            let display_username = crate::iutils::get_username_from_did(msg.sender().clone(), &mp);
+            PushNotification(
+                display_username,
+                msg.value().join("\n"),
+                ::utils::sounds::Sounds::Notification,
+            );
         }
     });
 
@@ -110,6 +112,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         is_active: active_chat == Some(conversation_info.conversation.id()),
                                         tx_chan: notifications_tx.clone(),
                                         on_pressed: move |uuid| {
+                                            // on press, change state so CSS class flips to show the chat
+                                            state.write().dispatch(Actions::HideSidebar(true));
                                             if *active_chat != Some(uuid) {
                                                 state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
                                                 active_chat.set(Some(uuid));
@@ -122,11 +126,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     }
                 )
             } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
-            Profile {
-                account: cx.props.account.clone(),
-                show: *show_profile.clone(),
-                on_hide: move |_| show_profile.set(false),
-            },
             Nav {
                 account: cx.props.account.clone(),
             }

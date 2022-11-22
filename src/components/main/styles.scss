@@ -9,3 +9,64 @@
   -webkit-user-select: none;
   user-select: none;
 }
+
+.mobile-back-button {
+  display: none;
+}
+
+.hidden-on-desktop {
+  display: none;
+}
+
+.show-on-desktop {
+  display: block;
+}
+
+@media only screen and (max-width: 600px) {
+  .main-sidebar {
+    .sidebar {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+    .compose {
+      display: none;
+    }
+  }
+  .main-chat {
+    .sidebar {
+      display: none;
+    }
+    .compose {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+  }
+
+  #files {
+    #sidebar {
+      display: none;
+    }
+    #content {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      justify-self: flex-end;
+    }
+  }
+  .mobile-back-button {
+    display: block;
+    margin-right: 5px;
+  }
+  .hidden-on-desktop {
+    display: block;
+  }
+  .show-on-desktop {
+    display: none;
+  }
+
+  #usage {
+    padding: 0rem 1rem;
+  }
+}

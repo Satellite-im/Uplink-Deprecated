@@ -1,18 +1,19 @@
 use crate::{
-    components::{
-        reusable::toolbar,
-        ui_kit::{
-            activity_indicator::ActivityIndicator,
-            icon_button::IconButton,
-            profile_picture::PFP,
-            skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
-        },
-    },
-    utils::{self, config::Config},
-    Account, STATE,
+    components::reusable::toolbar,
+    iutils::{self, config::Config},
+    state::Actions,
+    STATE,
 };
+
+use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use ui_kit::{
+    activity_indicator::ActivityIndicator,
+    icon_button::IconButton,
+    profile_picture::PFP,
+    skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
+};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -22,8 +23,10 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering compose/TopBar");
     let state = use_atom_ref(&cx, STATE);
     let config = Config::load_config_or_default();
+    let mut favorites = state.read().favorites.clone();
 
     // Read their values from locks
     let mp = cx.props.account.clone();
@@ -38,18 +41,28 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     match opt {
         Some(conversation_info) => {
             let (display_did, display_username) =
-                utils::get_username_from_conversation(conversation_info, &mp);
-            let profile_picture = utils::get_pfp_from_did(display_did.clone(), &mp);
+                iutils::get_username_from_conversation(conversation_info, &mp);
+            let profile_picture = iutils::get_pfp_from_did(display_did.clone(), &mp);
 
             let id = conversation_info.conversation.id();
+
+            let is_favorite = favorites.contains(&id);
 
             cx.render(rsx! {
                 toolbar::Toolbar {
                     controls: cx.render(rsx! {
                         IconButton {
                             icon: Shape::Heart,
-                            state: crate::components::ui_kit::icon_button::State::Secondary,
+                            state: match is_favorite {
+                                true => ui_kit::icon_button::State::Filled,
+                                false => ui_kit::icon_button::State::Secondary,
+                            },
                             on_pressed: move |_| {
+                                match is_favorite {
+                                    true => favorites.remove(&id),
+                                    false => favorites.insert(id),
+                                };
+                                state.write().dispatch(Actions::UpdateFavorites(favorites.clone()));
                             },
                         },
                         IconButton {
@@ -65,9 +78,19 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         }
                     }),
+                    div {
+                        class: "mobile-back-button",
+                        IconButton {
+                            icon: Shape::ArrowLeft,
+                            state: ui_kit::icon_button::State::Secondary,
+                            on_pressed: move |_| {
+                                state.write().dispatch(Actions::HideSidebar(false));
+                            },
+                        },
+                    },
                     PFP {
                         src: profile_picture,
-                        size: crate::components::ui_kit::profile_picture::Size::Normal
+                        size: ui_kit::profile_picture::Size::Normal
                     },
                     div {
                         class: "topbar-user-info",

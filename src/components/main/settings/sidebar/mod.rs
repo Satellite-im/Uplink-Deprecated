@@ -1,28 +1,26 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::{
-    components::{main::settings::sidebar::nav::Nav, ui_kit::icon_input::IconInput},
-    Account,
-};
-
-use self::nav::NavEvent;
+use self::nav::Route;
+use crate::{components::main::settings::sidebar::nav::Nav, Account};
+use ui_kit::icon_input::IconInput;
 
 pub mod nav;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    on_pressed: EventHandler<'a, NavEvent>,
+    on_pressed: EventHandler<'a, Route>,
     account: Account,
-    initial_value: NavEvent,
+    initial_value: Route,
 }
 
 #[allow(non_snake_case)]
 pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering SettingsSidebar");
     let initial_value = match cx.props.initial_value {
-        NavEvent::Profile => NavEvent::Profile,
-        NavEvent::Developer => NavEvent::Developer,
-        _ => NavEvent::General,
+        Route::Profile => Route::Profile,
+        Route::Developer => Route::Developer,
+        _ => Route::General,
     };
 
     cx.render(rsx! {

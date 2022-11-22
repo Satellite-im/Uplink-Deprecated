@@ -20,6 +20,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Messages(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Messages");
     //Note: We will just unwrap for now though we need to
     //      handle the error properly if there is ever one when
     //      getting own identity
@@ -91,6 +92,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
         //This is to prevent the future updating the state and causing a rerender
         if *list.read() != messages {
+            log::debug!("updating messages list ");
             *list.write() = messages;
         }
 
@@ -107,6 +109,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     if current_chat.conversation.id() == conversation_id {
                         match rg.get_message(conversation_id, message_id).await {
                             Ok(message) => {
+                                log::debug!("compose/messages streamed a new message ");
                                 list.write().push(message.clone());
                                 // todo: add message to chats sidebar
                                 current_chat.last_msg_sent =
@@ -140,53 +143,55 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 .zip(next_sender)
                 .zip(prev_sender)
                 .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
-            .map(|(mut rg, message, next_sender, prev_sender)|{
-                let message_id = message.id();
-                let conversation_id = message.conversation_id();
-                let msg_sender = message.sender();
-                let is_remote = ident.did_key() != msg_sender;
-                let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
-                let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
+                .map(|(mut rg, message, next_sender, prev_sender)| {
+                    let message_id = message.id();
+                    let conversation_id = message.conversation_id();
+                    let msg_sender = message.sender();
+                    let is_remote = ident.did_key() != msg_sender;
+                    let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
+                    let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
 
-                rsx!{
-                    Msg {
-                        // key: "{message_id}", // todo: try uuid.simple() - it may be that non alpha-numeric characters caused this to panic.
-                        message: message.clone(),
-                        account: cx.props.account.clone(),
-                        sender: message.sender(),
-                        remote: is_remote,
-                        // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                        last:  is_first,
-                        first: is_last,
-                        middle: !is_last && !is_first,
-                        on_reply: move |reply| {
-                            if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                //TODO: Display error?
+                    rsx! {
+                        Msg {
+                            // key: "{message_id}-reply",
+                            message: message.clone(),
+                            account: cx.props.account.clone(),
+                            sender: message.sender(),
+                            remote: is_remote,
+                            // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
+                            last:  is_first,
+                            first: is_last,
+                            middle: !is_last && !is_first,
+                            on_reply: move |reply| {
+                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                    //TODO: Display error?
+                                }
                             }
                         }
-                    }
-                    match message.replied() {
-                        Some(replied) => {
-                            let r = cx.props.messaging.clone();
-                            match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                Ok(message) => {
-                                    rsx!{
-                                        Reply {
-                                            message: message.value().join("\n"),
-                                            is_remote: is_remote,
-                                            account: cx.props.account.clone(),
-                                            sender: message.sender(),
+                        match message.replied() {
+                            Some(replied) => {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        rsx!{
+                                            Reply {
+                                                // key: "{message_id}-reply",
+                                                message: message.value().join("\n"),
+                                                is_remote: is_remote,
+                                                account: cx.props.account.clone(),
+                                                sender: message.sender(),
+                                            }
                                         }
-                                    }
-                                },
-                                Err(_) => { rsx!{ span { "Something went wrong" } } }
-                            }
-                        },
-                        _ => rsx!{ div {} }
+                                    },
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            },
+                            _ => rsx!{ div {  } }
+                        }
                     }
-                }
-            })
+                }),
             div {
+                // key: "encrypted-notification-0001",
                 class: "encrypted-notif",
                 Icon {
                     icon: Shape::LockClosed

@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
+use ui_kit::extension_placeholder::ExtensionPlaceholder;
 
-use crate::{
-    components::{reusable::nav::Nav, ui_kit::extension_placeholder::ExtensionPlaceholder},
-    utils::config::Config,
-    Account,
-};
+use crate::{components::reusable::nav::Nav, iutils::config::Config};
+use ::utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -14,6 +12,7 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
+    log::debug!("rendering reusable Sidebar");
     let config = Config::load_config_or_default();
 
     cx.render(rsx! {
