@@ -1,0 +1,16 @@
+[2m2022-11-22T17:00:06.455579Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 822da66a: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T17:00:29.674442Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m b5484e11: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T17:00:56.107055Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 60418736: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:00:58.863914Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8433e88e: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T17:01:19.876918Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 7089b7f8: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T17:02:00.164712Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m add2c322: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:02:15.832565Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 67d4096e: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:02:23.262152Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 73895645: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:02:42.589725Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ca942415: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:02:48.520833Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8598bafd: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:03:18.466125Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 331b1eeb: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:04:05.058188Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 96a09cc6: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:04:06.206769Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 99c72276: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:04:28.698500Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ed99b061: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:04:59.943933Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ed2e61c6: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T17:06:52.079728Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 537ccba1: socket error: decode error: i/o error: unexpected end of file    

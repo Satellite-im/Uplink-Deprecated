@@ -1,0 +1,10 @@
+[2m2022-11-22T14:00:36.931024Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m a7bab970: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:04:23.322117Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 20b3ab93: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:14:46.847636Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 503674ac: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:20:29.646183Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m fa86cf00: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:23:03.276732Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m c66e4535: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:30:58.785365Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 51cc7016: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T14:38:55.982958Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 394005f2: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T14:38:56.448342Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 494dbf2e: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-22T14:59:41.176991Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 34dc4461: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-22T14:59:41.299300Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ff07c77b: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    

@@ -1,0 +1,7 @@
+[2m2022-11-22T08:20:25.933408Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 27e2ed29: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-22T08:20:29.690245Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 4c351b50: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T08:20:29.744723Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m e3e372f9: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T08:54:04.680648Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m adb5fada: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-22T08:54:04.987288Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 27e3a6c5: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-22T08:54:05.517745Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 86b7ab25: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-22T08:54:05.739857Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m b8f6a319: socket error: decode error: i/o error: i/o error: Operation timed out (os error 60)    

@@ -1,0 +1,25 @@
+[2m2022-11-21T16:00:17.438128Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 413ac3da: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:01:40.764569Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m fb092a15: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:02:12.824187Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 5f3909f8: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-21T16:05:10.625817Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 217c4fbe: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-21T16:06:28.788198Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ed9c3fee: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:07:18.922031Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ca6f60fe: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:12:35.017672Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m d5fc2efc: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-21T16:13:30.200059Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m b6ef8d7d: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:14:06.868351Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m cc5409a3: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-21T16:14:16.454857Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 753a1eea: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-21T16:15:16.708588Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 410b54b3: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:15:49.618281Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 30bd230e: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:17:14.756636Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 19d14164: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T16:24:27.372497Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 396c36de: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-21T16:42:05.930478Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8b10089b: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:42:06.654945Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m b7ef397e: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:42:09.534743Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 642ff34f: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:07.923443Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 814fdbb3: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:08.090578Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 4e4e9327: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:08.234869Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 35302d1a: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:09.469612Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m b3acf1a1: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:09.515185Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m ae0c2788: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:10.492103Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 1977b9a2: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:10.783062Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 73b6c176: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-21T16:59:11.055077Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 9d56cad3: socket error: decode error: i/o error: Operation timed out (os error 60)    

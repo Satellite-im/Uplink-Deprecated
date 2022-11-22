@@ -17,12 +17,14 @@ pub struct TypingState {
     pub state: HashMap<Uuid, HashSet<DID>>,
 }
 
+#[derive(Debug)]
 pub enum Actions {
     AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    UpdateParticipantsStatus(Uuid, DID, Participant),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -37,16 +39,22 @@ pub struct PersistedState {
     pub favorites: HashSet<Uuid>,
     // show sidebar boolean, used with in mobile view
     pub hide_sidebar: bool,
+    pub participants_status: HashMap<Uuid, HashMap<DID, Participant>>,
 }
 
-#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq, Debug)]
 pub struct LastMsgSent {
     pub value: String,
     pub time: DateTime<Utc>,
 }
 
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq, Debug)]
+pub struct Participant {
+    pub typing: bool,
+}
+
 /// composes `Conversation` with relevant metadata
-#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq, Debug)]
 pub struct ConversationInfo {
     pub conversation: Conversation,
     /// the uuid of the last message read.
@@ -112,18 +120,33 @@ impl PersistedState {
                     .cloned()
                     .collect();
 
+                let mut participants_status = &self.participants_status;
+                for (chat_id, chat) in new_chats.iter() {
+                    if !participants_status.contains_key(chat_id) || (chat.conversation.recipients().len() - 1 != participants_status[chat_id].len()){ 
+                                                                        //might also check for participants dids over the number of them
+                        for &participant in chat.conversation.recipients().iter() {
+                            participants_status[chat_id].clear();
+                            //add check for participant == ME
+                            participants_status[chat_id].insert(participant, Participant { typing: false });
+                        }
+                    }
+                }
+                let mut new_participants_status = participants_status.iter().filter(|(id, _)| new_chats.contains_key(id)).collect();
+
                 PersistedState {
                     current_chat: self.current_chat,
                     all_chats: new_chats,
                     favorites,
                     hide_sidebar: self.hide_sidebar,
+                    participants_status: new_participants_status,
                 }
-            }
+            },
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
                 hide_sidebar: self.hide_sidebar,
+                participants_status: self.participants_status.clone(),
             },
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
@@ -131,6 +154,7 @@ impl PersistedState {
                     all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
+                    participants_status: self.participants_status.clone(),
                 };
                 // overwrite the existing entry
                 next.all_chats.insert(info.conversation.id(), info);
@@ -141,13 +165,27 @@ impl PersistedState {
                 all_chats: self.all_chats.clone(),
                 favorites,
                 hide_sidebar: self.hide_sidebar,
+                participants_status: self.participants_status.clone(),
             },
             Actions::HideSidebar(slide_bar_bool) => PersistedState {
                 current_chat: self.current_chat,
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
                 hide_sidebar: slide_bar_bool,
+                participants_status: self.participants_status.clone(),
             },
+            Actions::UpdateParticipantsStatus(chat_id, did, participant) => {
+                let mut new_participants_status = self.participants_status.clone();
+                new_participants_status[&chat_id][&did] = participant;
+            
+                PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                    participants_status: new_participants_status,
+                }
+            },    
         };
         // only save while there's a lock on PersistedState
         next.save();

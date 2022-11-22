@@ -1,6 +1,6 @@
 use crate::{
     components::main::compose::{msg::Msg, reply::Reply},
-    state::{Actions, LastMsgSent},
+    state::{Actions, LastMsgSent, Participant},
     Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
@@ -130,15 +130,13 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     conversation_id,
                     did_key,
                 } => {
-                    if current_chat.conversation.id() == conversation_id {
-                    }
+                    state.write().dispatch(Actions::UpdateParticipantsStatus( conversation_id, did_key, Participant { typing:true }));
                 }
                 | MessageEventKind::TypingIndicatorRemoved {
                     conversation_id,
                     did_key,
                 } => {
-                    if current_chat.conversation.id() == conversation_id {
-                    }
+                    state.write().dispatch(Actions::UpdateParticipantsStatus( conversation_id, did_key, Participant { typing:false }));
                 }
                 _ => {}
             }

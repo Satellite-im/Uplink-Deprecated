@@ -1,0 +1,17 @@
+[2m2022-11-22T16:00:00.881561Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 69bcb99d: socket error: decode error: i/o error: Operation timed out (os error 60)    
+[2m2022-11-22T16:25:05.103565Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m a94b7013: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:36:34.666892Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 672d797f: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:41:08.955258Z[0m [31mERROR[0m [2mwarp_mp_ipfs::store::friends[0m[2m:[0m Error: Recipient doesnt exist    
+[2m2022-11-22T16:41:15.762881Z[0m [31mERROR[0m [2mwarp_mp_ipfs::store::friends[0m[2m:[0m Error: Recipient doesnt exist    
+[2m2022-11-22T16:41:46.312406Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 3b2a3d87: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:41:56.473654Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8598d7d7: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T16:43:46.359746Z[0m [31mERROR[0m [2mwarp_mp_ipfs::store::friends[0m[2m:[0m Error broadcasting event: channel closed    
+[2m2022-11-22T16:50:08.929874Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 122fdcfb: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:51:08.382969Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8dd8779c: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:52:09.935540Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m c9b579e3: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:57:14.799791Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 20bd3ab6: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T16:58:08.448968Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 8e2ad331: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:58:25.951096Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 59b88863: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T16:58:27.871768Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 91cdf7b9: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T16:58:30.151968Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 41c81909: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-22T16:59:20.638279Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 03786aed: socket error: decode error: i/o error: unexpected end of file    

@@ -1,0 +1,4 @@
+[2m2022-11-21T17:14:56.828340Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m e559f4a0: socket error: decode error: i/o error: unexpected end of file    
+[2m2022-11-21T17:19:44.340484Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m c5b65d39: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-21T17:19:44.522666Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 3c6eacf1: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
+[2m2022-11-21T17:41:06.617755Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m c8670da3: socket error: decode error: i/o error: Operation timed out (os error 60)    

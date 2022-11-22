@@ -1,0 +1,2 @@
+[2m2022-11-22T12:16:02.157026Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m f7e59b8a: socket error: decode error: i/o error: Broken pipe (os error 32)    
+[2m2022-11-22T12:41:58.042121Z[0m [31mERROR[0m [2myamux::connection[0m[2m:[0m 7946e93d: socket error: decode error: i/o error: i/o error: Connection reset by peer (os error 54)    
