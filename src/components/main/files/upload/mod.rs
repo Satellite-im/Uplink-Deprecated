@@ -3,6 +3,7 @@ use std::path::Path;
 use dioxus::{core::to_owned, events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
+use mime::*;
 use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
 
@@ -25,8 +26,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     id: "content",
                     input {
                         "type": "file",
-                        onclick: move |dragged| {
-                            println!("{:?}", dragged);
+                        onclick: move |_| {
 
                             // TODO(Files): Remove filter to upload other kind of files          
                             let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
@@ -47,10 +47,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     let local_path = Path::new(&file_path).to_string_lossy().to_string();
                                     let mut filename_to_save = filename.clone();
                                     let mut count_index_for_duplicate_filename = 1;
-                                    let mut write_storage = file_storage.write();
+                                    let mut write_storage = file_storage.write();  
+
                                     loop {
                                         match write_storage.put(&filename_to_save, &local_path).await {
-                                            Ok(_) => {
+                                            Ok(_) => {                                                      
                                                 println!("{:?} file uploaded", &filename_to_save); 
                                                 break;
                                             },
@@ -83,6 +84,43 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             },
                                         };
                                     }
+
+                                    println!("Arrive here 1");
+
+                                    let item =  file_storage.read().root_directory().get_item(&filename_to_save).unwrap();
+                                    println!("Arrive here 2 {:?}", item);
+
+                                    let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
+
+                                    //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
+                                    let mime = match parts_of_filename.last() {
+                                        Some(m) => {
+                                            match *m {
+                                                "png" => IMAGE_PNG.to_string(),
+                                                "jpg" => IMAGE_JPEG.to_string(),
+                                                "jpeg" => IMAGE_JPEG.to_string(),
+                                                "svg" => IMAGE_SVG.to_string(),
+                                                &_ => "".to_string(),
+                                            }
+                                        },
+                                        None =>  "".to_string(),
+                                    };
+                                    println!("Arrive here 3");
+                                    let file =  file_storage.write().get_buffer(&filename_to_save).await.unwrap_or_default();
+
+                                    let image = match &file.len() {
+                                        0 => "".to_string(),
+                                        _ => {
+                                            let prefix = format!("data:{};base64,", mime);
+                                            let base64_image = base64::encode(&file);
+                                            let img = prefix + base64_image.as_str();
+                                            img
+                                        }
+                                    };
+
+                                    item.set_thumbnail(&image);
+
+                                    println!("Thumbnail: {:?}", item.thumbnail());
                                 }
                             });
                         }
