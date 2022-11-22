@@ -9,6 +9,7 @@
   border-radius: 10px;
   width: 130px;
   transition-duration: 0.4s;
+  transition: transform 0.2s;
   justify-content: center;
   align-items: center;
 }
@@ -21,5 +22,6 @@
 .file:hover {
   background-color: var(--theme-secondary-light);
   width: 130px;
+  transform: scale(1.1);
   color: white;
 }
