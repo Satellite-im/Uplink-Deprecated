@@ -18,7 +18,7 @@
   }
 }
 
-.button-files {
+.item {
   cursor: pointer;
   border: none;
   color: transparent;
@@ -82,7 +82,7 @@
   display: block;
 }
 
-.dropdown:hover .button-files {
+.dropdown:hover .item {
   background-color: var(--theme-secondary-light);
   transform: scale(1.1);
 }

@@ -47,7 +47,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             id: "browser",
             (cx.props.show_new_folder).then(|| rsx!(
                 div {
-                    class: "button-files file",
+                    class: "item file",
                     NewFolder {
                         state: State::Primary
                     }
@@ -66,7 +66,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     div {
                         class: "dropdown", 
                         div {
-                            class: "button-files file",
+                            class: "item file",
                             File {
                                 name: file.name(),
                                 state: State::Secondary,
