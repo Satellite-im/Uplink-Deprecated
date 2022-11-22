@@ -7,6 +7,7 @@ use mime::*;
 use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
 
+use warp::constellation::Constellation;
 #[derive(Props)]
 pub struct Props<'a> {
     storage: crate::Storage,
@@ -47,10 +48,9 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     let local_path = Path::new(&file_path).to_string_lossy().to_string();
                                     let mut filename_to_save = filename.clone();
                                     let mut count_index_for_duplicate_filename = 1;
-                                    let mut write_storage = file_storage.write();  
 
                                     loop {
-                                        match write_storage.put(&filename_to_save, &local_path).await {
+                                        match file_storage.put(&filename_to_save, &local_path).await {
                                             Ok(_) => {                                                      
                                                 println!("{:?} file uploaded", &filename_to_save); 
                                                 break;
@@ -87,7 +87,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                     println!("Arrive here 1");
 
-                                    let item =  file_storage.read().root_directory().get_item(&filename_to_save).unwrap();
+                                    let item =  file_storage.root_directory().get_item(&filename_to_save).unwrap();
                                     println!("Arrive here 2 {:?}", item);
 
                                     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
@@ -106,7 +106,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         None =>  "".to_string(),
                                     };
                                     println!("Arrive here 3");
-                                    let file =  file_storage.write().get_buffer(&filename_to_save).await.unwrap_or_default();
+                                    let file =  file_storage.get_buffer(&filename_to_save).await.unwrap_or_default();
 
                                     let image = match &file.len() {
                                         0 => "".to_string(),
