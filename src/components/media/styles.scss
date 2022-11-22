@@ -3,12 +3,11 @@
   background: var(--theme-background);
   display: inline-flex;
   flex-direction: column;
-  min-height: 200px;
+  min-height: 300px;
   max-height: calc(100% - 15rem);
   border-bottom: 1px solid var(--theme-borders);
   overflow-y: hidden;
   resize: vertical;
-  justify-content: center;
   position: relative;
 
   &.fullscreen {
@@ -23,23 +22,25 @@
     resize: none;
   }
 
-  #media-content {
-    flex: 1;
-    overflow: hidden;
-    overflow-y: scroll;
+  .media-view {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-  }
+    overflow-y: scroll;
+    flex: 1;
 
-  .media-toggle {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-  .settings-toggle {
-    position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
+    #media-content {
+      flex: 1;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+      align-content: center;
+      gap: 1rem;
+    }
+
+    .media-toggle {
+      flex-shrink: 0;
+    }
+    .settings-toggle {
+      flex-shrink: 0;
+    }
   }
 }

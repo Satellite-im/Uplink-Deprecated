@@ -222,6 +222,7 @@ async fn initialization(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
         None,
+        None,
     )
     .await
     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
