@@ -36,11 +36,12 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
         };
 
 
-    let status_msg = identity.status_message();
-    let status_msg_state = use_state(&cx, || match status_msg.clone() {
-        Some(msg) => msg,
-        None => String::new(),
-    });
+    let status_msg = match identity.status_message(){
+        Some(msg)=> msg,
+        None => String::new()
+    };
+    let status_msg2 = status_msg.clone();
+    let status_msg_state = use_state(&cx, || status_msg.clone());
     let edit_status_msg_state = use_state(&cx, || false);
 
     let update_user_name = move |_| {
@@ -49,17 +50,24 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
         edit_user_name_state.set(false);
     };
 
-    let update_status_msg = move |_| {
-        if let Err(e) =  account
-          .write()
-          .update_identity(IdentityUpdate::set_status_message(Some(
-              status_msg_state.to_string(),
-          )))
-      {
-          println!("Failed in updating status message:{}", e);
-      }
-      edit_status_msg_state.set(false);
-  };
+
+    fn update_status_msg(status_msg_state:&UseState<String>,status_msg: &String,user_name_error: &UseState<String>, account:&Account, edit_status_msg_state:&UseState<bool> ){
+         let status_msg_text = status_msg_state.trim();
+                                    if status_msg_text != *status_msg{
+                                        if status_msg_text.len() > 128{
+                                            user_name_error.set("status message needs to be less than 128 characters".into());
+
+                                        }else{
+                                            if let Err(e) =  account.write().update_identity(IdentityUpdate::set_status_message(
+                                                Some(status_msg_state.to_string(),)))
+                                                {
+                                                println!("Failed in updating status message:{}", e);
+                                                }
+                                            edit_status_msg_state.set(false);
+                                        }   
+                                    }  
+
+    }
 
     cx.render(rsx! {
         div {
@@ -170,26 +178,23 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                 value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
                                 on_enter:move|_|{
-                                    //TODO: add if msg changed here and on_pressed
-                                    if let Err(e) =  account.write().update_identity(IdentityUpdate::set_status_message(
-                                        Some(status_msg_state.to_string(),)))
-                                        {
-                                        println!("Failed in updating status message:{}", e);
-                                        }
-                                    edit_status_msg_state.set(false);
+                                    update_status_msg(status_msg_state,&status_msg,user_name_error,account,edit_status_msg_state);
+                                    }   
                                 },
                             },
+                            Button {
+                                text: l2.save.to_string(),
+                              on_pressed: move |_|{
+                                  update_status_msg(status_msg_state,&status_msg2,user_name_error,account,edit_status_msg_state);
+                              }
+                          },
                         },              
-                        Button {
-                          text: l2.save.to_string(),
-                        on_pressed: update_status_msg
-                        }
-                    },
+                        
                 )} else {rsx! (
                     div{
                         class: "change-profile",
                         span {
-                         status_msg
+                            "{status_msg}",
                         },
                        Button {
                         text: l2.edit.to_string(),
