@@ -32,7 +32,6 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 label {
                     "{file_size}"
                 }
-
         }
     })
 }

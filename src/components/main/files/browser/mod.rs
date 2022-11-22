@@ -2,7 +2,8 @@ use std::{collections::HashSet, time::Duration};
 
 use dioxus::{core::to_owned, prelude::*};
 
-use ui_kit::{file::File, folder::State, new_folder::NewFolder};
+use dioxus_heroicons::outline::Shape;
+use ui_kit::{file::File, folder::State, new_folder::NewFolder, icon_button::IconButton};
 use warp::constellation::item::ItemType;
 
 #[derive(Props, PartialEq)]
@@ -45,9 +46,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         div {
             id: "browser",
             (cx.props.show_new_folder).then(|| rsx!(
-                button {
+                div {
                     class: "button-files file",
-                    onclick: move |_| {},
                     NewFolder {
                         state: State::Primary
                     }
@@ -63,31 +63,58 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 .to_string();
 
                 rsx!(
-                    button {
-                        class: "button-files file",
-                        onclick: move |_| {
-                            let file_storage = cx.props.storage.clone();
-                            let file_name = file.name();
-                            cx.spawn({
-                                to_owned![file_storage, file_name];
-                                async move {
-                                let mut write_storage = file_storage.write();
-
-                                    match write_storage.remove(&file_name, true).await {
-                                        Ok(_) => eprintln!("{file_name} was deleted."),
-                                        Err(error) => eprintln!("Error deleting file: {error}"),
-                                    };
-                                }
-                            });
-                        },
-                        File {
-                            name: file.name(),
-                            state: State::Secondary,
-                            kind: file_extension,
-                            size: file.size(),
-                            thumbnail: file.thumbnail(),
+                    div {
+                        class: "dropdown", 
+                        div {
+                            class: "button-files file",
+                            File {
+                                name: file.name(),
+                                state: State::Secondary,
+                                kind: file_extension,
+                                size: file.size(),
+                                thumbnail: file.thumbnail(),
+                            }
+                        }
+                        div {
+                            class: "dropdown-content", 
+                            IconButton {
+                                icon: Shape::X,
+                                state: ui_kit::icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    let file_storage = cx.props.storage.clone();
+                                    let file_name = file.name();
+                                    cx.spawn({
+                                        to_owned![file_storage, file_name];
+                                        async move {
+                                        let mut write_storage = file_storage.write();
+        
+                                            match write_storage.remove(&file_name, true).await {
+                                                Ok(_) => eprintln!("{file_name} was deleted."),
+                                                Err(error) => eprintln!("Error deleting file: {error}"),
+                                            };
+                                        }
+                                    });
+                                },
+                            }
+                            IconButton {
+                                icon: Shape::Download,
+                                state: ui_kit::icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    // TODO(Files): Add download function here
+                                    eprintln!("Download item");
+                                },
+                            }
+                            IconButton {
+                                icon: Shape::Pencil,
+                                state: ui_kit::icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    // TODO(Files): Add edit name function here
+                                    eprintln!("Edit item name");
+                                },
+                            }
                         }
                     }
+                   
                 )
             }),
         },
