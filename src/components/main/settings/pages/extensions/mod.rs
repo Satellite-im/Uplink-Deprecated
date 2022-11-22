@@ -2,7 +2,7 @@ use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::button::Button;
-use utils::extensions::{BasicExtension, Extension};
+use utils::extensions::{BasicExtension, ExtensionInfo};
 
 pub mod extension;
 
@@ -14,7 +14,7 @@ use crate::components::{
 pub fn Extensions(cx: Scope) -> Element {
     log::debug!("rendering settings/pages/Extensions");
 
-    let mut extensions: Vec<Extension> = Vec::new();
+    let mut extensions: Vec<ExtensionInfo> = Vec::new();
     extensions.push(AudioFactory::info());
 
     let extensions_path = dirs::home_dir()

@@ -7,10 +7,7 @@ use ui_kit::{
     small_extension_placeholder::SmallExtensionPlaceholder,
     textarea::TextArea,
 };
-use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
-use crate::extensions::{ExtensionType, get_renders};
-use utils::extensions::BasicExtension;
+use utils::extensions::{ExtensionType, BasicExtension, get_renders};
 
 #[derive(Props)]
 pub struct Props<'a> {

@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::switch::Switch;
-use utils::extensions::Extension;
+use utils::extensions::ExtensionInfo;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
-    extension: Extension,
+    extension: ExtensionInfo,
 }
 
 #[allow(non_snake_case)]
