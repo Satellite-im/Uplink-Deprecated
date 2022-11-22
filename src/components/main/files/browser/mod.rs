@@ -74,8 +74,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                 let mut write_storage = file_storage.write();
 
                                     match write_storage.remove(&file_name, true).await {
-                                        Ok(_) => println!("{file_name} was deleted."),
-                                        Err(error) => println!("Error deleting file: {error}"),
+                                        Ok(_) => eprintln!("{file_name} was deleted."),
+                                        Err(error) => eprintln!("Error deleting file: {error}"),
                                     };
                                 }
                             });

@@ -1,8 +1,9 @@
-use std::path::Path;
+use std::{path::Path};
 
 use dioxus::{core::to_owned, events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
+use warp::error::Error;
 use mime::*;
 use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
@@ -54,14 +55,18 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                     loop {
                                         match file_storage.put(&filename_to_save, &local_path).await {
-                                            Ok(_) => {                                 
-                                                update_thumbnail(file_storage, filename_to_save.clone()).await;                 
-                                                println!("{:?} file uploaded", &filename_to_save); 
+                                            Ok(_) => {  
+                                                eprintln!("{:?} file uploaded!", &filename_to_save); 
+
+                                                match update_thumbnail(file_storage, filename_to_save.clone()).await {
+                                                    Ok(success) => eprintln!("{:?}", success), 
+                                                    Err(error) => eprintln!("Error on update thumbnail: {:?}", error), 
+                                                }               
                                                 break;
                                             },
                                             Err(error) => {
                                                 match &error {
-                                                    warp::error::Error::DuplicateName => {
+                                                    Error::DuplicateName => {
 
                                                         let file_name_without_extension = std::path::Path::new(&filename.clone())
                                                         .with_extension("")
@@ -77,10 +82,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                         .to_string();
 
                                                         filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
-                                                        println!("Duplicate name, changing file name to {}", &filename_to_save);
+                                                        eprintln!("Duplicate name, changing file name to {}", &filename_to_save);
                                                     },
                                                     _ => {
-                                                        println!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
+                                                        eprintln!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
                                                         break;
                                                     }
                                                 }
@@ -111,8 +116,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 }
 
 
-async fn update_thumbnail(file_storage: Storage, filename_to_save: String) {
-    let item =  file_storage.root_directory().get_item(&filename_to_save).unwrap();
+async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Result<String, Error> {
+    let item =  file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
     //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
@@ -129,7 +134,8 @@ async fn update_thumbnail(file_storage: Storage, filename_to_save: String) {
         None =>  "".to_string(),
     };
     
-    let file =  file_storage.get_buffer(&filename_to_save).await.unwrap_or_default();
+    let file =  file_storage.get_buffer(&filename_to_save).await?;
+  
 
     let image = match &file.len() {
         0 => "".to_string(),
@@ -142,5 +148,5 @@ async fn update_thumbnail(file_storage: Storage, filename_to_save: String) {
     };
 
     item.set_thumbnail(&image);
-    println!("Thumbnail setted: {:?}", item.thumbnail());
+    Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
 }
