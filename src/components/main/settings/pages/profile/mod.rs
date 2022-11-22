@@ -78,8 +78,9 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                         edit_username_state.set(false);
                 }
             }
+        } else {
+            edit_username_state.set(false);
         }
-
     }
 
 
@@ -98,8 +99,9 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                                                 }
                                             edit_status_msg_state.set(false);
                                         }   
-                                    }  
-
+                                    }  else {
+                                        edit_status_msg_state.set(false);
+                                    }
     }
 
     cx.render(rsx! {
@@ -126,7 +128,7 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                             div{
                                 class: "input-profile",
                                 Input {
-                                    placeholder: "type user name".to_string(),
+                                    placeholder: "Digit your username...".to_string(),
                                     value: username_state.to_string(),
                                     on_change: move |e: FormEvent| {
                                         username_error.set("".into());
@@ -174,7 +176,7 @@ pub fn Profile(cx: Scope<Props>, account:Account) -> Element {
                         div{
                             class: "input-profile",
                             Input {
-                                placeholder: "type".to_string(),
+                                placeholder: "Digit your status message...".to_string(),
                                 value: status_msg_state.to_string(),
                                 on_change: move |e: FormEvent| status_msg_state.set(e.value.clone()),
                                 on_enter:move|_|{
