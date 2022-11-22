@@ -59,7 +59,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         },
                     )),
                     (**show_media).then(|| rsx! {
-                        MediaContainer {}
+                        MediaContainer {
+                            account: cx.props.account.clone(),
+                        }
                     }),
                     div {
                         class: "messages-container",
