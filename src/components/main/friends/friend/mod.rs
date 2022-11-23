@@ -6,7 +6,7 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, error::Error, raygun::Conversation};
+use warp::{crypto::DID, error::Error, multipass::Friends, raygun::Conversation};
 
 use crate::{
     iutils,
@@ -89,6 +89,20 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 };
                                 state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
                                 cx.props.on_chat.call(());
+                            }
+                        },
+                        IconButton {
+                            icon: Shape::X,
+                            state: ui_kit::icon_button::State::Danger,
+                            on_pressed: move |_| {
+                                let mut multipass = cx.props.account.clone();
+                                let did_to_remove = cx.props.friend.clone();
+                                match multipass.remove_friend(&did_to_remove) {
+                                    Ok(_) => {}
+                                    Err(_) => {
+                                        log::debug!("error removing friend");
+                                    }
+                                }
                             }
                         }
                     )}
