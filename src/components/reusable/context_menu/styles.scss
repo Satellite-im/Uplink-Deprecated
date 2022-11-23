@@ -1,4 +1,4 @@
-#context-menu {
+.context-menu {
   position: fixed;
   width: fit-content;
   height: fit-content;
@@ -15,6 +15,16 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     gap: 0.5rem;
+
+    &.danger {
+      color: var(--theme-red);
+      svg {
+        stroke: var(--theme-red);
+      }
+      &:hover {
+        background-color: var(--theme-secondary);
+      }
+    }
 
     &:hover {
       background: var(--theme-primary);
