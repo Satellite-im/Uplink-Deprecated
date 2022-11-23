@@ -6,7 +6,13 @@ use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
-    components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
+    components::{
+        main::sidebar::favorites::Favorites,
+        reusable::{
+            context_menu::{ContextItem, ContextMenu},
+            nav::Nav,
+        },
+    },
     iutils::config::Config,
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,
@@ -73,6 +79,24 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         }
         div {
             class: "sidebar",
+            id: "main-sidebar",
+            ContextMenu {
+                parent: String::from("main-sidebar"),
+                items: cx.render(rsx! {
+                    ContextItem {
+                        onpressed: move |_| use_router(&cx).push_route("/main/files", None, None),
+                        text: String::from("Upload Files"),
+                    },
+                    ContextItem {
+                        onpressed: move |_| use_router(&cx).push_route("/main/friends", None, None),
+                        text: String::from("Manage Friends"),
+                    },
+                    ContextItem {
+                        onpressed: move |_| use_router(&cx).push_route("/main/settings", None, None),
+                        text: String::from("Settings"),
+                    },
+                })
+            },
             IconInput {
                 icon: Shape::Search,
                 placeholder: String::from("Search"),
