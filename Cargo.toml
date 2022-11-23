@@ -57,6 +57,7 @@ soloud = "1.0.2"
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"
 mime = "0.3.16"
+image = "0.24.5"
 ui_kit = { path = "src/ui_kit" }
 utils = { path = "src/utils" }
 

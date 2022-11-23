@@ -1,4 +1,4 @@
-use std::{path::Path};
+use std::{path::Path, io::Cursor};
 
 use dioxus::{core::to_owned, events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -7,6 +7,7 @@ use warp::error::Error;
 use mime::*;
 use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
+use image::io::Reader as ImageReader;
 
 use warp::constellation::Constellation;
 
@@ -116,10 +117,16 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 }
 
 
-async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Result<String, Error> {
+async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Result<String, Box<dyn std::error::Error>> {
     let item =  file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
+    let file =  file_storage.get_buffer(&filename_to_save).await?;
+
+    // Gurantee that is an image that has been uploaded
+    let image = ImageReader::new(Cursor::new(&file)).with_guessed_format()?.decode()?;
+    let image_thumbnail = image.thumbnail(70, 70);
+  
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
     let mime = match parts_of_filename.iter().map(|extension| extension.to_lowercase()).last() {
         Some(m) => {
@@ -134,15 +141,13 @@ async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Re
         None =>  "".to_string(),
     };
 
-    let file =  file_storage.get_buffer(&filename_to_save).await?;
-
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(&file);
+        let base64_image = base64::encode(image_thumbnail.as_bytes());
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
     } else {
-        Err(Error::InvalidItem)
+        Err(Box::from(Error::InvalidItem))
     }
 }
