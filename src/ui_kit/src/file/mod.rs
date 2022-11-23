@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{solid::Shape, Icon};
+use dioxus_heroicons::{outline::Shape, Icon};
 
 use super::folder::State;
 // Remember: owned props must implement PartialEq!
@@ -9,10 +9,11 @@ pub struct Props {
     state: State,
     kind: String,
     size: usize,
+    thumbnail: String,
 }
 
 #[allow(non_snake_case)]
-pub fn File(cx: Scope<Props>) -> Element {
+pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let class = match cx.props.state {
         State::Primary => "primary",
         State::Secondary => "secondary",
@@ -25,11 +26,12 @@ pub fn File(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "folder {class}",
-            Icon { icon: Shape::Document },
-            p { "{file_name}" },
-            label {
-                "{file_size}"
-            }
+
+                Icon { icon: Shape::Document},
+                p { "{file_name}" },
+                label {
+                    "{file_size}"
+                }
         }
     })
 }

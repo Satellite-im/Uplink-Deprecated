@@ -2,10 +2,7 @@ use dioxus::prelude::*;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
-    components::{
-        main::files::toolbar::usage::{Usage, UsageStats},
-        reusable::nav::Nav,
-    },
+    components::reusable::nav::Nav,
     main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
     STATE,
 };
