@@ -56,7 +56,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                          username_error.set(l2.username_error_length.to_string())
                                     } else {
                                         let username_regex_set =
-                                            RegexSet::new(&[r"@", r"[[:^alnum:]&&[:^punct:]]"]).unwrap();
+                                            RegexSet::new(&[r"@", r"[[:^alnum:]&&[:^punct:]]&&^ "]).unwrap();
                                         let matches = username_regex_set.matches(username_text);
                                         if matches.matched(0) {
                                             username_error.set(l2.username_error_at_sign.to_string())
