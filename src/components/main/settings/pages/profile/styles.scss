@@ -1,12 +1,14 @@
-.input_status {
-  width: 60%;
+.input-profile {
+  margin-right: 1rem;
+  width: 100%;
 }
-.change-status {
+.change-profile {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
-.profile_header {
+.profile-header {
   background: var(--theme-text-muted);
   border-radius: 8px 8px 0 0;
   height: 140px;
@@ -18,6 +20,6 @@
   justify-items: center;
 }
 
-.profile_picture {
+.profile-picture {
   margin-top: 80px;
 }

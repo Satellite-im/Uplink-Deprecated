@@ -1,75 +1,43 @@
 use dioxus::prelude::*;
 
-use crate::{Account, LANGUAGE};
-use dioxus::events::FormEvent;
-use dioxus_heroicons::outline::Shape;
-use ui_kit::{button::Button, icon_input::IconInput, photo_picker::PhotoPicker};
-use warp::multipass::identity::Identity;
+mod status_msg;
+mod username;
+
+use crate::Account;
+
+use ui_kit::photo_picker::PhotoPicker;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
 }
 
+#[inline_props]
 #[allow(non_snake_case)]
-pub fn Profile(cx: Scope<Props>) -> Element {
+pub fn Profile(cx: Scope<Props>, account: Account) -> Element {
     log::debug!("rendering settings/pages/Profile");
-    let l = use_atom_ref(&cx, LANGUAGE).read();
-    let edit = use_state(&cx, || false);
-    let status = use_state(&cx, String::new);
-    let mp = cx.props.account.clone();
-    let set_status = move |_: _| {
-        let mp = mp.clone();
-        edit.set(false);
-        //TODO: Change to using `MultiPass::update_identity`
-        let mut my_identity = match mp.write().get_own_identity() {
-            Ok(me) => me,
-            Err(_) => Identity::default(),
-        };
-        my_identity.set_status_message(Some(status.to_string()));
-    };
 
     cx.render(rsx! {
         div {
             id: "page_profile",
             class: "padded",
             div {
-                class: "profile_header",
+                class: "profile-header",
                 div {
-                    class: "profile_picture",
+                    class: "profile-picture",
                     PhotoPicker {
                         account: cx.props.account.clone(),
                     },
                 }
             },
             div {
-                div {
-                    class: "status",
-                    label {
-                        "Status Message"
-                    },
+                username::Username{
+                    account: account.clone(),
                 },
-                div {
-                    class: "change-status",
-                    div {
-                        class: "input_status",
-                        IconInput {
-                            icon: Shape::PencilAlt,
-                            placeholder: status.to_string(),
-                            value: status.to_string(),
-                            on_change: move |e: FormEvent| status.set(e.value.clone()),
-                            on_enter: set_status
-                        },
-                    },
-                    div {
-                        Button {
-                            text: l.save_status.to_string(),
-                            icon: Shape::Check,
-                            on_pressed: move |_| {},
-                        }
-                    }
+                status_msg::StatusMsg{
+                    account:account.clone(),
                 }
-            }
+            },
         }
     })
 }
