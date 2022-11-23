@@ -61,7 +61,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     name: file.name(),
                     state: State::Secondary,
                     kind: file_extension,
-                    size: file.size(),
+                    size: file.size().try_into().unwrap(),
                 })
             }),
         },
