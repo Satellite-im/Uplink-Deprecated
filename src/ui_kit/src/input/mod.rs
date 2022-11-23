@@ -61,11 +61,11 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     class: "input",
                     placeholder: "{cx.props.placeholder}",
                     oninput: |evt| cx.props.on_change.call(evt),
-                    // onkeyup:move |evt| {
-                    //     if evt.key_code == KeyCode::Enter {
-                    //         cx.props.on_enter.call(())
-                    //     }
-                    // }
+                    onkeyup: |evt| {
+                        if evt.key_code == KeyCode::Enter {
+                            cx.props.on_enter.call(())
+                        }
+                    }
                 }
             },
         }),}
