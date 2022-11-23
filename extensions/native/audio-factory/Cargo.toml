@@ -14,3 +14,7 @@ sir = "0.2.2"
 fs2 = "0.4.3"
 humansize = "2.0.0"
 # gstreamer = "0.19.2"
+
+#[lib]
+#name = "audiofactory"
+#crate_type = ["dylib"]

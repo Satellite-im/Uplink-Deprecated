@@ -1,0 +1,28 @@
+#context-menu {
+  position: fixed;
+  width: fit-content;
+  height: fit-content;
+  border-radius: 4px;
+  background: var(--theme-background);
+  border: 1px solid var(--theme-borders);
+  z-index: 1000;
+  display: inline-flex;
+  flex-direction: column;
+  padding: 0.5rem;
+
+  .context-item {
+    display: inline-flex;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    gap: 0.5rem;
+
+    &:hover {
+      background: var(--theme-primary);
+      cursor: pointer;
+    }
+  }
+
+  &.hidden {
+    display: none;
+  }
+}

@@ -56,11 +56,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     loop {
                                         match file_storage.put(&filename_to_save, &local_path).await {
                                             Ok(_) => {  
-                                                eprintln!("{:?} file uploaded!", &filename_to_save); 
+                                              log::info!("{:?} file uploaded!", &filename_to_save); 
 
                                                 match update_thumbnail(file_storage, filename_to_save.clone()).await {
-                                                    Ok(success) => eprintln!("{:?}", success), 
-                                                    Err(error) => eprintln!("Error on update thumbnail: {:?}", error), 
+                                                    Ok(success) => log::info!("{:?}", success), 
+                                                    Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
                                                 }               
                                                 break;
                                             },
@@ -82,10 +82,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                         .to_string();
 
                                                         filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
-                                                        eprintln!("Duplicate name, changing file name to {}", &filename_to_save);
+                                                        log::error!("Duplicate name, changing file name to {}", &filename_to_save);
                                                     },
                                                     _ => {
-                                                        eprintln!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
+                                                        log::error!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
                                                         break;
                                                     }
                                                 }
@@ -120,10 +120,10 @@ async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Re
     let item =  file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
-    //Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
-    let mime = match parts_of_filename.last() {
+    // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
+    let mime = match parts_of_filename.iter().map(|extension| extension.to_lowercase()).last() {
         Some(m) => {
-            match *m {
+            match m.as_str() {
                 "png" => IMAGE_PNG.to_string(),
                 "jpg" => IMAGE_JPEG.to_string(),
                 "jpeg" => IMAGE_JPEG.to_string(),

@@ -5,6 +5,9 @@ use dioxus::{core::to_owned, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{file::File, folder::State, new_folder::NewFolder, icon_button::IconButton};
 use warp::constellation::item::ItemType;
+use warp::constellation::Constellation;
+
+
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -21,7 +24,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     use_future(
         &cx,
-        (files, files_sorted, &file_storage.read().root_directory()),
+        (files, files_sorted, &file_storage.root_directory()),
         |(files, files_sorted, root_directory)| async move {
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(root_directory.get_items());
@@ -86,11 +89,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                     cx.spawn({
                                         to_owned![file_storage, file_name];
                                         async move {
-                                        let mut write_storage = file_storage.write();
         
-                                            match write_storage.remove(&file_name, true).await {
-                                                Ok(_) => eprintln!("{file_name} was deleted."),
-                                                Err(error) => eprintln!("Error deleting file: {error}"),
+                                            match file_storage.remove(&file_name, true).await {
+                                                Ok(_) => log::info!("{file_name} was deleted."),
+                                                Err(error) => log::error!("Error deleting file: {error}"),
                                             };
                                         }
                                     });
