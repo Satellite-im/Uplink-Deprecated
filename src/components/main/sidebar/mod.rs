@@ -78,6 +78,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             id: "main-sidebar",
             ContextMenu {
                 parent: String::from("main-sidebar"),
+                devmode: true,
                 items: cx.render(rsx! {
                     ContextItem {
                         onpressed: move |_| use_router(&cx).push_route("/main/files", None, None),
