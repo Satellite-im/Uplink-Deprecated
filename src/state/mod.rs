@@ -122,16 +122,22 @@ impl PersistedState {
 
                 let mut participants_status = &self.participants_status;
                 for (chat_id, chat) in new_chats.iter() {
-                    if !participants_status.contains_key(chat_id) || (chat.conversation.recipients().len() - 1 != participants_status[chat_id].len()){ 
-                                                                        //might also check for participants dids over the number of them
+                    if !participants_status.contains_key(chat_id)
+                        || (chat.conversation.recipients().len() - 1
+                            != participants_status[chat_id].len())
+                    {
+                        //might also check for participants dids over the number of them
                         for &participant in chat.conversation.recipients().iter() {
                             participants_status[chat_id].clear();
                             //add check for participant == ME
-                            participants_status[chat_id].insert(participant, Participant { typing: false });
+                            participants_status[chat_id]
+                                .insert(participant, Participant { typing: false });
                         }
                     }
                 }
-                let mut new_participants_status = participants_status.iter().filter(|(id, _)| new_chats.contains_key(id)).collect();
+
+                let mut new_participants_status = participants_status.clone();
+                new_participants_status.retain(|key, value| new_chats.contains_key(key));
 
                 PersistedState {
                     current_chat: self.current_chat,
@@ -140,7 +146,7 @@ impl PersistedState {
                     hide_sidebar: self.hide_sidebar,
                     participants_status: new_participants_status,
                 }
-            },
+            }
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
@@ -177,7 +183,7 @@ impl PersistedState {
             Actions::UpdateParticipantsStatus(chat_id, did, participant) => {
                 let mut new_participants_status = self.participants_status.clone();
                 new_participants_status[&chat_id][&did] = participant;
-            
+
                 PersistedState {
                     current_chat: self.current_chat,
                     all_chats: self.all_chats.clone(),
@@ -185,7 +191,7 @@ impl PersistedState {
                     hide_sidebar: self.hide_sidebar,
                     participants_status: new_participants_status,
                 }
-            },    
+            }
         };
         // only save while there's a lock on PersistedState
         next.save();
