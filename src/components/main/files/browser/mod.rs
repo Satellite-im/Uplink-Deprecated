@@ -89,7 +89,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                     cx.spawn({
                                         to_owned![file_storage, file_name];
                                         async move {
-        
                                             match file_storage.remove(&file_name, true).await {
                                                 Ok(_) => log::info!("{file_name} was deleted."),
                                                 Err(error) => log::error!("Error deleting file: {error}"),

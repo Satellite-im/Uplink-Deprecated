@@ -82,7 +82,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                         .to_string();
 
                                                         filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
-                                                        log::error!("Duplicate name, changing file name to {}", &filename_to_save);
+                                                        log::trace!("Duplicate name, changing file name to {}", &filename_to_save);
                                                     },
                                                     _ => {
                                                         log::error!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
@@ -133,20 +133,16 @@ async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Re
         },
         None =>  "".to_string(),
     };
-    
+
     let file =  file_storage.get_buffer(&filename_to_save).await?;
-  
 
-    let image = match &file.len() {
-        0 => "".to_string(),
-        _ => {
-            let prefix = format!("data:{};base64,", mime);
-            let base64_image = base64::encode(&file);
-            let img = prefix + base64_image.as_str();
-            img
-        }
-    };
-
-    item.set_thumbnail(&image);
-    Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
+    if !file.is_empty() || !mime.is_empty() {
+        let prefix = format!("data:{};base64,", mime);
+        let base64_image = base64::encode(&file);
+        let img = prefix + base64_image.as_str();
+        item.set_thumbnail(&img);
+        Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
+    } else {
+        Err(Error::InvalidItem)
+    }
 }
