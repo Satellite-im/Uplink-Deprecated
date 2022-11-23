@@ -1,5 +1,4 @@
 use crate::{
-    components::reusable::context_menu::{ContextItem, ContextMenu},
     iutils,
     state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, LANGUAGE, STATE,
@@ -8,6 +7,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::stream::StreamExt;
 use ui_kit::{
+    context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
