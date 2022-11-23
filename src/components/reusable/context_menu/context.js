@@ -5,8 +5,17 @@ document.getElementById("ID").addEventListener(
     ev.preventDefault()
     const context_menu = document.getElementById("context-menu")
     context_menu.classList.remove("hidden")
-    context_menu.style.top = `${ev.pageY}px`
-    context_menu.style.left = `${ev.pageX}px`
+    if (context_menu.offsetWidth + ev.pageX > document.offsetWidth) {
+      context_menu.style.right = `${ev.pageX}px`
+    } else {
+      context_menu.style.left = `${ev.pageX}px`
+    }
+    if (context_menu.offsetHeight + ev.pageY > document.offsetHeight) {
+      context_menu.style.bottom = `${ev.pageX}px`
+    } else {
+      context_menu.style.top = `${ev.pageX}px`
+    }
+
     return false
   },
   false,
