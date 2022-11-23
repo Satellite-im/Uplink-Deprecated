@@ -10,12 +10,16 @@ document.getElementById("ID").addEventListener(
     }
     // Select the current one
     const context_menu = document.getElementById("ID-context-menu")
-    // TODO: if this context menu would render off the bottom of the page, render the bottom left corner at mouse pointer.
-    // If the menu would render off the right, render the opposide side, continue this logic for top left bottom and right
-    // so that the menu never renders off screen.
     context_menu.classList.remove("hidden")
-    context_menu.style.top = `${ev.pageY}px`
-    context_menu.style.left = `${ev.pageX}px`
+    const { width, height } = context_menu.getBoundingClientRect()
+    let offsetX = ev.pageX
+    let offsetY = ev.pageY
+    let screenWidth = ev.view.innerWidth
+    let screenHeight = ev.view.innerHeight
+    let overFlowY = screenHeight < height + offsetY
+    let overFlowX = screenWidth < width + offsetX
+    context_menu.style.top = `${overFlowY ? offsetY - height : offsetY}px`
+    context_menu.style.left = `${overFlowX ? offsetX - width : offsetX}px`
     return false
   },
   false,
