@@ -43,7 +43,7 @@ pub fn make() -> Language {
         save: String::from("Save"),
         edit: String::from("Edit"),
         username: String::from("User Name"),
-        username_placeholder: String::from("Digit your username..."),
+        username_placeholder: String::from("Type your username..."),
 
         username_error_required: String::from("Username is required"),
         username_error_length: String::from(
@@ -52,7 +52,7 @@ pub fn make() -> Language {
         username_error_at_sign: String::from("@ is not allowed in username"),
         username_error_illegal: String::from("Illegal input in username"),
         status_msg: String::from("Status Message"),
-        status_placeholder: String::from("Digit your status message..."),
+        status_placeholder: String::from("Type your status message..."),
         status_error_length: String::from("status message needs to be less than 128 characters"),
         friends: String::from("Friends"),
         edit_profile: String::from("Edit Profile"),
