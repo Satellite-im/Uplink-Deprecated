@@ -243,7 +243,24 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                     })
                 },
-                ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
+                span {
+                    id: "{did}-pfp-chat",
+                    ContextMenu {
+                        parent: format!("{}-pfp-chat", did),
+                        items: cx.render(rsx! {
+                            ContextItem {
+                                onpressed: move |_| {},
+                                text: String::from("View Profile"),
+                            },
+                            ContextItem {
+                                onpressed: move |_| {},
+                                icon: Shape::Share,
+                                text: String::from("Share Profile"),
+                            },
+                        })
+                    },
+                    ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
+                },
                 div {
                     class: "who",
                     div {

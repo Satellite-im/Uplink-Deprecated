@@ -1,4 +1,4 @@
-use dioxus::{desktop::use_window, prelude::*};
+use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::profile_picture::PFP;
 
@@ -29,9 +29,9 @@ pub fn Media(cx: Scope<Props>) -> Element {
                     },
                 }
                 user_pdp.filter(|s| s.is_empty()).map(|_| rsx!(div {
-                                class: "placeholder",
-                                "{uppercase}"
-                            }))
+                    class: "placeholder",
+                    "{uppercase}"
+                }))
             }
 
             div {
