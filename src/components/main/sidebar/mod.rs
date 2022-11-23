@@ -6,13 +6,7 @@ use uuid::Uuid;
 use warp::raygun::Message;
 
 use crate::{
-    components::{
-        main::sidebar::favorites::Favorites,
-        reusable::{
-            context_menu::{ContextItem, ContextMenu},
-            nav::Nav,
-        },
-    },
+    components::{main::sidebar::favorites::Favorites, reusable::nav::Nav},
     iutils::config::Config,
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,
@@ -20,7 +14,9 @@ use crate::{
 
 use ::utils::{notifications::PushNotification, Account};
 use ui_kit::{
-    extension_placeholder::ExtensionPlaceholder, icon_input::IconInput,
+    context_menu::{ContextItem, ContextMenu},
+    extension_placeholder::ExtensionPlaceholder,
+    icon_input::IconInput,
     skeletal_chats::SkeletalChats,
 };
 
@@ -82,6 +78,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             id: "main-sidebar",
             ContextMenu {
                 parent: String::from("main-sidebar"),
+                devmode: true,
                 items: cx.render(rsx! {
                     ContextItem {
                         onpressed: move |_| use_router(&cx).push_route("/main/files", None, None),

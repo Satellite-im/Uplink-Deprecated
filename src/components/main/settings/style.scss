@@ -7,15 +7,6 @@
   width: 100%;
   background-color: var(--theme-background);
 
-  .closer {
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
-  }
-
   #content {
     background-color: var(--theme-background);
     border-radius: 4px;
@@ -25,6 +16,29 @@
     top: 2.5%;
     left: 2.5%;
     flex-direction: column;
+
+    .toolbar-wrapper {
+      margin-bottom: 0.2rem;
+      border-bottom: 1px solid var(--theme-borders);
+
+      #toolbar {
+        #content {
+          .toolbar-content {
+            display: flex;
+            flex-grow: 1;
+            justify-content: space-between;
+            align-items: center;
+
+            .toolbar-start,
+            .toolbar-end {
+              flex-grow: 1;
+              flex-basis: 0;
+            }
+          }
+        }
+      }
+    }
+
     #page {
       width: 100%;
       .wrapper {

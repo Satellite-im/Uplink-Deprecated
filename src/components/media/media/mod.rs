@@ -29,9 +29,9 @@ pub fn Media(cx: Scope<Props>) -> Element {
                     },
                 }
                 user_pdp.filter(|s| s.is_empty()).map(|_| rsx!(div {
-                                class: "placeholder",
-                                "{uppercase}"
-                            }))
+                    class: "placeholder",
+                    "{uppercase}"
+                }))
             }
 
             div {

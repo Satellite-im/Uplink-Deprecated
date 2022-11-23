@@ -4,6 +4,7 @@ use dioxus::prelude::*;
 use crate::{
     components::reusable::nav::Nav,
     main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
+    STATE,
 };
 pub mod browser;
 pub mod sidebar;
@@ -21,9 +22,16 @@ pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
 
+    let st = use_atom_ref(&cx, STATE).clone();
+    let sidebar_visibility = match st.read().hide_sidebar {
+        false => "sidebar-visible",
+        true => "sidebar-hidden",
+    };
+
     cx.render(rsx! {
         div {
             id: "files",
+            class: "{sidebar_visibility}",
             sidebar::Sidebar { account: cx.props.account.clone() },
             div {
                 id: "content",

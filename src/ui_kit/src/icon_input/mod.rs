@@ -2,6 +2,8 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 
+use crate::context_menu::{ContextItem, ContextMenu};
+
 #[derive(PartialEq, Eq)]
 pub enum State {
     Success,
@@ -25,6 +27,28 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         Some(value) => rsx! {
             div {
                 class: "icon-input",
+                id: "TODO-icon_input-input",
+                ContextMenu {
+                    parent: String::from("TODO-icon_input-input"),
+                    items: cx.render(rsx! {
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Paste"),
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Select All"),
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Copy"),
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Clear"),
+                        },
+                    })
+                },
                 Icon {
                     icon: cx.props.icon,
                 },

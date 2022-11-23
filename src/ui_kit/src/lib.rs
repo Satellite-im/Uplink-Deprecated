@@ -1,6 +1,7 @@
 pub mod activity_indicator;
 pub mod badge;
 pub mod button;
+pub mod context_menu;
 pub mod extension_placeholder;
 pub mod file;
 pub mod folder;

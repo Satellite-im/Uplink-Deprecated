@@ -29,14 +29,17 @@
       height: 100%;
       position: absolute;
     }
+
     .compose {
       display: none;
     }
   }
+
   .main-chat {
     .sidebar {
       display: none;
     }
+
     .compose {
       width: 100%;
       height: 100%;
@@ -44,24 +47,44 @@
     }
   }
 
-  #files {
-    #sidebar {
-      display: none;
+  #files,
+  #settings {
+    &.sidebar-hidden {
+      #sidebar {
+        display: none;
+      }
+
+      #content {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        justify-self: flex-end;
+      }
     }
-    #content {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      justify-self: flex-end;
+
+    &.sidebar-visible {
+      #sidebar {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        justify-self: flex-end;
+      }
+
+      #content {
+        display: none;
+      }
     }
   }
+
   .mobile-back-button {
     display: block;
     margin-right: 5px;
   }
+
   .hidden-on-desktop {
     display: block;
   }
+
   .show-on-desktop {
     display: none;
   }

@@ -3,6 +3,7 @@ use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
+    context_menu::{ContextItem, ContextMenu},
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
     textarea::TextArea,
@@ -22,7 +23,19 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     cx.render(rsx! {
-        div { class: "write",
+        div {
+            class: "write",
+            id: "write",
+            ContextMenu {
+                parent: String::from("write"),
+                items: cx.render(rsx! {
+                    ContextItem {
+                        onpressed: move |_| {},
+                        icon: Shape::Clipboard,
+                        text: String::from("Copy Conversation ID")
+                    },
+                })
+            },
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {

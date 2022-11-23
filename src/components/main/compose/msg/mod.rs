@@ -4,7 +4,12 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
-use ui_kit::{icon_button::IconButton, profile_picture::PFP, textarea::TextArea};
+use ui_kit::{
+    context_menu::{ContextItem, ContextMenu},
+    icon_button::IconButton,
+    profile_picture::PFP,
+    textarea::TextArea,
+};
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
@@ -123,15 +128,14 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         html_output.clone(),
     );
 
+    let id = cx.props.message.id();
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
             (popout).then(|| rsx!(
                 div {
                     class: "popout-mask {remote}",
-                    onclick: move |_| {
-                        popout.set(false);
-                    },
                     div {
                         class: "close",
                         IconButton {
@@ -191,13 +195,67 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             )),
             div {
                 class: "message {remote} {hover_class}",
+                id: "{id}-message",
+                ContextMenu {
+                    parent: format!("{}-message", &id),
+                    items: cx.render(rsx! {
+                        if cx.props.remote {rsx !{
+                            ContextItem {
+                                onpressed: move |_| popout.set(true),
+                                text: String::from("React"),
+                                icon: Shape::EmojiHappy,
+                            },
+                            ContextItem {
+                                onpressed: move |_| popout.set(true),
+                                text: String::from("Reply"),
+                                icon: Shape::Reply,
+                            }
+                        }} else {rsx!{
+                            ContextItem {
+                                onpressed: move |_| popout.set(true),
+                                text: String::from("React"),
+                                icon: Shape::EmojiHappy,
+                            },
+                            ContextItem {
+                                onpressed: move |_| popout.set(true),
+                                text: String::from("Reply"),
+                                icon: Shape::Reply,
+                            },
+                            ContextItem {
+                                onpressed: move |_| popout.set(true),
+                                text: String::from("Edit"),
+                                icon: Shape::Pencil,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {},
+                                danger: true,
+                                icon: Shape::Trash,
+                                text: String::from("Remove"),
+                            },
+                        }}
+                    })
+                },
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!(PFP {
-                                src: profile_picture2,
-                                size: ui_kit::profile_picture::Size::Normal
-                            })
+                            rsx!(
+                                span {
+                                    id: "{id}-pfp-message",
+                                    ContextMenu {
+                                        parent: format!("{}-pfp-message", id),
+                                        items: cx.render(rsx! {
+                                            ContextItem {
+                                                onpressed: move |_| {},
+                                                text: String::from("View Profile"),
+                                            },
+                                        })
+                                    },
+                                    PFP {
+                                        src: profile_picture2,
+                                        size: ui_kit::profile_picture::Size::Normal
+                                    }
+                                }
+                            )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },

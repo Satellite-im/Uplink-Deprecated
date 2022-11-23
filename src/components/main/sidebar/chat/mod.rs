@@ -4,8 +4,10 @@ use crate::{
     Account, Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 use futures::stream::StreamExt;
 use ui_kit::{
+    context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
@@ -206,10 +208,59 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.render(rsx! {
             div {
                 class: "chat {active}",
+                id: "chat-{did}",
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
-                ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
+                ContextMenu {
+                    parent: format!("chat-{}", &did),
+                    items: cx.render(rsx! {
+                        ContextItem {
+                            icon: Shape::EyeOff,
+                            onpressed: move |_| {},
+                            text: String::from("Mark Seen"),
+                        },
+                        hr{}
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Call"),
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Share File"),
+                        },
+                        hr{}
+                        ContextItem {
+                            icon: Shape::X,
+                            onpressed: move |_| {},
+                            text: String::from("Remove Chat"),
+                        },
+                        ContextItem {
+                            danger: true,
+                            icon: Shape::Ban,
+                            onpressed: move |_| {},
+                            text: String::from("Block User"),
+                        },
+                    })
+                },
+                span {
+                    id: "{did}-pfp-chat",
+                    ContextMenu {
+                        parent: format!("{}-pfp-chat", did),
+                        items: cx.render(rsx! {
+                            ContextItem {
+                                onpressed: move |_| {},
+                                text: String::from("View Profile"),
+                            },
+                            ContextItem {
+                                onpressed: move |_| {},
+                                icon: Shape::Share,
+                                text: String::from("Share Profile"),
+                            },
+                        })
+                    },
+                    ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
+                },
                 div {
                     class: "who",
                     div {

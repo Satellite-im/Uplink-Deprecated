@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
 
-use crate::Account;
+use crate::{state::Actions, Account, STATE};
 
 #[derive(Eq, PartialEq, Clone)]
 pub struct Directory {
@@ -32,11 +32,16 @@ pub enum FolderDisplay {
 #[allow(non_snake_case)]
 pub fn FileElem(cx: Scope, file: File) -> Element {
     let name = file.name.clone();
+    let st = use_atom_ref(&cx, STATE).clone();
+
     cx.render(rsx!(
         a {
             class: "tree_item",
             div {
                 class: "row",
+                onclick: move |_| {
+                    st.write().dispatch(Actions::HideSidebar(true));
+                },
                 Icon {
                     icon: Shape::Document,
                 },
