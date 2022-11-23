@@ -3,10 +3,7 @@ use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 use utils::Account;
 
-use crate::{
-    components::media::{controls::Controls, media::Media},
-    iutils,
-};
+use crate::components::media::{controls::Controls, media::Media};
 
 pub mod controls;
 pub mod media;
