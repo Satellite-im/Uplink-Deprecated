@@ -1,4 +1,7 @@
-use crate::utils;
+use crate::{
+    context_menu::{ContextItem, ContextMenu},
+    utils,
+};
 use dioxus::prelude::*;
 use dioxus_html::KeyCode;
 
@@ -31,6 +34,28 @@ pub fn TextArea<'a>(
     let elm = rsx! {
         div {
             class: "textarea-wrap",
+            id: "TODO-textarea-input",
+            ContextMenu {
+                parent: String::from("TODO-textarea-input"),
+                items: cx.render(rsx! {
+                    ContextItem {
+                        onpressed: move |_| {},
+                        text: String::from("Paste"),
+                    },
+                    ContextItem {
+                        onpressed: move |_| {},
+                        text: String::from("Select All"),
+                    },
+                    ContextItem {
+                        onpressed: move |_| {},
+                        text: String::from("Copy"),
+                    },
+                    ContextItem {
+                        onpressed: move |_| {},
+                        text: String::from("Clear"),
+                    },
+                })
+            },
             (text.is_empty()).then(|| rsx!{
                 span {
                     class: "placeholder",

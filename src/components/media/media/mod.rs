@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use dioxus::{desktop::use_window, prelude::*};
 use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::profile_picture::PFP;
 

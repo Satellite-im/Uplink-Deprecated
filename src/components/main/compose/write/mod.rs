@@ -23,6 +23,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     cx.render(rsx! {
         div { class: "write",
+            id: "write",
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
