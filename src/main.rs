@@ -1,6 +1,7 @@
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
+use dioxus_heroicons::outline::Shape;
 use fluent::{FluentBundle, FluentResource};
 use std::{
     fs,
@@ -10,6 +11,7 @@ use std::{
     thread,
 };
 use tracing_subscriber::EnvFilter;
+use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
 
 use crate::iutils::config::Config;
@@ -260,21 +262,37 @@ fn App(cx: Scope<State>) -> Element {
             manager: toast,
         }
         AppStyle {},
-        Router {
-            Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
-            Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
-            Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-            Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
-            Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
-            Route { to: "/main/settings", main::settings::Settings {
-                account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::Route::General,
-            }},
-            Route { to: "/main/settings/profile", main::settings::Settings {
-                account: cx.props.account.clone(),
-                page_to_open: main::settings::sidebar::nav::Route::Profile,
-            }},
-            Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
+        span {
+            id: "main-wrap",
+            ContextMenu {
+                parent: String::from("main-wrap"),
+                devmode: true,
+                items: cx.render(rsx! {
+                    ContextItem {
+                        icon: Shape::Code,
+                        text: String::from("View Source"),
+                        onpressed: move |_| {
+                            let _ = open::that("https://github.com/Satellite-im/Uplink");
+                        },
+                    }
+                })
+            },
+            Router {
+                Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
+                Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
+                Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+                Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
+                Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
+                Route { to: "/main/settings", main::settings::Settings {
+                    account: cx.props.account.clone(),
+                    page_to_open: main::settings::sidebar::nav::Route::General,
+                }},
+                Route { to: "/main/settings/profile", main::settings::Settings {
+                    account: cx.props.account.clone(),
+                    page_to_open: main::settings::sidebar::nav::Route::Profile,
+                }},
+                Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
+            }
         }
     ))
 }

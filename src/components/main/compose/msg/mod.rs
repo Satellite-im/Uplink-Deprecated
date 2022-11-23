@@ -238,10 +238,24 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 if cx.props.remote {
                     rsx! (
                         if cx.props.last {
-                            rsx!(PFP {
-                                src: profile_picture2,
-                                size: ui_kit::profile_picture::Size::Normal
-                            })
+                            rsx!(
+                                span {
+                                    id: "{id}-pfp-message",
+                                    ContextMenu {
+                                        parent: format!("{}-pfp-message", id),
+                                        items: cx.render(rsx! {
+                                            ContextItem {
+                                                onpressed: move |_| {},
+                                                text: String::from("View Profile"),
+                                            },
+                                        })
+                                    },
+                                    PFP {
+                                        src: profile_picture2,
+                                        size: ui_kit::profile_picture::Size::Normal
+                                    }
+                                }
+                            )
                         } else {
                             rsx!( div { class: "pfp-void" } )
                         },

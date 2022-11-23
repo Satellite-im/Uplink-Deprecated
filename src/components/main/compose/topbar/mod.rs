@@ -10,6 +10,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
+    context_menu::{ContextItem, ContextMenu},
     icon_button::IconButton,
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
@@ -88,9 +89,21 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         },
                     },
-                    PFP {
-                        src: profile_picture,
-                        size: ui_kit::profile_picture::Size::Normal
+                    span {
+                        id: "pfp-topbar",
+                        ContextMenu {
+                            parent: String::from("pfp-topbar"),
+                            items: cx.render(rsx! {
+                                ContextItem {
+                                    onpressed: move |_| {},
+                                    text: String::from("View Profile"),
+                                },
+                            })
+                        },
+                        PFP {
+                            src: profile_picture,
+                            size: ui_kit::profile_picture::Size::Normal
+                        },
                     },
                     div {
                         class: "topbar-user-info",
