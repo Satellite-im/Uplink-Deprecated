@@ -67,6 +67,8 @@ $(INSTALL)-%: $(DMG_NAME)-%
 clean: ## Remove all build artifacts
 	@cargo clean
 watch: ## prerequisite: `cargo install cargo-watch`
-	@cargo watch -q -c -x 'run -q'
+	@cargo watch -- make tw run
 tw: ## prerequisite: `npm i -g tailwindcss`
 	@rm ./src/tailwind.css || true && NODE_ENV=production tailwindcss -c ./tailwind.config.js -o ./src/tailwind.css --minify
+run: 
+	@cargo run
