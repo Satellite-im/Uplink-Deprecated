@@ -8,6 +8,9 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 use warp::raygun::RayGun;
+use warp::raygun::RayGunAttachment;
+use rfd::FileDialog;
+use std::path::PathBuf;
 
 use crate::{
     components::{
@@ -35,6 +38,16 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
     let show_media = use_state(&cx, || false);
+    let selected_file =  use_state(&cx, || -> Option<Vec<PathBuf>> { None });
+
+    let selected_file_str = &selected_file
+        .clone()
+        .as_ref()
+        .unwrap_or(&vec![])
+        .iter()
+        .map(|f| f.clone().into_os_string().into_string().unwrap())
+        .collect::<Vec<String>>()
+        .join(", ");
 
     cx.render(rsx! {
         div {
@@ -70,6 +83,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             messaging: cx.props.messaging.clone(),
                         }
                     },
+                    div {
+                        "{selected_file_str}"
+                    },
                     Write {
                         on_submit: move |message: String| {
                             text.set(String::from(""));
@@ -95,14 +111,32 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                     state.write().dispatch(Actions::UpdateConversation(conversation_info));
                                 }
 
+                                if selected_file.is_some() {
+                                    println!("attachments: {:?}", &selected_file);
+                                    let attachments = selected_file.as_ref().unwrap().to_vec();
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.attach(id, attachments, text_as_vec)) {
+                                        //TODO: Handle error
+                                        println!("Error: {:?}", _e);
+                                    }
+                                    selected_file.set(None);
+                                } else {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                        //TODO: Handle error
+                                        println!("Error: {:?}", _e);
+                                    };
+                                };
                                 // TODO: We need to wire this message up to display differently
                                 // until we confim whether it was successfully sent or failed
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
-                                    //TODO: Handle error
-                                };
+
                             }
                         },
-                        on_upload: move |_| {}
+                        on_upload: move |_| {
+                            let file = FileDialog::new()
+                                .add_filter("images", &["jpg", "png", "gif"])
+                                .set_directory("/")
+                                .pick_files();
+                            selected_file.set(file);
+                        }
                     }
                 )
         }

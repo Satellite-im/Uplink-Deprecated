@@ -220,21 +220,37 @@ async fn initialization(
         .await
         .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
 
-    let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-        Some(RgIpfsConfig::production(&path)),
-        account.clone(),
-        None,
-        None,
-    )
-    .await
-    .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
-
     let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
         account.clone(),
-        Some(FsIpfsConfig::production(path)),
+        Some(FsIpfsConfig::production(&path)),
     )
     .await
     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+
+    let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+        Some(RgIpfsConfig::production(path)),
+        account.clone(),
+        Some(storage.clone()),
+        None,
+    )
+        .await
+        .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
+
+    // let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
+    //     account.clone(),
+    //     Some(FsIpfsConfig::production(&path)),
+    // )
+    //     .await
+    //     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+    //
+    // let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
+    //     Some(RgIpfsConfig::production(path)),
+    //     account.clone(),
+    //     Some(storage.clone()),
+    //     None,
+    // )
+    //     .await
+    //     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
     Ok((account, messaging, storage))
 }
@@ -245,6 +261,9 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
+    cx.use_hook(|_| {
+        cx.provide_context(cx.props.messaging.clone());
+    });
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
