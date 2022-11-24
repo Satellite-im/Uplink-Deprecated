@@ -7,8 +7,7 @@ use utils::Storage;
 use warp::constellation::Constellation;
 
 use super::folder::State;
-use super::icon_button::State as icon_state;
-use crate::icon_button::IconButton;
+use crate::context_menu::{ContextItem, ContextMenu};
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -27,6 +26,8 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         State::Primary => "primary",
         State::Secondary => "secondary",
     };
+
+    let file_name = cx.props.name.clone();
 
     let file_name_ref = use_ref(&cx, String::new);
 
@@ -52,10 +53,48 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     });
 
     cx.render(rsx! {
-            div {
-                class: "dropdown",
-            div {
-                class: "item file",
+        div {
+            class: "item file",
+            id: "{file_name}-file",
+            ContextMenu {
+                parent: format!("{}-file", file_name),
+                items: cx.render(rsx! {
+                    ContextItem {
+                        icon: Shape::PencilAlt,
+                        onpressed: move |_| {
+                            start_edit_name.set(!start_edit_name);
+                        },
+                        text: String::from("Rename")
+                    },
+                    ContextItem {
+                        icon: Shape::DocumentDownload,
+                        onpressed: move |_| {
+                            // TODO(Files): Add download function here
+                            eprintln!("Download item");
+                        },
+                        text: String::from("Download")
+                    },
+                    hr {},
+                    ContextItem {
+                        onpressed: move |_| {
+                            let file_storage = cx.props.storage.clone();
+                            let file_name = file_name_complete_state.clone();
+                            cx.spawn({
+                                to_owned![file_storage, file_name];
+                                async move {
+                                    match file_storage.remove(&file_name, true).await {
+                                        Ok(_) => log::info!("{file_name} was deleted."),
+                                        Err(error) => log::error!("Error deleting file: {error}"),
+                                    };
+                                }
+                            });
+                        },
+                        icon: Shape::Trash,
+                        danger: true,
+                        text: String::from("Delete")
+                    },
+                })
+            },
             div {
                 class: "folder {class}",
                     Icon { icon: Shape::Document},
@@ -111,45 +150,9 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     }
             }
         }
-        div {
-            class: "dropdown-content",
-            IconButton {
-                icon: Shape::X,
-                state: icon_state::Secondary,
-                on_pressed: move |_| {
-                    let file_storage = cx.props.storage.clone();
-                    let file_name = file_name_complete_state.clone();
-                    cx.spawn({
-                        to_owned![file_storage, file_name];
-                        async move {
-                            match file_storage.remove(&file_name, true).await {
-                                Ok(_) => log::info!("{file_name} was deleted."),
-                                Err(error) => log::error!("Error deleting file: {error}"),
-                            };
-                        }
-                    });
-                },
-            }
-            IconButton {
-                icon: Shape::Download,
-                state: icon_state::Secondary,
-                on_pressed: move |_| {
-                    // TODO(Files): Add download function here
-                    eprintln!("Download item");
-                },
-            }
-            IconButton {
-                icon: Shape::Pencil,
-                state: icon_state::Secondary,
-                on_pressed: move |_| {
-                    start_edit_name.set(!start_edit_name);
-                },
-            }
-        }
-    }
-
-        })
+    })
 }
+
 
 fn format_file_size(file_size: usize) -> String {
     let base_1024: f64 = 1024.0;
