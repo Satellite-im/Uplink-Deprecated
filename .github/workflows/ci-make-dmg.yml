@@ -16,8 +16,6 @@ jobs:
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
-      - run: sudo apt install -y nodejs npm
-      - run: make tw
       - name: make dmg
         run: make dmg
         continue-on-error: true
