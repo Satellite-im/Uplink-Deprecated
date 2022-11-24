@@ -28,6 +28,9 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
 
+    // let dimensions = utils::media::Box::get_optimal_box_dimensions(params);
+    let script = include_str!("responsive.js");
+
     cx.render(rsx! {
         div {
             id: "media-container",
@@ -61,6 +64,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
             }
             Controls {}
+            script { "{script}" }
         }
     })
 }
