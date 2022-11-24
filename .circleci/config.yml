@@ -12,6 +12,8 @@ jobs:
       - run: sudo apt install -y libappindicator3-dev
       - run: sudo apt install -y libasound2-dev
       - run: sudo apt install -y protobuf-compiler
+      - run: sudo apt install -y nodejs npm
+      - run: make tw
       - run:
           name: Test
           command: cargo test
@@ -28,6 +30,8 @@ jobs:
       - run: sudo apt install -y libappindicator3-dev
       - run: sudo apt install -y libasound2-dev
       - run: sudo apt install -y protobuf-compiler
+      - run: sudo apt install -y nodejs npm
+      - run: make tw
       - run:
           name: Build Binary
           command: cargo build --release

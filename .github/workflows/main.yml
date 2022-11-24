@@ -54,3 +54,15 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+  tailwind:
+    name: Tailwind
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+	@@ -48,9 +48,23 @@ jobs:
+          toolchain: stable
+          override: true
+      - name: Install Packages
+      - run: sudo apt update && sudo apt install nodejs npm
+      - run: make tw
