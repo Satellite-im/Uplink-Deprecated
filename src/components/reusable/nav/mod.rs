@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use ui_kit::{
+    context_menu::{ContextItem, ContextMenu},
     icon_button::{self, IconButton},
     numeric_indicator::NumericIndicator,
 };
@@ -168,17 +169,63 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                     }
                 )),
             }
-            IconButton {
-                on_pressed: move |_| {
-                    use_router(&cx).push_route("/main/settings", None, None);
+            span {
+                id: "settings-cog",
+                ContextMenu {
+                    parent: String::from("settings-cog"),
+                    devmode: true,
+                    items: cx.render(rsx! {
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("General")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Profile")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Extensions")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            text: String::from("Developer")
+                        },
+                        hr {},
+                        ContextItem {
+                            onpressed: move |_| {},
+                            icon: Shape::FolderOpen,
+                            text: String::from("Open Cache")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            icon: Shape::Code,
+                            text: String::from("Toggle Developer")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            icon: Shape::Puzzle,
+                            text: String::from("Toggle Extensions")
+                        },
+                        ContextItem {
+                            onpressed: move |_| {},
+                            icon: Shape::Trash,
+                            text: String::from("Delete Account")
+                        },
+                    })
                 },
-                state: if active.eq(&NavEvent::Settings) {
-                    icon_button::State::Primary
-                } else {
-                    icon_button::State::Secondary
+                IconButton {
+                    on_pressed: move |_| {
+                        use_router(&cx).push_route("/main/settings", None, None);
+                    },
+                    state: if active.eq(&NavEvent::Settings) {
+                        icon_button::State::Primary
+                    } else {
+                        icon_button::State::Secondary
+                    },
+                    icon: Shape::Cog
                 },
-                icon: Shape::Cog
-            },
+            }
         }
     })
 }

@@ -267,7 +267,6 @@ fn App(cx: Scope<State>) -> Element {
             id: "main-wrap",
             ContextMenu {
                 parent: String::from("main-wrap"),
-                devmode: true,
                 items: cx.render(rsx! {
                     ContextItem {
                         icon: Shape::Code,

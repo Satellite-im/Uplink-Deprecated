@@ -52,25 +52,25 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
-
                 let file_extension = std::path::Path::new(&file.name())
-                .extension()
-                .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                .to_str()
-                .unwrap()
-                .to_string();
+                    .extension()
+                    .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                    .to_str()
+                    .unwrap()
+                    .to_string();
 
                 rsx!(
                     File {
-                        name: file.name(),
-                        state: State::Secondary,
-                        kind: file_extension,
-                        size: file.size(),
-                        thumbnail: file.thumbnail(),
-                        storage: cx.props.storage.clone(),
-                    }
+                            name: file.name(),
+                            state: State::Secondary,
+                            kind: file_extension,
+                            size: file.size(),
+                            thumbnail: file.thumbnail(),
+                            storage: cx.props.storage.clone(),
+                        }
+
                 )
-            }),
-        },
+            })
+        }
     })
 }
