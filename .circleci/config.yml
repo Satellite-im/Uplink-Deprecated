@@ -63,6 +63,8 @@ jobs:
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
+      - run: sudo apt install -y nodejs npm
+      - run: make tw
       - run:
           name: Run Tests
           command: cargo test
@@ -78,6 +80,8 @@ jobs:
       - run: source ~/.cargo/env
       - run: cargo --version
       - run: rustup default stable
+      - run: sudo apt install -y nodejs npm
+      - run: make tw
       - run:
           name: Make Bin
           command: make binary
