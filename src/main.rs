@@ -236,22 +236,6 @@ async fn initialization(
         .await
         .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
 
-    // let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
-    //     account.clone(),
-    //     Some(FsIpfsConfig::production(&path)),
-    // )
-    //     .await
-    //     .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
-    //
-    // let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
-    //     Some(RgIpfsConfig::production(path)),
-    //     account.clone(),
-    //     Some(storage.clone()),
-    //     None,
-    // )
-    //     .await
-    //     .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
-
     Ok((account, messaging, storage))
 }
 
