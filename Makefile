@@ -69,6 +69,6 @@ clean: ## Remove all build artifacts
 watch: ## prerequisite: `cargo install cargo-watch`
 	@cargo watch -- make tw run
 tw: ## prerequisite: `npm i -g tailwindcss`
-	@rm -f ./src/tailwind.css && NODE_ENV=production tailwindcss -c ./tailwind.config.js -o ./src/tailwind.css --minify
+	@rm -f ./src/tailwind.css && NODE_ENV=production npx tailwindcss -c ./tailwind.config.js -o ./src/tailwind.css --minify
 run: 
 	@cargo run
