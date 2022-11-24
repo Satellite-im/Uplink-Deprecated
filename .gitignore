@@ -15,8 +15,8 @@ Cargo.lock
 .temp
 
 src/.styles.css
+src/tailwind.css
 
 .DS_Store
 
-src/.styles.css
 .vscode/launch.json

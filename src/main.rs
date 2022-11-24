@@ -249,6 +249,7 @@ fn App(cx: Scope<State>) -> Element {
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
+    let tailwind = include_str!("tailwind.css");
     let css = include_str!(".styles.css");
 
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
@@ -256,7 +257,8 @@ fn App(cx: Scope<State>) -> Element {
     cx.render(rsx!(
         style {
             "{theme_colors}",
-            "{css}"
+            "{tailwind}",
+            "{css}",
         },
         dioxus_toast::ToastFrame {
             manager: toast,
