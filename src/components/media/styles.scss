@@ -1,14 +1,16 @@
 #media-container {
-  width: 100%;
-  background: var(--theme-background);
-  display: inline-flex;
+  position: relative;
+  display: flex;
   flex-direction: column;
-  min-height: 300px;
+  flex-shrink: 0;
+  gap: 1rem;
+  padding-top: 1rem;
+  min-height: 240px;
   max-height: calc(100% - 15rem);
+  background: var(--theme-background);
   border-bottom: 1px solid var(--theme-borders);
   overflow-y: hidden;
   resize: vertical;
-  position: relative;
 
   &.fullscreen {
     position: fixed;
@@ -24,16 +26,21 @@
 
   .media-view {
     display: flex;
-    overflow-y: scroll;
+    overflow-y: hidden;
     flex: 1;
 
     #media-content {
-      flex: 1;
+      position: relative;
       display: flex;
-      flex-flow: row wrap;
+      flex: 1;
+      flex-wrap: wrap;
+      flex-direction: row;
       justify-content: center;
       align-content: center;
       gap: 1rem;
+      min-height: 120px;
+      margin: 0 12px;
+      overflow: hidden;
     }
 
     .media-toggle {

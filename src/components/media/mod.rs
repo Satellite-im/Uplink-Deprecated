@@ -28,6 +28,8 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
 
+    let script = include_str!("./media.js");
+
     cx.render(rsx! {
         div {
             id: "media-container",
@@ -61,6 +63,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
             }
             Controls {}
+            script { "{script}" }
         }
     })
 }
