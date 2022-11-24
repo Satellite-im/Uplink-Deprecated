@@ -22,7 +22,11 @@
         stroke: var(--theme-red);
       }
       &:hover {
-        background-color: var(--theme-secondary);
+        color: var(--theme-text-bright);
+        background-color: var(--theme-red);
+        svg {
+          stroke: var(--theme-text-bright);
+        }
       }
     }
 

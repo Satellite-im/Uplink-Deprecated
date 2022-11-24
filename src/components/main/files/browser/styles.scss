@@ -49,6 +49,16 @@
     position: relative;
     display: inline-block;
     max-height: 132px;
+    &:hover {
+      background-color: var(--theme-secondary-light);
+      .dropdown-content {
+        display: block;
+      }
+      .item {
+        background-color: var(--theme-secondary-light);
+        transform: scale(1.1);
+      }
+    }
     .dropdown-content {
       display: none;
       position: relative;
@@ -65,17 +75,6 @@
         padding: 12px 16px;
         text-decoration: none;
         display: block;
-
-        &:hover {
-          background-color: var(--theme-secondary-light);
-          .dropdown-content {
-            display: block;
-          }
-          .item {
-            background-color: var(--theme-secondary-light);
-            transform: scale(1.1);
-          }
-        }
       }
     }
   }
