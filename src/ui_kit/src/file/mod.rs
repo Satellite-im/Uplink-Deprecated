@@ -1,3 +1,4 @@
+use std::time::Duration;
 
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
@@ -27,17 +28,28 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         State::Secondary => "secondary",
     };
 
-    let start_edit_name = use_state(&cx, || false);
+    let file_name_ref = use_ref(&cx, String::new);
 
-    let file_name_formatted =
-        format_file_name_to_show(cx.props.name.clone(), cx.props.kind.clone());
-
-    let file_name_formatted_state = use_state(&cx, || file_name_formatted);
+    let file_name_formatted_state = use_state(&cx, String::new);
 
     let file_name_complete_state = use_state(&cx, || cx.props.name.clone());
 
+    let start_edit_name = use_state(&cx, || false);
+
     let file_size = format_file_size(cx.props.size);    
 
+    use_future(&cx, (file_name_ref, file_name_complete_state, file_name_formatted_state, &cx.props.name.clone(), &cx.props.kind.clone()), 
+    |(file_name_ref, file_name_complete_state, file_name_formatted_state, file_name, file_extension)|
+     async move {
+
+        if *file_name_ref.read() != file_name {
+            *file_name_ref.write_silent() = file_name.clone();
+            let file_name_fmt = format_file_name_to_show(file_name.clone(), file_extension);
+            file_name_complete_state.set(file_name);
+            file_name_formatted_state.set(file_name_fmt);
+        }
+        tokio::time::sleep(Duration::from_millis(500)).await;
+    });
 
     cx.render(rsx! {
             div {
@@ -70,18 +82,18 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                             to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_state];
                                             async move {
                                                 let new_file_name_with_extension = format_args!("{}.{}", new_file_name.trim(), file_extension.clone()).to_string();
-    
+
                                                 match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
                                                     Ok(_) => {
                                                     let new_file_name_fmt =
                                                         format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
-                                                    
-                                                        file_name_complete_state.set(new_file_name_with_extension);
-                                                        file_name_formatted_state.set(new_file_name_fmt.clone());
+
+                                                        file_name_formatted_state.set(new_file_name_fmt);
+                                                        file_name_complete_state.set(new_file_name_with_extension.clone());
     
-                                                    println!("{old_file_name} renamed to {new_file_name_fmt}");
+                                                    log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
                                                     },
-                                                    Err(error) => println!("Error renaming file: {error}"),
+                                                    Err(error) => log::error!("Error renaming file: {error}"),
                                                 };
                                             }
                                         });
@@ -107,13 +119,12 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 on_pressed: move |_| {
                     let file_storage = cx.props.storage.clone();
                     let file_name = file_name_complete_state.clone();
-                    println!("Remove file {}", file_name);
                     cx.spawn({
                         to_owned![file_storage, file_name];
                         async move {
                             match file_storage.remove(&file_name, true).await {
-                                Ok(_) => println!("{file_name} was deleted."),
-                                Err(error) => println!("Error deleting file: {error}"),
+                                Ok(_) => log::info!("{file_name} was deleted."),
+                                Err(error) => log::error!("Error deleting file: {error}"),
                             };
                         }
                     });
@@ -125,7 +136,6 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 on_pressed: move |_| {
                     // TODO(Files): Add download function here
                     eprintln!("Download item");
-
                 },
             }
             IconButton {
