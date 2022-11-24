@@ -63,6 +63,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     File {
                             name: file.name(),
                             state: State::Secondary,
+                            creation_date: file.creation().to_string(),
                             kind: file_extension,
                             size: file.size(),
                             thumbnail: file.thumbnail(),

@@ -14,6 +14,7 @@ use crate::context_menu::{ContextItem, ContextMenu};
 pub struct Props {
     name: String,
     state: State,
+    creation_date: String,
     kind: String,
     size: usize,
     thumbnail: String,
@@ -27,27 +28,27 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         State::Secondary => "secondary",
     };
 
-    let file_name = cx.props.name.clone();
+    let file_creation_date = cx.props.creation_date.clone();
 
     let file_name_ref = use_ref(&cx, String::new);
 
     let file_name_formatted_state = use_state(&cx, String::new);
 
-    let file_name_complete_state = use_state(&cx, || cx.props.name.clone());
+    let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let start_edit_name = use_state(&cx, || false);
 
     let file_size = format_file_size(cx.props.size);    
 
-    use_future(&cx, (file_name_ref, file_name_complete_state, file_name_formatted_state, &cx.props.name.clone(), &cx.props.kind.clone()), 
-    |(file_name_ref, file_name_complete_state, file_name_formatted_state, file_name, file_extension)|
+    use_future(&cx, (file_name_ref, file_name_complete_ref, file_name_formatted_state, &cx.props.name.clone(), &cx.props.kind.clone()), 
+    |(file_name_ref, file_name_complete_ref, file_name_formatted_state, file_name, file_extension)|
      async move {
 
         if *file_name_ref.read() != file_name {
             *file_name_ref.write_silent() = file_name.clone();
             let file_name_fmt = format_file_name_to_show(file_name.clone(), file_extension);
-            file_name_complete_state.set(file_name);
-            file_name_formatted_state.set(file_name_fmt);
+            *file_name_complete_ref.write_silent() = file_name;
+        file_name_formatted_state.set(file_name_fmt);
         }
         tokio::time::sleep(Duration::from_millis(500)).await;
     });
@@ -55,9 +56,9 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(rsx! {
         div {
             class: "item file",
-            id: "{file_name}-file",
+            id: "{file_creation_date}-file",
             ContextMenu {
-                parent: format!("{}-file", file_name),
+                parent: format!("{}-file", file_creation_date),
                 items: cx.render(rsx! {
                     ContextItem {
                         icon: Shape::PencilAlt,
@@ -78,7 +79,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     ContextItem {
                         onpressed: move |_| {
                             let file_storage = cx.props.storage.clone();
-                            let file_name = file_name_complete_state.clone();
+                            let file_name = &*file_name_complete_ref.read();
                             cx.spawn({
                                 to_owned![file_storage, file_name];
                                 async move {
@@ -100,11 +101,12 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     Icon { icon: Shape::Document},
                     if **start_edit_name {
                         let val = use_ref(&cx, String::new);
+                        let complete_file_name = file_name_complete_ref.read();
                         rsx!(
                             input {
                             class: "new_file_input",
                             autofocus: "true",
-                            placeholder: "{file_name_complete_state}",
+                            placeholder: "{complete_file_name}",
                             onchange: move |evt| {
                                 *val.write_silent() = evt.value.to_string();
                             },
@@ -112,13 +114,13 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 if evt.key_code == KeyCode::Enter {
                                     start_edit_name.set(false);
                                     let file_storage = cx.props.storage.clone();
-                                    let old_file_name = file_name_complete_state.clone();
+                                    let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
 
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
-                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_state];
+                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
                                             async move {
                                                 let new_file_name_with_extension = format_args!("{}.{}", new_file_name.trim(), file_extension.clone()).to_string();
 
@@ -127,8 +129,8 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                                     let new_file_name_fmt =
                                                         format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
 
+                                                        *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
                                                         file_name_formatted_state.set(new_file_name_fmt);
-                                                        file_name_complete_state.set(new_file_name_with_extension.clone());
     
                                                     log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
                                                     },
