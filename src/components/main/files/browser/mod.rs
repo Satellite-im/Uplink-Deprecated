@@ -1,18 +1,16 @@
 use std::{collections::HashSet, time::Duration};
 
-use dioxus::{core::to_owned, prelude::*};
+use dioxus::prelude::*;
 
-use dioxus_heroicons::outline::Shape;
-use ui_kit::{file::File, folder::State, new_folder::NewFolder, icon_button::IconButton};
+use crate::Storage;
+use ui_kit::{file::File, folder::State, new_folder::NewFolder};
 use warp::constellation::item::ItemType;
 use warp::constellation::Constellation;
-
-
 
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
-    storage: crate::Storage,
+    storage: Storage,
     show_new_folder: bool,
 }
 
@@ -66,56 +64,14 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 .to_string();
 
                 rsx!(
-                    div {
-                        class: "dropdown", 
-                        div {
-                            class: "item file",
-                            File {
-                                name: file.name(),
-                                state: State::Secondary,
-                                kind: file_extension,
-                                size: file.size(),
-                                thumbnail: file.thumbnail(),
-                            }
-                        }
-                        div {
-                            class: "dropdown-content", 
-                            IconButton {
-                                icon: Shape::X,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    let file_storage = cx.props.storage.clone();
-                                    let file_name = file.name();
-                                    cx.spawn({
-                                        to_owned![file_storage, file_name];
-                                        async move {
-                                            match file_storage.remove(&file_name, true).await {
-                                                Ok(_) => log::info!("{file_name} was deleted."),
-                                                Err(error) => log::error!("Error deleting file: {error}"),
-                                            };
-                                        }
-                                    });
-                                },
-                            }
-                            IconButton {
-                                icon: Shape::Download,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    // TODO(Files): Add download function here
-                                    eprintln!("Download item");
-                                },
-                            }
-                            IconButton {
-                                icon: Shape::Pencil,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    // TODO(Files): Add edit name function here
-                                    eprintln!("Edit item name");
-                                },
-                            }
-                        }
+                    File {
+                        name: file.name(),
+                        state: State::Secondary,
+                        kind: file_extension,
+                        size: file.size(),
+                        thumbnail: file.thumbnail(),
+                        storage: cx.props.storage.clone(),
                     }
-                   
                 )
             }),
         },
