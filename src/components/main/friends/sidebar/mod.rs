@@ -1,4 +1,7 @@
-use crate::{components::main::friends::request::FriendRequest, Account, LANGUAGE, TOAST_MANAGER};
+use crate::{
+    components::main::friends::request::FriendRequest, state::Actions, Account, LANGUAGE, STATE,
+    TOAST_MANAGER,
+};
 
 use arboard::Clipboard;
 use dioxus::{
@@ -228,6 +231,17 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                         Err(_) => add_error.set(l2.invalid_code.to_string()),
                     }
                 },
+            },
+            div {
+                class: "show-friends-button",
+                IconButton {
+                    icon: Shape::ArrowRight,
+                    state: ui_kit::icon_button::State::Secondary,
+                    on_pressed: move |_| {
+                        let state = use_atom_ref(&cx, STATE).clone();
+                        state.write().dispatch(Actions::HideSidebar(true));
+                    },
+                }
             }
         },
         div {

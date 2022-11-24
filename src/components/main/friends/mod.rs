@@ -9,7 +9,8 @@ use std::{
 
 use crate::{
     components::main::friends::{friend::Friend, sidebar::Sidebar},
-    Account, Messaging,
+    components::reusable::page_header,
+    Account, Messaging, STATE,
 };
 
 use crate::iutils::get_username_from_did;
@@ -41,6 +42,12 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     let disp_friends = use_state(&cx, Vec::new);
     let friends = use_ref(&cx, HashSet::new);
 
+    let st = use_atom_ref(&cx, STATE).clone();
+    let sidebar_visibility = match st.read().hide_sidebar {
+        false => "sidebar-visible",
+        true => "sidebar-hidden",
+    };
+
     use_future(
         &cx,
         (friends, &cx.props.account.clone(), disp_friends),
@@ -70,47 +77,57 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "friends",
+            class: "{sidebar_visibility}",
             Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
             div {
                 id: "content",
+                page_header::PageHeader {
+                    content_start: cx.render(rsx! {Fragment()}),
+                    content_center: cx.render(rsx! {
+                        h1 { "Friends" }
+                    }),
+                    content_end: cx.render(rsx! {Fragment()}),
+                    hide_on_desktop: true,
+                },
                 div {
-                    class: "friends-list",
-                    disp_friends.iter().map(|friends_per_char_list| {
-                        let first_username_char = friends_per_char_list.letter;
-                        rsx!(
-                            div {
-                                class: "friends-separator",
-                                h5 {
-                                    id: "{first_username_char}",
-                                    "{first_username_char}"
-                                }
-                            }
-                            friends_per_char_list.friends.iter().map(|user| {
-                                rsx!(
-                                Friend {
-                                    account: cx.props.account.clone(),
-                                    messaging: cx.props.messaging.clone(),
-                                    friend: user.did.clone(),
-                                    friend_username: user.username.clone(),
-                                    on_chat: move |_| {
-                                        add_error.set("".into());
-                                        use_router(&cx).push_route("/main", None, None);
+                    class: "main",
+                    div {
+                        class: "friends-list",
+                        disp_friends.iter().map(|friends_per_char_list| {
+                            let first_username_char = friends_per_char_list.letter;
+                            rsx!(
+                                div {
+                                    class: "friends-separator",
+                                    h5 {
+                                        id: "{first_username_char}",
+                                        "{first_username_char}"
                                     }
                                 }
+                                friends_per_char_list.friends.iter().map(|user| {
+                                    rsx!(
+                                        Friend {
+                                            account: cx.props.account.clone(),
+                                            messaging: cx.props.messaging.clone(),
+                                            friend: user.did.clone(),
+                                            friend_username: user.username.clone(),
+                                            on_chat: move |_| {
+                                                add_error.set("".into());
+                                                use_router(&cx).push_route("/main", None, None);
+                                            }
+                                        }
+                                    )
+                                }),
                             )
-                        }
-                        ),
-                    )
-                    }),
-
-               }
-            }
-            ul {
-                alpha.iter().map(|letter| {
-                    rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
-                })
+                        }),
+                    },
+                    ul {
+                        alpha.iter().map(|letter| {
+                            rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
+                        })
+                    }
                 }
             }
+        }
     })
 }
 
