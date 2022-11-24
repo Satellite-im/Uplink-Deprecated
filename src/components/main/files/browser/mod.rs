@@ -3,11 +3,10 @@ use std::{collections::HashSet, time::Duration};
 use dioxus::{core::to_owned, prelude::*};
 
 use dioxus_heroicons::outline::Shape;
-use ui_kit::{file::File, folder::State, new_folder::NewFolder, icon_button::IconButton};
+use ui_kit::context_menu::{ContextItem, ContextMenu};
+use ui_kit::{file::File, folder::State, icon_button::IconButton, new_folder::NewFolder};
 use warp::constellation::item::ItemType;
 use warp::constellation::Constellation;
-
-
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -58,66 +57,65 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
 
+                let filname = file.name();
                 let file_extension = std::path::Path::new(&file.name())
-                .extension()
-                .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                .to_str()
-                .unwrap()
-                .to_string();
+                    .extension()
+                    .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                    .to_str()
+                    .unwrap()
+                    .to_string();
 
                 rsx!(
                     div {
-                        class: "dropdown", 
-                        div {
-                            class: "item file",
-                            File {
-                                name: file.name(),
-                                state: State::Secondary,
-                                kind: file_extension,
-                                size: file.size(),
-                                thumbnail: file.thumbnail(),
-                            }
-                        }
-                        div {
-                            class: "dropdown-content", 
-                            IconButton {
-                                icon: Shape::X,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    let file_storage = cx.props.storage.clone();
-                                    let file_name = file.name();
-                                    cx.spawn({
-                                        to_owned![file_storage, file_name];
-                                        async move {
-                                            match file_storage.remove(&file_name, true).await {
-                                                Ok(_) => log::info!("{file_name} was deleted."),
-                                                Err(error) => log::error!("Error deleting file: {error}"),
-                                            };
-                                        }
-                                    });
+                        class: "item file",
+                        id: "{filname}-file",
+                        ContextMenu {
+                            parent: format!("{}-file", filname),
+                            items: cx.render(rsx! {
+                                ContextItem {
+                                    icon: Shape::PencilAlt,
+                                    onpressed: move |_| {},
+                                    text: String::from("Rename")
                                 },
-                            }
-                            IconButton {
-                                icon: Shape::Download,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    // TODO(Files): Add download function here
-                                    eprintln!("Download item");
+                                ContextItem {
+                                    icon: Shape::DocumentDownload,
+                                    onpressed: move |_| {
+                                        // TODO(Files): Add download function here
+                                        eprintln!("Download item");
+                                    },
+                                    text: String::from("Download")
                                 },
-                            }
-                            IconButton {
-                                icon: Shape::Pencil,
-                                state: ui_kit::icon_button::State::Secondary,
-                                on_pressed: move |_| {
-                                    // TODO(Files): Add edit name function here
-                                    eprintln!("Edit item name");
+                                hr {},
+                                ContextItem {
+                                    onpressed: move |_| {
+                                        let file_storage = cx.props.storage.clone();
+                                        let file_name = file.name();
+                                        cx.spawn({
+                                            to_owned![file_storage, file_name];
+                                            async move {
+                                                match file_storage.remove(&file_name, true).await {
+                                                    Ok(_) => log::info!("{file_name} was deleted."),
+                                                    Err(error) => log::error!("Error deleting file: {error}"),
+                                                };
+                                            }
+                                        });
+                                    },
+                                    icon: Shape::Trash,
+                                    danger: true,
+                                    text: String::from("Delete")
                                 },
-                            }
+                            })
+                        },
+                        File {
+                            name: file.name(),
+                            state: State::Secondary,
+                            kind: file_extension,
+                            size: file.size(),
+                            thumbnail: file.thumbnail(),
                         }
                     }
-                   
                 )
-            }),
-        },
+            })
+        }
     })
 }
