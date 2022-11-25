@@ -21,7 +21,11 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
     let content = reqwest::get(url).await?.text().await?;
 
     let doc = Document::from(content.as_str());
-    let title = doc.find(Name("title")).next().unwrap();
+    let title = doc
+        .find(Name("title"))
+        .next()
+        .map(|node| node.text())
+        .unwrap_or_default();
 
     let desc = doc
         .find(Name("meta"))
@@ -62,7 +66,7 @@ pub async fn get_meta(url: &str) -> Result<SiteMeta> {
         .unwrap_or_default();
 
     Ok(SiteMeta {
-        title: title.text(),
+        title,
         description: String::from(desc),
         icon: String::from(icon),
         url: String::from(url),
