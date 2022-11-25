@@ -3,7 +3,10 @@ use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 use utils::Account;
 
-use crate::components::media::{controls::Controls, media::Media, time::Time};
+use crate::{
+    components::media::{controls::Controls, media::Media, time::Time},
+    iutils::config::Config,
+};
 
 pub mod controls;
 pub mod media;
@@ -28,6 +31,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let my_identity = mp.read().get_own_identity().unwrap();
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
+    let config = Config::load_config_or_default();
 
     cx.render(rsx! {
         div {
@@ -62,9 +66,12 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
             }
             Controls {}
-            Time {
-                start_time: 0
-            }
+            config.audiovideo.call_timer.then(|| rsx!{
+                Time {
+                    start_time: 0
+                }
+            })
+
         }
     })
 }
