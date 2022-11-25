@@ -39,14 +39,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .and_then(|x| state.read().all_chats.get(&x).cloned());
 
     // periodically refresh message timestamps
-    let should_reload = use_future(&cx, (), |_| async move {
-        tokio::time::sleep(std::time::Duration::from_secs(60)).await;
-        true
+    use_future(&cx, (), move |_| {
+        let update = cx.schedule_update();
+        async move {
+            loop {
+                tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+                update();
+            }
+        }
     });
-
-    if should_reload.value().is_some() {
-        cx.needs_update();
-    };
 
     // restart the use_future when the current_chat changes
     use_future(&cx, &current_chat, |current_chat| async move {
