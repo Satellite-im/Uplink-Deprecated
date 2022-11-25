@@ -14,7 +14,7 @@ use crate::context_menu::{ContextItem, ContextMenu};
 pub struct Props {
     name: String,
     state: State,
-    creation_date: String,
+    id: String,
     kind: String,
     size: usize,
     thumbnail: String,
@@ -28,11 +28,11 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         State::Secondary => "secondary",
     };
 
-    let file_creation_date = cx.props.creation_date.clone();
+    let file_id = cx.props.id.clone();
 
-    let file_name_ref = use_ref(&cx, String::new);
+    let file_name_fmt = format_file_name_to_show(cx.props.name.clone(), cx.props.kind.clone());
 
-    let file_name_formatted_state = use_state(&cx, String::new);
+    let file_name_formatted_state = use_state(&cx, || file_name_fmt);
 
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
@@ -40,25 +40,12 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let file_size = format_file_size(cx.props.size);    
 
-    use_future(&cx, (file_name_ref, file_name_complete_ref, file_name_formatted_state, &cx.props.name.clone(), &cx.props.kind.clone()), 
-    |(file_name_ref, file_name_complete_ref, file_name_formatted_state, file_name, file_extension)|
-     async move {
-
-        if *file_name_ref.read() != file_name {
-            *file_name_ref.write_silent() = file_name.clone();
-            let file_name_fmt = format_file_name_to_show(file_name.clone(), file_extension);
-            *file_name_complete_ref.write_silent() = file_name;
-        file_name_formatted_state.set(file_name_fmt);
-        }
-        tokio::time::sleep(Duration::from_millis(500)).await;
-    });
-
     cx.render(rsx! {
         div {
             class: "item file",
-            id: "{file_creation_date}-file",
+            id: "{file_id}-file",
             ContextMenu {
-                parent: format!("{}-file", file_creation_date),
+                parent: format!("{}-file", file_id),
                 items: cx.render(rsx! {
                     ContextItem {
                         icon: Shape::PencilAlt,

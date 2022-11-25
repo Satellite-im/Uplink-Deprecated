@@ -59,11 +59,14 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     .unwrap()
                     .to_string();
 
+                let key = file.id();
+
                 rsx!(
                     File {
+                            key: "{key}",
                             name: file.name(),
                             state: State::Secondary,
-                            creation_date: file.creation().to_string(),
+                            id: key.to_string(),
                             kind: file_extension,
                             size: file.size(),
                             thumbnail: file.thumbnail(),
