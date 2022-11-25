@@ -112,7 +112,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 }
 
                                 if selected_file.is_some() {
-                                    println!("attachments: {:?}", &selected_file);
                                     let attachments = selected_file.as_ref().unwrap().to_vec();
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.attach(id, attachments, text_as_vec)) {
                                         //TODO: Handle error
