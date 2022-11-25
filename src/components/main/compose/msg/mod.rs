@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use dioxus::{core::to_owned, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use embeds::LinkEmbed;
 use linkify::LinkFinder;
@@ -17,7 +17,7 @@ use crate::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
-    Account, LANGUAGE,
+    Account, Messaging, LANGUAGE,
 };
 
 pub mod embeds;
@@ -25,6 +25,7 @@ pub mod embeds;
 #[derive(Props)]
 pub struct Props<'a> {
     message: Message,
+    messaging: Messaging,
     account: Account,
     sender: DID,
     remote: bool,
@@ -209,6 +210,24 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
                                 icon: Shape::Reply,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    let rg = cx.props.messaging.clone();
+                                    let conversation_id = cx.props.message.clone().conversation_id();
+                                    cx.spawn({
+                                        to_owned![rg, conversation_id];
+                                        async move {
+                                            match rg.write().delete(conversation_id, None).await {
+                                                Ok(_) => log::info!("successfully delete conversation"),
+                                                Err(error) => log::error!("error when deleting conversation: {error}"),
+                                            };
+                                        }
+                                    });
+                                },
+                                text: String::from("Remove Friend"),
+                                icon: Shape::X,
+                                danger: true,
                             }
                         }} else {rsx!{
                             ContextItem {
