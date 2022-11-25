@@ -65,6 +65,7 @@ pub fn display_msg_time(timestamp: DateTime<Utc>) -> String {
     }
 }
 
+// TODO: See if we can achieve the same thing with the human time crate
 pub fn display_formatted_time(num: u64) -> String {
     let seconds = num % 60;
     let minutes = (num / 60) % 60;
