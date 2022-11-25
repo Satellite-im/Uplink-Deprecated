@@ -95,7 +95,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::X,
                             state: ui_kit::icon_button::State::Danger,
                             on_pressed: move |_| {
-                                let rg = rg.clone();
+                                let rg = cx.props.messaging.clone();
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_remove = cx.props.friend.clone();
                                 match multipass.remove_friend(&did_to_remove) {
