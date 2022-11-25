@@ -1,4 +1,4 @@
-use dioxus::prelude::*;
+use dioxus::{core::to_owned, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
@@ -95,6 +95,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::X,
                             state: ui_kit::icon_button::State::Danger,
                             on_pressed: move |_| {
+                                let rg = rg.clone();
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_remove = cx.props.friend.clone();
                                 match multipass.remove_friend(&did_to_remove) {
@@ -103,6 +104,22 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         log::debug!("error removing friend");
                                     }
                                 }
+                                let current_chat = state.read().current_chat.and_then(|x| state.read().all_chats.get(&x).cloned());
+                                let current_chat_condition = match current_chat {
+                                    // this better not panic
+                                    Some(c) => c,
+                                    None => return,
+                                };
+                                let conversation_id = current_chat_condition.conversation.id();
+                                cx.spawn({
+                                    to_owned![rg, conversation_id];
+                                    async move {
+                                        match rg.write().delete(conversation_id, None).await {
+                                            Ok(_) => log::info!("successfully delete conversation"),
+                                            Err(error) => log::error!("error when deleting conversation: {error}"),
+                                        };
+                                    }
+                                });
                             }
                         }
                     )}
