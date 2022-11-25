@@ -14,7 +14,6 @@ const getBoxDimensionsForLayout = (params, numMaxCols, numRows) => {
 }
 
 const getOptimalBoxDimensions = (params) => {
-  console.log("getOptimalBoxDimensions", params)
   let prevWidth = 0
   let prevHeight = 0
   let width = 0
@@ -32,7 +31,6 @@ const getOptimalBoxDimensions = (params) => {
 }
 
 const calculateMediaUserSize = (entry) => {
-  console.log("entry", entry)
   const mediaUsers = media.querySelectorAll(".media-user")
   const dimensions = getOptimalBoxDimensions({
     containerWidth: entry?.contentRect.width ?? media.clientWidth,
@@ -46,7 +44,6 @@ const calculateMediaUserSize = (entry) => {
     mediaUser.style.width = `${dimensions[0]}px`
     mediaUser.style.height = `${dimensions[1]}px`
   }
-  console.log("---", mediaUserSize)
 }
 
 const resizeObserver = new ResizeObserver((entries) => {
