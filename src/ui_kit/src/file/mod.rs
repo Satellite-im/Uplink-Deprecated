@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
@@ -91,7 +89,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         let complete_file_name = file_name_complete_ref.read();
                         rsx!(
                             input {
-                            class: "new_file_input",
+                            class: "new_folder_input",
                             autofocus: "true",
                             placeholder: "{complete_file_name}",
                             onchange: move |evt| {
@@ -104,7 +102,6 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
                                             to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
@@ -119,7 +116,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                                         *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
                                                         file_name_formatted_state.set(new_file_name_fmt);
     
-                                                    log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
+                                                        log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
                                                     },
                                                     Err(error) => log::error!("Error renaming file: {error}"),
                                                 };
