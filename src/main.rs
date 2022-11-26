@@ -114,13 +114,13 @@ fn main() {
     app_menu.add_native_item(MenuItem::About(
         String::from("Uplink"),
         AboutMetadata {
-            version: todo!(),
-            authors: todo!(),
-            comments: todo!(),
-            copyright: todo!(),
-            license: todo!(),
-            website: todo!(),
-            website_label: todo!(),
+            version: None,
+            authors: None,
+            comments: None,
+            copyright: None,
+            license: None,
+            website: None,
+            website_label: None,
         },
     ));
     // add native shortcuts to `edit_menu` menu
@@ -189,6 +189,9 @@ fn main() {
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
+
+    let config = dioxus_desktop::Config::default();
+
     #[cfg(target_os = "macos")]
     dioxus_desktop::launch_with_props(
         App,
@@ -198,7 +201,7 @@ fn main() {
             messaging,
             storage,
         },
-        |c| c.with_window(|_| window.with_menu(main_menu)),
+        config.with_window(window.with_menu(main_menu)),
     );
 
     #[cfg(not(target_os = "macos"))]
@@ -210,7 +213,7 @@ fn main() {
             messaging,
             storage,
         },
-        |c| c.with_window(|_| window),
+        config.with_window(window.with_menu(main_menu)),
     );
 }
 
@@ -279,7 +282,7 @@ fn App(cx: Scope<State>) -> Element {
                 parent: String::from("main-wrap"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        icon: Shape::CodeBracketSquare,
+                        icon: Shape::CodeBracket,
                         text: String::from("View Source"),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");
