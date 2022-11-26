@@ -2,6 +2,7 @@
 
 use dioxus::prelude::*;
 use dioxus_heroicons::{solid::Shape, Icon};
+use fermi::use_atom_ref;
 
 use crate::{state::Actions, Account, STATE};
 

@@ -5,6 +5,7 @@ use crate::{
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use futures::stream::StreamExt;
 use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
@@ -216,7 +217,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     parent: format!("chat-{}", &did),
                     items: cx.render(rsx! {
                         ContextItem {
-                            icon: Shape::EyeOff,
+                            icon: Shape::EyeSlash,
                             onpressed: move |_| {},
                             text: String::from("Mark Seen"),
                         },
@@ -231,13 +232,13 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                         hr{}
                         ContextItem {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             onpressed: move |_| {},
                             text: String::from("Remove Chat"),
                         },
                         ContextItem {
                             danger: true,
-                            icon: Shape::Ban,
+                            icon: Shape::NoSymbol,
                             onpressed: move |_| {},
                             text: String::from("Block User"),
                         },

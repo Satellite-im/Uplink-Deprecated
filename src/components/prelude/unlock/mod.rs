@@ -1,8 +1,8 @@
 use dioxus::core::to_owned;
-use dioxus::router::use_router;
 use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use sir::css;
+use dioxus_router::use_router;
+use fermi::use_atom_ref;
 use ui_kit::{
     icon_button::{self, IconButton},
     pin::Pin,
@@ -28,7 +28,8 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     let show_tip = use_state(&cx, || false);
     let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
-        css!("opacity: 0")
+        // css!("opacity: 0")
+        "hidden_text"
     } else {
         "error_text"
     };
@@ -72,7 +73,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     icon: if error.is_empty() {
                                         Shape::Check
                                     } else {
-                                        Shape::X
+                                        Shape::XMark
                                     }
                                     on_pressed: move |_| {
                                         let tesseract = cx.props.tesseract.clone();

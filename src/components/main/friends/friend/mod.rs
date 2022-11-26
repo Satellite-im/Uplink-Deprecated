@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
     icon_button::IconButton,
@@ -69,13 +70,13 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     class: "control-wrap",
                     if show_skeleton {rsx!(
                         IconButton {
-                            icon: Shape::ChatAlt,
+                            icon: Shape::ChatBubbleLeft,
                             disabled: true,
                             on_pressed: move |_| {}
                         }
                     )} else {rsx!(
                         IconButton {
-                            icon: Shape::ChatAlt,
+                            icon: Shape::ChatBubbleLeft,
                             on_pressed: move |_| {
                                 let rg = rg.clone();
                                 let friend = cx.props.friend.clone();
@@ -92,7 +93,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         },
                         IconButton {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             state: ui_kit::icon_button::State::Danger,
                             on_pressed: move |_| {
                                 let mut multipass = cx.props.account.clone();

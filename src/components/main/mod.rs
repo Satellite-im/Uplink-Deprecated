@@ -5,6 +5,7 @@ use crate::{
 };
 use chrono::prelude::*;
 use dioxus::prelude::*;
+use fermi::use_atom_ref;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
 use warp::raygun::RayGun;

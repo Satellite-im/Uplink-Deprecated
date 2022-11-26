@@ -1,6 +1,8 @@
 use ::utils::notifications::PushNotification;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use dioxus_router::{use_route, use_router};
+use fermi::use_atom_ref;
 use futures::StreamExt;
 use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
@@ -131,7 +133,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 } else {
                     icon_button::State::Secondary
                 }
-                icon: Shape::Chat
+                icon: Shape::ChatBubbleLeft
             },
             IconButton {
                 on_pressed: move |_| {
@@ -199,12 +201,12 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Code,
+                            icon: Shape::CodeBracketSquare,
                             text: String::from("Toggle Developer")
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Puzzle,
+                            icon: Shape::Beaker,
                             text: String::from("Toggle Extensions")
                         },
                         ContextItem {

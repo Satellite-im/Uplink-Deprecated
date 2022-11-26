@@ -54,11 +54,11 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                     };
 
                     let filename = std::path::Path::new(&path)
-                    .file_name()
-                    .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                    .to_str()
-                    .unwrap()
-                    .to_string();
+                        .file_name()
+                        .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                        .to_str()
+                        .unwrap()
+                        .to_string();
 
                     let parts_of_filename: Vec<&str> = filename.split('.').collect();
 

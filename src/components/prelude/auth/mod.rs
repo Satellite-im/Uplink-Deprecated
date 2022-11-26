@@ -1,9 +1,9 @@
-use dioxus::desktop::use_window;
-use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
+use dioxus_desktop::use_window;
 use dioxus_heroicons::outline::Shape;
 use dioxus_heroicons::Icon;
-use sir::css;
+use dioxus_router::use_router;
+use fermi::use_atom_ref;
 use ui_kit::{
     button::{self, Button},
     icon_input::IconInput,
@@ -27,7 +27,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let valid_username = username.len() >= 4;
     let error = use_state(&cx, String::new);
     let error_class = if error.is_empty() {
-        css!("opacity: 0")
+        "hidden_text"
     } else {
         "error_text"
     };

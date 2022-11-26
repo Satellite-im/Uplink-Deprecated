@@ -2,6 +2,7 @@ use crate::{iutils::config::Config, LANGUAGE};
 use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     icon_button::{self, IconButton},

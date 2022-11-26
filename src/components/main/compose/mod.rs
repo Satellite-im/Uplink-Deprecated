@@ -6,6 +6,7 @@ pub mod write;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use ui_kit::icon_button::IconButton;
 use warp::raygun::RayGun;
 

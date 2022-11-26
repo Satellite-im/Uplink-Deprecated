@@ -232,7 +232,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                 AudioOption {
                     title: String::from("Output Location"),
                     text: String::from("c://fake/path/changeme"),
-                    icon: Shape::FolderDownload,
+                    icon: Shape::FolderArrowDown,
                     children: cx.render(rsx! {
                         Button {
                             text: String::from("Change"),

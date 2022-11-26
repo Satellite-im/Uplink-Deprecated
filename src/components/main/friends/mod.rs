@@ -15,6 +15,7 @@ use crate::{
 use crate::iutils::get_username_from_did;
 
 use dioxus::prelude::*;
+use dioxus_router::use_router;
 
 #[derive(Clone, PartialEq)]
 struct UsernameAndDID {

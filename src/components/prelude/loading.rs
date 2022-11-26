@@ -1,8 +1,9 @@
 use crate::{iutils::config::Config, Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 use dioxus::core::to_owned;
-use dioxus::desktop::use_window;
 use dioxus::prelude::*;
-use dioxus::router::use_router;
+use dioxus_desktop::use_window;
+use dioxus_router::use_router;
+use fermi::use_atom_ref;
 use futures::StreamExt;
 use ui_kit::loader::Loader;
 

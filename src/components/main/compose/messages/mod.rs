@@ -6,6 +6,7 @@ use crate::{
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
+use fermi::use_atom_ref;
 use futures::StreamExt;
 use warp::{
     crypto::DID,

@@ -35,7 +35,7 @@ pub fn LinkEmbed(cx: Scope<Props>) -> Element {
                             "{cx.props.meta.description}"
                         },
                         icon_button::IconButton {
-                            icon: Shape::ExternalLink,
+                            icon: Shape::ArrowTopRightOnSquare,
                             text: String::from("Open Link"),
                             state: icon_button::State::Secondary,
                             on_pressed: move |_| {

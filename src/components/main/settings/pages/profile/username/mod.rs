@@ -1,6 +1,6 @@
 use dioxus::{events::FormEvent, prelude::*};
+use fermi::use_atom_ref;
 use regex::RegexSet;
-use sir::css;
 use ui_kit::{
     button::{self, Button},
     input::Input,
@@ -26,7 +26,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     let edit_username_state = use_state(&cx, || false);
     let username_error = use_state(&cx, String::new);
     let username_error_class = if username_error.is_empty() {
-        css!("opacity: 0")
+        "hidden_text"
     } else {
         "error_text"
     };

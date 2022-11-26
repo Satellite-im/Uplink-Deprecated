@@ -54,7 +54,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 div {
                     class: "media-toggle",
                     IconButton {
-                        icon: if **fullscreen { Shape::Minus } else { Shape::ArrowsExpand },
+                        icon: if **fullscreen { Shape::Minus } else { Shape::ArrowsPointingOut },
                         state: ui_kit::icon_button::State::Transparent,
                         on_pressed: move |_| fullscreen.set(!fullscreen),
                     }

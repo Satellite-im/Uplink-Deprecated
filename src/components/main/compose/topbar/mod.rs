@@ -8,6 +8,7 @@ use crate::{
 use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
     context_menu::{ContextItem, ContextMenu},

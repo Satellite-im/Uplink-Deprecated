@@ -8,6 +8,7 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
+use fermi::use_atom_ref;
 use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
 
 use std::{collections::HashSet, time::Duration};
@@ -158,7 +159,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             class: "add",
             IconInput {
                 placeholder: l.add_placeholder.clone(),
-                icon: Shape::UserAdd,
+                icon: Shape::UserPlus,
                 on_change: move |evt: FormEvent| {
                     add_error.set(String::new());
                     remote_friend.set(evt.value.clone());
@@ -241,7 +242,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             class: "code",
             Button {
                 text: l2.copy_code.to_string(),
-                icon: Shape::ClipboardCopy,
+                icon: Shape::ClipboardDocumentCheck,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
 

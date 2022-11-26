@@ -1,5 +1,5 @@
 use dioxus::{events::FormEvent, prelude::*};
-use sir::css;
+use fermi::use_atom_ref;
 use ui_kit::{
     button::{self, Button},
     input::Input,
@@ -28,11 +28,11 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
     let status_msg_state = use_state(&cx, || status_msg.clone());
     let edit_status_msg_state = use_state(&cx, || false);
     let status_msg_error = use_state(&cx, String::new);
-    let status_msg_error_class = if status_msg_error.is_empty() {
-        css!("opacity: 0")
-    } else {
-        "error_text"
-    };
+    // let status_msg_error_class = if status_msg_error.is_empty() {
+    //     css!("opacity: 0")
+    // } else {
+    //     "error_text"
+    // };
 
     cx.render(rsx! {
         div{
@@ -113,7 +113,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                 },)
         }
         p {
-            class: "{status_msg_error_class}",
+            class: "error",
             "{status_msg_error}"
         },}
     })

@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use fermi::use_atom_ref;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{

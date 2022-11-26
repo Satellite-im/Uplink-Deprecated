@@ -6,6 +6,7 @@ use crate::{
 use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use fermi::use_atom_ref;
 use std::collections::HashMap;
 use ui_kit::{icon_button::IconButton, profile_picture::PFP};
 use uuid::Uuid;
@@ -47,7 +48,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     div {
                         class: "close",
                         IconButton {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
                             }

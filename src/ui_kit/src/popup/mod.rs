@@ -64,14 +64,14 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                             icon: match *modal.clone() {
                                 true => Shape::Minus,
-                                false => Shape::ArrowsExpand
+                                false => Shape::ArrowsPointingOut
                             }
                         },
                         IconButton {
                             on_pressed: move |_| {
                                 cx.props.on_dismiss.call(());
                             },
-                            icon: Shape::X
+                            icon: Shape::XMark
                         },
                     },
                     // TODO:

@@ -1,7 +1,8 @@
 use clap::Parser;
 use core::time;
-use dioxus::desktop::tao;
+use dioxus_desktop::tao::{self, menu::AboutMetadata};
 use dioxus_heroicons::outline::Shape;
+use fermi::{use_atom_ref, AtomRef};
 use fluent::{FluentBundle, FluentResource};
 use std::{
     fs,
@@ -16,12 +17,12 @@ use unic_langid::LanguageIdentifier;
 
 use crate::iutils::config::Config;
 use ::utils::Account;
-use dioxus::router::{Route, Router};
-use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
+use dioxus::prelude::*;
+use dioxus_desktop::tao::dpi::LogicalSize;
+use dioxus_router::{Route, Router};
 use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
-use sir::AppStyle;
 use state::PersistedState;
 use themes::Theme;
 
@@ -110,7 +111,18 @@ fn main() {
     let mut window_menu = Menu::new();
 
     app_menu.add_native_item(MenuItem::Quit);
-    app_menu.add_native_item(MenuItem::About(String::from("Uplink")));
+    app_menu.add_native_item(MenuItem::About(
+        String::from("Uplink"),
+        AboutMetadata {
+            version: todo!(),
+            authors: todo!(),
+            comments: todo!(),
+            copyright: todo!(),
+            license: todo!(),
+            website: todo!(),
+            website_label: todo!(),
+        },
+    ));
     // add native shortcuts to `edit_menu` menu
     // in macOS native item are required to get keyboard shortcut
     // to works correctly
@@ -178,7 +190,7 @@ fn main() {
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
     #[cfg(target_os = "macos")]
-    dioxus::desktop::launch_with_props(
+    dioxus_desktop::launch_with_props(
         App,
         State {
             tesseract,
@@ -258,17 +270,16 @@ fn App(cx: Scope<State>) -> Element {
             "{theme_colors}",
             "{css}"
         },
-        dioxus_toast::ToastFrame {
-            manager: toast,
-        }
-        AppStyle {},
+        // dioxus_toast::ToastFrame {
+        //     manager: toast,
+        // }
         span {
             id: "main-wrap",
             ContextMenu {
                 parent: String::from("main-wrap"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        icon: Shape::Code,
+                        icon: Shape::CodeBracketSquare,
                         text: String::from("View Source"),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");
