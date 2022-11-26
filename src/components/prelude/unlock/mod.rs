@@ -1,5 +1,6 @@
 use dioxus::core::to_owned;
-use dioxus::{events::KeyCode, prelude::*};
+use dioxus::prelude::*;
+use dioxus_elements::input_data::keyboard_types::Code;
 use dioxus_heroicons::outline::Shape;
 use dioxus_router::use_router;
 use fermi::use_atom_ref;
@@ -144,7 +145,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         }
                     },
                     onkeyup: move |evt| {
-                        if evt.key_code == KeyCode::Enter {
+                        if evt.code().eq(&Code::Enter) {
                             if pin.len() < 4 && !tesseract_available {
                                 error.set(l.short_pin.clone());
                             } else {

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
+use dioxus_elements::input_data::keyboard_types::Code;
 use dioxus_heroicons::{solid::Shape, Icon};
-use dioxus_html::KeyCode;
 
 use super::folder::State;
 
@@ -31,7 +31,7 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                     folder_name.set(evt.value.to_string());
                 },
                 onkeyup: |evt| {
-                    if evt.key_code == KeyCode::Enter {
+                    if evt.code().eq(&Code::Enter) {
                         println!("Create new folder: {}", folder_name.clone());
                     }
                 }

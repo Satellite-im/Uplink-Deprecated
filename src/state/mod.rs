@@ -16,6 +16,7 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    #[allow(dead_code)] // TODO: use this once we hook notifications to a global hook
     SendNotification(String, String, Sounds),
 }
 

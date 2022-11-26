@@ -1,6 +1,6 @@
 use dioxus::{events::FormEvent, prelude::*};
+use dioxus_elements::input_data::keyboard_types::Code;
 use dioxus_heroicons::{outline::Shape, Icon};
-use dioxus_html::KeyCode;
 
 use crate::context_menu::{ContextItem, ContextMenu};
 
@@ -58,7 +58,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     oninput: |e| cx.props.on_change.call(e),
                     value:"{value}",
                     onkeyup: |evt| {
-                        if evt.key_code == KeyCode::Enter {
+                        if evt.code().eq(&Code::Enter) {
                             cx.props.on_enter.call(())
                         }
                     }
@@ -77,7 +77,7 @@ pub fn IconInput<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     placeholder: "{cx.props.placeholder}",
                     oninput: |e| cx.props.on_change.call(e),
                     onkeyup: |evt| {
-                        if evt.key_code == KeyCode::Enter {
+                        if evt.code().eq(&Code::Enter) {
                             cx.props.on_enter.call(())
                         }
                     }

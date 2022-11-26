@@ -1,5 +1,5 @@
 use dioxus::{events::FormEvent, prelude::*};
-use dioxus_elements::KeyCode;
+use dioxus_elements::input_data::keyboard_types::Code;
 
 use crate::context_menu::{ContextItem, ContextMenu};
 
@@ -51,7 +51,7 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             value: "{value}",
             oninput: |evt| cx.props.on_change.call(evt),
             onkeyup: |evt| {
-                if evt.key_code == KeyCode::Enter {
+                if evt.code().eq(&Code::Enter) {
                     cx.props.on_enter.call(())
                 }
             }
@@ -62,7 +62,7 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     placeholder: "{cx.props.placeholder}",
                     oninput: |evt| cx.props.on_change.call(evt),
                     onkeyup: |evt| {
-                        if evt.key_code == KeyCode::Enter {
+                        if evt.code().eq(&Code::Enter) {
                             cx.props.on_enter.call(())
                         }
                     }

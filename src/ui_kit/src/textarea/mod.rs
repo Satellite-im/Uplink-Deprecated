@@ -3,7 +3,7 @@ use crate::{
     utils,
 };
 use dioxus::prelude::*;
-use dioxus_html::KeyCode;
+use dioxus_elements::input_data::keyboard_types::{Code, Modifiers};
 
 // for more information about this, see here: https://github.com/DioxusLabs/dioxus/issues/611
 // `text` is passed in this way because it is lifted. This allows for a 'send' button to clear the text
@@ -12,7 +12,7 @@ use dioxus_html::KeyCode;
 //TODO: Evaluate inner_html and `cx.use_hook(|_| " ").clone();` to determine if this is actually necessary
 #[allow(clippy::clone_double_ref)]
 //TODO: Like above but for `inner_html = " "`
-#[allow(unused_assignments)]
+#[allow(unused)]
 pub fn TextArea<'a>(
     cx: Scope,
     on_submit: EventHandler<'a, String>,
@@ -77,7 +77,7 @@ pub fn TextArea<'a>(
                     }
                 },
                 onkeyup: |e| {
-                    if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
+                    if e.data.code().eq(&Code::Enter) && !e.data.modifiers().eq(&Modifiers::SHIFT) {
                         if !text.trim().is_empty() {
                             on_submit.call(text.trim().to_string());
                         }
