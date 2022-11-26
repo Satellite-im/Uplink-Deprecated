@@ -40,9 +40,17 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
+    let edit_name_shared_state = use_state(&cx, || true);
+
     cx.render(rsx! {
         div {
-            id: "browser",
+         id: "browser",
+         onmouseout: move |_| {
+            edit_name_shared_state.set(false);   
+         },
+         onclick: move |_| {
+            edit_name_shared_state.set(false);   
+         },
             (cx.props.show_new_folder).then(|| rsx!(
                 div {
                     class: "item file",
@@ -52,6 +60,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
+                 
+
                 let file_extension = std::path::Path::new(&file.name())
                     .extension()
                     .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -62,17 +72,22 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 let key = file.id();
 
                 rsx!(
-                    File {
-                            key: "{key}",
-                            name: file.name(),
-                            state: State::Secondary,
-                            id: key.to_string(),
-                            kind: file_extension,
-                            size: file.size(),
-                            thumbnail: file.thumbnail(),
-                            storage: cx.props.storage.clone(),
-                        }
-
+                    div {
+                        onmouseover: move |_| {
+                            edit_name_shared_state.set(true);  
+                        }, 
+                            File {
+                                key: "{key}",
+                                name: file.name(),
+                                state: State::Secondary,
+                                id: key.to_string(),
+                                kind: file_extension,
+                                size: file.size(),
+                                thumbnail: file.thumbnail(),
+                                edit_name_shared_state: edit_name_shared_state.clone(),
+                                storage: cx.props.storage.clone(),
+                            }
+                        },
                 )
             })
         }
