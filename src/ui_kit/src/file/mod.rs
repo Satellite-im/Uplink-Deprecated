@@ -102,6 +102,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
+                                    
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
                                             to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
