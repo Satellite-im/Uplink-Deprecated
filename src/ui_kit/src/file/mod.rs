@@ -61,7 +61,7 @@ fn format_file_name_to_show(cx: Scope<Props>) -> String {
     let file_name_without_extension = std::path::Path::new(&file_name)
         .with_extension("")
         .to_str()
-        .unwrap()
+        .unwrap_or_default()
         .to_string();
 
     if file_name_without_extension.len() > 10 {

@@ -62,7 +62,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     .extension()
                     .unwrap_or_else(|| std::ffi::OsStr::new(""))
                     .to_str()
-                    .unwrap()
+                    .unwrap_or_default()
                     .to_string();
 
                 rsx!(

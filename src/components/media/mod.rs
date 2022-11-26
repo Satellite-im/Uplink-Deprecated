@@ -24,7 +24,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     };
 
     let mp = cx.props.account.clone();
-    let my_identity = mp.read().get_own_identity().unwrap();
+    let my_identity = mp.read().get_own_identity().unwrap_or_default();
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
 

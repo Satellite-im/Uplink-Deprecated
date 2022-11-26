@@ -11,7 +11,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Media(cx: Scope<Props>) -> Element {
     log::debug!("rendering Media");
-    let first_letter = cx.props.name.chars().next().unwrap();
+    let first_letter = cx.props.name.chars().next().unwrap_or_default();
     let uppercase = first_letter.to_uppercase().collect::<Vec<_>>()[0];
     let user_pdp = Some(cx.props.src.clone());
 

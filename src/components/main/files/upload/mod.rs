@@ -44,7 +44,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             .file_name()
                             .unwrap_or_else(|| std::ffi::OsStr::new(""))
                             .to_str()
-                            .unwrap()
+                            .unwrap_or_default()
                             .to_string();
 
                             cx.spawn({
@@ -72,14 +72,14 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                                         let file_name_without_extension = std::path::Path::new(&filename.clone())
                                                         .with_extension("")
                                                         .to_str()
-                                                        .unwrap()
+                                                        .unwrap_or_default()
                                                         .to_string();
 
                                                         let file_extension = std::path::Path::new(&filename.clone())
                                                         .extension()
                                                         .unwrap_or_else(|| std::ffi::OsStr::new(""))
                                                         .to_str()
-                                                        .unwrap()
+                                                        .unwrap_or_default()
                                                         .to_string();
 
                                                         filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);

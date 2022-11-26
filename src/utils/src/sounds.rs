@@ -13,10 +13,10 @@ pub fn Play(sound: Sounds) {
     match sound {
         Sounds::Notification => wav
             .load_mem(include_bytes!("../../../extra/assets/sounds/Ponderous.ogg"))
-            .unwrap(),
+            .unwrap_or_default(),
         Sounds::FriendReq => wav
             .load_mem(include_bytes!("../../../extra/assets/sounds/Success.ogg"))
-            .unwrap(),
+            .unwrap_or_default(),
         Sounds::General => {}
     };
     sl.play(&wav);

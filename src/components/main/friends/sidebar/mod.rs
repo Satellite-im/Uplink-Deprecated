@@ -257,7 +257,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                             ..ToastInfo::simple(&codeCopied)
                         };
                         let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
-                        clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap();
+                        clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap_or_default();
                     }
                 }
             }
