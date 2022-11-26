@@ -113,15 +113,7 @@ fn main() {
     app_menu.add_native_item(MenuItem::Quit);
     app_menu.add_native_item(MenuItem::About(
         String::from("Uplink"),
-        AboutMetadata {
-            version: None,
-            authors: None,
-            comments: None,
-            copyright: None,
-            license: None,
-            website: None,
-            website_label: None,
-        },
+        AboutMetadata::default(),
     ));
     // add native shortcuts to `edit_menu` menu
     // in macOS native item are required to get keyboard shortcut

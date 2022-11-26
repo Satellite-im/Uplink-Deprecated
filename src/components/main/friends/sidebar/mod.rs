@@ -148,12 +148,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
     let remote_friend = use_state(&cx, String::new);
 
     let l2 = l.clone();
+    let l3 = l.clone();
     let codeCopied = { l.code_copied.to_string() };
     let account2 = account.clone();
 
     cx.render(rsx!(
         label {
-            "{l.add_someone}",
+            "{l3.add_someone}",
         },
         div {
             class: "add",

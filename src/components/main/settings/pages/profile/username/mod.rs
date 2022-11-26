@@ -19,6 +19,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
+    let l4 = l.clone();
     let identity = account.read().get_own_identity().unwrap();
     let username = identity.username();
     let username2 = username.clone();
@@ -33,7 +34,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     cx.render(rsx!{
         div{
             label {
-                "{l.username}"
+                "{l4.username}"
             },
             if **edit_username_state {rsx! (
                 div {

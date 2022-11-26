@@ -209,12 +209,12 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         cx.render(rsx! {
             div {
                 class: "chat {active}",
-                id: "chat-{did}",
+                id: "chat-{did.clone()}",
                 onclick: move |_| {
                     cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
                 },
                 ContextMenu {
-                    parent: format!("chat-{}", &did),
+                    parent: format!("chat-{}", &did.clone()),
                     items: cx.render(rsx! {
                         ContextItem {
                             icon: Shape::EyeSlash,
@@ -247,7 +247,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 span {
                     id: "{did}-pfp-chat",
                     ContextMenu {
-                        parent: format!("{}-pfp-chat", did),
+                        parent: format!("{}-pfp-chat", did.clone()),
                         items: cx.render(rsx! {
                             ContextItem {
                                 onpressed: move |_| {},
@@ -260,7 +260,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                         })
                     },
-                    ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did },
+                    ChatPfp {status: online_status2, account: cx.props.account.clone(), did: did.clone() },
                 },
                 div {
                     class: "who",

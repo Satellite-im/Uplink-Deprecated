@@ -19,6 +19,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
+    let l4 = l.clone();
     let identity = account.read().get_own_identity().unwrap();
     let status_msg = match identity.status_message() {
         Some(msg) => msg,
@@ -37,7 +38,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
     cx.render(rsx! {
         div{
             label {
-                "{l.status_msg}"
+                "{l4.status_msg}"
             },
         if **edit_status_msg_state {rsx! (
             div {
@@ -73,7 +74,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                         },
                     },
                     Button {
-                        text: l.save.to_string(),
+                        text: l.clone().save.to_string(),
                       on_pressed: move |_|{
                         let status_msg_text = status_msg_state.trim();
                         if status_msg_text != status_msg2 {
@@ -104,7 +105,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                     "{status_msg}",
                 },
                Button {
-                text: l.edit.to_string(),
+                text: l.clone().edit.to_string(),
                 state: button::State::Secondary,
                         on_pressed: move |_| {
                             edit_status_msg_state.set(true);
