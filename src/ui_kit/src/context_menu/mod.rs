@@ -1,7 +1,5 @@
-use dioxus::{
-    desktop::{tao::window, use_window},
-    prelude::*,
-};
+use dioxus::prelude::*;
+use dioxus_desktop::use_window;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 #[derive(Props)]

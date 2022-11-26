@@ -36,10 +36,9 @@ fermi = { git = "https://github.com/DioxusLabs/dioxus/" }
 dioxus-router = { git = "https://github.com/DioxusLabs/dioxus/" }
 dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/" }
 dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-heroicons = "0.1.4"
-dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
+dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
+dioxus-toast =  { git = "https://github.com/Satellite-im/dioxus-toast"}
 notify-rust = "4.5.10"
-sir = { version = "0.2.2", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }

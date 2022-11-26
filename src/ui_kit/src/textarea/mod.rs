@@ -21,9 +21,9 @@ pub fn TextArea<'a>(
 ) -> Element<'a> {
     log::debug!("rendering ui_kit/TextArea");
 
-    let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
+    let clearing_state = &*cx.use_hook(|| std::cell::Cell::new(false));
 
-    let mut inner_html = cx.use_hook(|_| " ").clone();
+    let mut inner_html = cx.use_hook(|| " ").clone();
     if clearing_state.get() {
         inner_html = "";
         cx.needs_update();

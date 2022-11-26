@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 dioxus = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-heroicons = "0.1.4"
+dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
 ui_kit = { path = "../../../src/ui_kit" }
 utils = { path = "../../../src/utils" }
 sir = "0.2.2"

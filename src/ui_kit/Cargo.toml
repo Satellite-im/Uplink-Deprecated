@@ -8,8 +8,8 @@ edition = "2021"
 [dependencies]
 dioxus = { git = "https://github.com/DioxusLabs/dioxus/" }
 dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-heroicons = "0.1.4"
-sir = { version = "0.2.2", features = ["dioxus"] }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/" }
+dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
 tokio = { version = "1", features = ["full"] }
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }
 base64 = "0.13.1"

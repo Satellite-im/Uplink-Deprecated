@@ -1,0 +1,31 @@
+@keyframes skeleton-loading {
+  0% {
+    background-color: var(--theme-text-muted);
+  }
+  100% {
+    background-color: var(--theme-text-darker);
+  }
+}
+
+.inline-skeleton {
+  width: 100%;
+  height: 20px;
+  border-radius: 4px;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: var(--theme-text-muted);
+  }
+  100% {
+    background-color: var(--theme-text-darker);
+  }
+}
+
+.pfp-skeleton {
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
