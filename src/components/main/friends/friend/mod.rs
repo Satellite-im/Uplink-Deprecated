@@ -70,13 +70,13 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     class: "control-wrap",
                     if show_skeleton {rsx!(
                         IconButton {
-                            icon: Shape::ChatBubbleLeft,
+                            icon: Shape::ChatBubbleBottomCenterText,
                             disabled: true,
                             on_pressed: move |_| {}
                         }
                     )} else {rsx!(
                         IconButton {
-                            icon: Shape::ChatBubbleLeft,
+                            icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
                                 let rg = rg.clone();
                                 let friend = cx.props.friend.clone();

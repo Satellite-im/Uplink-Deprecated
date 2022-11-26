@@ -133,7 +133,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 } else {
                     icon_button::State::Secondary
                 }
-                icon: Shape::ChatBubbleLeft
+                icon: Shape::ChatBubbleBottomCenterText
             },
             IconButton {
                 on_pressed: move |_| {
