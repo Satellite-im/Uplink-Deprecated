@@ -54,10 +54,10 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     SmallExtensionPlaceholder {}
                 }
             })
-            div {
-                class: "chatbar_extensions",
-                // AudioFactory::render()
-            },
+            // div {
+            //     class: "chatbar_extensions",
+            //     // AudioFactory::render()
+            // },
             div {
                 id: "send",
                 IconButton {

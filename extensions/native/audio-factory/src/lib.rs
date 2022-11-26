@@ -1,7 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use humansize::{format_size, DECIMAL};
-use sir::css;
 
 use ui_kit::{
     button::{self, Button},
@@ -21,53 +20,9 @@ pub struct OptionProps<'a> {
 
 #[allow(non_snake_case)]
 fn AudioOption<'a>(cx: Scope<'a, OptionProps<'a>>) -> Element<'a> {
-    let styles = css!(
-        "
-        display: inline-flex;
-        flex-wrap: wrap;
-        border: 1px solid var(--theme-borders);
-        border-radius: 4px;
-        margin-bottom: 0.5rem;
-        padding: 0.5rem 1rem;
-        width: 100%;
-        justify-content: center;
-
-        & {
-            .info {
-                display: inline-flex;
-                flex: 1;
-                min-width: 200px;
-                text-align: left;
-                align-items: center;
-                .icon {
-                    display: inline-flex;
-                    align-items: center;
-                    margin-right: 1rem;
-                    svg {
-                        width: 30px;
-                        height: 30px;
-                    }
-                }
-            }
-
-            .control {
-                margin: 1rem 0;
-                display: inline-flex;
-                align-items: center;
-                width: 20%;
-                min-width: 200px;
-                justify-content: center;
-                .switch {
-                    margin: 0 !important;
-                }
-            }
-        }
-        "
-    );
-
     cx.render(rsx! {
         div {
-            class: "row {styles}",
+            class: "row option",
             div {
                 class: "info",
                 div {
@@ -101,68 +56,6 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
-    let styles = css!(
-        "
-        border: 1px solid var(--theme-borders);
-        background: var(--theme-background);
-        padding: 1rem;
-        position: absolute;
-        z-index: 5;
-        border-radius: 8px;
-        left: 1rem;
-        right: 1rem;
-        bottom: 80px;
-        max-height: 60vh;
-        overflow-y: scroll;
-        @media only screen and (min-width: 900px) {
-            left: 50%;
-        }
-        &:hover {
-            &::-webkit-scrollbar-thumb {
-                background: var(--theme-primary) !important;
-                opacity: 1;
-            }
-        }
-
-        .button {
-            width: 100%;
-            margin: 0 0 0.5rem 0 !important;
-        }
-
-        .avail {
-            padding: 0.5rem 1rem;
-            text-align: center;
-            border: 1px solid var(--theme-borders);
-            border-radius: 4px;
-            margin: 0.5rem 0;
-            color: var(--theme-text-muted);
-            font-size: var(--theme-text-small);
-        }
-
-        .restricted {
-            cursor: not-allowed;
-
-            div {
-                opacity: 0.65;
-                pointer-events: none;
-            }
-        }
-
-        .progress {
-            height: 0.5rem;
-            border-radius: 0.25rem 0 0.25 0;
-            background: var(--theme-background-light);
-            overflow: hidden;
-            width: 100%;
-            display: inline-block;
-            .bar {
-                height: 100%;
-                background: var(--theme-primary);
-            }
-        }
-        "
-    );
-
     let free_space = match fs2::free_space("/") {
         Ok(space) => space,
         Err(_) => 1,
@@ -196,7 +89,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "{styles}",
+            id: "audio-factory",
             div {
                 class: "row",
                 Button {
@@ -367,19 +260,12 @@ impl BasicExtension for AudioFactory {
     }
 
     fn render(cx: Scope) -> dioxus::prelude::Element {
-        let styles = css!(
-            "
-            
-            "
-        );
-
         // TODO: Icon should be a record icon, it should turn red and become a ovular shape like a normal button which includes the duration of the recording and turns the icon red
         let factory_visible = use_state(&cx, || false);
 
         cx.render(rsx! {
             div {
                 id: "audio-factory",
-                class: "{styles}",
                 (factory_visible).then(|| rsx! {
                     ExtAudioFactory {
                         debug: false

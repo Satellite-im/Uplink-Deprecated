@@ -154,46 +154,51 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
 
                     rsx! {
-                        Msg {
-                            // key: "{message_id}-reply",
-                            message: message.clone(),
-                            account: cx.props.account.clone(),
-                            sender: message.sender(),
-                            remote: is_remote,
-                            // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                            last:  is_first,
-                            first: is_last,
-                            middle: !is_last && !is_first,
-                            on_reply: move |reply| {
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                    //TODO: Display error?
+                        div {
+                            key: "{message_id}",
+                            style: "display: contents",
+                            Msg {
+                                // key: "{message_id}-reply",
+                                message: message.clone(),
+                                account: cx.props.account.clone(),
+                                sender: message.sender(),
+                                remote: is_remote,
+                                // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
+                                last:  is_first,
+                                first: is_last,
+                                middle: !is_last && !is_first,
+                                on_reply: move |reply| {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                        //TODO: Display error?
+                                    }
                                 }
                             }
-                        }
-                        match message.replied() {
-                            Some(replied) => {
-                                let r = cx.props.messaging.clone();
-                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                    Ok(message) => {
-                                        rsx!{
-                                            Reply {
-                                                // key: "{message_id}-reply",
-                                                message: message.value().join("\n"),
-                                                is_remote: is_remote,
-                                                account: cx.props.account.clone(),
-                                                sender: message.sender(),
+                            
+                            match message.replied() {
+                                Some(replied) => {
+                                    let r = cx.props.messaging.clone();
+                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                        Ok(message) => {
+                                            rsx!{
+                                                Reply {
+                                                    key: "{message_id}",
+                                                    message: message.value().join("\n"),
+                                                    is_remote: is_remote,
+                                                    account: cx.props.account.clone(),
+                                                    sender: message.sender(),
+                                                }
                                             }
-                                        }
-                                    },
-                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                }
-                            },
-                            _ => rsx!{ div {  } }
+                                        },
+                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                    }
+                                },
+                                _ => rsx!{ div {  } }
+                            }
                         }
                     }
-                }),
+                }
+            ),
             div {
-                // key: "encrypted-notification-0001",
                 class: "encrypted-notif",
                 Icon {
                     icon: Shape::LockClosed

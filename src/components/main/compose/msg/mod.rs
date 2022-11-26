@@ -131,6 +131,16 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let id = cx.props.message.id();
 
+    let preview = if fetch_meta.value().is_some() {
+        cx.render(rsx! {
+            LinkEmbed {
+                meta: meta
+            }
+        })
+    } else {
+        cx.render(rsx! { span {} })
+    };
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -273,11 +283,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output2}",
-                                has_links.then(|| rsx!{
-                                    LinkEmbed {
-                                        meta: meta
-                                    }
-                                }),
+                                has_links.then(|| preview),
                             }
                         }
                     )
@@ -296,11 +302,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             div {
                                 dangerous_inner_html: "{output3}",
-                                has_links.then(|| rsx!{
-                                    LinkEmbed {
-                                        meta: meta
-                                    }
-                                }),
+                                has_links.then(|| preview),
                             }
                         },
                         if cx.props.last {
