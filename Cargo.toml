@@ -31,11 +31,11 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 
 
-dioxus = { git = "https://github.com/DioxusLabs/dioxus/" }
-fermi = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-router = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/" }
+dioxus = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+fermi = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+dioxus-router = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
 dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
 dioxus-toast =  { git = "https://github.com/Satellite-im/dioxus-toast"}
 notify-rust = "4.5.10"

@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/" }
-dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/" }
+dioxus = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+dioxus-html = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
+dioxus-desktop = { git = "https://github.com/DioxusLabs/dioxus/", rev="1e99e35572f6cf4f3ae09e1d0290b6e43838518d" }
 dioxus-heroicons = { git = "https://github.com/Satellite-im/dioxus-heroicons" }
 tokio = { version = "1", features = ["full"] }
 rfd = {version = "0.10.0", default-features = false, features = ["xdg-portal"] }

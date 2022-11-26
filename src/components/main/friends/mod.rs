@@ -87,19 +87,23 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                                 }
                             }
                             friends_per_char_list.friends.iter().map(|user| {
+                                let key = &user.did;
                                 rsx!(
-                                Friend {
-                                    account: cx.props.account.clone(),
-                                    messaging: cx.props.messaging.clone(),
-                                    friend: user.did.clone(),
-                                    friend_username: user.username.clone(),
-                                    on_chat: move |_| {
-                                        add_error.set("".into());
-                                        use_router(&cx).push_route("/main", None, None);
+                                    div {
+                                        key: "{key}",
+                                        Friend {
+                                            account: cx.props.account.clone(),
+                                            messaging: cx.props.messaging.clone(),
+                                            friend: user.did.clone(),
+                                            friend_username: user.username.clone(),
+                                            on_chat: move |_| {
+                                                add_error.set("".into());
+                                                use_router(&cx).push_route("/main", None, None);
+                                            }
+                                        }
                                     }
-                                }
-                            )
-                        }
+                                )
+                            }
                         ),
                     )
                     }),

@@ -197,7 +197,7 @@ fn main() {
     );
 
     #[cfg(not(target_os = "macos"))]
-    dioxus::desktop::launch_with_props(
+    dioxus_desktop::launch_with_props(
         App,
         State {
             tesseract,
@@ -286,6 +286,7 @@ fn App(cx: Scope<State>) -> Element {
                 Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
                 Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
                 Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
+                Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
                 Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/settings", main::settings::Settings {
@@ -296,7 +297,6 @@ fn App(cx: Scope<State>) -> Element {
                     account: cx.props.account.clone(),
                     page_to_open: main::settings::sidebar::nav::Route::Profile,
                 }},
-                Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             }
         }
     ))
