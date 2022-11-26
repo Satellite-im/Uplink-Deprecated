@@ -38,6 +38,8 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let file_size = format_file_size(cx.props.size);    
 
+    let focus_on_input_script = "document.getElementById('file_name_input').focus()";
+
     cx.render(rsx! {
         div {
             class: "item file",
@@ -49,6 +51,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         icon: Shape::PencilAlt,
                         onpressed: move |_| {
                             start_edit_name.set(!start_edit_name);
+
                         },
                         text: String::from("Rename")
                     },
@@ -87,10 +90,10 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     if **start_edit_name {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
-                        rsx!(
+                        rsx! {
                             input {
+                            id: "file_name_input",
                             class: "new_folder_input",
-                            autofocus: "true",
                             placeholder: "{complete_file_name}",
                             onchange: move |evt| {
                                 *val.write_silent() = evt.value.to_string();
@@ -128,18 +131,19 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     
                                 }
                             }
-                        })
-                    } else {
+                        }
+                        script { "{focus_on_input_script}" },
+                    }
+                } else {
                         rsx!(p { "{file_name_formatted_state}" })
                 }
-                    label {
+                label {
                         "{file_size}"
                     }
             }
         }
     })
 }
-
 
 fn format_file_size(file_size: usize) -> String {
     let base_1024: f64 = 1024.0;
