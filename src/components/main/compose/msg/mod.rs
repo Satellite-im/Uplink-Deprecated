@@ -174,6 +174,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             TextArea {
                                 placeholder: l.send_a_reply.to_string(),
+                                on_input: move |e| {
+                                    todo!()
+                                }
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
 

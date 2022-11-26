@@ -1,20 +1,19 @@
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
+use warp::crypto::DID;
 
-#[derive(PartialEq, Eq, Props)]
-pub struct Props {
-    users: Vec<String>,
-}
-
+#[inline_props]
 #[allow(non_snake_case)]
-pub fn TypingIndicator(cx: Scope<Props>) -> Element {
-    let users_list = cx.props.users.clone();
+pub fn TypingIndicator(cx: Scope, users: UseRef<HashMap<DID, String>>) -> Element {
+    let users_list: Vec<String> = users.read().iter().map(|(_k, v)| v.clone()).collect();
     let name_typing = if users_list.len() <= 3 {
         users_list.join(", ")
     } else {
         users_list.len().to_string() + " users"
     };
     let article = if users_list.is_empty() {
-        String::from("Why do i see this indicator? None is")
+        return None;
     } else if users_list.len() == 1 {
         String::from(" is")
     } else {
