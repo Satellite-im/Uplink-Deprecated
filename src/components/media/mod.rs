@@ -33,6 +33,8 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let names = [username, String::from("Fake User")];
     let config = Config::load_config_or_default();
 
+    let script = include_str!("responsive.js");
+
     cx.render(rsx! {
         div {
             id: "media-container",
@@ -66,12 +68,12 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
             }
             Controls {}
+            script { "{script}" }
             config.audiovideo.call_timer.then(|| rsx!{
                 Time {
                     start_time: 0
                 }
             })
-
         }
     })
 }
