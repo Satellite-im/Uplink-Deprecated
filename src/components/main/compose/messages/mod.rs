@@ -95,6 +95,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     remote_name,
                     indicator,
                 } => {
+                    log::debug!("received typing indicator");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
                         prev_current_chat = current_chat;
@@ -120,6 +121,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     users_typing,
                     current_chat,
                 } => {
+                    log::debug!("received typing indicator timeout");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
                         prev_current_chat = current_chat;
@@ -162,7 +164,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         (&real_current_chat.clone(), &cx.props.users_typing.clone()),
         |(current_chat, users_typing)| async move {
             loop {
-                let _ = tokio::time::sleep(Duration::from_secs(4));
+                log::debug!("checking for typing indicator timeout on rx side");
+                tokio::time::sleep(Duration::from_secs(4)).await;
                 chan1.send(ChanCmd::Timeout {
                     users_typing: users_typing.clone(),
                     current_chat,

@@ -6,6 +6,8 @@ use warp::crypto::DID;
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn TypingIndicator(cx: Scope, users: UseRef<HashMap<DID, String>>) -> Element {
+    log::debug!("rendering typing indicator");
+
     let users_list: Vec<String> = users.read().iter().map(|(_k, v)| v.clone()).collect();
     let name_typing = if users_list.len() <= 3 {
         users_list.join(", ")

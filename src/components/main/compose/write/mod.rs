@@ -49,6 +49,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         while let Some(cmd) = rx.next().await {
             match cmd {
                 ChanCmd::Typing { chat_id, mut rg } => {
+                    log::debug!("typing indicator tx: received typing ");
                     let chat_id_changed = match typing_state {
                         None => true,
                         Some((prev_id, _)) => prev_id != chat_id,
@@ -63,9 +64,11 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 }
                 ChanCmd::NotTyping => {
+                    log::debug!("typing indicator tx: received not typing ");
                     typing_state = None;
                 }
                 ChanCmd::RefreshTyping { mut rg } => {
+                    log::debug!("typing indicator tx: received refresh typing ");
                     if let Some((chat_id, last_time)) = typing_state {
                         let elapsed = Instant::now().duration_since(last_time);
                         if elapsed > Duration::from_secs(3) {
@@ -85,8 +88,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let chan1 = chan.clone();
     use_future(&cx, &cx.props.messaging.clone(), |rg| async move {
         loop {
-            // todo: start this wait when a user changes from not typing to typing
-            let _ = tokio::time::sleep(Duration::from_secs(3));
+            log::debug!("send typing indicator refresh");
+            tokio::time::sleep(Duration::from_secs(3)).await;
             chan1.send(ChanCmd::RefreshTyping { rg: rg.clone() });
         }
     });
@@ -97,16 +100,16 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         div {
             class: "write",
             id: "write",
-            //ContextMenu {
-            //    parent: String::from("write"),
-            //    items: cx.render(rsx! {
-            //        ContextItem {
-            //            onpressed: move |_| {},
-            //            icon: Shape::Clipboard,
-            //            text: String::from("Copy Conversation ID")
-            //        },
-            //    })
-            //},
+            ContextMenu {
+                parent: String::from("write"),
+                items: cx.render(rsx! {
+                    ContextItem {
+                        onpressed: move |_| {},
+                        icon: Shape::Clipboard,
+                        text: String::from("Copy Conversation ID")
+                    },
+                })
+            },
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
