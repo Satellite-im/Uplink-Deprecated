@@ -45,7 +45,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
         .as_ref()
         .unwrap_or(&vec![])
         .iter()
-        .map(|f| f.clone().into_os_string().into_string().unwrap())
+        .map(|f| f.clone().into_os_string().into_string().unwrap_or_default())
         .collect::<Vec<String>>()
         .join(", ");
 
