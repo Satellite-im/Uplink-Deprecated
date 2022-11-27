@@ -28,6 +28,7 @@ pub struct General {
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct AudioVideo {
     pub noise_suppression: bool,
+    pub call_timer: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Copy, Clone)]
@@ -56,6 +57,7 @@ impl Config {
             extensions: Extensions { enable: true },
             audiovideo: AudioVideo {
                 noise_suppression: false,
+                call_timer: false,
             },
             developer: Developer {
                 developer_mode: false,

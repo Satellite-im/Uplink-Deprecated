@@ -8,6 +8,7 @@ safer_file_scanning = true
 
 [audiovideo]
 noise_suppression = false
+call_timer = false
 
 [extensions]
 enable = false
