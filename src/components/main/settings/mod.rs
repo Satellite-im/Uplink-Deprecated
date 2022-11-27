@@ -2,7 +2,8 @@ use dioxus::prelude::*;
 
 use crate::{
     components::main::settings::pages::{
-        developer::Developer, extensions::Extensions, general::General, profile::Profile,
+        audio_video::AudioVideo, developer::Developer, extensions::Extensions, general::General,
+        profile::Profile,
     },
     components::reusable::toolbar,
     state::Actions,
@@ -111,6 +112,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                                 Route::Developer => rsx!(Developer { account: cx.props.account.clone() }),
                                 Route::Profile => rsx!(Profile { account: cx.props.account.clone() }),
                                 Route::Extensions => rsx!(Extensions {}),
+                                Route::AudioVideo => rsx!(AudioVideo {}),
                                 _ => rsx!(Developer { account: cx.props.account.clone() }),
                             }
                         }

@@ -89,7 +89,7 @@ pub fn Nav<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             NavButton {
                 text: String::from("AudioVideo"),
                 active: Route::AudioVideo.eq(active_item),
-                disabled: true,
+                disabled: false,
                 on_pressed: |_| {
                     active_item.set(Route::AudioVideo);
                     cx.props.on_pressed.call(Route::AudioVideo);
