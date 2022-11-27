@@ -61,10 +61,10 @@ image = "0.24.5"
 ui_kit = { path = "src/ui_kit" }
 utils = { path = "src/utils" }
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "335313d98faf58f753971019183d3137a46cb3fb"}
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "335313d98faf58f753971019183d3137a46cb3fb" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "335313d98faf58f753971019183d3137a46cb3fb" }
-warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "335313d98faf58f753971019183d3137a46cb3fb" }
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "e12cdd2c589286714142a7d892ab5b225ff41fc3"}
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "e12cdd2c589286714142a7d892ab5b225ff41fc3" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "e12cdd2c589286714142a7d892ab5b225ff41fc3" }
+warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "e12cdd2c589286714142a7d892ab5b225ff41fc3" }
 arboard = "3.1.0"
 fs2 = "0.4.3"
 humansize = "2.0.0"
