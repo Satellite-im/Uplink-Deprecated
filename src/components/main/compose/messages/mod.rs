@@ -16,7 +16,7 @@ use futures::StreamExt;
 use uuid::Uuid;
 use warp::{
     crypto::DID,
-    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions, RayGun, RayGunStream},
+    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions},
 };
 
 #[derive(Eq, PartialEq)]
