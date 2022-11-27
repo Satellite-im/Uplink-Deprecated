@@ -32,13 +32,13 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         "error_text"
     };
 
-    let mp = cx.props.account.clone();
-    let new_account = move || {
+    let mut mp = cx.props.account.clone();
+    let mut new_account = move || {
         let username = username.trim();
         if username.is_empty() {
             error.set("Username is required".into())
         } else {
-            match mp.write().create_identity(Some(username), None) {
+            match mp.create_identity(Some(username), None) {
                 Ok(_) => {
                     window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
                     use_router(&cx).push_route("/loading", None, None);
@@ -50,7 +50,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             }
         }
     };
-    let new_account2 = new_account.clone();
+    let mut new_account2 = new_account.clone();
 
     cx.render(rsx! {
         div {

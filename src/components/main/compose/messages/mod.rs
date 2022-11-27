@@ -9,7 +9,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use futures::StreamExt;
 use warp::{
     crypto::DID,
-    raygun::{Message, MessageEventKind, MessageOptions, RayGun, RayGunStream},
+    raygun::{Message, MessageEventKind, MessageOptions},
 };
 
 #[derive(Props, PartialEq)]
@@ -27,7 +27,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE).clone();
 
     let mut rg = cx.props.messaging.clone();
-    let ident = cx.props.account.read().get_own_identity().unwrap();
+    let ident = cx.props.account.get_own_identity().unwrap();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future

@@ -6,7 +6,7 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, error::Error, multipass::Friends, raygun::Conversation};
+use warp::{crypto::DID, error::Error, raygun::Conversation};
 
 use crate::{
     iutils,
@@ -77,10 +77,10 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         IconButton {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let rg = rg.clone();
+                                let mut rg = rg.clone();
                                 let friend = cx.props.friend.clone();
                                 let conversation_response = warp::async_block_in_place_uncheck(
-                                    rg.write().create_conversation(&friend)
+                                    rg.create_conversation(&friend)
                                 );
                                 let conversation = match conversation_response {
                                     Ok(v) => v,

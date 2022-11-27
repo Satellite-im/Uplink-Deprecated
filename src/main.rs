@@ -7,7 +7,6 @@ use std::{
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
-    sync::Arc,
     thread,
 };
 use tracing_subscriber::EnvFilter;
@@ -206,19 +205,12 @@ async fn initialization(
     path: PathBuf,
     tesseract: Tesseract,
     experimental: bool,
-) -> Result<
-    (
-        Arc<RwLock<Box<dyn MultiPass>>>,
-        Arc<RwLock<Box<dyn RayGun>>>,
-        Arc<RwLock<Box<dyn Constellation>>>,
-    ),
-    warp::error::Error,
-> {
+) -> Result<(Box<dyn MultiPass>, Box<dyn RayGun>, Box<dyn Constellation>), warp::error::Error> {
     let config = MpIpfsConfig::production(&path, experimental);
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
-        .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
+        .map(|mp| Box::new(mp) as Box<dyn MultiPass>)?;
 
     let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
@@ -227,14 +219,14 @@ async fn initialization(
         None,
     )
     .await
-    .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
+    .map(|rg| Box::new(rg) as Box<dyn RayGun>)?;
 
     let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
         account.clone(),
         Some(FsIpfsConfig::production(path)),
     )
     .await
-    .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+    .map(|ct| Box::new(ct) as Box<dyn Constellation>)?;
 
     Ok((account, messaging, storage))
 }
@@ -297,10 +289,10 @@ fn App(cx: Scope<State>) -> Element {
 }
 
 #[derive(Clone)]
-pub struct Messaging(Arc<RwLock<Box<dyn RayGun>>>);
+pub struct Messaging(Box<dyn RayGun>);
 
 impl Deref for Messaging {
-    type Target = Arc<RwLock<Box<dyn RayGun>>>;
+    type Target = Box<dyn RayGun>;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -314,15 +306,15 @@ impl DerefMut for Messaging {
 
 impl PartialEq for Messaging {
     fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
+        self.0.id() == other.0.id()
     }
 }
 
 #[derive(Clone)]
-pub struct Storage(Arc<RwLock<Box<dyn Constellation>>>);
+pub struct Storage(Box<dyn Constellation>);
 
 impl Deref for Storage {
-    type Target = Arc<RwLock<Box<dyn Constellation>>>;
+    type Target = Box<dyn Constellation>;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -336,6 +328,6 @@ impl DerefMut for Storage {
 
 impl PartialEq for Storage {
     fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
+        self.0.id() == other.0.id()
     }
 }

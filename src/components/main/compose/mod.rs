@@ -7,7 +7,6 @@ pub mod write;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
-use warp::raygun::RayGun;
 
 use crate::{
     components::{
