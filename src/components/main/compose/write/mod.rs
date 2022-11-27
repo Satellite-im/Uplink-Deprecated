@@ -1,4 +1,4 @@
-use crate::{iutils::config::Config, LANGUAGE};
+use crate::{iui_kit::textarea::TextArea, iutils::config::Config, Messaging, LANGUAGE};
 use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
@@ -6,12 +6,12 @@ use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
-    textarea::TextArea,
 };
 use utils::extensions::BasicExtension;
 
 #[derive(Props)]
 pub struct Props<'a> {
+    messaging: Messaging,
     on_submit: EventHandler<'a, String>,
     on_upload: EventHandler<'a, ()>,
 }
@@ -20,8 +20,10 @@ pub struct Props<'a> {
 pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering compose/Write");
     let config = Config::load_config_or_default();
+
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+
     cx.render(rsx! {
         div {
             class: "write",
@@ -43,7 +45,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 },
             },
             TextArea {
-                on_submit: |val| cx.props.on_submit.call(val),
+                messaging: cx.props.messaging.clone(),
+                on_input: move |_| {}
+                on_submit: move |val| cx.props.on_submit.call(val),
                 text: text.clone(),
                 placeholder: l.chatbar_placeholder.to_string()
             }
