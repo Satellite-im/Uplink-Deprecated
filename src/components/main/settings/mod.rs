@@ -5,13 +5,10 @@ use crate::{
         audio_video::AudioVideo, developer::Developer, extensions::Extensions, general::General,
         profile::Profile,
     },
-    components::reusable::toolbar,
+    components::reusable::page_header,
     state::Actions,
     Account, STATE,
 };
-
-use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
 
 use self::sidebar::nav::Route;
 
@@ -70,36 +67,13 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             },
             div {
                 id: "content",
-                div {
-                    class: "toolbar-wrapper",
-                    toolbar::Toolbar {
-                        controls: cx.render(rsx! {
-                            div {}
-                        }),
-                        div {
-                            class: "toolbar-content",
-                            div {
-                                class: "toolbar-start",
-                                div {
-                                    class: "mobile-back-button",
-                                    IconButton {
-                                        icon: Shape::ArrowLeft,
-                                        state: ui_kit::icon_button::State::Secondary,
-                                        on_pressed: move |_| {
-                                            let state = use_atom_ref(&cx, STATE).clone();
-                                            state.write().dispatch(Actions::HideSidebar(false));
-                                        },
-                                    },
-                                },
-                            },
-                            h1 {
-                                "{active_page_string}",
-                            },
-                            div {
-                                class:  "toolbar-end",
-                            }
-                        }
-                    },
+                page_header::PageHeader {
+                    content_start: cx.render(rsx! {Fragment()}),
+                    content_center: cx.render(rsx! {
+                        h1 { "{active_page_string}" }
+                    }),
+                    content_end: cx.render(rsx! {Fragment()}),
+                    hide_on_desktop: true,
                 },
                 div {
                     id: "page",

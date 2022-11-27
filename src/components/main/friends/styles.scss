@@ -7,6 +7,7 @@
   flex-direction: row;
 
   #content {
+    display: flex;
     flex: 1;
     min-width: 0;
     height: 100%;
@@ -14,6 +15,32 @@
     overflow-x: hidden;
     overflow-y: scroll;
     flex-direction: column;
+
+    .main {
+      display: flex;
+
+      .friends-list {
+        padding: 1rem;
+        flex-grow: 1;
+      }
+
+      .friends-separator {
+        align-items: center;
+        height: 12px;
+        width: calc(100% - 5rem);
+        margin: 4px 0px 16px 0px;
+        text-align: left;
+      }
+
+      ul {
+        list-style-type: none;
+        margin-right: 2px;
+        padding: 8px 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    }
   }
 
   .a-z-list {
@@ -39,50 +66,6 @@
   @media only screen and (min-height: 650px) {
     ul {
       font-size: 16px;
-    }
-  }
-
-  ul {
-    list-style-type: none;
-    margin-right: 2px;
-    padding: 8px 8px 8px 0px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .friends-separator {
-    align-items: center;
-    height: 12px;
-    width: calc(100% - 5rem);
-    margin: 4px 0px 16px 0px;
-    text-align: left;
-  }
-
-  .friends-list {
-    padding: 1rem;
-  }
-
-  .toolbar {
-    min-height: 0;
-    display: inline-flex;
-    padding: 0.5rem 1rem;
-    width: 100%;
-    flex-direction: row;
-    border-bottom: 1px solid var(--theme-borders);
-
-    .controls {
-      flex: 1;
-      height: 100%;
-      min-width: 0;
-      display: inline-flex;
-      flex-direction: row;
-      justify-content: flex-end;
-
-      .button {
-        margin-left: 0.25rem;
-        padding: 0 0.25rem;
-      }
     }
   }
 }
