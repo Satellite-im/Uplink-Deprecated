@@ -174,8 +174,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             TextArea {
                                 placeholder: l.send_a_reply.to_string(),
-                                on_input: move |e| {
-                                    todo!()
+                                on_input: move |_e| {
+                                   todo!("add typing indicator for message replies")
                                 }
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);

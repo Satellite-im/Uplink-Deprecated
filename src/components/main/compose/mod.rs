@@ -75,6 +75,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         }
                     },
                     Write {
+                        messaging: cx.props.messaging.clone(),
                         on_submit: move |message: String| {
                             text.set(String::from(""));
                             let mut rg = cx.props.messaging.clone();

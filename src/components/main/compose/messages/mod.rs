@@ -162,7 +162,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         (&real_current_chat.clone(), &cx.props.users_typing.clone()),
         |(current_chat, users_typing)| async move {
             loop {
-                let _ = tokio::time::sleep(Duration::from_secs(3));
+                let _ = tokio::time::sleep(Duration::from_secs(4));
                 chan1.send(ChanCmd::Timeout {
                     users_typing: users_typing.clone(),
                     current_chat,
@@ -242,8 +242,19 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             match rg.get_message(conversation_id, message_id).await {
                                 Ok(message) => {
                                     log::debug!("compose/messages streamed a new message ");
+                                    // remove typing indicator
+                                    let username =
+                                        iutils::get_username_from_did(message.sender(), &mp);
+                                    chan2.send(ChanCmd::Indicator {
+                                        users_typing: users_typing.clone(),
+                                        current_chat: Some(conversation_id),
+                                        remote_id: message.sender(),
+                                        remote_name: username,
+                                        indicator: TypingIndicator::NotTyping,
+                                    });
+                                    // update messages
+                                    // todo: check if sidebar gets updated
                                     list.write().push(message.clone());
-                                    // todo: add message to chats sidebar
                                     current_chat.last_msg_sent =
                                         Some(LastMsgSent::new(&message.value()));
                                     state.write().dispatch(Actions::UpdateConversation(
@@ -281,6 +292,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         did_key,
                         event,
                     } => match event {
+                        // this event isn't expected to be sent. handling it here anyway.
                         MessageEvent::Typing => {
                             if current_chat.conversation.id() == conversation_id
                                 && did_key != my_did
