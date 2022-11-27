@@ -23,40 +23,40 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     };
 
     cx.render(rsx! {
-				div {
-						id: "page-header",
-						class: "{header_visibility}",
-						toolbar::Toolbar {
-								controls: cx.render(rsx! {
-										div {}
-								}),
-								div {
-										class: "toolbar-content",
-										div {
-												class: "toolbar-start",
-												div {
-														class: "mobile-back-button",
-														IconButton {
-																icon: Shape::ArrowLeft,
-																state: ui_kit::icon_button::State::Secondary,
-																on_pressed: move |_| {
-																		let state = use_atom_ref(&cx, STATE).clone();
-																		state.write().dispatch(Actions::HideSidebar(false));
-																},
-														},
-												},
-												&cx.props.content_start
-										},
-										div {
-												class: "toolbar-center",
-												&cx.props.content_center
-										},
-										div {
-												class:  "toolbar-end",
-												&cx.props.content_end
-										},
-								}
-						},
-				},
+        div {
+            id: "page-header",
+            class: "{header_visibility}",
+            toolbar::Toolbar {
+                controls: cx.render(rsx! {
+                    div {}
+                }),
+                div {
+                    class: "toolbar-content",
+                    div {
+                        class: "toolbar-start",
+                        div {
+                            class: "mobile-back-button",
+                            IconButton {
+                                icon: Shape::ArrowLeft,
+                                state: ui_kit::icon_button::State::Secondary,
+                                on_pressed: move |_| {
+                                    let state = use_atom_ref(&cx, STATE).clone();
+                                    state.write().dispatch(Actions::HideSidebar(false));
+                                },
+                            },
+                        },
+                        &cx.props.content_start
+                    },
+                    div {
+                        class: "toolbar-center",
+                        &cx.props.content_center
+                    },
+                    div {
+                        class:  "toolbar-end",
+                        &cx.props.content_end
+                    },
+                }
+            },
+        },
     })
 }
