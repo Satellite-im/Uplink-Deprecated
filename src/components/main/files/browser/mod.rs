@@ -4,7 +4,7 @@ use dioxus::{core::to_owned, prelude::*};
 
 use dioxus_heroicons::outline::Shape;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
-use ui_kit::{file::File, folder::State, icon_button::IconButton, new_folder::NewFolder};
+use ui_kit::{file::File, folder::State, new_folder::NewFolder};
 use warp::constellation::item::ItemType;
 use warp::constellation::Constellation;
 
@@ -73,12 +73,12 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             parent: format!("{}-file", filname),
                             items: cx.render(rsx! {
                                 ContextItem {
-                                    icon: Shape::PencilAlt,
+                                    icon: Shape::PencilSquare,
                                     onpressed: move |_| {},
                                     text: String::from("Rename")
                                 },
                                 ContextItem {
-                                    icon: Shape::DocumentDownload,
+                                    icon: Shape::ArrowDownOnSquare,
                                     onpressed: move |_| {
                                         // TODO(Files): Add download function here
                                         eprintln!("Download item");

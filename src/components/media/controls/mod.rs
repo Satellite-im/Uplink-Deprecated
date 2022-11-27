@@ -20,12 +20,12 @@ pub fn Controls(cx: Scope) -> Element {
                 on_pressed: |_| {}
             },
             IconButton {
-                icon: Shape::DesktopComputer,
+                icon: Shape::Window,
                 state: ui_kit::icon_button::State::Secondary,
                 on_pressed: |_| {}
             },
             IconButton {
-                icon: Shape::PhoneMissedCall,
+                icon: Shape::PhoneXMark,
                 state: ui_kit::icon_button::State::Danger,
                 on_pressed: |_| {}
             },

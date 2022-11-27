@@ -3,10 +3,14 @@ use dioxus_heroicons::outline::Shape;
 use ui_kit::icon_button::IconButton;
 use utils::Account;
 
-use crate::components::media::{controls::Controls, media::Media};
+use crate::{
+    components::media::{controls::Controls, media::Media, time::Time},
+    iutils::config::Config,
+};
 
 pub mod controls;
 pub mod media;
+pub mod time;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -27,6 +31,9 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let my_identity = mp.read().get_own_identity().unwrap();
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
+    let config = Config::load_config_or_default();
+
+    let script = include_str!("responsive.js");
 
     cx.render(rsx! {
         div {
@@ -54,13 +61,19 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 div {
                     class: "media-toggle",
                     IconButton {
-                        icon: if **fullscreen { Shape::Minus } else { Shape::ArrowsExpand },
+                        icon: if **fullscreen { Shape::ArrowsPointingIn } else { Shape::ArrowsPointingOut },
                         state: ui_kit::icon_button::State::Transparent,
                         on_pressed: move |_| fullscreen.set(!fullscreen),
                     }
                 },
             }
             Controls {}
+            script { "{script}" }
+            config.audiovideo.call_timer.then(|| rsx!{
+                Time {
+                    start_time: 0
+                }
+            })
         }
     })
 }

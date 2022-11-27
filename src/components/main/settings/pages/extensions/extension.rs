@@ -20,7 +20,7 @@ pub fn ExtensionOptions(cx: Scope<Props>) -> Element {
                 div {
                     class: "icon",
                     Icon {
-                        icon: Shape::Chip
+                        icon: Shape::Beaker
                     }
                 },
                 div {
