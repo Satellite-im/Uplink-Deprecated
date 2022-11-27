@@ -1,5 +1,4 @@
 pub mod extensions;
-pub mod media;
 pub mod notifications;
 pub mod sounds;
 
