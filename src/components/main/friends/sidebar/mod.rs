@@ -1,4 +1,4 @@
-use crate::{components::main::friends::request::FriendRequest, Account, LANGUAGE, TOAST_MANAGER};
+use crate::{components::main::friends::request::FriendRequest, Account, LANGUAGE};
 
 use arboard::Clipboard;
 use dioxus::{
@@ -7,7 +7,7 @@ use dioxus::{
     prelude::*,
 };
 use dioxus_heroicons::outline::Shape;
-use dioxus_toast::{Position, ToastInfo};
+// use dioxus_toast::{Position, ToastInfo};
 use fermi::use_atom_ref;
 use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
 
@@ -143,13 +143,13 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> Element {
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+    // let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let remote_friend = use_state(&cx, String::new);
 
     let l2 = l.clone();
     let l3 = l.clone();
-    let codeCopied = { l.code_copied.to_string() };
+    // let codeCopied = { l.code_copied.to_string() };
     let account2 = account.clone();
 
     cx.render(rsx!(
@@ -174,11 +174,11 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 .send_request(&d)
                             {
                                 Ok(_) => {
-                                    let single_toast = ToastInfo {
-                                        position: Position::TopRight,
-                                        ..ToastInfo::simple(l.request_sent.clone().as_ref())
-                                    };
-                                    let _id = toast.write().popup(single_toast);
+                                    // let single_toast = ToastInfo {
+                                    //     position: Position::TopRight,
+                                    //     ..ToastInfo::simple(l.request_sent.clone().as_ref())
+                                    // };
+                                    // let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
                                 }
                                 Err(e) => {
@@ -209,11 +209,11 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                                 .send_request(&d)
                             {
                                 Ok(_) => {
-                                    let single_toast = ToastInfo {
-                                        position: Position::TopRight,
-                                        ..ToastInfo::simple(&l2.request_sent)
-                                    };
-                                    let _id = toast.write().popup(single_toast);
+                                    // let single_toast = ToastInfo {
+                                    //     position: Position::TopRight,
+                                    //     ..ToastInfo::simple(&l2.request_sent)
+                                    // };
+                                    // let _id = toast.write().popup(single_toast);
                                     add_error.set("".into());
                                 }
                                 Err(e) => {
@@ -252,11 +252,11 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                         .read()
                         .get_own_identity()
                     {
-                        let single_toast = ToastInfo {
-                            position: Position::TopRight,
-                            ..ToastInfo::simple(&codeCopied)
-                        };
-                        let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
+                        // let single_toast = ToastInfo {
+                        //     position: Position::TopRight,
+                        //     ..ToastInfo::simple(&codeCopied)
+                        // };
+                        // let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
                         clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap_or_default();
                     }
                 }

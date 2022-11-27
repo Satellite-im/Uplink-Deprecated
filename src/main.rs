@@ -20,7 +20,7 @@ use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_desktop::tao::dpi::LogicalSize;
 use dioxus_router::{Route, Router};
-use dioxus_toast::ToastManager;
+// use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use state::PersistedState;
@@ -49,7 +49,7 @@ use tao::menu::{MenuBar as Menu, MenuItem};
 
 mod state;
 
-static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
+// static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
@@ -254,7 +254,7 @@ fn App(cx: Scope<State>) -> Element {
 
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
-    let toast = use_atom_ref(&cx, TOAST_MANAGER);
+    // let toast = use_atom_ref(&cx, TOAST_MANAGER);
 
     let css = include_str!(".styles.css");
 
