@@ -139,7 +139,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     div {
                         class: "close",
                         IconButton {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
                             }
@@ -169,7 +169,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 e.cancel_bubble();
                             },
                             IconButton {
-                                icon: Shape::EmojiHappy,
+                                icon: Shape::FaceSmile,
                                 on_pressed: move |_| {}
                             },
                             TextArea {
@@ -203,28 +203,28 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("React"),
-                                icon: Shape::EmojiHappy,
+                                icon: Shape::FaceSmile,
                             },
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
-                                icon: Shape::Reply,
+                                icon: Shape::ArrowUturnLeft,
                             }
                         }} else {rsx!{
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("React"),
-                                icon: Shape::EmojiHappy,
+                                icon: Shape::FaceSmile,
                             },
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
-                                icon: Shape::Reply,
+                                icon: Shape::ArrowUturnLeft,
                             },
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Edit"),
-                                icon: Shape::Pencil,
+                                icon: Shape::PencilSquare,
                             },
                             ContextItem {
                                 onpressed: move |_| {},

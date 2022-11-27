@@ -31,7 +31,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tracing-appender = "0.2"
 
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
-dioxus-heroicons = "0.1.4"
+dioxus-heroicons = { git="https://github.com/Satellite-im/dioxus-heroicons" }
 dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
 dioxus-html = "0.2.1"
 notify-rust = "4.5.10"

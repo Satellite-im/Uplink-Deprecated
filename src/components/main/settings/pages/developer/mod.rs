@@ -100,7 +100,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                 div {
                     class: "interactive",
                     Button {
-                        icon: Shape::Download,
+                        icon: Shape::ArrowDownOnSquare,
                         disabled: true,
                         text: String::from("Download"),
                         on_pressed: move |_| {},

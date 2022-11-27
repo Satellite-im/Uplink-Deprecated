@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
-dioxus-heroicons = "0.1.4"
+dioxus-heroicons = { git="https://github.com/Satellite-im/dioxus-heroicons" }
 dioxus-html = "0.2.1"
 sir = { version = "0.2.2", features = ["dioxus"] }
 tokio = { version = "1", features = ["full"] }

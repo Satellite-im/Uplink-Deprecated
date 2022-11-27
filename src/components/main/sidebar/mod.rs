@@ -94,7 +94,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 })
             },
             IconInput {
-                icon: Shape::Search,
+                icon: Shape::MagnifyingGlass,
                 placeholder: String::from("Search"),
                 value: String::from(""),
                 on_change: move |_| {},
