@@ -18,4 +18,4 @@ regex = "1.6.0"
 utils = { path = "../utils" }
 log = "0.4.17"
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "335313d98faf58f753971019183d3137a46cb3fb"}
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "e12cdd2c589286714142a7d892ab5b225ff41fc3"}
