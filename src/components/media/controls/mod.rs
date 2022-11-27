@@ -20,7 +20,7 @@ pub fn Controls(cx: Scope) -> Element {
                 on_pressed: |_| {}
             },
             IconButton {
-                icon: Shape::ComputerDesktop,
+                icon: Shape::Window,
                 state: ui_kit::icon_button::State::Secondary,
                 on_pressed: |_| {}
             },
