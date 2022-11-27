@@ -342,6 +342,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     rsx! {
                         Msg {
                             // key: "{message_id}-reply",
+                            messaging: cx.props.messaging.clone(),
                             message: message.clone(),
                             account: cx.props.account.clone(),
                             sender: message.sender(),
