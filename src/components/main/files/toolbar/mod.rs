@@ -24,17 +24,17 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         toolbar::Toolbar {
             controls: cx.render(rsx! {
                 IconButton {
-                    icon: Shape::Archive,
+                    icon: Shape::ArchiveBox,
                     state: ui_kit::icon_button::State::Secondary,
                     on_pressed: move |_| {}
                 },
                 IconButton {
-                    icon: Shape::FolderAdd,
+                    icon: Shape::FolderPlus,
                     state: ui_kit::icon_button::State::Secondary,
                     on_pressed: move |e| cx.props.on_new_folder.call(e)
                 },
                 IconButton {
-                    icon: Shape::Upload,
+                    icon: Shape::Plus,
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
             }),

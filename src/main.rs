@@ -268,7 +268,7 @@ fn App(cx: Scope<State>) -> Element {
                 parent: String::from("main-wrap"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        icon: Shape::Code,
+                        icon: Shape::CodeBracketSquare,
                         text: String::from("View Source"),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");

@@ -47,7 +47,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     div {
                         class: "close",
                         IconButton {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
                             }
