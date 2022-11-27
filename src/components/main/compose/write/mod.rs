@@ -80,7 +80,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         }
     });
-
+    log::debug!("starting typing indicator timer");
     // periodically re-send typing indicator
     let chan1 = chan.clone();
     use_future(&cx, &cx.props.messaging.clone(), |rg| async move {
@@ -90,23 +90,23 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             chan1.send(ChanCmd::RefreshTyping { rg: rg.clone() });
         }
     });
-
+    log::debug!("rendering write");
     let chan2 = chan.clone();
     let chan3 = chan.clone();
     cx.render(rsx! {
         div {
             class: "write",
             id: "write",
-            ContextMenu {
-                parent: String::from("write"),
-                items: cx.render(rsx! {
-                    ContextItem {
-                        onpressed: move |_| {},
-                        icon: Shape::Clipboard,
-                        text: String::from("Copy Conversation ID")
-                    },
-                })
-            },
+            //ContextMenu {
+            //    parent: String::from("write"),
+            //    items: cx.render(rsx! {
+            //        ContextItem {
+            //            onpressed: move |_| {},
+            //            icon: Shape::Clipboard,
+            //            text: String::from("Copy Conversation ID")
+            //        },
+            //    })
+            //},
             IconButton {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
