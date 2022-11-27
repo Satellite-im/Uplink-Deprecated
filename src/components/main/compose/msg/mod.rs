@@ -8,22 +8,23 @@ use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     icon_button::IconButton,
     profile_picture::PFP,
-    textarea::TextArea,
 };
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
+    iui_kit::textarea::TextArea,
     iutils::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
-    Account, LANGUAGE,
+    Account, Messaging, LANGUAGE,
 };
 
 pub mod embeds;
 
 #[derive(Props)]
 pub struct Props<'a> {
+    messaging: Messaging,
     message: Message,
     account: Account,
     sender: DID,
@@ -173,7 +174,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 on_pressed: move |_| {}
                             },
                             TextArea {
+                                messaging: cx.props.messaging.clone(),
                                 placeholder: l.send_a_reply.to_string(),
+                                on_input: move |_| {}
                                 on_submit: move |e| {
                                     cx.props.on_reply.call(e);
 
