@@ -229,7 +229,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         hr{}
                         ContextItem {
                             icon: Shape::XMark,
-                            onpressed: move |_| {},
+                            onpressed: move |_| {
+                                state.write().dispatch(Actions::RemoveChat(cx.props.conversation_info.conversation.id().clone()));
+                            },
                             text: String::from("Remove Chat"),
                         },
                         ContextItem {

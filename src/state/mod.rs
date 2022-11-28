@@ -16,6 +16,7 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    RemoveChat(Uuid),
     ClearChat,
     // SendNotification(String, String, Sounds),
 }
@@ -131,6 +132,26 @@ impl PersistedState {
                 hide_sidebar: self.hide_sidebar,
                 total_unreads: self.total_unreads,
             },
+            Actions::RemoveChat(uuid) => {
+                let mut chats = self.all_chats.clone();
+                chats.remove(&uuid);
+                // If the current chat was set to this, we'll want to remove that too.
+                match self.current_chat {
+                    Some(u) => {
+                        if u.eq(&uuid) {
+                            self.current_chat = None;
+                        }
+                    }
+                    None => {}
+                }
+                PersistedState {
+                    current_chat: None,
+                    all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: self.total_unreads,
+                }
+            }
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
