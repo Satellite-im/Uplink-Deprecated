@@ -11,7 +11,7 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
-use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
+use ui_kit::{button::Button, icon_button::IconButton, input::Input};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;
@@ -159,7 +159,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
         },
         div {
             class: "add",
-            IconInput {
+            Input {
                 placeholder: l.add_placeholder.clone(),
                 icon: Shape::UserPlus,
                 on_change: move |evt: FormEvent| {
