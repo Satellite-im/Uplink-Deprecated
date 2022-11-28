@@ -1,0 +1,54 @@
+import AppScreen from "../screenobjects/AppScreen"
+
+const SELECTORS = {
+  MACOS: {
+    HEADER_TEXT: '-ios predicate string:value == "Create a Pin"',
+    WINDOW: "-ios class chain:**/XCUIElementTypeWindow",
+    PIN_INPUT:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeTextField',
+    SUBTITLE_TEXT:
+      '-ios class chain:**/XCUIElementTypeStaticText[`value == "Choose a 4-6 digit pin to secure your account."`][1]',
+    PROFILE_BUTTON:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[1]',
+    WORLD_BUTTON:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[2]',
+    ERROR_MESSAGE_INVALID_PIN:
+      "//XCUIElementTypeWebView/XCUIElementTypeGroup[4]/XCUIElementTypeStaticText",
+  },
+}
+
+class PinDesktopScreen extends AppScreen {
+  constructor() {
+    super("~Create a Pin")
+  }
+
+  get headerText() {
+    return $(SELECTORS.MACOS.HEADER_TEXT)
+  }
+
+  get window() {
+    return $(SELECTORS.MACOS.WINDOW)
+  }
+
+  get subtitleText() {
+    return $(SELECTORS.MACOS.SUBTITLE_TEXT)
+  }
+
+  get profileButton() {
+    return $(SELECTORS.MACOS.PROFILE_BUTTON)
+  }
+
+  get worldButton() {
+    return $(SELECTORS.MACOS.WORLD_BUTTON)
+  }
+
+  get invalidPinMessage() {
+    return $(SELECTORS.MACOS.ERROR_MESSAGE_INVALID_PIN)
+  }
+
+  get pinInput() {
+    return $(SELECTORS.MACOS.PIN_INPUT)
+  }
+}
+
+export default new PinDesktopScreen()
