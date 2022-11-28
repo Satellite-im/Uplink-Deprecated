@@ -22,4 +22,5 @@ pub mod small_extension_placeholder;
 pub mod switch;
 pub mod textarea;
 pub mod tooltip;
+pub mod typing_indicator;
 pub mod utils;

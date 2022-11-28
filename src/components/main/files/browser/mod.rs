@@ -73,12 +73,12 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             parent: format!("{}-file", filname),
                             items: cx.render(rsx! {
                                 ContextItem {
-                                    icon: Shape::PencilAlt,
+                                    icon: Shape::PencilSquare,
                                     onpressed: move |_| {},
                                     text: String::from("Rename")
                                 },
                                 ContextItem {
-                                    icon: Shape::DocumentDownload,
+                                    icon: Shape::ArrowDownOnSquare,
                                     onpressed: move |_| {
                                         // TODO(Files): Add download function here
                                         eprintln!("Download item");

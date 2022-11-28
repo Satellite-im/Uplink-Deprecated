@@ -131,7 +131,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 } else {
                     icon_button::State::Secondary
                 }
-                icon: Shape::Chat
+                icon: Shape::ChatBubbleBottomCenterText
             },
             IconButton {
                 on_pressed: move |_| {
@@ -199,12 +199,12 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Code,
+                            icon: Shape::CodeBracketSquare,
                             text: String::from("Toggle Developer")
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Puzzle,
+                            icon: Shape::Beaker,
                             text: String::from("Toggle Extensions")
                         },
                         ContextItem {

@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{solid::Shape, Icon};
+use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 
 use super::folder::State;

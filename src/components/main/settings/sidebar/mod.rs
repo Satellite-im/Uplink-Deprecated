@@ -27,7 +27,7 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         crate::components::reusable::sidebar::Sidebar {
             account: cx.props.account.clone(),
             IconInput {
-                icon: Shape::Search,
+                icon: Shape::MagnifyingGlass,
                 placeholder: String::from("Search"),
                 value: String::from(""),
                 on_change: move |_| {},

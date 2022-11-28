@@ -60,7 +60,7 @@ pub fn ContextMenu<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             cx.props.devmode.is_some().then(|| rsx!(
                 hr {},
                 ContextItem {
-                    icon: Shape::Terminal,
+                    icon: Shape::CommandLine,
                     text: String::from("Open Console"),
                     onpressed: move |_| window.devtool(),
                 }
