@@ -71,15 +71,6 @@ impl Default for ExtensionInfo {
     }
 }
 
-impl Default for ExtensionManager {
-    fn default() -> Self {
-        Self {
-            extensions: HashMap::new(),
-            is_loaded: false,
-        }
-    }
-}
-
 impl Extension {
     pub fn load<P: AsRef<OsStr>>(filename: P) -> Result<Self, anyhow::Error> {
         unsafe {
