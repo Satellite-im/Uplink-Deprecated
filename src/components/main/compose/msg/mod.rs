@@ -211,7 +211,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             ContextItem {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
-                                icon: Shape::Reply,
+                                icon: Shape::ArrowUturnLeft,
                             },
                             ContextItem {
                                 onpressed: move |_| {
@@ -228,9 +228,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     });
                                 },
                                 text: String::from("Remove Friend"),
-                                icon: Shape::X,
                                 danger: true,
-                                icon: Shape::ArrowUturnLeft,
+                                icon: Shape::XCircle,
                             }
                         }} else {rsx!{
                             ContextItem {
