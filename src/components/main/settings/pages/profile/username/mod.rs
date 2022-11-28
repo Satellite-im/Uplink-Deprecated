@@ -16,10 +16,12 @@ pub struct Props {
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn Username(cx: Scope<Props>, account: Account) -> Element {
+    let mut account = account.clone();
+    let mut account2 = account.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
-    let identity = account.read().get_own_identity().unwrap();
+    let identity = account.get_own_identity().unwrap();
     let username = identity.username();
     let username2 = username.clone();
     let username_state = use_state(&cx, || username.clone());
@@ -64,7 +66,6 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                             username_error.set(l2.username_error_illegal.to_string())
                                         } else {
                                             if let Err(e) = account
-                                                .write()
                                                 .update_identity(IdentityUpdate::set_username(username_text.to_string()))
                                             {
                                                 println!("Failed in updating status message:{}", e);
@@ -96,8 +97,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                     } else if matches.matched(1){
                                         username_error.set(l3.username_error_illegal.to_string())
                                     } else {
-                                        if let Err(e) = account
-                                            .write()
+                                        if let Err(e) = account2
                                             .update_identity(IdentityUpdate::set_username(username_text.to_string()))
                                         {
                                             println!("Failed in updating status message:{}", e);

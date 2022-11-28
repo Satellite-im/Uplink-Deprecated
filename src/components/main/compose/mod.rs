@@ -9,9 +9,10 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{icon_button::IconButton, typing_indicator::TypingIndicator};
-use warp::{crypto::DID, raygun::{RayGun, RayGunAttachment}};
+
 use rfd::FileDialog;
 use std::path::PathBuf;
+use warp::crypto::DID;
 
 use crate::{
     components::{
@@ -41,7 +42,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let show_media = use_state(&cx, || false);
     let users_typing: &UseRef<HashMap<DID, String>> = use_ref(&cx, HashMap::new);
 
-    let selected_file =  use_state(&cx, || -> Option<Vec<PathBuf>> { None });
+    let selected_file = use_state(&cx, || -> Option<Vec<PathBuf>> { None });
     let selected_file_str = &selected_file
         .clone()
         .as_ref()

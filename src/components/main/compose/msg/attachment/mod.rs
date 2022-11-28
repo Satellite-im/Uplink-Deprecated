@@ -4,7 +4,7 @@ use dioxus_html::on::MouseEvent;
 use futures::StreamExt;
 use rfd::FileDialog;
 use warp::constellation::file::File;
-use warp::raygun::{Message, RayGunAttachment};
+use warp::raygun::Message;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]
@@ -78,7 +78,7 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                     },
                     None => {
                         println!("Path not provided");
-                    },
+                    }
                 }
             }
         });

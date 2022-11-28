@@ -2,7 +2,6 @@ use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::Storage;
-use warp::constellation::Constellation;
 
 use super::folder::State;
 use crate::context_menu::{ContextItem, ContextMenu};

@@ -16,7 +16,7 @@ use futures::StreamExt;
 use uuid::Uuid;
 use warp::{
     crypto::DID,
-    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions, RayGun, RayGunStream},
+    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions},
 };
 
 #[derive(Eq, PartialEq)]
@@ -56,7 +56,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE).clone();
 
     let mut rg = cx.props.messaging.clone();
-    let ident = cx.props.account.read().get_own_identity().unwrap();
+    let ident = cx.props.account.get_own_identity().unwrap();
     let my_did = ident.did_key().clone();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();

@@ -54,7 +54,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         |(friends, mp, disp_friends)| async move {
             loop {
                 let friends_list: HashSet<_> =
-                    HashSet::from_iter(mp.read().list_friends().unwrap_or_default());
+                    HashSet::from_iter(mp.list_friends().unwrap_or_default());
 
                 if *friends.read() != friends_list {
                     log::debug!("updating friends list ");

@@ -9,8 +9,6 @@ use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
 use image::io::Reader as ImageReader;
 
-use warp::constellation::Constellation;
-
 use crate::Storage;
 
 #[derive(Props)]

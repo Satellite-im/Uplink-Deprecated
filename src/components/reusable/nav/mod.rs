@@ -9,7 +9,7 @@ use ui_kit::{
 };
 
 use crate::{Account, LANGUAGE};
-use warp::multipass::{Friends, FriendsEvent, MultiPass, MultiPassEventKind};
+use warp::multipass::MultiPassEventKind;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum NavEvent {
