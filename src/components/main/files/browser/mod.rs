@@ -40,17 +40,9 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
-    let edit_name_shared_state = use_state(&cx, || true);
-
     cx.render(rsx! {
         div {
          id: "browser",
-         onmouseout: move |_| {
-            edit_name_shared_state.set(false);   
-         },
-         onclick: move |_| {
-            edit_name_shared_state.set(false);   
-         },
             (cx.props.show_new_folder).then(|| rsx!(
                 div {
                     class: "item file",
@@ -72,10 +64,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 let key = file.id();
 
                 rsx!(
-                    div {
-                        onmouseover: move |_| {
-                            edit_name_shared_state.set(true);  
-                        }, 
+              
                             File {
                                 key: "{key}",
                                 name: file.name(),
@@ -84,10 +73,9 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                 kind: file_extension,
                                 size: file.size(),
                                 thumbnail: file.thumbnail(),
-                                edit_name_shared_state: edit_name_shared_state.clone(),
                                 storage: cx.props.storage.clone(),
                             }
-                        },
+                        
                 )
             })
         }

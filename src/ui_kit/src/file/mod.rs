@@ -16,7 +16,6 @@ pub struct Props {
     kind: String,
     size: usize,
     thumbnail: String,
-    edit_name_shared_state: UseState<bool>,
     storage: Storage,
 }
 
@@ -35,30 +34,29 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
-    let start_edit_name = use_state(&cx, || false);
-
     let file_size = format_file_size(cx.props.size);    
 
-    let focus_on_input_script = "document.getElementById('file_name_input').focus()";
-
+    let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
+    let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &file_id);
 
     cx.render(rsx! {
         div {
             class: "item file",
             id: "{file_id}-file",
                 ContextMenu {
-                    parent: format!("{}-file", file_id),
+                    parent: format!("{}-file", file_id.clone()),
                     items: cx.render(
                         rsx! {
                                 ContextItem {
-                                    icon: Shape::PencilAlt,
+                                    icon: Shape::PencilSquare,
                                     onpressed: move |_| {
-                                        start_edit_name.set(true);
+                                        // Use js script to show edit file name element
+                                        use_eval(&cx)(&show_edit_name_script);
                                     },
                                     text: String::from("Rename")
                                 },
                                 ContextItem {
-                                    icon: Shape::DocumentDownload,
+                                    icon: Shape::DocumentArrowDown,
                                     onpressed: move |_| {
                                         // TODO(Files): Add download function here
                                         eprintln!("Download item");
@@ -87,15 +85,18 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         
                     }),
                 },
+         
             div {
                 class: "folder {class}",
                     Icon { icon: Shape::Document},
-                    if **start_edit_name && *cx.props.edit_name_shared_state {
+                   {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
+                        let file_id = file_id.clone();
                         rsx! {
                             input {
-                            id: "file_name_input",
+                            id: "{file_id}-input",
+                            display: "none",
                             class: "new_folder_input",
                             placeholder: "{complete_file_name}",
                             onchange: move |evt| {
@@ -103,12 +104,13 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             onkeyup: move |evt| {
                                 if evt.key_code == KeyCode::Enter {
-                                    start_edit_name.set(false);
                                     let file_storage = cx.props.storage.clone();
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-                                    
+                                    // Use js script to hide edit file name element
+                                    use_eval(&cx)(&hide_edit_name_script);
+
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
                                             to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
@@ -122,25 +124,28 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
                                                         *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
                                                         file_name_formatted_state.set(new_file_name_fmt);
-    
+
+
                                                         log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
                                                     },
                                                     Err(error) => log::error!("Error renaming file: {error}"),
                                                 };
                                             }
                                         });
+
                                     }
 
                                 }
                             }
                         }
-                        script { "{focus_on_input_script}" },
                     }
-                } else {
-                        start_edit_name.set(false);
-                        rsx!(
-                            p { "{file_name_formatted_state}" })
+                    
                 }
+                rsx!(
+                    p { 
+                        id: "{file_id}-name-normal",
+                        "{file_name_formatted_state}" })
+                
                 label {
                         "{file_size}"
                     }
