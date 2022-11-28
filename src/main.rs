@@ -13,6 +13,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
+use utils::Storage;
 
 use crate::iutils::config::Config;
 use ::utils::Account;
@@ -218,21 +219,21 @@ async fn initialization(
         .await
         .map(|mp| Box::new(mp) as Box<dyn MultiPass>)?;
 
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
+        account.clone(),
+        Some(FsIpfsConfig::production(&path)),
+    )
+    .await
+    .map(|ct| Box::new(ct) as Box<dyn Constellation>)?;
+
     let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
-        None,
+        Some(storage.clone()),
         None,
     )
     .await
     .map(|rg| Box::new(rg) as Box<dyn RayGun>)?;
-
-    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
-        account.clone(),
-        Some(FsIpfsConfig::production(path)),
-    )
-    .await
-    .map(|ct| Box::new(ct) as Box<dyn Constellation>)?;
 
     Ok((account, messaging, storage))
 }
@@ -243,6 +244,9 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
+    cx.use_hook(|_| {
+        cx.provide_context(cx.props.messaging.clone());
+    });
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -311,28 +315,6 @@ impl DerefMut for Messaging {
 }
 
 impl PartialEq for Messaging {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.id() == other.0.id()
-    }
-}
-
-#[derive(Clone)]
-pub struct Storage(Box<dyn Constellation>);
-
-impl Deref for Storage {
-    type Target = Box<dyn Constellation>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Storage {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Storage {
     fn eq(&self, other: &Self) -> bool {
         self.0.id() == other.0.id()
     }

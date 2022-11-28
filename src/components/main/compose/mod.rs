@@ -9,6 +9,9 @@ use std::collections::HashMap;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{icon_button::IconButton, typing_indicator::TypingIndicator};
+
+use rfd::FileDialog;
+use std::path::PathBuf;
 use warp::crypto::DID;
 
 use crate::{
@@ -38,6 +41,16 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let show_warning = use_state(&cx, || true);
     let show_media = use_state(&cx, || false);
     let users_typing: &UseRef<HashMap<DID, String>> = use_ref(&cx, HashMap::new);
+
+    let selected_file = use_state(&cx, || -> Option<Vec<PathBuf>> { None });
+    let selected_file_str = &selected_file
+        .clone()
+        .as_ref()
+        .unwrap_or(&vec![])
+        .iter()
+        .map(|f| f.clone().into_os_string().into_string().unwrap_or_default())
+        .collect::<Vec<String>>()
+        .join(", ");
 
     cx.render(rsx! {
         div {
@@ -74,6 +87,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             users_typing: users_typing.clone(),
                         }
                     },
+                    div {
+                        "{selected_file_str}"
+                    },
                     Write {
                         messaging: cx.props.messaging.clone(),
                         on_submit: move |message: String| {
@@ -86,7 +102,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 .map(|s| s.to_string())
                                 .collect::<Vec<_>>();
 
-                            if text_as_vec.is_empty() {
+                            if text_as_vec.is_empty() && selected_file.is_none() {
                                 return;
                             }
 
@@ -100,14 +116,30 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                     state.write().dispatch(Actions::UpdateConversation(conversation_info));
                                 }
 
+                                if selected_file.is_some() {
+                                    let attachments = selected_file.as_ref().unwrap().to_vec();
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.attach(id, attachments, text_as_vec)) {
+                                        //TODO: Handle error
+                                        println!("Error: {:?}", _e);
+                                    }
+                                    selected_file.set(None);
+                                } else {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                        //TODO: Handle error
+                                        println!("Error: {:?}", _e);
+                                    };
+                                };
                                 // TODO: We need to wire this message up to display differently
                                 // until we confim whether it was successfully sent or failed
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
-                                    //TODO: Handle error
-                                };
+
                             }
                         },
-                        on_upload: move |_| {}
+                        on_upload: move |_| {
+                            let file = FileDialog::new()
+                                .set_directory("/")
+                                .pick_files();
+                            selected_file.set(file);
+                        }
                     },
                     TypingIndicator{
                         users: users_typing.clone()
