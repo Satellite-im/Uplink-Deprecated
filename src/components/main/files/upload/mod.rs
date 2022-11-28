@@ -34,8 +34,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "type": "file",
                         onclick: move |_| {
 
-                            // TODO(Files): Remove filter to upload other kind of files          
-                            let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
+                            let file_path = match FileDialog::new().set_directory(".").pick_file() {
                                 Some(path) => path,
                                 None => return
                             };
@@ -59,7 +58,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             Ok(_) => {  
                                               log::info!("{:?} file uploaded!", &filename_to_save); 
 
-                                                match update_thumbnail(file_storage, filename_to_save.clone()).await {
+                                                match set_thumbnail_if_file_is_image(file_storage, filename_to_save.clone()).await {
                                                     Ok(success) => log::info!("{:?}", success), 
                                                     Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
                                                 }               
@@ -117,7 +116,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 }
 
 
-async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Result<String, Box<dyn std::error::Error>> {
+async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save: String) -> Result<String, Box<dyn std::error::Error>> {
     let item =  file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 

@@ -14,6 +14,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
+use utils::Storage;
 
 use crate::iutils::config::Config;
 use ::utils::Account;
@@ -322,28 +323,6 @@ impl DerefMut for Messaging {
 }
 
 impl PartialEq for Messaging {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
-}
-
-#[derive(Clone)]
-pub struct Storage(Arc<RwLock<Box<dyn Constellation>>>);
-
-impl Deref for Storage {
-    type Target = Arc<RwLock<Box<dyn Constellation>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Storage {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Storage {
     fn eq(&self, other: &Self) -> bool {
         self.0.is_locked() == other.0.is_locked()
     }
