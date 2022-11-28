@@ -97,7 +97,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                 .map(|s| s.to_string())
                                 .collect::<Vec<_>>();
 
-                            if text_as_vec.is_empty() {
+                            if text_as_vec.is_empty() && selected_file.is_none() {
                                 return;
                             }
 
