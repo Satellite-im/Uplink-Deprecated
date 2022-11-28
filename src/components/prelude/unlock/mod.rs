@@ -72,7 +72,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                     icon: if error.is_empty() {
                                         Shape::Check
                                     } else {
-                                        Shape::X
+                                        Shape::XMark
                                     }
                                     on_pressed: move |_| {
                                         let tesseract = cx.props.tesseract.clone();

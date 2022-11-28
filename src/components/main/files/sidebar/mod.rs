@@ -1,7 +1,7 @@
 #![allow(clippy::derive_partial_eq_without_eq)]
 
 use dioxus::prelude::*;
-use dioxus_heroicons::{solid::Shape, Icon};
+use dioxus_heroicons::{outline::Shape, Icon};
 
 use crate::{state::Actions, Account, STATE};
 

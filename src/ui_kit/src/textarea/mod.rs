@@ -15,6 +15,7 @@ use dioxus_html::KeyCode;
 #[allow(unused_assignments)]
 pub fn TextArea<'a>(
     cx: Scope,
+    on_input: EventHandler<'a, String>,
     on_submit: EventHandler<'a, String>,
     text: UseState<String>,
     placeholder: String,
@@ -72,6 +73,7 @@ pub fn TextArea<'a>(
                 oninput: move |e| {
                     if !clearing_state.get() {
                         text.set(e.value.clone());
+                        on_input.call(e.value.clone());
                     } else {
                         clearing_state.set(false);
                     }

@@ -107,7 +107,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             cx.props.on_hide.call(e);
                         },
                         state: ui_kit::icon_button::State::Secondary,
-                        icon: Shape::X
+                        icon: Shape::XMark
                     }
                 }
             }

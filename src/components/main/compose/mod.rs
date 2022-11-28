@@ -4,10 +4,12 @@ pub mod reply;
 pub mod topbar;
 pub mod write;
 
+use std::collections::HashMap;
+
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
-use warp::raygun::RayGun;
+use ui_kit::{icon_button::IconButton, typing_indicator::TypingIndicator};
+use warp::{crypto::DID, raygun::RayGun};
 
 use crate::{
     components::{
@@ -35,6 +37,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let text = use_state(&cx, String::new);
     let show_warning = use_state(&cx, || true);
     let show_media = use_state(&cx, || false);
+    let users_typing: &UseRef<HashMap<DID, String>> = use_ref(&cx, HashMap::new);
 
     cx.render(rsx! {
         div {
@@ -68,9 +71,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         Messages {
                             account: cx.props.account.clone(),
                             messaging: cx.props.messaging.clone(),
+                            users_typing: users_typing.clone(),
                         }
                     },
                     Write {
+                        messaging: cx.props.messaging.clone(),
                         on_submit: move |message: String| {
                             text.set(String::from(""));
                             let mut rg = cx.props.messaging.clone();
@@ -103,6 +108,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             }
                         },
                         on_upload: move |_| {}
+                    },
+                    TypingIndicator{
+                        users: users_typing.clone()
                     }
                 )
         }
