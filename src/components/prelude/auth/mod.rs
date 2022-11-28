@@ -6,7 +6,7 @@ use dioxus_heroicons::Icon;
 use sir::css;
 use ui_kit::{
     button::{self, Button},
-    icon_input::IconInput,
+    input::Input,
 };
 
 use crate::{Account, LANGUAGE, WINDOW_SUFFIX_NAME};
@@ -81,7 +81,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                     div { class: "m-bottom" },
                     div {
                         class: "full-width",
-                        IconInput {
+                        Input {
                             icon: Shape::Identification,
                             value: username.clone().to_string(),
                             placeholder: String::from("Choose a username.."),
