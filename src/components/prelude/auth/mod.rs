@@ -3,6 +3,7 @@ use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use dioxus_heroicons::Icon;
+use regex::RegexSet;
 use sir::css;
 use ui_kit::{
     button::{self, Button},
@@ -37,16 +38,27 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         let username = username.trim();
         if username.is_empty() {
             error.set("Username is required".into())
+        } else if username.len() < 4 || username.len() > 32 {
+            error.set("Username needs to be between 4 and 32 characters long".into())
         } else {
-            match mp.create_identity(Some(username), None) {
-                Ok(_) => {
-                    window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                    use_router(&cx).push_route("/loading", None, None);
+            let username_regex_set =
+                RegexSet::new(&[r"@", r"[[:^alnum:]&&[:^punct:]]&&^ "]).unwrap();
+            let matches = username_regex_set.matches(username);
+            if matches.matched(0) {
+                error.set("@ is not allowed in username".into())
+            } else if matches.matched(1) {
+                error.set("Illegal input in username".into())
+            } else {
+                match mp.create_identity(Some(username), None) {
+                    Ok(_) => {
+                        window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
+                        use_router(&cx).push_route("/loading", None, None);
+                    }
+                    Err(warp::error::Error::InvalidLength { .. }) => {
+                        error.set("Username length is invalid".into())
+                    }
+                    Err(_) => error.set("Unexpected error has occurred".into()),
                 }
-                Err(warp::error::Error::InvalidLength { .. }) => {
-                    error.set("Username length is invalid".into())
-                }
-                Err(_) => error.set("Unexpected error has occurred".into()),
             }
         }
     };
