@@ -1,15 +1,45 @@
-.attachment {
-  background: #333;
-  display: flex;
+.attachment-embed {
+  background: var(--theme-foreground-dark);
+  text-align: left;
+  margin: 0.5rem 0;
+  display: inline-flex;
   flex-direction: column;
-  padding: 5px;
-  &:hover {
-    background-color: #444;
+  overflow: hidden;
+  border-radius: 4px;
+
+  .embed-icon {
+    min-width: 40px;
+    padding: 1rem;
+    background: var(--theme-background);
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      margin-right: 1rem;
+    }
+
+    h2 {
+      margin: 0;
+    }
   }
-  .name {
-    font-size: 12px;
-  }
-  .size {
-    font-size: 10px;
+  .embed-details {
+    padding: 1rem;
+    flex: 1;
+
+    div {
+      width: 100%;
+    }
+
+    .button {
+      min-width: 100%;
+      margin-top: 1rem;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 }
