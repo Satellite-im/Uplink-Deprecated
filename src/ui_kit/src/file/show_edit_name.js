@@ -11,5 +11,8 @@ document.addEventListener("click", (event) => {
     file_name_input_element.value = ""
     file_name_input_element.style.display = "none"
     file_name_p_element.style.display = "block"
+    removeEventListener()
+  } else {
+    file_name_input_element.focus()
   }
 })

@@ -50,6 +50,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 ContextItem {
                                     icon: Shape::PencilSquare,
                                     onpressed: move |_| {
+                                        //TODO(File): Investigate in a way to replace use_eval in the future
                                         // Use js script to show edit file name element
                                         use_eval(&cx)(&show_edit_name_script);
                                     },
@@ -108,6 +109,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
+                                    //TODO(File): Investigate in a way to replace use_eval in the future
                                     // Use js script to hide edit file name element
                                     use_eval(&cx)(&hide_edit_name_script);
 
