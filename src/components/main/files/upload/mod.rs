@@ -1,13 +1,13 @@
-use std::{path::Path, io::Cursor};
+use std::{io::Cursor, path::Path};
 
 use dioxus::{core::to_owned, events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
-use warp::error::Error;
+use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
-use image::io::Reader as ImageReader;
+use warp::error::Error;
 
 use warp::constellation::Constellation;
 
@@ -34,7 +34,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         "type": "file",
                         onclick: move |_| {
 
-                            // TODO(Files): Remove filter to upload other kind of files          
+                            // TODO(Files): Remove filter to upload other kind of files
                             let file_path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
                                 Some(path) => path,
                                 None => return
@@ -56,13 +56,13 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                                     loop {
                                         match file_storage.put(&filename_to_save, &local_path).await {
-                                            Ok(_) => {  
-                                              log::info!("{:?} file uploaded!", &filename_to_save); 
+                                            Ok(_) => {
+                                              log::info!("{:?} file uploaded!", &filename_to_save);
 
                                                 match update_thumbnail(file_storage, filename_to_save.clone()).await {
-                                                    Ok(success) => log::info!("{:?}", success), 
-                                                    Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
-                                                }               
+                                                    Ok(success) => log::info!("{:?}", success),
+                                                    Err(error) => log::error!("Error on update thumbnail: {:?}", error),
+                                                }
                                                 break;
                                             },
                                             Err(error) => {
@@ -94,8 +94,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                             },
                                         };
                                     }
-                                    
-                                    
                                 }
                             });
                         }
@@ -116,29 +114,35 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     })
 }
 
-
-async fn update_thumbnail(file_storage: Storage, filename_to_save: String) -> Result<String, Box<dyn std::error::Error>> {
-    let item =  file_storage.root_directory().get_item(&filename_to_save)?;
+async fn update_thumbnail(
+    file_storage: Storage,
+    filename_to_save: String,
+) -> Result<String, Box<dyn std::error::Error>> {
+    let item = file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
-    let file =  file_storage.get_buffer(&filename_to_save).await?;
+    let file = file_storage.get_buffer(&filename_to_save).await?;
 
     // Gurantee that is an image that has been uploaded
-    let image = ImageReader::new(Cursor::new(&file)).with_guessed_format()?.decode()?;
+    let image = ImageReader::new(Cursor::new(&file))
+        .with_guessed_format()?
+        .decode()?;
     let image_thumbnail = image.thumbnail(70, 70);
-  
+
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
-    let mime = match parts_of_filename.iter().map(|extension| extension.to_lowercase()).last() {
-        Some(m) => {
-            match m.as_str() {
-                "png" => IMAGE_PNG.to_string(),
-                "jpg" => IMAGE_JPEG.to_string(),
-                "jpeg" => IMAGE_JPEG.to_string(),
-                "svg" => IMAGE_SVG.to_string(),
-                &_ => "".to_string(),
-            }
+    let mime = match parts_of_filename
+        .iter()
+        .map(|extension| extension.to_lowercase())
+        .last()
+    {
+        Some(m) => match m.as_str() {
+            "png" => IMAGE_PNG.to_string(),
+            "jpg" => IMAGE_JPEG.to_string(),
+            "jpeg" => IMAGE_JPEG.to_string(),
+            "svg" => IMAGE_SVG.to_string(),
+            &_ => "".to_string(),
         },
-        None =>  "".to_string(),
+        None => "".to_string(),
     };
 
     if !file.is_empty() || !mime.is_empty() {
