@@ -10,6 +10,7 @@ use std::{
     sync::Arc,
     thread,
 };
+use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
@@ -38,6 +39,7 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
+pub mod iui_kit;
 pub mod iutils;
 pub mod language;
 pub mod themes;
@@ -145,7 +147,11 @@ fn main() {
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()
         .with_writer(non_blocking)
-        .with_env_filter(EnvFilter::from_default_env())
+        .with_env_filter(
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::ERROR.into())
+                .from_env_lossy(),
+        )
         .init();
 
     if let Some(title) = opt.title {
@@ -271,7 +277,7 @@ fn App(cx: Scope<State>) -> Element {
                 parent: String::from("main-wrap"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        icon: Shape::Code,
+                        icon: Shape::CodeBracketSquare,
                         text: String::from("View Source"),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");

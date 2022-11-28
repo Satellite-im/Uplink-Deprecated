@@ -65,6 +65,17 @@ pub fn display_msg_time(timestamp: DateTime<Utc>) -> String {
     }
 }
 
+// TODO: See if we can achieve the same thing with the human time crate
+pub fn display_formatted_time(num: u64) -> String {
+    let seconds = num % 60;
+    let minutes = (num / 60) % 60;
+    let hours = (num / 60) / 60;
+    if hours > 0 {
+        return format!("{:02}:{:02}:{:02}", hours, minutes, seconds);
+    }
+    format!("{:02}:{:02}", minutes, seconds)
+}
+
 pub fn get_pfp_from_did(did: DID, mp: &Account) -> Option<String> {
     let display_user = mp.read().get_identity(did.into()).unwrap_or_default();
     display_user

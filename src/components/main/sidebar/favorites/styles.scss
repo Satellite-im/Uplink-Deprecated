@@ -1,43 +1,24 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
-div.favorites {
+.favorites-container {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  z-index: 1;
-  overflow-x: scroll;
+  gap: 1rem;
+  overflow-x: auto;
+  overflow-y: hidden;
 
-  .labeled,
-  .favorites-container {
+  .favorites-item {
+    width: 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-
-  .favorites-container {
-    margin-left: 1rem;
-    min-width: 40px;
-    max-width: 50px;
-    text-overflow: ellipsis;
-    overflow-x: hidden;
-    display: inline-block;
+    padding: 0;
+    overflow: hidden;
     color: var(--theme-text-muted);
-    cursor: pointer;
+    flex-shrink: 0;
 
     .profile-wrapper {
       display: flex;
-      flex-direction: row;
       position: relative;
-
-      .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
-        /*this is required to prevent a message from squashing the circle/profile picture*/
-        min-width: 40px;
-        /*same width as .pfs*/
-      }
 
       .pfs {
         position: absolute;
@@ -56,28 +37,20 @@ div.favorites {
         }
       }
     }
+    .name {
+      width: 100%;
+    }
   }
 
   .add-favorites {
     display: flex;
     flex-direction: column;
-    align-items: left;
+    gap: 1rem;
 
     .to-add {
       display: flex;
-      flex-direction: row;
       align-items: center;
-
-      .pfp {
-        background: var(--theme-text-muted);
-        border-radius: 20px;
-        height: 40px;
-        width: 40px;
-        /*this is required to prevent a message from squashing the circle/profile picture*/
-        min-width: 40px;
-        /*same width as .pfs*/
-        margin-right: 10px;
-      }
+      gap: 0.5rem;
     }
   }
 
