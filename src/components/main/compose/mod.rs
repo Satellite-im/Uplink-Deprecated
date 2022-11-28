@@ -131,7 +131,6 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         },
                         on_upload: move |_| {
                             let file = FileDialog::new()
-                                .add_filter("images", &["jpg", "png", "gif"])
                                 .set_directory("/")
                                 .pick_files();
                             selected_file.set(file);
