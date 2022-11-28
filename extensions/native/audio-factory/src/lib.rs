@@ -359,7 +359,7 @@ pub struct AudioFactory;
 impl BasicExtension for AudioFactory {
     fn info() -> ExtensionInfo {
         ExtensionInfo {
-            name: String::from("Audio Factory"),
+            name: String::from("AudioFactory"),
             author: String::from("matt@satellite.im"),
             description: String::from("Audio Factory allows you to record all in app audio to different audio tracks. You can additionally change the format, compress and convert."),
             location: ExtensionType::ChatbarIcon,

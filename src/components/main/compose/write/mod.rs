@@ -7,7 +7,7 @@ use ui_kit::{
     icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
 };
-use utils::extensions::{ExtensionType, get_renders, BasicExtension};
+use utils::extensions::{ExtensionType, BasicExtension, get_renders};
 
 #[derive(Props)]
 pub struct Props<'a> {
