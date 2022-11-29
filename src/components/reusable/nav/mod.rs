@@ -3,13 +3,13 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use ui_kit::{
+    button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
-    icon_button::{self, IconButton},
     numeric_indicator::NumericIndicator,
 };
 
 use crate::{Account, LANGUAGE};
-use warp::multipass::{Friends, FriendsEvent, MultiPass, MultiPassEventKind};
+use warp::multipass::MultiPassEventKind;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum NavEvent {
@@ -122,25 +122,25 @@ pub fn Nav(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "nav",
-            IconButton {
+            Button {
                 on_pressed: move |_| {
                     use_router(&cx).push_route("/main", None, None);
                 },
                 state: if active.eq(&NavEvent::Home) {
-                    icon_button::State::Primary
+                    button::State::Primary
                 } else {
-                    icon_button::State::Secondary
+                    button::State::Secondary
                 }
-                icon: Shape::Chat
+                icon: Shape::ChatBubbleBottomCenterText
             },
-            IconButton {
+            Button {
                 on_pressed: move |_| {
                     use_router(&cx).push_route("/main/files", None, None);
                 },
                 state: if active.eq(&NavEvent::Files) {
-                    icon_button::State::Primary
+                    button::State::Primary
                 } else {
-                    icon_button::State::Secondary
+                    button::State::Secondary
                 },
                 icon: Shape::Folder
             },
@@ -152,14 +152,14 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         format_args!("has_indicator")
                     }
                 },
-                IconButton {
+                Button {
                     on_pressed: move |_| {
                         use_router(&cx).push_route("/main/friends", None, None);
                     },
                     state: if active.eq(&NavEvent::Friends) {
-                        icon_button::State::Primary
+                        button::State::Primary
                     } else {
-                        icon_button::State::Secondary
+                        button::State::Secondary
                     }
                     icon: Shape::Users
                 },
@@ -199,12 +199,12 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Code,
+                            icon: Shape::CodeBracketSquare,
                             text: String::from("Toggle Developer")
                         },
                         ContextItem {
                             onpressed: move |_| {},
-                            icon: Shape::Puzzle,
+                            icon: Shape::Beaker,
                             text: String::from("Toggle Extensions")
                         },
                         ContextItem {
@@ -214,14 +214,14 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         },
                     })
                 },
-                IconButton {
+                Button {
                     on_pressed: move |_| {
                         use_router(&cx).push_route("/main/settings", None, None);
                     },
                     state: if active.eq(&NavEvent::Settings) {
-                        icon_button::State::Primary
+                        button::State::Primary
                     } else {
-                        icon_button::State::Secondary
+                        button::State::Secondary
                     },
                     icon: Shape::Cog
                 },

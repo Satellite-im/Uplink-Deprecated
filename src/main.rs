@@ -7,12 +7,13 @@ use std::{
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
-    sync::Arc,
     thread,
 };
+use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
+use utils::Storage;
 
 use crate::iutils::config::Config;
 use ::utils::Account;
@@ -38,6 +39,7 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
+pub mod iui_kit;
 pub mod iutils;
 pub mod language;
 pub mod themes;
@@ -145,7 +147,11 @@ fn main() {
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
     tracing_subscriber::fmt()
         .with_writer(non_blocking)
-        .with_env_filter(EnvFilter::from_default_env())
+        .with_env_filter(
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::ERROR.into())
+                .from_env_lossy(),
+        )
         .init();
 
     if let Some(title) = opt.title {
@@ -206,35 +212,28 @@ async fn initialization(
     path: PathBuf,
     tesseract: Tesseract,
     experimental: bool,
-) -> Result<
-    (
-        Arc<RwLock<Box<dyn MultiPass>>>,
-        Arc<RwLock<Box<dyn RayGun>>>,
-        Arc<RwLock<Box<dyn Constellation>>>,
-    ),
-    warp::error::Error,
-> {
+) -> Result<(Box<dyn MultiPass>, Box<dyn RayGun>, Box<dyn Constellation>), warp::error::Error> {
     let config = MpIpfsConfig::production(&path, experimental);
 
     let account = warp_mp_ipfs::ipfs_identity_persistent(config, tesseract, None)
         .await
-        .map(|mp| Arc::new(RwLock::new(Box::new(mp) as Box<dyn MultiPass>)))?;
+        .map(|mp| Box::new(mp) as Box<dyn MultiPass>)?;
+
+    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
+        account.clone(),
+        Some(FsIpfsConfig::production(&path)),
+    )
+    .await
+    .map(|ct| Box::new(ct) as Box<dyn Constellation>)?;
 
     let messaging = warp_rg_ipfs::IpfsMessaging::<Persistent>::new(
         Some(RgIpfsConfig::production(&path)),
         account.clone(),
-        None,
+        Some(storage.clone()),
         None,
     )
     .await
-    .map(|rg| Arc::new(RwLock::new(Box::new(rg) as Box<dyn RayGun>)))?;
-
-    let storage = warp_fs_ipfs::IpfsFileSystem::<warp_fs_ipfs::Persistent>::new(
-        account.clone(),
-        Some(FsIpfsConfig::production(path)),
-    )
-    .await
-    .map(|ct| Arc::new(RwLock::new(Box::new(ct) as Box<dyn Constellation>)))?;
+    .map(|rg| Box::new(rg) as Box<dyn RayGun>)?;
 
     Ok((account, messaging, storage))
 }
@@ -245,6 +244,9 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
+    cx.use_hook(|_| {
+        cx.provide_context(cx.props.messaging.clone());
+    });
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -268,7 +270,7 @@ fn App(cx: Scope<State>) -> Element {
                 parent: String::from("main-wrap"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        icon: Shape::Code,
+                        icon: Shape::CodeBracketSquare,
                         text: String::from("View Source"),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");
@@ -297,10 +299,10 @@ fn App(cx: Scope<State>) -> Element {
 }
 
 #[derive(Clone)]
-pub struct Messaging(Arc<RwLock<Box<dyn RayGun>>>);
+pub struct Messaging(Box<dyn RayGun>);
 
 impl Deref for Messaging {
-    type Target = Arc<RwLock<Box<dyn RayGun>>>;
+    type Target = Box<dyn RayGun>;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -314,28 +316,6 @@ impl DerefMut for Messaging {
 
 impl PartialEq for Messaging {
     fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
-    }
-}
-
-#[derive(Clone)]
-pub struct Storage(Arc<RwLock<Box<dyn Constellation>>>);
-
-impl Deref for Storage {
-    type Target = Arc<RwLock<Box<dyn Constellation>>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Storage {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl PartialEq for Storage {
-    fn eq(&self, other: &Self) -> bool {
-        self.0.is_locked() == other.0.is_locked()
+        self.0.id() == other.0.id()
     }
 }

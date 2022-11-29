@@ -45,9 +45,14 @@
       height: 100%;
       position: absolute;
     }
+
+    .popout-mask {
+      left: 0;
+    }
   }
 
   #files,
+  #friends,
   #settings {
     &.sidebar-hidden {
       #sidebar {

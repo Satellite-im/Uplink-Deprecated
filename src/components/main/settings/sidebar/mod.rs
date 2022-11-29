@@ -3,7 +3,7 @@ use dioxus_heroicons::outline::Shape;
 
 use self::nav::Route;
 use crate::{components::main::settings::sidebar::nav::Nav, Account};
-use ui_kit::icon_input::IconInput;
+use ui_kit::input::Input;
 
 pub mod nav;
 
@@ -26,8 +26,8 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
             account: cx.props.account.clone(),
-            IconInput {
-                icon: Shape::Search,
+            Input {
+                icon: Shape::MagnifyingGlass,
                 placeholder: String::from("Search"),
                 value: String::from(""),
                 on_change: move |_| {},

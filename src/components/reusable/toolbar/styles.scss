@@ -4,15 +4,17 @@
   padding: 1rem;
   width: 100%;
   flex-direction: row;
-  // border-bottom: 1px solid var(--theme-borders);
 
   #content {
     flex: 1;
     line-height: 1;
     display: inline-flex;
+    overflow: hidden;
+
     .pfp {
       margin-right: 0.5rem;
     }
+
     .activity.inline {
       margin-top: 0.5rem;
     }
@@ -23,9 +25,9 @@
     height: 100%;
     max-width: fit-content;
     display: inline-flex;
-    .icon-button {
+
+    .button {
       margin-left: 0.25rem;
-      padding: 0 0.25rem;
     }
   }
 }

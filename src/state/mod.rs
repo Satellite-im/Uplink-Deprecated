@@ -4,7 +4,7 @@ use std::{
     cmp::{Ord, Ordering},
     collections::{HashMap, HashSet},
 };
-use utils::{notifications::PushNotification, sounds::Sounds};
+// use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
@@ -16,7 +16,8 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
-    SendNotification(String, String, Sounds),
+    ClearChat,
+    // SendNotification(String, String, Sounds),
 }
 
 /// tracks the active conversations. Chagnes are persisted
@@ -123,6 +124,13 @@ impl PersistedState {
                     total_unreads: total_notifications(&self),
                 }
             }
+            Actions::ClearChat => PersistedState {
+                current_chat: None,
+                all_chats: self.all_chats.clone(),
+                favorites: self.favorites.clone(),
+                hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
+            },
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
@@ -156,16 +164,16 @@ impl PersistedState {
                 hide_sidebar: slide_bar_bool,
                 total_unreads: self.total_unreads,
             },
-            Actions::SendNotification(title, content, sound) => {
-                let _ = PushNotification(title, content, sound);
-                PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: total_notifications(&self),
-                }
-            }
+            // Actions::SendNotification(title, content, sound) => {
+            //     let _ = PushNotification(title, content, sound);
+            //     PersistedState {
+            //         current_chat: self.current_chat,
+            //         all_chats: self.all_chats.clone(),
+            //         favorites: self.favorites.clone(),
+            //         hide_sidebar: self.hide_sidebar,
+            //         total_unreads: total_notifications(&self),
+            //     }
+            // }
         };
         // only save while there's a lock on PersistedState
         next.save();

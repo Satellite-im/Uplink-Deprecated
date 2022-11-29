@@ -13,8 +13,8 @@ use ui_kit::{
 };
 use uuid::Uuid;
 use warp::crypto::DID;
-use warp::multipass::{identity::IdentityStatus, IdentityInformation};
-use warp::raygun::{Message, MessageEventKind, RayGun, RayGunStream};
+use warp::multipass::identity::IdentityStatus;
+use warp::raygun::{Message, MessageEventKind};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -53,10 +53,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
 
-    let ident = mp
-        .read()
-        .get_own_identity()
-        .expect("Unexpected error <temp>");
+    let ident = mp.get_own_identity().expect("Unexpected error <temp>");
 
     let did = cx
         .props
@@ -67,7 +64,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
         //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
-        .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        .filter_map(|did| mp.get_identity(did.clone().into()).ok())
         //flatted the nested iterators
         .flatten()
         .map(|i| i.did_key())
@@ -83,7 +80,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
         //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
-        .filter_map(|did| mp.read().get_identity(did.clone().into()).ok())
+        .filter_map(|did| mp.get_identity(did.clone().into()).ok())
         //flatted the nested iterators
         .flatten()
         .map(|i| i.username())
@@ -216,7 +213,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     parent: format!("chat-{}", &did),
                     items: cx.render(rsx! {
                         ContextItem {
-                            icon: Shape::EyeOff,
+                            icon: Shape::EyeSlash,
                             onpressed: move |_| {},
                             text: String::from("Mark Seen"),
                         },
@@ -231,13 +228,13 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                         hr{}
                         ContextItem {
-                            icon: Shape::X,
+                            icon: Shape::XMark,
                             onpressed: move |_| {},
                             text: String::from("Remove Chat"),
                         },
                         ContextItem {
                             danger: true,
-                            icon: Shape::Ban,
+                            icon: Shape::NoSymbol,
                             onpressed: move |_| {},
                             text: String::from("Block User"),
                         },

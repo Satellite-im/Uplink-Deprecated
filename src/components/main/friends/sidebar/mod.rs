@@ -1,4 +1,7 @@
-use crate::{components::main::friends::request::FriendRequest, Account, LANGUAGE, TOAST_MANAGER};
+use crate::{
+    components::main::friends::request::FriendRequest, state::Actions, Account, LANGUAGE, STATE,
+    TOAST_MANAGER,
+};
 
 use arboard::Clipboard;
 use dioxus::{
@@ -8,11 +11,10 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
-use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
+use ui_kit::{button::Button, input::Input};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;
-use warp::multipass::Friends;
 
 #[inline_props]
 #[allow(non_snake_case)]
@@ -35,9 +37,9 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
         |(incoming, outgoing, account)| async move {
             loop {
                 let incoming_list: HashSet<_> =
-                    HashSet::from_iter(account.read().list_incoming_request().unwrap_or_default());
+                    HashSet::from_iter(account.list_incoming_request().unwrap_or_default());
                 let outgoing_list: HashSet<_> =
-                    HashSet::from_iter(account.read().list_outgoing_request().unwrap_or_default());
+                    HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());
 
                 if *incoming != incoming_list {
                     log::debug!("updating incoming friend requests ");
@@ -73,7 +75,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     request: request.clone(),
                                     on_accept: move |_| {
                                         match account.clone()
-                                            .write()
                                             .accept_request(&request.from())
                                         {
                                             Ok(_) => {
@@ -87,7 +88,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     },
                                     on_deny: move |_| {
                                         match account.clone()
-                                            .write()
                                             .deny_request(&request.from())
                                         {
                                             Ok(_) => {
@@ -115,7 +115,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     request: request.clone(),
                                     on_deny:  move |_| {
                                         match account.clone()
-                                            .write()
                                             .close_request(&request.to())
                                         {
                                             Ok(_) => {
@@ -156,9 +155,9 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
         },
         div {
             class: "add",
-            IconInput {
+            Input {
                 placeholder: l.add_placeholder.clone(),
-                icon: Shape::UserAdd,
+                icon: Shape::UserPlus,
                 on_change: move |evt: FormEvent| {
                     add_error.set(String::new());
                     remote_friend.set(evt.value.clone());
@@ -168,7 +167,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     match did {
                         Ok(d) => {
                             match account.clone()
-                                .write()
                                 .send_request(&d)
                             {
                                 Ok(_) => {
@@ -194,7 +192,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     }
                 }
             }
-            IconButton {
+            Button {
                 icon: Shape::Plus,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
@@ -203,7 +201,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     match did {
                         Ok(d) => {
                             match account.clone()
-                                .write()
                                 .send_request(&d)
                             {
                                 Ok(_) => {
@@ -228,6 +225,17 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                         Err(_) => add_error.set(l2.invalid_code.to_string()),
                     }
                 },
+            },
+            div {
+                class: "show-friends-button",
+                Button {
+                    icon: Shape::ArrowRight,
+                    state: ui_kit::button::State::Secondary,
+                    on_pressed: move |_| {
+                        let state = use_atom_ref(&cx, STATE).clone();
+                        state.write().dispatch(Actions::HideSidebar(true));
+                    },
+                }
             }
         },
         div {
@@ -241,13 +249,12 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             class: "code",
             Button {
                 text: l2.copy_code.to_string(),
-                icon: Shape::ClipboardCopy,
+                icon: Shape::ClipboardDocument,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
 
                     let mut clipboard = Clipboard::new().unwrap();
                     if let Ok(ident) = account2
-                        .read()
                         .get_own_identity()
                     {
                         let single_toast = ToastInfo {

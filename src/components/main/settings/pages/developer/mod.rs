@@ -24,7 +24,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
     let mut config = Config::load_config_or_default();
     let c = config.clone();
 
-    let did = if let Ok(ident) = cx.props.account.read().get_own_identity() {
+    let did = if let Ok(ident) = cx.props.account.get_own_identity() {
         ident.did_key().to_string()
     } else {
         DID::default().to_string()
@@ -100,7 +100,7 @@ pub fn Developer(cx: Scope<Props>) -> Element {
                 div {
                     class: "interactive",
                     Button {
-                        icon: Shape::Download,
+                        icon: Shape::ArrowDownOnSquare,
                         disabled: true,
                         text: String::from("Download"),
                         on_pressed: move |_| {},

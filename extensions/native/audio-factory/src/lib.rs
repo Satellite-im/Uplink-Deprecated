@@ -5,7 +5,6 @@ use sir::css;
 
 use ui_kit::{
     button::{self, Button},
-    icon_button::{self, IconButton},
     select::Select,
     switch::Switch,
 };
@@ -232,7 +231,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                 AudioOption {
                     title: String::from("Output Location"),
                     text: String::from("c://fake/path/changeme"),
-                    icon: Shape::FolderDownload,
+                    icon: Shape::ArrowDownOnSquare,
                     children: cx.render(rsx! {
                         Button {
                             text: String::from("Change"),
@@ -385,12 +384,12 @@ impl BasicExtension for AudioFactory {
                         debug: false
                     }
                 }),
-                IconButton {
-                    icon: Shape::Film,
+                Button {
+                    icon: Shape::ViewfinderCircle,
                     state: if **factory_visible {
-                        icon_button::State::Primary
+                        button::State::Primary
                     } else {
-                        icon_button::State::Secondary
+                        button::State::Secondary
                     }
                     on_pressed: move |_| factory_visible.set(!factory_visible)
                 }

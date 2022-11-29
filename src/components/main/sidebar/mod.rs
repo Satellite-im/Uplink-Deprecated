@@ -16,7 +16,7 @@ use ::utils::{notifications::PushNotification, Account};
 use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     extension_placeholder::ExtensionPlaceholder,
-    icon_input::IconInput,
+    input::Input,
     skeletal_chats::SkeletalChats,
 };
 
@@ -93,8 +93,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     },
                 })
             },
-            IconInput {
-                icon: Shape::Search,
+            Input {
+                icon: Shape::MagnifyingGlass,
                 placeholder: String::from("Search"),
                 value: String::from(""),
                 on_change: move |_| {},

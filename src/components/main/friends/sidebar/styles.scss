@@ -27,12 +27,19 @@
       width: 100%;
       display: inline-flex;
       margin-bottom: 1rem;
+
       .icon-input {
         flex: 1;
       }
 
       .button {
-        margin-left: 1rem;
+        margin-left: 8px;
+      }
+
+      @media only screen and (min-width: 600px) {
+        .show-friends-button {
+          display: none;
+        }
       }
     }
   }

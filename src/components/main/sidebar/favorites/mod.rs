@@ -3,11 +3,11 @@ use crate::{
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,
 };
-use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
-use ui_kit::{icon_button::IconButton, profile_picture::PFP};
+use ui_kit::{button::Button, profile_picture::PFP};
+use utils::Account;
 use uuid::Uuid;
 
 #[derive(Props, PartialEq)]
@@ -37,7 +37,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
             "{favString}"
         },
         div {
-            class: "favorites",
+            class: "favorites-container",
             (popout).then(|| rsx!(
                 div {
                     class: "popout-mask",
@@ -46,8 +46,8 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     },
                     div {
                         class: "close",
-                        IconButton {
-                            icon: Shape::X,
+                        Button {
+                            icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
                             }
@@ -63,13 +63,14 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     },
                 }
             )),
-            div {
-                class: "labeled",
-                IconButton {
+            button {
+                class: "favorites-item",
+                Button {
                     icon: Shape::Plus,
                     on_pressed: move |_| popout.set(true),
                 },
-                span {
+                div {
+                    class: "name",
                     "{newchatdString}"
                 }
             },
@@ -110,8 +111,8 @@ pub fn FavoriteChat<'a>(
     let profile_picture = iutils::get_pfp_from_did(did, mp);
 
     cx.render(rsx! {
-        div {
-            class: "favorites-container",
+        button {
+            class: "favorites-item",
             onclick: move |_| on_pressed.call(conversation_id),
             div {
                 class: "profile-wrapper",
@@ -126,7 +127,8 @@ pub fn FavoriteChat<'a>(
                     class: "pfs {has_unread}"
                 }
             }
-            span {
+            div {
+                class: "ellipsis name",
                 "{conversation_name}"
             }
         }

@@ -4,7 +4,7 @@ use dioxus::{events::KeyCode, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use sir::css;
 use ui_kit::{
-    icon_button::{self, IconButton},
+    button::{self, Button},
     pin::Pin,
     tooltip::{ArrowPosition, Tooltip},
 };
@@ -68,11 +68,11 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         rsx! {
                             span {
                                 class: "{confirm_button_class}",
-                                IconButton {
+                                Button {
                                     icon: if error.is_empty() {
                                         Shape::Check
                                     } else {
-                                        Shape::X
+                                        Shape::XMark
                                     }
                                     on_pressed: move |_| {
                                         let tesseract = cx.props.tesseract.clone();
@@ -159,16 +159,16 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
             },
             div {
                 class: "login-actions",
-                IconButton {
+                Button {
                     icon: Shape::User,
                     disabled: true,
-                    state: icon_button::State::Secondary,
+                    state: button::State::Secondary,
                     on_pressed: move |_| {},
                 },
-                IconButton {
+                Button {
                     icon: Shape::GlobeAlt,
                     disabled: true,
-                    state: icon_button::State::Secondary,
+                    state: button::State::Secondary,
                     on_pressed: move |_| {},
                 },
             }

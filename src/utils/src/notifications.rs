@@ -17,6 +17,8 @@ pub fn PushNotification(title: String, content: String, notification_sound: Soun
 }
 
 pub fn set_badge(count: u32) -> Result<(), String> {
+    #[cfg(not(target_os = "macos"))]
+    let _ = count;
     #[cfg(target_os = "macos")]
     unsafe {
         use cocoa::{appkit::NSApp, base::nil, foundation::NSString};

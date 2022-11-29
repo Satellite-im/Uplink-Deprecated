@@ -5,16 +5,16 @@ use crate::{
     STATE,
 };
 
-use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
+    button::Button,
     context_menu::{ContextItem, ContextMenu},
-    icon_button::IconButton,
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
+use utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -52,11 +52,11 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             cx.render(rsx! {
                 toolbar::Toolbar {
                     controls: cx.render(rsx! {
-                        IconButton {
+                        Button {
                             icon: Shape::Heart,
                             state: match is_favorite {
-                                true => ui_kit::icon_button::State::Filled,
-                                false => ui_kit::icon_button::State::Secondary,
+                                true => ui_kit::button::State::Filled,
+                                false => ui_kit::button::State::Secondary,
                             },
                             on_pressed: move |_| {
                                 match is_favorite {
@@ -66,13 +66,13 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 state.write().dispatch(Actions::UpdateFavorites(favorites.clone()));
                             },
                         },
-                        IconButton {
+                        Button {
                             icon: Shape::Phone,
                             on_pressed: move |_| {
                                 cx.props.on_call.call(());
                             },
                         },
-                        IconButton {
+                        Button {
                             icon: Shape::VideoCamera,
                             on_pressed: move |_| {
                                 cx.props.on_call.call(());
@@ -81,9 +81,9 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }),
                     div {
                         class: "mobile-back-button",
-                        IconButton {
+                        Button {
                             icon: Shape::ArrowLeft,
-                            state: ui_kit::icon_button::State::Secondary,
+                            state: ui_kit::button::State::Secondary,
                             on_pressed: move |_| {
                                 state.write().dispatch(Actions::HideSidebar(false));
                             },
@@ -141,7 +141,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 },
                 div {
                     class: "topbar-controls",
-                    IconButton {
+                    Button {
                         icon: Shape::Phone,
                         on_pressed: move |_| {
                             cx.props.on_call.call(());
