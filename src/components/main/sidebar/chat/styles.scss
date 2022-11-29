@@ -63,6 +63,7 @@
       flex: 1;
       flex-direction: column;
       text-align: left;
+      overflow: hidden;
 
       .top-row {
         display: inline-flex;
@@ -70,6 +71,9 @@
 
         h3 {
           margin: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .timestamp {
