@@ -11,64 +11,63 @@ env:
 
 jobs:
   windows:
-  needs: ["extract-version", "create-release"]
-  runs-on: windows-latest
+    runs-on: windows-latest
 
-  defaults:
-    run:
-      shell: bash
+    defaults:
+      run:
+        shell: bash
 
-  steps:
-    - uses: actions/checkout@v3
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-        components: rustfmt, clippy
-    - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.13
-      with:
-        cmake-version: "3.16.x"
-    - name: Use cmake
-      run: cmake --version
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build resources
-      run: cargo build
-    # - name: Sign resources
-    #   run: cargo make sign-windows-resources
-    #   env:
-    #     CODESIGN_PWD: ${{ secrets.WIN_CODESIGN_PWD }}
-    #     CODESIGN_CROSS_SIGNED_B64: ${{ secrets.WIN_CODESIGN_INTERMEDIATE_B64 }}
-    #     CODESIGN_CERTIFICATE_B64: ${{ secrets.WIN_CODESIGN_CERTIFICATE_B64 }}
-    # - name: Build installer
-    #   run: cargo make build-windows-installer --profile release --skip-tasks build-windows-resources
-    # - name: Sign installer
-    #   run: cargo make sign-windows-installer
-    #   env:
-    #     CODESIGN_PWD: ${{ secrets.WIN_CODESIGN_PWD }}
-    #     CODESIGN_CROSS_SIGNED_B64: ${{ secrets.WIN_CODESIGN_INTERMEDIATE_B64 }}
-    #     CODESIGN_CERTIFICATE_B64: ${{ secrets.WIN_CODESIGN_CERTIFICATE_B64 }}
-    # - name: Build portable mode archive
-    #   run: cargo make build-windows-portable --profile release --skip-tasks build-windows-resources
-    # - name: Create portable mode archive
-    #   shell: powershell
-    #   run: |
-    #     Rename-Item target/windows/portable espanso-portable
-    #     Compress-Archive target/windows/espanso-portable target/windows/Espanso-Win-Portable-x86_64.zip
-    # - name: Calculate hashes
-    #   shell: powershell
-    #   run: |
-    #     Get-FileHash target/windows/Espanso-Win-Portable-x86_64.zip -Algorithm SHA256 | select-object -ExpandProperty Hash > target/windows/Espanso-Win-Portable-x86_64.zip.sha256.txt
-    #     Get-FileHash target/windows/installer/Espanso-Win-Installer-x86_64.exe -Algorithm SHA256 | select-object -ExpandProperty Hash > target/windows/installer/Espanso-Win-Installer-x86_64.exe.sha256.txt
-    - uses: actions/upload-artifact@v3
-      name: "Upload artifacts"
-      with:
-        name: Windows Artifacts
-        path: |
-          target/debug/uplink.exe
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.13
+        with:
+          cmake-version: "3.16.x"
+      - name: Use cmake
+        run: cmake --version
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build resources
+        run: cargo build
+      # - name: Sign resources
+      #   run: cargo make sign-windows-resources
+      #   env:
+      #     CODESIGN_PWD: ${{ secrets.WIN_CODESIGN_PWD }}
+      #     CODESIGN_CROSS_SIGNED_B64: ${{ secrets.WIN_CODESIGN_INTERMEDIATE_B64 }}
+      #     CODESIGN_CERTIFICATE_B64: ${{ secrets.WIN_CODESIGN_CERTIFICATE_B64 }}
+      # - name: Build installer
+      #   run: cargo make build-windows-installer --profile release --skip-tasks build-windows-resources
+      # - name: Sign installer
+      #   run: cargo make sign-windows-installer
+      #   env:
+      #     CODESIGN_PWD: ${{ secrets.WIN_CODESIGN_PWD }}
+      #     CODESIGN_CROSS_SIGNED_B64: ${{ secrets.WIN_CODESIGN_INTERMEDIATE_B64 }}
+      #     CODESIGN_CERTIFICATE_B64: ${{ secrets.WIN_CODESIGN_CERTIFICATE_B64 }}
+      # - name: Build portable mode archive
+      #   run: cargo make build-windows-portable --profile release --skip-tasks build-windows-resources
+      # - name: Create portable mode archive
+      #   shell: powershell
+      #   run: |
+      #     Rename-Item target/windows/portable espanso-portable
+      #     Compress-Archive target/windows/espanso-portable target/windows/Espanso-Win-Portable-x86_64.zip
+      # - name: Calculate hashes
+      #   shell: powershell
+      #   run: |
+      #     Get-FileHash target/windows/Espanso-Win-Portable-x86_64.zip -Algorithm SHA256 | select-object -ExpandProperty Hash > target/windows/Espanso-Win-Portable-x86_64.zip.sha256.txt
+      #     Get-FileHash target/windows/installer/Espanso-Win-Installer-x86_64.exe -Algorithm SHA256 | select-object -ExpandProperty Hash > target/windows/installer/Espanso-Win-Installer-x86_64.exe.sha256.txt
+      - uses: actions/upload-artifact@v3
+        name: "Upload artifacts"
+        with:
+          name: Windows Artifacts
+          path: |
+            target/debug/uplink.exe
