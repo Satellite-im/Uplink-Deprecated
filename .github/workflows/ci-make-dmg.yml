@@ -61,17 +61,18 @@ jobs:
           xcrun notarytool submit "notarization.zip" --keychain-profile "uplink-notarytool-profile" --wait
           echo "Attach staple"
           xcrun stapler staple "target/release/macos/Uplink.app"
-      # - name: Create ZIP archive
-      #   run: |
-      #     ditto -c -k --sequesterRsrc --keepParent target/release/macos/Uplink.app Uplink-Mac-Universal.zip
-      # - name: Calculate hashes
-      #   run: |
-      #     shasum -a 256 Uplink-Mac-Universal.zip > Uplink-Mac-Universal.zip.sha256.txt
+      - name: Create ZIP archive
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent target/release/macos/Uplink.app Uplink-Mac-Universal.zip
+      - name: Calculate hashes
+        run: |
+          shasum -a 256 Uplink-Mac-Universal.zip > Uplink-Mac-Universal.zip.sha256.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
         with:
-          name: Uplink.app
+          name: Uplink Universal Mac App
           path: |
-            target/release/macos/Uplink.app
+            Uplink-Mac-Universal.zip
+            Uplink-Mac-Universal.zip.sha256.txt
