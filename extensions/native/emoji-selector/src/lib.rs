@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
-use utils::extensions::{BasicExtension, Extension, ExtensionType};
+use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
 
 pub struct EmojiSelector;
 
 impl BasicExtension for EmojiSelector {
-    fn info() -> Extension {
-        Extension {
+    fn info() -> ExtensionInfo {
+        ExtensionInfo {
             name: String::from("Emoji Picker"),
             author: String::from("matt@satellite.im"),
             description: String::from(
