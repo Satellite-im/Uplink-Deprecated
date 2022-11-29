@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_with_signing:
+  build_sign_macos:
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
@@ -31,7 +31,7 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: "10.13"
         run: |
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
-      - name: Codesign executable
+      - name: Codesign and Build executable
         env:
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
@@ -66,7 +66,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent target/release/macos/Uplink.app Uplink-Mac-Universal.zip
       - name: Calculate hashes
         run: |
-          shasum -a 256 Uplink-Mac-Universal.zip > Uplink-Mac-Universal.zip.sha256.txt
+          shasum -a 256 target/release/macos/Uplink.app > Uplink-Mac-Universal.sha256.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         env:
@@ -74,5 +74,5 @@ jobs:
         with:
           name: Uplink Universal Mac App
           path: |
-            Uplink-Mac-Universal.zip
-            Uplink-Mac-Universal.zip.sha256.txt
+            target/release/macos/Uplink.app
+            Uplink-Mac-Universal.sha256.txt

@@ -66,3 +66,5 @@ $(INSTALL)-%: $(DMG_NAME)-%
 
 clean: ## Remove all build artifacts
 	@cargo clean
+watch: ## run this first: `cargo install cargo-watch`
+	@cargo watch -q -c -x 'run -q'
