@@ -19,7 +19,7 @@ const SELECTORS = {
 
 class CreateAccountScreen extends AppScreen {
   constructor() {
-    super("~Create a Pin")
+    super(SELECTORS.MACOS.HEADER_TEXT)
   }
 
   get headerText() {

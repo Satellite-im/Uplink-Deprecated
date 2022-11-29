@@ -3,7 +3,7 @@ import config from "./wdio.shared.local.appium.conf"
 // ============
 // Specs
 // ============
-config.specs = ["./tests/specs/**/app*.spec.ts"]
+config.specs = ["./tests/specs/**/*.spec.ts"]
 
 // ============
 // Capabilities
@@ -19,9 +19,12 @@ config.capabilities = [
     // http://appium.io/docs/en/writing-running-appium/caps/
     // This is `appium:` for all Appium Capabilities which can be found here
     "appium:automationName": "mac2",
+    "appium:prerun": {
+      command: 'do shell script "rm -rf ~/.warp"',
+    },
     // @ts-ignore
     "appium:bundleId": "im.satellite.uplink",
-    "appium:newCommandTimeout": 240,
+    "appium:newCommandTimeout": 15,
   },
 ]
 
