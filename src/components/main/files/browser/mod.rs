@@ -51,8 +51,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
-                 
-
                 let file_extension = std::path::Path::new(&file.name())
                     .extension()
                     .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -63,18 +61,16 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 let key = file.id();
 
                 rsx!(
-              
-                            File {
-                                key: "{key}",
-                                name: file.name(),
-                                state: State::Secondary,
-                                id: key.to_string(),
-                                kind: file_extension,
-                                size: file.size(),
-                                thumbnail: file.thumbnail(),
-                                storage: cx.props.storage.clone(),
-                            }
-                        
+                    File {
+                        key: "{key}",
+                        name: file.name(),
+                        state: State::Secondary,
+                        id: key.to_string(),
+                        kind: file_extension,
+                        size: file.size(),
+                        thumbnail: file.thumbnail(),
+                        storage: cx.props.storage.clone(),
+                    }
                 )
             })
         }

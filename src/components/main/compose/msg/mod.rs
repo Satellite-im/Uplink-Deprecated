@@ -5,8 +5,8 @@ use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
 use ui_kit::{
-    context_menu::{ContextItem, ContextMenu},
     button::Button,
+    context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
 };
 use warp::{crypto::DID, raygun::Message};

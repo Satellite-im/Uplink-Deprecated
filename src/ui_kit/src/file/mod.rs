@@ -33,7 +33,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
-    let file_size = format_file_size(cx.props.size);    
+    let file_size = format_file_size(cx.props.size);
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
     let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &file_id);
@@ -82,10 +82,10 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     danger: true,
                                     text: String::from("Delete")
                                 },
-                        
+
                     }),
                 },
-         
+
             div {
                 class: "folder {class}",
                     Icon { icon: Shape::Document},
@@ -140,13 +140,13 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         }
                     }
-                    
+
                 }
                 rsx!(
-                    p { 
+                    p {
                         id: "{file_id}-name-normal",
                         "{file_name_formatted_state}" })
-                
+
                 label {
                         "{file_size}"
                     }
