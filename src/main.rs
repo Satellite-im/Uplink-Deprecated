@@ -53,6 +53,9 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
+static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
+Lazy::new(|| RwLock::new(DroppedFile {local_path: String::new(), file_drag_event: FileDragEvent::None}));
+
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
@@ -61,6 +64,20 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum FileDragEvent {
+    Dropped,
+    Hovered,
+    Cancelled,
+    None, 
+}
+
+#[derive(Debug, Clone)]
+pub struct DroppedFile {
+    local_path: String, 
+    file_drag_event: FileDragEvent,
+}
+
 #[derive(PartialEq, Props)]
 pub struct State {
     tesseract: Tesseract,
@@ -68,7 +85,6 @@ pub struct State {
     messaging: Messaging,
     storage: Storage,
 }
-
 #[derive(Debug, Parser)]
 #[clap(name = "")]
 struct Opt {
@@ -183,6 +199,8 @@ fn main() {
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
+
+
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -192,7 +210,28 @@ fn main() {
             messaging,
             storage,
         },
-        |c| c.with_window(|_| window.with_menu(main_menu)),
+        |c| {
+            c.with_window(|_| window.with_menu(main_menu));
+            c.with_file_drop_handler(|_w, e| {
+                let mut dropped_file_local_path = format!("{:?}", e);
+                let file_drag_event = if dropped_file_local_path.contains("Hovered") {
+                    FileDragEvent::Hovered
+                } else if dropped_file_local_path.contains("Dropped") {
+                    FileDragEvent::Dropped
+                } else if dropped_file_local_path.contains("Cancelled") {
+                     FileDragEvent::Cancelled 
+                } else {
+                    FileDragEvent::None 
+                };
+                dropped_file_local_path = 
+                dropped_file_local_path.replace("Dropped([", "").replace("Hovered([", "").replace("])", "");
+                *DROPPED_FILE.write() = DroppedFile {
+                    local_path: dropped_file_local_path, 
+                    file_drag_event: file_drag_event,
+                };
+                true
+            })
+        },
     );
 
     #[cfg(not(target_os = "macos"))]
@@ -243,7 +282,7 @@ fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
-
+ 
     cx.use_hook(|_| {
         cx.provide_context(cx.props.messaging.clone());
     });
