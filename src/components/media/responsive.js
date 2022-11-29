@@ -1,6 +1,6 @@
-const media = document.querySelector("#media-content")
+var media = document.querySelector("#media-content")
 
-const getBoxDimensionsForLayout = (params, numMaxCols, numRows) => {
+function getBoxDimensionsForLayout(params, numMaxCols, numRows) {
   const rowGap = params.gap * (numRows - 1)
   const colGap = params.gap * (numMaxCols - 1)
   let boxWidth = (params.containerWidth - colGap) / numMaxCols
@@ -13,7 +13,7 @@ const getBoxDimensionsForLayout = (params, numMaxCols, numRows) => {
   return [boxWidth, boxHeight]
 }
 
-const getOptimalBoxDimensions = (params) => {
+function getOptimalBoxDimensions(params) {
   let prevWidth = 0
   let prevHeight = 0
   let width = 0
@@ -30,7 +30,7 @@ const getOptimalBoxDimensions = (params) => {
   return [width, height]
 }
 
-const calculateMediaUserSize = (entry) => {
+function calculateMediaUserSize(entry) {
   const mediaUsers = media.querySelectorAll(".media-user")
   const dimensions = getOptimalBoxDimensions({
     containerWidth: entry?.contentRect.width ?? media.clientWidth,
@@ -46,10 +46,10 @@ const calculateMediaUserSize = (entry) => {
   }
 }
 
-const resizeObserver = new ResizeObserver((entries) => {
+var resizeObserver = new ResizeObserver((entries) => {
   for (const entry of entries) {
     calculateMediaUserSize(entry)
   }
 })
 
-resizeObserver.observe(media)
+if (media) resizeObserver.observe(media)

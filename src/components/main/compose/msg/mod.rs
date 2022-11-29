@@ -6,7 +6,7 @@ use pulldown_cmark::{html, Options, Parser};
 
 use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
-    icon_button::IconButton,
+    button::Button,
     profile_picture::PFP,
 };
 use warp::{crypto::DID, raygun::Message};
@@ -20,7 +20,9 @@ use crate::{
     Account, Messaging, LANGUAGE,
 };
 
+mod attachment;
 pub mod embeds;
+use attachment::Attachment;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -40,6 +42,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering compose/Msg");
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
+    let attachments = cx.props.message.attachments();
     let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
     let has_links = finder.links(&joined_b).next().is_some();
@@ -131,6 +134,15 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let id = cx.props.message.id();
 
+    let attachment_list = attachments.iter().map(|file| {
+        let key = file.id();
+        rsx!(Attachment {
+            key: "{key}",
+            file: file.clone(),
+            message: cx.props.message.clone(),
+        })
+    });
+
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
@@ -139,7 +151,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     class: "popout-mask {remote}",
                     div {
                         class: "close",
-                        IconButton {
+                        Button {
                             icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
@@ -169,7 +181,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             onclick: move |e| {
                                 e.cancel_bubble();
                             },
-                            IconButton {
+                            Button {
                                 icon: Shape::FaceSmile,
                                 on_pressed: move |_| {}
                             },
@@ -184,9 +196,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 },
                                 text: text.clone(),
                             },
-                            IconButton {
+                            Button {
                                 icon: Shape::ArrowRight,
-                                state: ui_kit::icon_button::State::Secondary,
+                                state: ui_kit::button::State::Secondary,
                                 on_pressed: move |_| {
                                     cx.props.on_reply.call(text.clone().to_string());
                                     popout.set(false);
@@ -280,6 +292,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         meta: meta
                                     }
                                 }),
+                                div {
+                                    attachment_list
+                                }
                             }
                         }
                     )
@@ -303,6 +318,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         meta: meta
                                     }
                                 }),
+                                div {
+                                    attachment_list
+                                }
                             }
                         },
                         if cx.props.last {

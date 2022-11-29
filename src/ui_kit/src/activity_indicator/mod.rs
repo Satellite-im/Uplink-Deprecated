@@ -1,8 +1,5 @@
 use dioxus::prelude::*;
-use warp::{
-    crypto::DID,
-    multipass::{identity::IdentityStatus, IdentityInformation},
-};
+use warp::{crypto::DID, multipass::identity::IdentityStatus};
 
 use utils::Account;
 

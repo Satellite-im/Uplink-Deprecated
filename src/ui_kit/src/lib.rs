@@ -5,8 +5,6 @@ pub mod context_menu;
 pub mod extension_placeholder;
 pub mod file;
 pub mod folder;
-pub mod icon_button;
-pub mod icon_input;
 pub mod input;
 pub mod loader;
 pub mod new_folder;

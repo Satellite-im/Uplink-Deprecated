@@ -16,10 +16,12 @@ pub struct Props {
 #[inline_props]
 #[allow(non_snake_case)]
 pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
+    let mut account = account.clone();
+    let mut account2 = account.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
-    let identity = account.read().get_own_identity().unwrap();
+    let identity = account.get_own_identity().unwrap();
     let status_msg = match identity.status_message() {
         Some(msg) => msg,
         None => String::new(),
@@ -50,14 +52,13 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                         on_change: move |e: FormEvent| {
                             status_msg_error.set("".into());
                             status_msg_state.set(e.value.clone())},
-                        on_enter:move|_|{
+                        on_enter:move |_|{
                             let status_msg_text = status_msg_state.trim();
                             if status_msg_text != status_msg {
                                 if status_msg_text.len() > 128 {
                                     status_msg_error.set(l2.status_error_length.to_string());
                                 } else {
                                     if let Err(e) = account
-                                        .write()
                                         .update_identity(IdentityUpdate::set_status_message(Some(
                                             status_msg_state.to_string(),
                                         )))
@@ -80,8 +81,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                             if status_msg_text.len() > 128 {
                                 status_msg_error.set(l3.status_error_length.to_string());
                             } else {
-                                if let Err(e) = account
-                                    .write()
+                                if let Err(e) = account2
                                     .update_identity(IdentityUpdate::set_status_message(Some(
                                         status_msg_state.to_string(),
                                     )))

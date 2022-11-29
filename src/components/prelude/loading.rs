@@ -32,7 +32,7 @@ pub fn Loading(cx: Scope<Props>) -> Element {
     });
     std::thread::sleep(std::time::Duration::from_millis(10));
     let multipass = cx.props.account.clone();
-    let _account_fetch_status = match multipass.read().get_own_identity() {
+    let _account_fetch_status = match multipass.get_own_identity() {
         Ok(i) => {
             if *loaded.get() {
                 // if config.general.show_splash {

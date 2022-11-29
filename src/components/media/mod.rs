@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
+use ui_kit::button::Button;
 use utils::Account;
 
 use crate::{
@@ -28,7 +28,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     };
 
     let mp = cx.props.account.clone();
-    let my_identity = mp.read().get_own_identity().unwrap();
+    let my_identity = mp.get_own_identity().unwrap();
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
     let config = Config::load_config_or_default();
@@ -43,9 +43,9 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 class: "media-view",
                 div {
                     class: "settings-toggle",
-                    IconButton {
+                    Button {
                         icon: Shape::Cog,
-                        state: ui_kit::icon_button::State::Transparent,
+                        state: ui_kit::button::State::Transparent,
                         on_pressed: move |_| {},
                     }
                 },
@@ -60,9 +60,9 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                 },
                 div {
                     class: "media-toggle",
-                    IconButton {
+                    Button {
                         icon: if **fullscreen { Shape::ArrowsPointingIn } else { Shape::ArrowsPointingOut },
-                        state: ui_kit::icon_button::State::Transparent,
+                        state: ui_kit::button::State::Transparent,
                         on_pressed: move |_| fullscreen.set(!fullscreen),
                     }
                 },

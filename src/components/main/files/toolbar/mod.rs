@@ -1,6 +1,6 @@
 use dioxus::{events::MouseEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
+use ui_kit::button::Button;
 
 use crate::components::{
     main::files::toolbar::usage::{Usage, UsageStats},
@@ -23,17 +23,17 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         toolbar::Toolbar {
             controls: cx.render(rsx! {
-                IconButton {
+                Button {
                     icon: Shape::ArchiveBox,
-                    state: ui_kit::icon_button::State::Secondary,
+                    state: ui_kit::button::State::Secondary,
                     on_pressed: move |_| {}
                 },
-                IconButton {
+                Button {
                     icon: Shape::FolderPlus,
-                    state: ui_kit::icon_button::State::Secondary,
+                    state: ui_kit::button::State::Secondary,
                     on_pressed: move |e| cx.props.on_new_folder.call(e)
                 },
-                IconButton {
+                Button {
                     icon: Shape::Plus,
                     on_pressed: move |e| cx.props.on_show_upload.call(e)
                 }
@@ -42,9 +42,9 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "usage-container",
                 div {
                     class: "mobile-back-button",
-                    IconButton {
+                    Button {
                         icon: Shape::ArrowLeft,
-                        state: ui_kit::icon_button::State::Secondary,
+                        state: ui_kit::button::State::Secondary,
                         on_pressed: move |_| {
                             st.write().dispatch(Actions::HideSidebar(false));
                         },

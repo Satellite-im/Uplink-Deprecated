@@ -16,7 +16,7 @@ use futures::StreamExt;
 use uuid::Uuid;
 use warp::{
     crypto::DID,
-    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions, RayGun, RayGunStream},
+    raygun::{Message, MessageEvent, MessageEventKind, MessageOptions},
 };
 
 #[derive(Eq, PartialEq)]
@@ -56,7 +56,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE).clone();
 
     let mut rg = cx.props.messaging.clone();
-    let ident = cx.props.account.read().get_own_identity().unwrap();
+    let ident = cx.props.account.get_own_identity().unwrap();
     let my_did = ident.did_key().clone();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
@@ -340,42 +340,45 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
 
                     rsx! {
-                        Msg {
-                            // key: "{message_id}-reply",
-                            messaging: cx.props.messaging.clone(),
-                            message: message.clone(),
-                            account: cx.props.account.clone(),
-                            sender: message.sender(),
-                            remote: is_remote,
-                            // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                            last:  is_first,
-                            first: is_last,
-                            middle: !is_last && !is_first,
-                            on_reply: move |reply| {
-                                if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
-                                    //TODO: Display error?
+                        div {
+                            key: "{message_id}",
+                            style: "display: contents",
+                            Msg {
+                                // key: "{message_id}-reply",
+                                messaging: cx.props.messaging.clone(),message: message.clone(),
+                                account: cx.props.account.clone(),
+                                sender: message.sender(),
+                                remote: is_remote,
+                                // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
+                                last:  is_first,
+                                first: is_last,
+                                middle: !is_last && !is_first,
+                                on_reply: move |reply| {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
+                                        //TODO: Display error?
+                                    }
                                 }
                             }
-                        }
-                        match message.replied() {
-                            Some(replied) => {
-                                let r = cx.props.messaging.clone();
-                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                    Ok(message) => {
-                                        rsx!{
-                                            Reply {
-                                                // key: "{message_id}-reply",
-                                                message: message.value().join("\n"),
-                                                is_remote: is_remote,
-                                                account: cx.props.account.clone(),
-                                                sender: message.sender(),
+                            match message.replied() {
+                                Some(replied) => {
+                                    let r = cx.props.messaging.clone();
+                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                        Ok(message) => {
+                                            rsx!{
+                                                Reply {
+                                                    // key: "{message_id}-reply",
+                                                    message: message.value().join("\n"),
+                                                    is_remote: is_remote,
+                                                    account: cx.props.account.clone(),
+                                                    sender: message.sender(),
+                                                }
                                             }
-                                        }
-                                    },
-                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                }
-                            },
-                            _ => rsx!{ div {  } }
+                                        },
+                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                    }
+                                },
+                                _ => rsx!{ div {  } }
+                            }
                         }
                     }
                 }),
