@@ -169,15 +169,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             placeholder: String::from("Choose a username.."),
                             on_change: move | evt: FormEvent | {
                                 error.set(String::from(""));
-                                if evt.value.len() > 26 {
-                                    error.set(String::from("Maximum username length reached (26)"));
-                                    return;
-                                }
-                                if evt.value.contains(char::is_whitespace) {
-                                    error.set(String::from("Username cannot contain spaces."));
-                                    return;
-                                }
-
                                 username.set(evt.value.clone());
                             },
                             on_enter: move |_| new_account(),
