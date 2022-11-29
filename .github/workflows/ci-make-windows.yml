@@ -31,12 +31,8 @@ jobs:
           cmake-version: "3.16.x"
       - name: Use cmake
         run: cmake --version
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build resources
         run: cargo build
       # - name: Sign resources
