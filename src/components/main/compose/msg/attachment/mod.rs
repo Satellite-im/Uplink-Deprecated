@@ -1,8 +1,13 @@
 use crate::Messaging;
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use dioxus_heroicons::Icon;
 use dioxus_html::on::MouseEvent;
 use futures::StreamExt;
+use humansize::format_size;
+use humansize::DECIMAL;
 use rfd::FileDialog;
+use ui_kit::icon_button;
 use warp::constellation::file::File;
 use warp::raygun::Message;
 
@@ -15,7 +20,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Attachment(cx: Scope<Props>) -> Element {
-    let size = format!("{:.3} KB", cx.props.file.size() / 1024);
+    let size = format_size(cx.props.file.size(), DECIMAL);
     let name = cx.props.file.name();
 
     let rg = cx.consume_context::<Messaging>().unwrap();
@@ -29,7 +34,6 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                 .set_file_name(&cx.props.file.name())
                 .set_directory("/")
                 .save_file();
-            println!("selected save path: {:?}", save_path);
 
             let conversation_id = cx.props.message.conversation_id();
             let id = cx.props.message.id();
@@ -46,7 +50,7 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                                         current,
                                         total,
                                     } => {
-                                        println!("Written {} MB for {name}", current / 1024 / 1024);
+                                        // println!("Written {} MB for {name}", current / 1024 / 1024);
                                         if let Some(total) = total {
                                             println!(
                                                 "{}% completed",
@@ -59,11 +63,13 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                                         name,
                                         total,
                                     } => {
+                                        // TODO: Actual UI upload progress bindings.
                                         println!(
                                             "{name} downloaded with {} bytes written",
                                             total.unwrap_or_default()
                                         );
                                     }
+                                    // TODO: Actual UI upload progress bindings.
                                     warp::constellation::Progression::ProgressFailed {
                                         name,
                                         error,
@@ -86,15 +92,27 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            class: "attachment",
-            onclick: handle_click,
+            class: "attachment-embed",
             div {
-                class: "file-name",
-                "{name}"
-            },
+                class: "embed-icon",
+                Icon {
+                    icon: Shape::Document,
+                },
+                h2 {
+                    "{name}"
+                }
+            }
             div {
-                class: "file-size",
-                "{size}"
+                class: "embed-details",
+                p {
+                    "{size}"
+                },
+                icon_button::IconButton {
+                    icon: Shape::DocumentArrowDown,
+                    text: String::from("Download File"),
+                    state: icon_button::State::Secondary,
+                    on_pressed: handle_click
+                }
             }
         }
     })

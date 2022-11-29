@@ -16,6 +16,7 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    ClearChat,
     // SendNotification(String, String, Sounds),
 }
 
@@ -123,6 +124,13 @@ impl PersistedState {
                     total_unreads: total_notifications(&self),
                 }
             }
+            Actions::ClearChat => PersistedState {
+                current_chat: None,
+                all_chats: self.all_chats.clone(),
+                favorites: self.favorites.clone(),
+                hide_sidebar: self.hide_sidebar,
+                total_unreads: self.total_unreads,
+            },
             Actions::ChatWith(info) => PersistedState {
                 current_chat: Some(info.conversation.id()),
                 all_chats: self.all_chats.clone(),
