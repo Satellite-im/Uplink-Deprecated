@@ -234,7 +234,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     cx.spawn({
                                         to_owned![rg, conversation_id];
                                         async move {
-                                            match rg.write().delete(conversation_id, None).await {
+                                            match rg.delete(conversation_id, None).await {
                                                 Ok(_) => log::info!("successfully delete conversation"),
                                                 Err(error) => log::error!("error when deleting conversation: {error}"),
                                             };
