@@ -2,18 +2,15 @@
 # notarization info from here^
 name: Make dmg
 
-# Watch for tags being created, after self hosted runner setup we can change this back, or make it when a user manually requests a dmg
 on:
-  push:
-    tags:
-      - '*' 
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  CARGO_TERM_COLOR: always
 
 jobs:
   build_sign_macos:
-    runs-on: macos-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -27,26 +24,32 @@ jobs:
         continue-on-error: true
         run: |
           brew update
-          brew install protobuf
+          brew install protobuf 
+          brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
       - name: Add Targets
         env:
           MACOSX_DEPLOYMENT_TARGET: "10.13"
         run: |
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
       - name: Codesign and Build executable
+        continue-on-error: true
         env:
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
           MACOS_CI_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+          MACOS_KEYCHAIN_NAME: ${{ MACOS_KEYCHAIN_NAME }}
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
-          security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain 
-          security default-keychain -s builduplink.keychain
-          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
-          security set-keychain-settings builduplink.keychain
-          security import certificate.p12 -k builduplink.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
+          ## security delete-keychain "~/Library/Keychains/builduplink.keychain-db"
+          ## security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" "~/Library/Keychains/builduplink.keychain-db"
+          ## security default-keychain -s "~/Library/Keychains/builduplink.keychain-db"
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" "$HOME/Library/Keychains/$MACOS_KEYCHAIN_NAME"
+          security set-keychain-settings "~/Library/Keychains/$MACOS_KEYCHAIN_NAME"
+          ## security import certificate.p12 -k "~/Library/Keychains/builduplink.keychain-db" -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" "~/Library/Keychains/$MACOS_KEYCHAIN_NAME"
+          ## security find-identity -p codesigning -v
+          ## security list-keychains
           make dmg-universal
       - name: "Notarize executable"
         env:

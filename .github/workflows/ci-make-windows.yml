@@ -1,0 +1,38 @@
+# # https://federicoterzi.com/blog/automatic-code-signing-and-notarization-for-macos-apps-using-github-actions/
+# ## TODO: Once we get the EV certificate, make this code-sign the windows exe so we dont have that nasty error message
+# name: Make Windows Executable
+
+# on:
+#   pull_request:
+#     types: [opened, synchronize, reopened, edited]
+# env:
+#   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# jobs:
+#   windows:
+#     runs-on: windows-latest
+#     defaults:
+#       run:
+#         shell: bash
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Install Rust
+#         uses: actions-rs/toolchain@v1
+#         with:
+#           toolchain: stable
+#           override: true
+#           components: rustfmt, clippy
+#       - name: Setup cmake
+#         uses: jwlawson/actions-setup-cmake@v1.13
+#       - name: Use cmake
+#         run: cmake --version
+#       - name: Install Protoc
+#         uses: arduino/setup-protoc@v1
+#       - name: Build resources
+#         run: cargo build
+#       - name: Upload Artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: Uplink-Windows.zip
+#           path: |
+#             target/debug/uplink.exe
