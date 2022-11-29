@@ -2,13 +2,17 @@ use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use dioxus_heroicons::Icon;
+use dioxus_heroicons::{Icon};
 use regex::RegexSet;
+use mime::*;
+use rfd::FileDialog;
 use sir::css;
+use ui_kit::icon_button::IconButton;
 use ui_kit::{
     button::{self, Button},
     input::Input,
 };
+use warp::multipass::identity::IdentityUpdate;
 
 use crate::{Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 
@@ -33,6 +37,10 @@ pub fn Auth(cx: Scope<Props>) -> Element {
         "error_text"
     };
 
+    let profile_picture_state = use_state(&cx, String::new);
+
+    let profile_picture_is_empty = profile_picture_state.is_empty();
+
     let mut mp = cx.props.account.clone();
     let mut new_account = move || {
         let username = username.trim();
@@ -51,6 +59,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             } else {
                 match mp.create_identity(Some(username), None) {
                     Ok(_) => {
+                        if profile_picture_is_empty == false {
+                            if let Err(e) =  mp.update_identity(IdentityUpdate::set_graphics_picture(profile_picture_state.to_string())) {
+                                println!("{}", e);
+                            }
+                        }
                         window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
                         use_router(&cx).push_route("/loading", None, None);
                     }
@@ -77,18 +90,75 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                         "{l.create_account_desc}",
                     },
                     div { class: "m-bottom" },
-
-
-                    div {
-                        class: "display",
-                            rsx! {
-                                Icon {
-                                    icon: Shape::User,
-                                    size: 30,
+                    div{
+                        class: "photo-picker",                  
+                        if profile_picture_is_empty {
+                                rsx! {
+                                    Icon {
+                                        icon: Shape::User,
+                                        size: 30,
+                                    }
+                                }
+                            } else {
+                                rsx!{
+                                    img {
+                                        class: "profile_photo",
+                                        src: "{profile_picture_state}",
+                                        height: "100",
+                                        width: "100",
+                                    }
                                 }
                             }
-                    },
+                        IconButton {
+                            icon: Shape::Plus,
+                            on_pressed: move |_| {
+                                let path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
+                                    Some(path) => path,
+                                    None => return
+                                };
+            
+                                let file = match std::fs::read(&path) {
+                                    Ok(image_vec) => image_vec,
+                                    Err(_) => vec![],
+                                };
+            
+                                let filename = std::path::Path::new(&path)
+                                .file_name()
+                                .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                                .to_str()
+                                .unwrap()
+                                .to_string();
+            
+                                let parts_of_filename: Vec<&str> = filename.split('.').collect();
 
+                                let mime = match parts_of_filename.last() {
+                                    Some(m) => {
+                                        match *m {
+                                            "png" => IMAGE_PNG.to_string(),
+                                            "jpg" => IMAGE_JPEG.to_string(),
+                                            "jpeg" => IMAGE_JPEG.to_string(),
+                                            "svg" => IMAGE_SVG.to_string(),
+                                            &_ => "".to_string(),
+                                        }
+                                    },
+                                    None =>  "".to_string(),
+                                };
+            
+                                let image = match &file.len() {
+                                    0 => "".to_string(),
+                                    _ => {
+                                        let prefix = format!("data:{};base64,", mime);
+                                        let base64_image = base64::encode(&file);
+                                        let img = prefix + base64_image.as_str();
+                                        img
+                                    }
+                                };
+    
+                                profile_picture_state.set(image);
+            
+                            }
+                        },
+                    }
 
                     div { class: "m-bottom" },
                     div {
