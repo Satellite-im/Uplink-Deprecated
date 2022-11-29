@@ -3,11 +3,11 @@ use crate::{
     state::{Actions, ConversationInfo},
     Messaging, LANGUAGE, STATE,
 };
-use ::utils::Account;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
-use ui_kit::{icon_button::IconButton, profile_picture::PFP};
+use ui_kit::{button::Button, profile_picture::PFP};
+use utils::Account;
 use uuid::Uuid;
 
 #[derive(Props, PartialEq)]
@@ -46,7 +46,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                     },
                     div {
                         class: "close",
-                        IconButton {
+                        Button {
                             icon: Shape::XMark,
                             on_pressed: move |_| {
                                 popout.set(false);
@@ -65,7 +65,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
             )),
             button {
                 class: "favorites-item",
-                IconButton {
+                Button {
                     icon: Shape::Plus,
                     on_pressed: move |_| popout.set(true),
                 },

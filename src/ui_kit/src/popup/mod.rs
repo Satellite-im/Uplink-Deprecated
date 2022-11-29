@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
-use crate::icon_button::IconButton;
+use crate::button::Button;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -58,7 +58,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                     div {
                         class: "controls",
-                        IconButton {
+                        Button {
                             on_pressed: move |_| {
                                 modal.set(!modal.clone());
                             },
@@ -67,7 +67,7 @@ pub fn Popup<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 false => Shape::ArrowsPointingOut
                             }
                         },
-                        IconButton {
+                        Button {
                             on_pressed: move |_| {
                                 cx.props.on_dismiss.call(());
                             },

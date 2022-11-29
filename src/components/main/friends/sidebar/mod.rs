@@ -11,7 +11,7 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
-use ui_kit::{button::Button, icon_button::IconButton, input::Input};
+use ui_kit::{button::Button, input::Input};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;
@@ -192,7 +192,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     }
                 }
             }
-            IconButton {
+            Button {
                 icon: Shape::Plus,
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
@@ -228,9 +228,9 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             },
             div {
                 class: "show-friends-button",
-                IconButton {
+                Button {
                     icon: Shape::ArrowRight,
-                    state: ui_kit::icon_button::State::Secondary,
+                    state: ui_kit::button::State::Secondary,
                     on_pressed: move |_| {
                         let state = use_atom_ref(&cx, STATE).clone();
                         state.write().dispatch(Actions::HideSidebar(true));

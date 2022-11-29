@@ -7,7 +7,7 @@ use futures::StreamExt;
 use humansize::format_size;
 use humansize::DECIMAL;
 use rfd::FileDialog;
-use ui_kit::icon_button;
+use ui_kit::button;
 use warp::constellation::file::File;
 use warp::raygun::Message;
 
@@ -107,10 +107,10 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                 p {
                     "{size}"
                 },
-                icon_button::IconButton {
+                button::Button {
                     icon: Shape::DocumentArrowDown,
                     text: String::from("Download File"),
-                    state: icon_button::State::Secondary,
+                    state: button::State::Secondary,
                     on_pressed: handle_click
                 }
             }
