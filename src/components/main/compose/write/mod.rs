@@ -3,8 +3,8 @@ use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
+    button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
-    icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
 };
 use utils::extensions::BasicExtension;
@@ -38,7 +38,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                 })
             },
-            IconButton {
+            Button {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
                     let _ = &cx.props.on_upload.call(());
@@ -63,9 +63,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             div {
                 id: "send",
-                IconButton {
+                Button {
                     icon: Shape::ArrowRight,
-                    state: icon_button::State::Secondary,
+                    state: button::State::Secondary,
                     on_pressed: move |_| {
                         let text = text.clone();
                         let _ = &cx.props.on_submit.call(text.to_string());

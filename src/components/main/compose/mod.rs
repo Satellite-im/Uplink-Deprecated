@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::{icon_button::IconButton, typing_indicator::TypingIndicator};
+use ui_kit::{button::Button, typing_indicator::TypingIndicator};
 
 use rfd::FileDialog;
 use std::path::PathBuf;
@@ -22,7 +22,7 @@ use crate::{
     state::{Actions, LastMsgSent},
     Messaging, LANGUAGE, STATE,
 };
-use ::utils::Account;
+use utils::Account;
 
 #[derive(PartialEq, Props)]
 pub struct Props {
@@ -66,7 +66,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                         div {
                             class: "alpha-warning animate__animated animate__slideInDown",
                             "{warningMessage}",
-                            IconButton {
+                            Button {
                                 on_pressed: move |_| {
                                     show_warning.set(false);
                                 },
