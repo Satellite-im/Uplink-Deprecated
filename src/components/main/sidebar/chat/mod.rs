@@ -32,7 +32,6 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering main/sidebar/Chat");
-    let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     // must be 'moved' into the use_future. don't pass it as a dependency because that won't work with
     // Rust's ownership model
@@ -116,6 +115,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }
         },
     );
+    let state = use_atom_ref(&cx, STATE).clone();
 
     use_future(
         &cx,
@@ -230,6 +230,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         ContextItem {
                             icon: Shape::XMark,
                             onpressed: move |_| {
+                                let state = use_atom_ref(&cx, STATE).clone();
                                 state.write().dispatch(Actions::RemoveChat(cx.props.conversation_info.conversation.id().clone()));
                             },
                             text: String::from("Remove Chat"),

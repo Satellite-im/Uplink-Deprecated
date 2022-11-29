@@ -146,7 +146,7 @@ impl PersistedState {
                 }
                 PersistedState {
                     current_chat: None,
-                    all_chats: self.all_chats.clone(),
+                    all_chats: chats,
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: self.total_unreads,
