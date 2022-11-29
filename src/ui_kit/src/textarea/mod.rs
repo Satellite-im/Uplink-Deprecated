@@ -22,15 +22,17 @@ pub fn TextArea<'a>(
 ) -> Element<'a> {
     log::debug!("rendering ui_kit/TextArea");
 
-    let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
-
-    let mut inner_html = cx.use_hook(|_| " ").clone();
-    if clearing_state.get() {
-        inner_html = "";
-        cx.needs_update();
-    }
-
+    let clear_disabled = &*cx.use_hook(|_| std::cell::Cell::new(true));
     let formatted = utils::wrap_in_markdown(text.as_ref());
+    let mut inner_html = cx.use_hook(|_| " ").clone();
+
+    if !inner_html.is_empty() && text.is_empty() && !clear_disabled.get() {
+        inner_html = "";
+        clear_disabled.set(true);
+        cx.needs_update();
+    } else {
+        clear_disabled.set(false);
+    }
 
     let elm = rsx! {
         div {
@@ -71,12 +73,8 @@ pub fn TextArea<'a>(
                 class: "dynamic-input",
                 contenteditable: "true",
                 oninput: move |e| {
-                    if !clearing_state.get() {
                         text.set(e.value.clone());
                         on_input.call(e.value.clone());
-                    } else {
-                        clearing_state.set(false);
-                    }
                 },
                 onkeyup: |e| {
                     if e.data.key_code.eq(&KeyCode::Enter) && !e.data.shift_key {
@@ -84,7 +82,6 @@ pub fn TextArea<'a>(
                             on_submit.call(text.trim().to_string());
                         }
                         text.set(String::from(""));
-                        clearing_state.set(true);
                     }
                 },
                 "dangerous_inner_html": "{inner_html}"
@@ -92,6 +89,5 @@ pub fn TextArea<'a>(
         }
     };
 
-    clearing_state.set(false);
     cx.render(elm)
 }

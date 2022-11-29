@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use dioxus::prelude::*;
 use futures::StreamExt;
 use uuid::Uuid;
-use warp::raygun::{MessageEvent, RayGunEvents};
+use warp::raygun::MessageEvent;
 
 use crate::{Messaging, STATE};
 

@@ -21,6 +21,8 @@ use crate::{
 };
 
 pub mod embeds;
+mod attachment;
+use attachment::Attachment;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -40,6 +42,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering compose/Msg");
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
+    let attachments = cx.props.message.attachments();
     let joined_a = content.join("\n");
     let joined_b = joined_a.clone();
     let has_links = finder.links(&joined_b).next().is_some();
@@ -130,6 +133,17 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     );
 
     let id = cx.props.message.id();
+
+    let attachment_list = attachments.iter().map(|file| {
+        let key = file.id();
+        rsx!(
+            Attachment {
+                key: "{key}",
+                file: file.clone(),
+                message: cx.props.message.clone(),
+            }
+        )
+    });
 
     cx.render(rsx! (
         div {
@@ -298,6 +312,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         meta: meta
                                     }
                                 }),
+                                div {
+                                    attachment_list
+                                }
                             }
                         }
                     )
@@ -321,6 +338,9 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         meta: meta
                                     }
                                 }),
+                                div {
+                                    attachment_list
+                                }
                             }
                         },
                         if cx.props.last {

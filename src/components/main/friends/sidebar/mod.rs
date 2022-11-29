@@ -11,11 +11,10 @@ use dioxus::{
 };
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
-use ui_kit::{button::Button, icon_button::IconButton, icon_input::IconInput};
+use ui_kit::{button::Button, icon_button::IconButton, input::Input};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;
-use warp::multipass::Friends;
 
 #[inline_props]
 #[allow(non_snake_case)]
@@ -38,9 +37,9 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
         |(incoming, outgoing, account)| async move {
             loop {
                 let incoming_list: HashSet<_> =
-                    HashSet::from_iter(account.read().list_incoming_request().unwrap_or_default());
+                    HashSet::from_iter(account.list_incoming_request().unwrap_or_default());
                 let outgoing_list: HashSet<_> =
-                    HashSet::from_iter(account.read().list_outgoing_request().unwrap_or_default());
+                    HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());
 
                 if *incoming != incoming_list {
                     log::debug!("updating incoming friend requests ");
@@ -76,7 +75,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     request: request.clone(),
                                     on_accept: move |_| {
                                         match account.clone()
-                                            .write()
                                             .accept_request(&request.from())
                                         {
                                             Ok(_) => {
@@ -90,7 +88,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     },
                                     on_deny: move |_| {
                                         match account.clone()
-                                            .write()
                                             .deny_request(&request.from())
                                         {
                                             Ok(_) => {
@@ -118,7 +115,6 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
                                     request: request.clone(),
                                     on_deny:  move |_| {
                                         match account.clone()
-                                            .write()
                                             .close_request(&request.to())
                                         {
                                             Ok(_) => {
@@ -159,7 +155,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
         },
         div {
             class: "add",
-            IconInput {
+            Input {
                 placeholder: l.add_placeholder.clone(),
                 icon: Shape::UserPlus,
                 on_change: move |evt: FormEvent| {
@@ -171,7 +167,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     match did {
                         Ok(d) => {
                             match account.clone()
-                                .write()
                                 .send_request(&d)
                             {
                                 Ok(_) => {
@@ -206,7 +201,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     match did {
                         Ok(d) => {
                             match account.clone()
-                                .write()
                                 .send_request(&d)
                             {
                                 Ok(_) => {
@@ -261,7 +255,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
 
                     let mut clipboard = Clipboard::new().unwrap();
                     if let Ok(ident) = account2
-                        .read()
                         .get_own_identity()
                     {
                         let single_toast = ToastInfo {

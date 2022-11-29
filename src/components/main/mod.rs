@@ -7,7 +7,6 @@ use chrono::prelude::*;
 use dioxus::prelude::*;
 use std::{collections::HashMap, time::Duration};
 use uuid::Uuid;
-use warp::raygun::RayGun;
 
 pub mod compose;
 pub mod files;
