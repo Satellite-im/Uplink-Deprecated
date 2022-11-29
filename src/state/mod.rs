@@ -133,8 +133,8 @@ impl PersistedState {
                 total_unreads: self.total_unreads,
             },
             Actions::RemoveChat(uuid) => {
-                let mut chats = self.all_chats.clone();
-                chats.remove(&uuid);
+                let mut all_chats = self.all_chats.clone();
+                all_chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
                 let mut current_chat = self.current_chat.clone();
                 match current_chat {
@@ -146,8 +146,8 @@ impl PersistedState {
                     None => {}
                 }
                 PersistedState {
-                    current_chat: current_chat,
-                    all_chats: chats,
+                    current_chat,
+                    all_chats,
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: self.total_unreads,
