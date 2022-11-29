@@ -11,7 +11,8 @@ use warp::raygun::Conversation;
 use crate::DEFAULT_PATH;
 
 pub enum Actions {
-    AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
+    AddConversation(Conversation),
+    RemoveConversation(Uuid),
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
@@ -110,16 +111,44 @@ impl PersistedState {
 
     pub fn dispatch(&mut self, action: Actions) {
         let next = match action {
-            Actions::AddRemoveConversations(new_chats) => {
+            Actions::AddConversation(conversation) => {
                 let favorites = self
                     .favorites
                     .iter()
-                    .filter(|id| new_chats.contains_key(id))
+                    .filter(|id| conversation.id() == **id) //Note: this might need to be changed
                     .cloned()
                     .collect();
+
+                let mut all_chats = self.all_chats.clone();
+                all_chats.insert(
+                    conversation.id(),
+                    ConversationInfo {
+                        conversation,
+                        creation_time: DateTime::from(Local::now()),
+                        ..Default::default()
+                    },
+                );
+
                 PersistedState {
                     current_chat: self.current_chat,
-                    all_chats: new_chats,
+                    all_chats,
+                    favorites,
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: total_notifications(&self),
+                }
+            }
+            Actions::RemoveConversation(conversation_id) => {
+                let favorites = self
+                    .favorites
+                    .iter()
+                    .filter(|id| conversation_id == **id)
+                    .cloned()
+                    .collect();
+                let mut all_chats = self.all_chats.clone();
+                all_chats.remove(&conversation_id);
+                PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats,
                     favorites,
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
