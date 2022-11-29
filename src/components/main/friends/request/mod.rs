@@ -60,14 +60,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "request-controls",
                 div {
                     class: "control-wrap",
-                    if show_skeleton {rsx!(
-                        IconButton {
-                            icon: Shape::XMark,
-                            state: icon_button::State::Secondary,
-                            disabled: true,
-                            on_pressed: move |_| {}
-                        }
-                    )} else {rsx!(
+                    rsx!(
                         IconButton {
                             icon: Shape::XMark,
                             state: icon_button::State::Secondary,
@@ -75,7 +68,7 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 cx.props.on_deny.call(());
                             }
                         }
-                    )}
+                    )
                 }
                 (!cx.props.deny_only).then(|| rsx!{
                     if show_skeleton {rsx!(
