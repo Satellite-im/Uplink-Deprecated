@@ -36,7 +36,6 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let file_size = format_file_size(cx.props.size);    
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
-    let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &file_id);
 
     cx.render(rsx! {
         div {
@@ -58,6 +57,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 ContextItem {
                                     icon: Shape::DocumentArrowDown,
                                     onpressed: move |_| {
+                                        hide_edit_name_element(cx.clone());
                                         // TODO(Files): Add download function here
                                         eprintln!("Download item");
                                     },
@@ -66,6 +66,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 hr {},
                                 ContextItem {
                                     onpressed: move |_| {
+                                        hide_edit_name_element(cx.clone());
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
                                         cx.spawn({
@@ -108,9 +109,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-                                    //TODO(File): Investigate in a way to replace use_eval in the future
-                                    // Use js script to hide edit file name element
-                                    use_eval(&cx)(&hide_edit_name_script);
+                                    hide_edit_name_element(cx.clone());
 
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
@@ -145,7 +144,8 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 rsx!(
                     p { 
                         id: "{file_id}-name-normal",
-                        "{file_name_formatted_state}" })
+                        "{file_name_formatted_state}" }
+                    )
                 
                 label {
                         "{file_size}"
@@ -153,6 +153,13 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             }
         }
     })
+}
+
+fn hide_edit_name_element(cx: Scope<Props>) {
+    //TODO(File): Investigate in a way to replace use_eval in the future
+    // Use js script to hide edit file name element
+    let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &cx.props.id.clone());
+    use_eval(&cx)(&hide_edit_name_script);
 }
 
 fn format_file_size(file_size: usize) -> String {
