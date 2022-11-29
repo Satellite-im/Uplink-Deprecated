@@ -2,10 +2,10 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
 use crate::iutils;
-use ::utils::Account;
+use utils::Account;
 
 use ui_kit::{
-    icon_button::{self, IconButton},
+    button::{self, Button},
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
@@ -61,9 +61,9 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 div {
                     class: "control-wrap",
                     rsx!(
-                        IconButton {
+                        Button {
                             icon: Shape::XMark,
-                            state: icon_button::State::Secondary,
+                            state: button::State::Secondary,
                             on_pressed: move |_| {
                                 cx.props.on_deny.call(());
                             }
@@ -74,9 +74,9 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     if show_skeleton {rsx!(
                         div {
                             class: "control-wrap",
-                            IconButton {
+                            Button {
                                 icon: Shape::Check,
-                                state: icon_button::State::Primary,
+                                state: button::State::Primary,
                                 disabled: true,
                                 on_pressed: move |_| {}
                             }
@@ -84,9 +84,9 @@ pub fn FriendRequest<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     )} else {rsx!(
                         div {
                             class: "control-wrap",
-                            IconButton {
+                            Button {
                                 icon: Shape::Check,
-                                state: icon_button::State::Primary,
+                                state: button::State::Primary,
                                 on_pressed: move |_| {
                                     cx.props.on_accept.call(());
                                 }

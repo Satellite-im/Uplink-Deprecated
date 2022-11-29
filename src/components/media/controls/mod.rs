@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
+use ui_kit::button::Button;
 
 #[allow(non_snake_case)]
 pub fn Controls(cx: Scope) -> Element {
@@ -9,24 +9,24 @@ pub fn Controls(cx: Scope) -> Element {
     cx.render(rsx! {
         div {
             id: "media-controls",
-            IconButton {
+            Button {
                 icon: Shape::Microphone,
-                state: ui_kit::icon_button::State::Secondary,
+                state: ui_kit::button::State::Secondary,
                 on_pressed: |_| {}
             },
-            IconButton {
+            Button {
                 icon: Shape::VideoCamera,
-                state: ui_kit::icon_button::State::Secondary,
+                state: ui_kit::button::State::Secondary,
                 on_pressed: |_| {}
             },
-            IconButton {
+            Button {
                 icon: Shape::Window,
-                state: ui_kit::icon_button::State::Secondary,
+                state: ui_kit::button::State::Secondary,
                 on_pressed: |_| {}
             },
-            IconButton {
+            Button {
                 icon: Shape::PhoneXMark,
-                state: ui_kit::icon_button::State::Danger,
+                state: ui_kit::button::State::Danger,
                 on_pressed: |_| {}
             },
         }

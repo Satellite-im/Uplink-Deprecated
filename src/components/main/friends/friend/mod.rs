@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
-    icon_button::IconButton,
+    button::Button,
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
@@ -68,13 +68,13 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 div {
                     class: "control-wrap",
                     if show_skeleton {rsx!(
-                        IconButton {
+                        Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             disabled: true,
                             on_pressed: move |_| {}
                         }
                     )} else {rsx!(
-                        IconButton {
+                        Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
                                 let mut rg = rg.clone();
@@ -91,9 +91,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 cx.props.on_chat.call(());
                             }
                         },
-                        IconButton {
+                        Button {
                             icon: Shape::XMark,
-                            state: ui_kit::icon_button::State::Danger,
+                            state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_remove = cx.props.friend.clone();

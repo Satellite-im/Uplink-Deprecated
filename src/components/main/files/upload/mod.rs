@@ -6,7 +6,7 @@ use dioxus_heroicons::outline::Shape;
 use warp::error::Error;
 use mime::*;
 use rfd::FileDialog;
-use ui_kit::icon_button::IconButton;
+use ui_kit::button::Button;
 use image::io::Reader as ImageReader;
 
 use crate::Storage;
@@ -100,11 +100,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 },
                 div {
                     id: "close",
-                    IconButton {
+                    Button {
                         on_pressed: move |e| {
                             cx.props.on_hide.call(e);
                         },
-                        state: ui_kit::icon_button::State::Secondary,
+                        state: ui_kit::button::State::Secondary,
                         icon: Shape::XMark
                     }
                 }
