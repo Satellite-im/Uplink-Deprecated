@@ -2,12 +2,11 @@ use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use dioxus_heroicons::{Icon};
-use regex::RegexSet;
+use dioxus_heroicons::Icon;
 use mime::*;
+use regex::RegexSet;
 use rfd::FileDialog;
 use sir::css;
-use ui_kit::icon_button::IconButton;
 use ui_kit::{
     button::{self, Button},
     input::Input,
@@ -60,7 +59,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                 match mp.create_identity(Some(username), None) {
                     Ok(_) => {
                         if profile_picture_is_empty == false {
-                            if let Err(e) =  mp.update_identity(IdentityUpdate::set_graphics_picture(profile_picture_state.to_string())) {
+                            if let Err(e) =
+                                mp.update_identity(IdentityUpdate::set_graphics_picture(
+                                    profile_picture_state.to_string(),
+                                ))
+                            {
                                 println!("{}", e);
                             }
                         }
@@ -109,26 +112,23 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             }
-                        IconButton {
+                        Button {
                             icon: Shape::Plus,
                             on_pressed: move |_| {
                                 let path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
                                     Some(path) => path,
                                     None => return
                                 };
-            
                                 let file = match std::fs::read(&path) {
                                     Ok(image_vec) => image_vec,
                                     Err(_) => vec![],
                                 };
-            
                                 let filename = std::path::Path::new(&path)
                                 .file_name()
                                 .unwrap_or_else(|| std::ffi::OsStr::new(""))
                                 .to_str()
                                 .unwrap()
                                 .to_string();
-            
                                 let parts_of_filename: Vec<&str> = filename.split('.').collect();
 
                                 let mime = match parts_of_filename.last() {
@@ -143,7 +143,6 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     },
                                     None =>  "".to_string(),
                                 };
-            
                                 let image = match &file.len() {
                                     0 => "".to_string(),
                                     _ => {
@@ -153,9 +152,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                         img
                                     }
                                 };
-    
                                 profile_picture_state.set(image);
-            
                             }
                         },
                     }
