@@ -17,7 +17,8 @@ use crate::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
-    Account, Messaging, LANGUAGE,
+    state::Actions,
+    Account, Messaging, LANGUAGE, STATE,
 };
 
 mod attachment;
@@ -227,17 +228,51 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             ContextItem {
                                 onpressed: move |_| {
+                                    let state = use_atom_ref(&cx, STATE).clone();
                                     let rg = cx.props.messaging.clone();
                                     let conversation_id = cx.props.message.clone().conversation_id();
                                     cx.spawn({
-                                        to_owned![rg, conversation_id];
+                                        to_owned![rg, conversation_id, state];
                                         async move {
                                             match rg.delete(conversation_id, None).await {
-                                                Ok(_) => log::info!("successfully delete conversation"),
+                                                Ok(_) => {
+                                                    state.write().dispatch(Actions::ClearChat);
+                                                    log::info!("successfully delete conversation")
+                                                },
                                                 Err(error) => log::error!("error when deleting conversation: {error}"),
                                             };
                                         }
                                     });
+                                },
+                                text: String::from("Clear Chat"),
+                                danger: true,
+                                icon: Shape::Trash,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    let state = use_atom_ref(&cx, STATE).clone();
+                                    let rg = cx.props.messaging.clone();
+                                    let conversation_id = cx.props.message.clone().conversation_id();
+                                    cx.spawn({
+                                        to_owned![rg, conversation_id, state];
+                                        async move {
+                                            match rg.delete(conversation_id, None).await {
+                                                Ok(_) => {
+                                                    state.write().dispatch(Actions::ClearChat);
+                                                    log::info!("successfully delete conversation")
+                                                },
+                                                Err(error) => log::error!("error when deleting conversation: {error}"),
+                                            };
+                                        }
+                                    });
+                                    let mut multipass = cx.props.account.clone();
+                                    let did_to_remove = cx.props.sender.clone();
+                                    match multipass.remove_friend(&did_to_remove) {
+                                        Ok(_) => {}
+                                        Err(_) => {
+                                            log::debug!("error removing friend");
+                                        }
+                                    }
                                 },
                                 text: String::from("Remove Friend"),
                                 danger: true,

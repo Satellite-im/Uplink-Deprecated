@@ -27,7 +27,6 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
-    let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
     let rg = cx.props.messaging.clone();
@@ -77,6 +76,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
+                                let state = use_atom_ref(&cx, STATE);
                                 let mut rg = rg.clone();
                                 let friend = cx.props.friend.clone();
                                 let conversation_response = warp::async_block_in_place_uncheck(
@@ -95,15 +95,8 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
+                                let state = use_atom_ref(&cx, STATE);
                                 let rg = cx.props.messaging.clone();
-                                let mut multipass = cx.props.account.clone();
-                                let did_to_remove = cx.props.friend.clone();
-                                match multipass.remove_friend(&did_to_remove) {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        log::debug!("error removing friend");
-                                    }
-                                }
                                 let current_chat = state.read().current_chat.and_then(|x| state.read().all_chats.get(&x).cloned());
                                 let current_chat_condition = match current_chat {
                                     // this better not panic
@@ -112,14 +105,25 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 };
                                 let conversation_id = current_chat_condition.conversation.id();
                                 cx.spawn({
-                                    to_owned![rg, conversation_id];
+                                    to_owned![rg, conversation_id, state];
                                     async move {
                                         match rg.delete(conversation_id, None).await {
-                                            Ok(_) => log::info!("successfully delete conversation"),
+                                            Ok(_) => {
+                                                state.write().dispatch(Actions::ClearChat);
+                                                log::info!("successfully delete conversation")
+                                            },
                                             Err(error) => log::error!("error when deleting conversation: {error}"),
                                         };
                                     }
                                 });
+                                let mut multipass = cx.props.account.clone();
+                                let did_to_remove = cx.props.friend.clone();
+                                match multipass.remove_friend(&did_to_remove) {
+                                    Ok(_) => {}
+                                    Err(_) => {
+                                        log::debug!("error removing friend");
+                                    }
+                                }
                             }
                         }
                     )}
