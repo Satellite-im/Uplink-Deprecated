@@ -66,7 +66,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent target/release/macos/Uplink.app Uplink-Mac-Universal.zip
       - name: Calculate hashes
         run: |
-          shasum -a 256 target/release/macos/Uplink.app > Uplink-Mac-Universal.sha256.txt
+          shasum -a 256 Uplink-Mac-Universal.zip > Uplink-Mac-Universal.zip.sha256.txt
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         env:
@@ -74,5 +74,5 @@ jobs:
         with:
           name: Uplink Universal Mac App
           path: |
-            target/release/macos/Uplink.app
-            Uplink-Mac-Universal.sha256.txt
+            Uplink-Mac-Universal.zip
+            Uplink-Mac-Universal.zip.sha256.txt
