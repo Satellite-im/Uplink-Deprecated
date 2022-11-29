@@ -55,8 +55,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             for item in &list {
                 if !st.read().all_chats.contains_key(&item.id()) {
                     log::debug!("modifying chats");
-                    st.write()
-                        .dispatch(Actions::AddConversation(item.clone()));
+                    st.write().dispatch(Actions::AddConversation(item.clone()));
                 };
             }
         }
@@ -65,7 +64,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             match event {
                 RayGunEventKind::ConversationCreated { conversation_id } => {
                     //For now get the conversation from list_conversation
-                    let conversation = rg
+                    if let Some(conversation) = rg
                         .list_conversations()
                         .await
                         .unwrap_or_default()
@@ -75,10 +74,9 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                         .collect::<Vec<_>>()
                         .first()
                         .cloned()
-                        .unwrap();
-
-                    st.write()
-                        .dispatch(Actions::AddConversation(conversation));
+                    {
+                        st.write().dispatch(Actions::AddConversation(conversation));
+                    }
                 }
                 RayGunEventKind::ConversationDeleted { .. } => {
                     //TODO

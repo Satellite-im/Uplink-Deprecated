@@ -29,6 +29,7 @@ pub struct PersistedState {
     pub current_chat: Option<Uuid>,
     /// all active conversations
     pub all_chats: HashMap<Uuid, ConversationInfo>,
+    pub hidden_chat: HashSet<Uuid>,
     /// a list of favorited conversations.
     /// Uuid is for Conversation and can be used to look things up in all_chats
     pub favorites: HashSet<Uuid>,
@@ -120,19 +121,22 @@ impl PersistedState {
                     .collect();
 
                 let mut all_chats = self.all_chats.clone();
-                all_chats.insert(
-                    conversation.id(),
-                    ConversationInfo {
-                        conversation,
-                        creation_time: DateTime::from(Local::now()),
-                        ..Default::default()
-                    },
-                );
+                if !self.hidden_chat.contains(&conversation.id()) {
+                    all_chats.insert(
+                        conversation.id(),
+                        ConversationInfo {
+                            conversation,
+                            creation_time: DateTime::from(Local::now()),
+                            ..Default::default()
+                        },
+                    );
+                }
 
                 PersistedState {
                     current_chat: self.current_chat,
                     all_chats,
                     favorites,
+                    hidden_chat: self.hidden_chat.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
                 }
@@ -150,6 +154,7 @@ impl PersistedState {
                     current_chat: self.current_chat,
                     all_chats,
                     favorites,
+                    hidden_chat: self.hidden_chat.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
                 }
@@ -158,12 +163,14 @@ impl PersistedState {
                 current_chat: None,
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
+                hidden_chat: self.hidden_chat.clone(),
                 hide_sidebar: self.hide_sidebar,
                 total_unreads: self.total_unreads,
             },
             Actions::RemoveChat(uuid) => {
                 let mut all_chats = self.all_chats.clone();
                 all_chats.remove(&uuid);
+                self.hidden_chat.insert(uuid);
                 // If the current chat was set to this, we'll want to remove that too.
                 let mut current_chat = self.current_chat.clone();
                 match current_chat {
@@ -178,22 +185,28 @@ impl PersistedState {
                     current_chat,
                     all_chats,
                     favorites: self.favorites.clone(),
+                    hidden_chat: self.hidden_chat.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: self.total_unreads,
                 }
             }
-            Actions::ChatWith(info) => PersistedState {
-                current_chat: Some(info.conversation.id()),
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
+            Actions::ChatWith(info) => {
+                self.hidden_chat.remove(&info.conversation.id());
+                PersistedState {
+                    current_chat: Some(info.conversation.id()),
+                    all_chats: self.all_chats.clone(),
+                    favorites: self.favorites.clone(),
+                    hidden_chat: self.hidden_chat.clone(),
+                    hide_sidebar: self.hide_sidebar,
+                    total_unreads: self.total_unreads,
+                }
+            }
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
                     current_chat: self.current_chat,
                     all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
+                    hidden_chat: self.hidden_chat.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
                 };
@@ -205,6 +218,7 @@ impl PersistedState {
                 current_chat: self.current_chat,
                 all_chats: self.all_chats.clone(),
                 favorites,
+                hidden_chat: self.hidden_chat.clone(),
                 hide_sidebar: self.hide_sidebar,
                 total_unreads: self.total_unreads,
             },
@@ -212,6 +226,7 @@ impl PersistedState {
                 current_chat: self.current_chat,
                 all_chats: self.all_chats.clone(),
                 favorites: self.favorites.clone(),
+                hidden_chat: self.hidden_chat.clone(),
                 hide_sidebar: slide_bar_bool,
                 total_unreads: self.total_unreads,
             },
