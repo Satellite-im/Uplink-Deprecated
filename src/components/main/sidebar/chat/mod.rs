@@ -232,7 +232,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         ContextItem {
                             icon: Shape::XMark,
                             onpressed: move |_| {
-                                state2.write().dispatch(Actions::RemoveChat(chat_id));
+                                state2.write().dispatch(Actions::RemoveConversation(chat_id));
                             },
                             text: String::from("Remove Chat"),
                         },

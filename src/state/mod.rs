@@ -11,12 +11,12 @@ use warp::raygun::Conversation;
 use crate::DEFAULT_PATH;
 
 pub enum Actions {
-    AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
+    AddConversation(Conversation),
+    RemoveConversation(Uuid),
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
-    RemoveChat(Uuid),
     ClearChat,
     SetShowPrerelaseNotice(bool),
     // SendNotification(String, String, Sounds),
@@ -115,15 +115,38 @@ impl PersistedState {
     }
 
     pub fn dispatch(&mut self, action: Actions) {
-        match action {
-            Actions::AddRemoveConversations(new_chats) => {
-                self.favorites = self
+        let next = match action {
+            Actions::AddConversation(conversation) => {
+                let favorites = self
                     .favorites
                     .iter()
-                    .filter(|id| new_chats.contains_key(id))
+                    .filter(|id| conversation.id() == **id) //Note: this might need to be changed
                     .cloned()
                     .collect();
-                self.all_chats = new_chats;
+
+                self.all_chats.insert(
+                    conversation.id(),
+                    ConversationInfo {
+                        conversation,
+                        creation_time: DateTime::from(Local::now()),
+                        ..Default::default()
+                    },
+                );
+                self.favorites = favorites;
+                self.total_unreads = total_notifications(&self);
+            }
+            Actions::RemoveConversation(conversation_id) => {
+                let favorites = self
+                    .favorites
+                    .iter()
+                    .filter(|id| conversation_id == **id)
+                    .cloned()
+                    .collect();
+                self.all_chats.remove(&conversation_id);
+                self.favorites = favorites;
+                if self.current_chat == Some(conversation_id) {
+                    self.current_chat = None;
+                }
                 self.total_unreads = total_notifications(&self);
             }
             Actions::ClearChat => {
@@ -141,12 +164,6 @@ impl PersistedState {
             }
             Actions::HideSidebar(slide_bar_bool) => {
                 self.hide_sidebar = slide_bar_bool;
-            }
-            Actions::RemoveChat(uuid) => {
-                self.all_chats.remove(&uuid);
-                if self.current_chat == Some(uuid) {
-                    self.current_chat = None;
-                }
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 self.show_prerelease_notice = value;
