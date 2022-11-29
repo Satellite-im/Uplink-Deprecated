@@ -53,8 +53,7 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
-Lazy::new(|| RwLock::new(DroppedFile {local_path: String::new(), file_drag_event: FileDragEvent::None}));
+
 
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
@@ -64,11 +63,12 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
+static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
+    Lazy::new(|| RwLock::new(DroppedFile {local_path: String::new(), file_drag_event: FileDragEvent::None}));       
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum FileDragEvent {
     Dropped,
-    Hovered,
-    Cancelled,
     None, 
 }
 
@@ -214,17 +214,16 @@ fn main() {
             c.with_window(|_| window.with_menu(main_menu));
             c.with_file_drop_handler(|_w, e| {
                 let mut dropped_file_local_path = format!("{:?}", e);
-                let file_drag_event = if dropped_file_local_path.contains("Hovered") {
-                    FileDragEvent::Hovered
-                } else if dropped_file_local_path.contains("Dropped") {
+                let file_drag_event = if dropped_file_local_path.contains("Dropped") {
                     FileDragEvent::Dropped
-                } else if dropped_file_local_path.contains("Cancelled") {
-                     FileDragEvent::Cancelled 
-                } else {
+                 } else {
                     FileDragEvent::None 
                 };
                 dropped_file_local_path = 
-                dropped_file_local_path.replace("Dropped([", "").replace("Hovered([", "").replace("])", "");
+                dropped_file_local_path.replace("Dropped([", "")
+                .replace("Hovered([", "")
+                .replace("])", "")
+                .replace('"', "");
                 *DROPPED_FILE.write() = DroppedFile {
                     local_path: dropped_file_local_path, 
                     file_drag_event: file_drag_event,

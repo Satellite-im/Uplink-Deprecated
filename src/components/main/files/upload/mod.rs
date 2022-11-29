@@ -10,7 +10,7 @@ use rfd::FileDialog;
 use ui_kit::icon_button::IconButton;
 use image::io::Reader as ImageReader;
 
-use crate::{Storage, FileDragEvent, DroppedFile};
+use crate::{Storage, FileDragEvent};
 use crate::DROPPED_FILE;
 
 
@@ -28,22 +28,26 @@ enum Action {
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-
+    let file_over_dropzone = "document.getElementById('dropzone').style.background = 'green'";
+    let file_leave_dropzone = "document.getElementById('dropzone').style.background = 'grey'";
+    let file_storage = cx.props.storage.clone();
+   
     let observe_drag_event = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
+        to_owned![file_storage];
         async move {
         while let Some(action) = rx.next().await {
             match action {
                 Action::Start => {
-                        println!("Loop running...");
-                        tokio::time::sleep(std::time::Duration::from_millis(1000)).await;
-                        let dropped_file = DROPPED_FILE.read();
-                        if dropped_file.file_drag_event == FileDragEvent::Dropped {
-                            let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();
-                            // upload_file(cx.clone(), file_path);
-                        }                            
+                        log::info!("File on dropzone");
+                            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                            let dropped_file = DROPPED_FILE.read();
+                            if dropped_file.file_drag_event == FileDragEvent::Dropped {
+                                let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
+                                upload_file(file_storage.clone(), file_path).await;
+                            }                      
                     },
                         Action::Stop => {
-                        println!("Stopped");
+                            log::info!("File out dropzone");
                         },
                     }
                 }
@@ -56,35 +60,48 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 div {
                     id: "content",
                     div {
-                     
+                        input {
+                            "type": "file",
+                            onclick: move |_| {
+                                let file_path = match FileDialog::new().set_directory(".").pick_file() {
+                                    Some(path) => path,
+                                    None => return
+                                };
+                                let file_storage = cx.props.storage.clone();
+                                cx.spawn({
+                                    to_owned![file_storage, file_path];
+                                    async move {
+                                        upload_file(file_storage, file_path).await;
+                                    }
+                                }); 
+                            }
+                        }
+                        hr {
+                            margin_top: "12px",
+                            margin_bottom: "12px",
+                            margin_right: "8px"
+                        }
                         div {
                             id: "dropzone",
                             height: "100px",
-                            width: "100px",
-                            background: "red",
-                            oninput: move |evt| println!("input event: {:?}", evt),
+                            width: "100%",
+                            align_content: "center",
+                            margin_right: "8px",
+                            background: "grey",
+                            ondragend: move |_| {
+                                println!("End drag");
+                            },
                             ondragenter: move |_| {
-                                let cx_2 =  cx.clone();
+                                use_eval(&cx)(&file_over_dropzone);
                                 observe_drag_event.send(Action::Start);
                             },
                             ondragleave: move |_| {
-                                let cx_2 =  cx.clone();
-
+                                use_eval(&cx)(&file_leave_dropzone);
                                 observe_drag_event.send(Action::Stop);
-                                println!("drag leave");
                             },
-                            p { "drag a file here and check your console" }
-                        }
-                    }
-                    input {
-                        "type": "file",
-                        onclick: move |_| {
-
-                            let file_path = match FileDialog::new().set_directory(".").pick_file() {
-                                Some(path) => path,
-                                None => return
-                            };
-                            upload_file(cx.clone(), file_path);
+                            p { 
+                                id: "text_inside_dropzone",
+                                "Drop file here to upload" }
                         }
                     }
                 },
@@ -103,7 +120,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     })
 }
 
-fn upload_file(cx: Scope<Props>, file_path: PathBuf) {
+async fn upload_file(file_storage: Storage, file_path: PathBuf) {
     let filename = std::path::Path::new(&file_path)
     .file_name()
     .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -111,59 +128,51 @@ fn upload_file(cx: Scope<Props>, file_path: PathBuf) {
     .unwrap()
     .to_string();
 
-    let file_storage = cx.props.storage.clone();
+    let local_path = Path::new(&file_path).to_string_lossy().to_string();
+    let mut filename_to_save = filename.clone();
+    let mut count_index_for_duplicate_filename = 1;
+    let mut file_storage = file_storage.clone();
 
-    cx.spawn({
-        to_owned![file_storage, file_path, filename];
-        async move {
-            let local_path = Path::new(&file_path).to_string_lossy().to_string();
-            let mut filename_to_save = filename.clone();
-            let mut count_index_for_duplicate_filename = 1;
+    loop {
+        match file_storage.put(&filename_to_save, &local_path).await {
+            Ok(_) => {  
+                log::info!("{:?} file uploaded!", &filename_to_save); 
 
-            loop {
-                match file_storage.put(&filename_to_save, &local_path).await {
-                    Ok(_) => {  
-                      log::info!("{:?} file uploaded!", &filename_to_save); 
+                match set_thumbnail_if_file_is_image(file_storage.clone(), filename_to_save.clone()).await {
+                    Ok(success) => log::info!("{:?}", success), 
+                    Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
+                }               
+                break;
+            },
+            Err(error) => {
+                match &error {
+                    Error::DuplicateName => {
 
-                        match set_thumbnail_if_file_is_image(file_storage, filename_to_save.clone()).await {
-                            Ok(success) => log::info!("{:?}", success), 
-                            Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
-                        }               
+                        let file_name_without_extension = std::path::Path::new(&filename.clone())
+                        .with_extension("")
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+
+                        let file_extension = std::path::Path::new(&filename.clone())
+                        .extension()
+                        .unwrap_or_else(|| std::ffi::OsStr::new(""))
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+
+                        filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
+                        log::trace!("Duplicate name, changing file name to {}", &filename_to_save);
+                    },
+                    _ => {
+                        log::error!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
                         break;
-                    },
-                    Err(error) => {
-                        match &error {
-                            Error::DuplicateName => {
-
-                                let file_name_without_extension = std::path::Path::new(&filename.clone())
-                                .with_extension("")
-                                .to_str()
-                                .unwrap()
-                                .to_string();
-
-                                let file_extension = std::path::Path::new(&filename.clone())
-                                .extension()
-                                .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                                .to_str()
-                                .unwrap()
-                                .to_string();
-
-                                filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
-                                log::trace!("Duplicate name, changing file name to {}", &filename_to_save);
-                            },
-                            _ => {
-                                log::error!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
-                                break;
-                            }
-                        }
-                        count_index_for_duplicate_filename += 1;
-                    },
-                };
-            }
-            
-            
-        }
-    });
+                    }
+                }
+                count_index_for_duplicate_filename += 1;
+            },
+        };
+    };
 }
 
 
