@@ -18,6 +18,13 @@ static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(ExtensionManager::l
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 
+#[cfg(target_os = "macos")]
+static FILE_EXT: &str = "dylib";
+#[cfg(target_os = "linux")]
+static FILE_EXT: &str = "so";
+#[cfg(target_os = "windows")]
+static FILE_EXT: &str = "dll";
+
 #[derive(Debug, Parser)]
 #[clap(name = "")]
 struct Opt {
@@ -110,15 +117,17 @@ impl ExtensionManager {
 
         for entry in paths {
             let path = entry?.path();
-            let result = Extension::load(&path);
-            match result {
-                Ok(extension) => {
-                    info!("Extension loaded {:?}", &extension.info);
-                    let location = extension.info.location;
-                    extensions.entry(location).or_default().push(extension);
-                }
-                Err(err) => {
-                    error!("Failed to load extension {:?}: {}", &path, err)
+            if path.extension().unwrap_or_default() == FILE_EXT {
+                let result = Extension::load(&path);
+                match result {
+                    Ok(extension) => {
+                        info!("Extension loaded {:?}", &extension.info);
+                        let location = extension.info.location;
+                        extensions.entry(location).or_default().push(extension);
+                    }
+                    Err(err) => {
+                        error!("Failed to load extension {:?}: {}", &path, err)
+                    }
                 }
             }
         }
