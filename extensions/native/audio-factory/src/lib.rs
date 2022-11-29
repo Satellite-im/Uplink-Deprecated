@@ -8,7 +8,7 @@ use ui_kit::{
     select::Select,
     switch::Switch,
 };
-use utils::extensions::{BasicExtension, Extension, ExtensionType};
+use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
 
 #[derive(Props)]
 pub struct OptionProps<'a> {
@@ -356,8 +356,8 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
 pub struct AudioFactory;
 
 impl BasicExtension for AudioFactory {
-    fn info() -> Extension {
-        Extension {
+    fn info() -> ExtensionInfo {
+        ExtensionInfo {
             name: String::from("Audio Factory"),
             author: String::from("matt@satellite.im"),
             description: String::from("Audio Factory allows you to record all in app audio to different audio tracks. You can additionally change the format, compress and convert."),
