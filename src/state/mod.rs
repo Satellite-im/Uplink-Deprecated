@@ -136,16 +136,17 @@ impl PersistedState {
                 let mut chats = self.all_chats.clone();
                 chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
-                match self.current_chat {
+                let mut current_chat = self.current_chat.clone();
+                match current_chat {
                     Some(u) => {
                         if u.eq(&uuid) {
-                            self.current_chat = None;
+                            current_chat = None;
                         }
                     }
                     None => {}
                 }
                 PersistedState {
-                    current_chat: self.current_chat,
+                    current_chat: current_chat,
                     all_chats: chats,
                     favorites: self.favorites.clone(),
                     hide_sidebar: self.hide_sidebar,
