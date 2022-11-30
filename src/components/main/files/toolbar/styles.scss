@@ -1,3 +1,13 @@
-.usage-container {
+#files-toolbar-content {
   display: flex;
+  min-width: 0;
+  width: 100%;
+  gap: 16px;
+
+  .usage-container {
+    display: flex;
+    padding-right: 16px;
+    min-width: 0;
+    flex-grow: 1;
+  }
 }

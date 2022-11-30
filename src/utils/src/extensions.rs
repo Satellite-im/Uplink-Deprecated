@@ -1,17 +1,38 @@
-use std::{collections::HashMap, fmt, fs, path::PathBuf};
-
+use clap::Parser;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
 use once_cell::sync::Lazy;
+use std::ffi::OsStr;
+use std::sync::Arc;
+use std::{collections::HashMap, fs};
+use std::path::PathBuf;
+use warp::logging::tracing::{info, error};
 use warp::sync::RwLock;
 
-type Render = unsafe fn() -> Box<fn(Scope) -> Element>;
-type Info = unsafe fn() -> Box<Extension>;
+type ComponentFn = unsafe fn() -> Box<Component>;
+type InfoFn = unsafe fn() -> Box<ExtensionInfo>;
 
+type Extensions = HashMap<ExtensionType, Vec<Extension>>;
+
+static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(ExtensionManager::load_or_default);
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 
-#[derive(PartialEq, Eq, Hash, Clone, Debug)]
+#[cfg(target_os = "macos")]
+static FILE_EXT: &str = "dylib";
+#[cfg(target_os = "linux")]
+static FILE_EXT: &str = "so";
+#[cfg(target_os = "windows")]
+static FILE_EXT: &str = "dll";
+
+#[derive(Debug, Parser)]
+#[clap(name = "")]
+struct Opt {
+    #[clap(long)]
+    path: Option<PathBuf>,
+}
+
+#[derive(PartialEq, Eq, Hash, Clone, Debug, Copy)]
 pub enum ExtensionType {
     SidebarWidget,
     ChatbarIcon,
@@ -19,14 +40,34 @@ pub enum ExtensionType {
 
 #[allow(dead_code)]
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Extension {
+pub struct ExtensionInfo {
     pub name: String,
     pub author: String,
     pub description: String,
     pub location: ExtensionType,
 }
 
-impl Default for Extension {
+#[allow(dead_code)]
+pub struct Extension {
+    lib: Arc<Library>,
+    info: ExtensionInfo,
+    component: Component,
+}
+
+
+#[derive(Default)]
+#[allow(dead_code)]
+pub struct ExtensionManager {
+    extensions: Extensions,
+    is_loaded: bool,
+}
+
+pub trait BasicExtension {
+    fn info() -> ExtensionInfo;
+    fn render(cx: Scope) -> Element;
+}
+
+impl Default for ExtensionInfo {
     fn default() -> Self {
         Self {
             name: Default::default(),
@@ -37,152 +78,86 @@ impl Default for Extension {
     }
 }
 
-pub trait BasicExtension {
-    fn info() -> Extension;
-    fn render(cx: Scope) -> Element;
-}
-
-#[derive(Clone)]
-pub struct ExtensionManager {
-    pub info: Extension,
-    pub render: fn(Scope) -> Element,
-}
-
-impl std::fmt::Display for ExtensionType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> fmt::Result {
-        match self {
-            ExtensionType::ChatbarIcon => write!(f, "ChatbarIcon"),
-            ExtensionType::SidebarWidget => write!(f, "SidebarWidget"),
-        }
-    }
-}
-
-impl std::fmt::Display for Extension {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
-        let mut extension_manager_display = String::new();
-
-        extension_manager_display.push_str(self.name.as_str());
-        extension_manager_display.push_str(", \n");
-        extension_manager_display.push_str(self.author.as_str());
-        extension_manager_display.push_str(", \n");
-        extension_manager_display.push_str(self.description.as_str());
-        extension_manager_display.push_str(", \n");
-        extension_manager_display.push_str(self.location.to_string().as_str());
-
-        write!(f, "{}", extension_manager_display)
-    }
-}
-
-impl std::fmt::Display for ExtensionManager {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
-        let mut extension_manager_display = String::new();
-
-        extension_manager_display.push_str(self.info.to_string().as_str());
-
-        write!(f, "{}", extension_manager_display)
-    }
-}
-
-pub fn get_extensions() -> HashMap<ExtensionType, Vec<ExtensionManager>> {
-    let mut map_extensions: HashMap<ExtensionType, Vec<ExtensionManager>> = HashMap::new();
-    let mut ext_mng;
-    fs::create_dir_all(DEFAULT_PATH.read().join("extensions")).unwrap();
-    let paths = fs::read_dir(DEFAULT_PATH.read().join("extensions")).expect("Directory is empty");
-    for path in paths {
-        let path_extension = path.unwrap().path();
-
+impl Extension {
+    pub fn load<P: AsRef<OsStr>>(filename: P) -> Result<Self, anyhow::Error> {
         unsafe {
-            let lib = Library::new(path_extension).unwrap();
-            let render: Symbol<Render> = lib.get(b"ret_rend").unwrap();
-            let info: Symbol<Info> = lib.get(b"ret_info").unwrap();
-            ext_mng = ExtensionManager {
+            let lib = Library::new(filename)?;
+            let component: Symbol<ComponentFn> = lib.get(b"ret_rend")?;
+            let info: Symbol<InfoFn> = lib.get(b"ret_info")?;
+
+            Ok(Self {
                 info: *info(),
-                render: *render(),
-            };
+                component: *component(),
+                lib: Arc::new(lib),
+            })
         }
-        let location = ext_mng.clone().info.location;
-        map_extensions.entry(location).or_default().push(ext_mng);
     }
-    map_extensions
+}
+
+impl ExtensionManager {
+    pub fn load_or_default() -> Self {
+        match Self::load() {
+            Ok(instance) => instance,
+            Err(err) => {
+                error!("Failed to initialize ExtensionManager: {}", err);
+                Self::default()
+            }
+        }
+    }
+
+    fn load() -> Result<Self, anyhow::Error> {
+        let opt = Opt::parse();
+        if let Some(path) = opt.path {
+            *DEFAULT_PATH.write() = path;
+        }
+        let extensions_path = DEFAULT_PATH.read().join("extensions");
+        fs::create_dir_all(&extensions_path)?;
+        let paths = fs::read_dir(&extensions_path).expect("Directory is empty");
+        let mut extensions: Extensions = HashMap::new();
+
+        for entry in paths {
+            let path = entry?.path();
+            if path.extension().unwrap_or_default() == FILE_EXT {
+                let result = Extension::load(&path);
+                match result {
+                    Ok(extension) => {
+                        info!("Extension loaded {:?}", &extension.info);
+                        let location = extension.info.location;
+                        extensions.entry(location).or_default().push(extension);
+                    }
+                    Err(err) => {
+                        error!("Failed to load extension {:?}: {}", &path, err)
+                    }
+                }
+            }
+        }
+
+        Ok(Self {
+            extensions,
+            is_loaded: true,
+        })
+    }
+
+    pub fn instance() -> &'static ExtensionManager {
+        Lazy::force(&EXTENSION_MANAGER)
+    }
 }
 
 #[allow(non_snake_case)]
-pub fn get_renders<'src>(
-    extension_type: ExtensionType,
-    enable: bool,
-) -> Vec<LazyNodes<'src, 'src>> {
-    match enable {
-        true => {
-            let exts = get_extensions();
-            let mut extensions = vec![];
+pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes<'src, 'src>> {
+    if enable {
+        let extensions = ExtensionManager::instance().extensions.get(&location);
 
-            if let Some(em) = exts.get(&extension_type) {
-                for extension in em {
-                    extensions.push(extension.render);
-                }
-            };
-
-            let closure = |&Ext: &fn(Scope) -> Option<VNode>| {
-                rsx! (
-                    div {
-                        Ext {},
-                    },
-                )
-            };
-
-            let extensions_to_render = extensions.iter().map(closure).collect::<Vec<LazyNodes>>();
-            extensions_to_render
-        }
-        false => vec![],
-    }
-}
-
-pub fn get_info(
-    name: Option<&str>,
-    author: Option<&str>,
-    location: Option<ExtensionType>,
-) -> Vec<Extension> {
-    let exts = get_extensions();
-    let mut extensions = vec![];
-
-    if name.is_none() && author.is_none() {
-        if location.is_none() {
-            for (_ext_type, ext_mngs) in exts {
-                for ext_mng in ext_mngs {
-                    extensions.push(ext_mng.info);
-                }
-            }
-            return extensions;
-        }
-
-        let ext_mngs = exts.get(&location.unwrap()).unwrap().clone();
-
-        for ext_mng in ext_mngs {
-            extensions.push(ext_mng.info);
-        }
-
-        return extensions;
-    }
-    if let Some(name) = name {
-        for (_ext_type, ext_mngs) in exts.clone() {
-            for ext_mng in ext_mngs {
-                if ext_mng.info.name.as_str() == name {
-                    extensions.push(ext_mng.info);
-                    return extensions;
-                }
-            }
+        if let Some(items) = extensions {
+            let nodes: Vec<LazyNodes> = items
+                .iter()
+                .map(|ext| {
+                    let Ext = ext.component;
+                    rsx!(div { Ext {} })
+                })
+                .collect();
+            return nodes;
         }
     }
-    if let Some(author) = author {
-        for (_ext_type, ext_mngs) in exts {
-            for ext_mng in ext_mngs {
-                if ext_mng.info.author.as_str() == author {
-                    extensions.push(ext_mng.info);
-                }
-            }
-        }
-        return extensions;
-    }
-
-    extensions
+    vec![]
 }

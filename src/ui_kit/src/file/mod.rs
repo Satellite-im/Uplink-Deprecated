@@ -82,10 +82,8 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     danger: true,
                                     text: String::from("Delete")
                                 },
-
                     }),
                 },
-
             div {
                 class: "folder {class}",
                     Icon { icon: Shape::Document},
@@ -140,13 +138,11 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         }
                     }
-
                 }
                 rsx!(
                     p {
                         id: "{file_id}-name-normal",
-                        "{file_name_formatted_state}" })
-
+                        "{file_name_formatted_state}"})
                 label {
                         "{file_size}"
                     }
