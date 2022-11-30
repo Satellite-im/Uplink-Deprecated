@@ -34,7 +34,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let file_size = format_file_size(cx.props.size);
-
+    let file_thumb = &cx.props.thumbnail.clone();
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
     let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &file_id);
 
@@ -42,6 +42,25 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         div {
             class: "item file",
             id: "{file_id}-file",
+                if cx.props.thumbnail.is_empty() {
+                    rsx! {
+                        div {
+                            class: "thumb_icon",
+                            Icon { icon: Shape::Document },
+                        }
+                    }
+                } else {
+                    rsx! {
+                            div {
+                                class: "thumb_img",
+                                img {
+                                    src: "{file_thumb}",
+                                    width: "100%",
+                                    height: "100%",}
+                            }
+                    }
+                },
+
                 ContextMenu {
                     parent: format!("{}-file", file_id.clone()),
                     items: cx.render(
@@ -86,7 +105,6 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 },
             div {
                 class: "folder {class}",
-                    Icon { icon: Shape::Document},
                    {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
@@ -138,14 +156,21 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             }
                         }
                     }
+                    
+                },
+                
+                div {
+                    class:"file_info",
+                    rsx!(
+                        p { 
+                            id: "{file_id}-name-normal",
+                            "{file_name_formatted_state}" })
+                    
+                    label {
+                            "{file_size}"
+                        }
+                        
                 }
-                rsx!(
-                    p {
-                        id: "{file_id}-name-normal",
-                        "{file_name_formatted_state}"})
-                label {
-                        "{file_size}"
-                    }
             }
         }
     })

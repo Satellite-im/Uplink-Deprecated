@@ -1,0 +1,23 @@
+.file_info {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.thumb_img {
+  height: 100px;
+  justify-content: center;
+  align-items: center;
+  contain: content;
+  padding: 0.5rem;
+  margin: 0.25rem;
+  padding: 0.25rem;
+  display: block;
+  display: flex;
+  justify-content: center;
+}
+.thumb_icon {
+  justify-content: center;
+  height: 100px;
+  align-items: center;
+  display: flex;
+}

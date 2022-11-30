@@ -28,8 +28,10 @@
     padding: 0.5rem;
     border-radius: 8px;
     width: 130px;
+    height: 180px;
     justify-content: center;
     align-items: center;
+    contain: content;
     color: var(--theme-text);
 
     &:hover {
