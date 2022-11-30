@@ -48,6 +48,35 @@ use tao::window::WindowBuilder;
 
 use tao::menu::{MenuBar as Menu, MenuItem};
 
+use i18n_embed::{
+    fluent::{fluent_language_loader, FluentLanguageLoader},
+    DesktopLanguageRequester,
+};
+use rust_embed::RustEmbed;
+
+#[derive(RustEmbed)]
+#[folder = "i18n"] // path to the compiled localization resources
+struct Localizations;
+
+pub static LANGUAGE_LOADER: Lazy<FluentLanguageLoader> = Lazy::new(|| {
+    let loader = fluent_language_loader!();
+    let languages = DesktopLanguageRequester::requested_languages();
+    i18n_embed::select(&loader, &Localizations, &languages).unwrap();
+    loader.set_use_isolating(false);
+    loader
+});
+
+macro_rules! fl {
+    ($message_id:literal) => {
+        i18n_embed_fl::fl!(crate::LANGUAGE_LOADER, $message_id)
+    };
+    ($message_id:literal, $($args:expr),*) => {
+        i18n_embed_fl::fl!(crate::LANGUAGE_LOADER, $message_id, $($args),*)
+    };
+}
+
+pub(crate) use fl;
+
 mod state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
