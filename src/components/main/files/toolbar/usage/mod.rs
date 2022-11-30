@@ -3,6 +3,28 @@ use humansize::format_size;
 use humansize::DECIMAL;
 
 #[derive(Props, PartialEq, Eq)]
+pub struct UsageContentProps {
+    space: String,
+    available: u128,
+}
+
+#[allow(non_snake_case)]
+pub fn UsageContent(cx: Scope<UsageContentProps>) -> Element {
+    cx.render(rsx! {
+        Fragment {
+            div {
+                class: "usage_bar_heading ellipsis",
+                "{cx.props.available} Free",
+            }
+            div {
+                class: "usage_bar_subheading ellipsis",
+                "Disk Space: {cx.props.space}"
+            }
+        }
+    })
+}
+
+#[derive(Props, PartialEq, Eq)]
 pub struct Props {
     usage: UsageStats,
 }
@@ -31,37 +53,24 @@ pub fn Usage(cx: Scope<Props>) -> Element {
         format_size(free_space, DECIMAL),
         format_size(total_space, DECIMAL)
     );
-    let space_clone = space.clone();
 
     cx.render(rsx! {
         div {
             id: "usage",
             div {
-                id: "usage_bar",
-                style: "width:{perc}%;",
-                (perc > 60.0).then(||  rsx!{
-                    span {
-                        class: "usage-available-text",
-                        "{cx.props.usage.available} Free",
-                        br {},
-                        span {
-                            "Disk Space: {space}"
-                        }
-                    }
-                })
+                id: "usage_bar_bg",
+                UsageContent {
+                    space: space.clone(),
+                    available: cx.props.usage.available.clone()
+                }
             },
             div {
-                id: "usage_bar_bg",
-                (perc <= 59.0).then(||  rsx!{
-                    span {
-                        class: "usage-available-text",
-                        "{cx.props.usage.available} Free",
-                        br {},
-                        span {
-                            "Disk Space: {space_clone}"
-                        }
-                    }
-                })
+                id: "usage_bar",
+                style: "-webkit-clip-path: inset(0 0 0 {perc}%);",
+                UsageContent {
+                    space: space.clone(),
+                    available: cx.props.usage.available.clone()
+                }
             },
         },
     })
