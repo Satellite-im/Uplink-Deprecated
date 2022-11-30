@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, io::Cursor};
+use std::{path::{Path, PathBuf}, io::Cursor, time::Duration};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -26,33 +26,40 @@ enum Action {
         Stop,
     }
 
+
+
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_over_dropzone = "document.getElementById('dropzone').style.background = 'green'";
     let file_leave_dropzone = "document.getElementById('dropzone').style.background = 'grey'";
     let file_storage = cx.props.storage.clone();
-   
-    let observe_drag_event = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![file_storage];
+    let drag_over_dropzone = use_ref(&cx, || false);
+    let enable_to_upload_file = use_ref(&cx, || false);
+
+    let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
+        to_owned![file_storage, drag_over_dropzone, enable_to_upload_file];
         async move {
         while let Some(action) = rx.next().await {
             match action {
                 Action::Start => {
                         log::info!("File on dropzone");
-                            tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                            tokio::time::sleep(Duration::from_millis(300)).await;
                             let dropped_file = DROPPED_FILE.read();
-                            if dropped_file.file_drag_event == FileDragEvent::Dropped {
-                                let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
-                                upload_file(file_storage.clone(), file_path).await;
-                            }                      
+                        if dropped_file.file_drag_event == FileDragEvent::Dropped && *enable_to_upload_file.read() && *drag_over_dropzone.read() {
+                            *enable_to_upload_file.write() = false;
+                            println!("Upload file...");
+                            let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
+                            upload_file(file_storage.clone(), file_path).await;
+                            tokio::time::sleep(Duration::from_millis(500)).await;
+                        }  
                     },
-                        Action::Stop => {
-                            log::info!("File out dropzone");
+                Action::Stop => {
+                            log::info!("File not able to upload");
                         },
                     }
                 }
             }});
-
+            
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (
             div {
@@ -88,16 +95,24 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             align_content: "center",
                             margin_right: "8px",
                             background: "grey",
-                            ondragend: move |_| {
-                                println!("End drag");
+                            prevent_default: "ondragover",
+                            onmouseout: move |_| {
+                                *drag_over_dropzone.write() = false;
+                                *enable_to_upload_file.write() = false;
+                                upload_file_dropped_routine.send(Action::Stop);
+                            },
+                            ondragover: move |_| {
+                                *drag_over_dropzone.write() = true;
+                                upload_file_dropped_routine.send(Action::Start);
                             },
                             ondragenter: move |_| {
+                                *enable_to_upload_file.write() = true;
                                 use_eval(&cx)(&file_over_dropzone);
-                                observe_drag_event.send(Action::Start);
                             },
                             ondragleave: move |_| {
+                                *drag_over_dropzone.write() = false;
+                                *enable_to_upload_file.write() = false;
                                 use_eval(&cx)(&file_leave_dropzone);
-                                observe_drag_event.send(Action::Stop);
                             },
                             p { 
                                 id: "text_inside_dropzone",
@@ -206,7 +221,7 @@ async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save:
 
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(image_thumbnail.as_bytes());
+        let base64_image = base64::encode(image_thumbnail.as_bytes().to_vec());
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
