@@ -46,7 +46,7 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     rsx! {
                         div {
                             class: "thumb_icon",
-                            Icon { icon: Shape::Document },
+                            Icon { icon: Shape::Document, size: 50 },
                         }
                     }
                 } else {
