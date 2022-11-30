@@ -63,8 +63,9 @@ impl Node {
 }
 
 impl SecurityCard {
+    /// Compare a granted card against this card (i'm usually the one in your extension)
     fn compatible(&self, granted: SecurityCard) -> bool {
-        let mut c = false;
+        let mut all_good = false;
         // All permissions required must be at least the level granted.
         for gnode in granted {
             for node in self {
@@ -75,15 +76,15 @@ impl SecurityCard {
                             // Optional nodes will still pass here. Extensions should only optionally require nodes which
                             // include fallbacks for if the user opt's out
                             if gnode >= n {
-                                c = true;
+                                all_good = true;
                             }
                         }
-                        None => c = false,
+                        None => all_good = false,
                     },
-                    None => c = false,
+                    None => all_good = false,
                 }
             }
         }
-        c
+        all_good
     }
 }
