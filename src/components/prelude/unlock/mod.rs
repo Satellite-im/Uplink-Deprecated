@@ -10,7 +10,7 @@ use ui_kit::{
 };
 use warp::tesseract::Tesseract;
 
-use crate::LANGUAGE;
+use crate::fl;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -21,8 +21,6 @@ pub struct UnlockProps {
 #[allow(non_snake_case)]
 pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     log::debug!("rendering Unlock");
-    let l = use_atom_ref(&cx, LANGUAGE).read();
-    let l2 = l.clone();
 
     let pin = use_state(&cx, String::new);
     let show_tip = use_state(&cx, || false);
@@ -32,7 +30,6 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     } else {
         "error_text"
     };
-    let auth_text = l.auth_tooltip.clone();
 
     let confirm_button_class = if error.is_empty() {
         "confirm-button"
@@ -48,12 +45,16 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
             div {
                 class: "container",
                 h2 {
-                    (tesseract_available).then(|| l.enter_pin.clone()),
-                    (!tesseract_available).then(|| l.create_pin.clone()),
+                    match tesseract_available {
+                        true => [fl!("unlock-enter-pin")],
+                        false => [fl!("unlock-create-pin")],
+                    }
                 },
                 label {
-                    (tesseract_available).then(|| l.enter_your_pin.clone()),
-                    (!tesseract_available).then(|| l.choose_a_pin.clone()),
+                    match tesseract_available {
+                        true => [fl!("unlock-enter-a-pin")],
+                        false => [fl!("unlock-create-a-pin")],
+                    }
                 },
                 div {
                     class: "m-bottom-xl",
@@ -80,7 +81,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                             Ok(_) => {
                                                 use_router(&cx).push_route("/loading", None, None)
                                             },
-                                            Err(_) => error.set(l2.invalid_pin.clone()),
+                                            Err(_) => error.set(fl!("unlock-invalid-pin"))
                                         }
                                     },
                                 },
@@ -96,7 +97,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     span {
                         class: "pin_tooltip",
                         Tooltip {
-                            text: auth_text,
+                            text: fl!("unlock-tooltip"),
                             arrow_position: ArrowPosition::Top
                         }
                     }
@@ -145,12 +146,12 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                     onkeyup: move |evt| {
                         if evt.key_code == KeyCode::Enter {
                             if pin.len() < 4 && !tesseract_available {
-                                error.set(l.short_pin.clone());
+                                error.set(fl!("unlock-pin-too-short"));
                             } else {
                                 let tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
                                     Ok(_) => use_router(&cx).push_route("/loading", None, None),
-                                    Err(_) => error.set(l.invalid_pin.clone()),
+                                    Err(_) => error.set(fl!("unlock-invalid-pin")),
                                 }
                             }
                         }
