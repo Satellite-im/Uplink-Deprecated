@@ -245,8 +245,6 @@ fn App(cx: Scope<State>) -> Element {
             .expect("Failed to add FTL resources to the bundle.");
     }
 
-    let _app_name = flu_state.read().get_message("App");
-
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
@@ -254,6 +252,19 @@ fn App(cx: Scope<State>) -> Element {
     let css = include_str!(".styles.css");
 
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
+
+    // TODO: This should probably be made into a util which loads default values we know exist from the english translation.
+    // We can probably also cut this down to a one line util.
+    let l_view_source = match flu_state.read().get_message("developer.view_source") {
+        Some(msg) => {
+            let pattern = msg.value().expect("No Translation.");
+            let fluent = flu_state.read();
+            let text = fluent.format_pattern(&pattern, None, &mut vec![]);
+            text.into_owned()
+        }
+        None => "View Source".to_owned(),
+    }
+    .to_string();
 
     cx.render(rsx!(
         style {
@@ -271,7 +282,7 @@ fn App(cx: Scope<State>) -> Element {
                 items: cx.render(rsx! {
                     ContextItem {
                         icon: Shape::CodeBracketSquare,
-                        text: flu_state.read().get_message("developer.view-source").unwrap_or_else(String::from("View Source")),
+                        text: l_view_source,
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");
                         },
