@@ -3,7 +3,7 @@ use dioxus::prelude::*;
 use crate::{components::reusable::toolbar, state::Actions, STATE};
 
 use dioxus_heroicons::outline::Shape;
-use ui_kit::icon_button::IconButton;
+use ui_kit::button::Button;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -36,9 +36,9 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         class: "toolbar-start",
                         div {
                             class: "mobile-back-button",
-                            IconButton {
+                            Button {
                                 icon: Shape::ArrowLeft,
-                                state: ui_kit::icon_button::State::Secondary,
+                                state: ui_kit::button::State::Secondary,
                                 on_pressed: move |_| {
                                     let state = use_atom_ref(&cx, STATE).clone();
                                     state.write().dispatch(Actions::HideSidebar(false));

@@ -5,11 +5,10 @@ use sir::css;
 
 use ui_kit::{
     button::{self, Button},
-    icon_button::{self, IconButton},
     select::Select,
     switch::Switch,
 };
-use utils::extensions::{BasicExtension, Extension, ExtensionType};
+use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
 
 #[derive(Props)]
 pub struct OptionProps<'a> {
@@ -357,8 +356,8 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
 pub struct AudioFactory;
 
 impl BasicExtension for AudioFactory {
-    fn info() -> Extension {
-        Extension {
+    fn info() -> ExtensionInfo {
+        ExtensionInfo {
             name: String::from("Audio Factory"),
             author: String::from("matt@satellite.im"),
             description: String::from("Audio Factory allows you to record all in app audio to different audio tracks. You can additionally change the format, compress and convert."),
@@ -385,12 +384,12 @@ impl BasicExtension for AudioFactory {
                         debug: false
                     }
                 }),
-                IconButton {
+                Button {
                     icon: Shape::ViewfinderCircle,
                     state: if **factory_visible {
-                        icon_button::State::Primary
+                        button::State::Primary
                     } else {
-                        icon_button::State::Secondary
+                        button::State::Secondary
                     }
                     on_pressed: move |_| factory_visible.set(!factory_visible)
                 }

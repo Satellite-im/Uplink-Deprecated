@@ -21,7 +21,17 @@
     stroke-width: 2px;
   }
 
-  &-lg {
+  &.button-icon-only {
+    padding: 0;
+    min-width: 40px;
+
+    &.button-lg {
+      min-width: 52px;
+    }
+  }
+
+  &.button-lg {
+    min-width: 52px;
     height: 52px;
     border-radius: 26px;
   }

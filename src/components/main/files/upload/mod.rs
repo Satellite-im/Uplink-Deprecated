@@ -4,11 +4,11 @@ use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*};
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
+use ui_kit::button::Button;
 use warp::error::Error;
+use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
-use ui_kit::icon_button::IconButton;
-use image::io::Reader as ImageReader;
 
 use crate::{Storage, FileDragEvent};
 use crate::DROPPED_FILE;
@@ -107,11 +107,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 },
                 div {
                     id: "close",
-                    IconButton {
+                    Button {
                         on_pressed: move |e| {
                             cx.props.on_hide.call(e);
                         },
-                        state: ui_kit::icon_button::State::Secondary,
+                        state: ui_kit::button::State::Secondary,
                         icon: Shape::XMark
                     }
                 }
@@ -180,24 +180,28 @@ async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save:
     let item =  file_storage.root_directory().get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
-    let file =  file_storage.get_buffer(&filename_to_save).await?;
+    let file = file_storage.get_buffer(&filename_to_save).await?;
 
     // Gurantee that is an image that has been uploaded
-    let image = ImageReader::new(Cursor::new(&file)).with_guessed_format()?.decode()?;
+    let image = ImageReader::new(Cursor::new(&file))
+        .with_guessed_format()?
+        .decode()?;
     let image_thumbnail = image.thumbnail(70, 70);
-  
+
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
-    let mime = match parts_of_filename.iter().map(|extension| extension.to_lowercase()).last() {
-        Some(m) => {
-            match m.as_str() {
-                "png" => IMAGE_PNG.to_string(),
-                "jpg" => IMAGE_JPEG.to_string(),
-                "jpeg" => IMAGE_JPEG.to_string(),
-                "svg" => IMAGE_SVG.to_string(),
-                &_ => "".to_string(),
-            }
+    let mime = match parts_of_filename
+        .iter()
+        .map(|extension| extension.to_lowercase())
+        .last()
+    {
+        Some(m) => match m.as_str() {
+            "png" => IMAGE_PNG.to_string(),
+            "jpg" => IMAGE_JPEG.to_string(),
+            "jpeg" => IMAGE_JPEG.to_string(),
+            "svg" => IMAGE_SVG.to_string(),
+            &_ => "".to_string(),
         },
-        None =>  "".to_string(),
+        None => "".to_string(),
     };
 
     if !file.is_empty() || !mime.is_empty() {

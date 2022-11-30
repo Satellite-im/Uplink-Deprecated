@@ -1,4 +1,4 @@
-use crate::icon_button::IconButton;
+use crate::button::Button;
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use mime::*;
@@ -40,7 +40,7 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                         }
                     }
                 }
-            IconButton {
+            Button {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
                     let path = match FileDialog::new().add_filter("image", &["jpg", "png", "jpeg", "svg"]).set_directory(".").pick_file() {
