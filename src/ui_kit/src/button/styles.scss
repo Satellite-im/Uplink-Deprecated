@@ -25,6 +25,10 @@
     padding: 0;
     min-width: 40px;
 
+    .button-text {
+      display: none;
+    }
+
     &.button-lg {
       min-width: 52px;
     }
