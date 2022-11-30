@@ -3,11 +3,11 @@ use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
+    button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
-    icon_button::{self, IconButton},
     small_extension_placeholder::SmallExtensionPlaceholder,
 };
-use utils::extensions::BasicExtension;
+use utils::extensions::{ExtensionType, BasicExtension, get_renders};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -24,6 +24,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
+    let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
     cx.render(rsx! {
         div {
             class: "write",
@@ -38,7 +39,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     },
                 })
             },
-            IconButton {
+            exts,
+            Button {
                 icon: Shape::Plus,
                 on_pressed: move |_| {
                     let _ = &cx.props.on_upload.call(());
@@ -63,9 +65,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             div {
                 id: "send",
-                IconButton {
+                Button {
                     icon: Shape::ArrowRight,
-                    state: icon_button::State::Secondary,
+                    state: button::State::Secondary,
                     on_pressed: move |_| {
                         let text = text.clone();
                         let _ = &cx.props.on_submit.call(text.to_string());

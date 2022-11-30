@@ -33,7 +33,7 @@
   stroke: var(--theme-text-muted);
 }
 
-.photo-picker .icon-button {
+.photo-picker .button {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -43,6 +43,6 @@
   padding: 0;
 }
 
-.photo-picker .icon-button svg {
+.photo-picker .button svg {
   padding-top: 2px;
 }

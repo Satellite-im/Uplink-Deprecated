@@ -2,7 +2,7 @@ use crate::iutils::get_meta::SiteMeta;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use open;
-use ui_kit::icon_button;
+use ui_kit::button;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Eq, Props)]
@@ -34,10 +34,10 @@ pub fn LinkEmbed(cx: Scope<Props>) -> Element {
                         p {
                             "{cx.props.meta.description}"
                         },
-                        icon_button::IconButton {
+                        button::Button {
                             icon: Shape::ArrowDownOnSquare,
                             text: String::from("Open Link"),
-                            state: icon_button::State::Secondary,
+                            state: button::State::Secondary,
                             on_pressed: move |_| {
                                 let _ = open::that(cx.props.meta.url.clone());
                             }

@@ -153,7 +153,7 @@
     bottom: 0;
     display: inline-flex;
     justify-content: center;
-    left: 330px;
+    left: var(--sidebar-width);
     overflow: hidden;
     position: fixed;
     right: 0;

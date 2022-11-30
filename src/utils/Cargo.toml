@@ -13,6 +13,8 @@ dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
 libloading = "0.7.3"
 once_cell = "1.13"
 dirs = "4.0.0"
+clap = { version = "3.2", features = ["derive"] }
+anyhow = "1.0"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 cocoa = "0.24.1"
