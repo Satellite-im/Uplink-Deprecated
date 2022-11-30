@@ -53,6 +53,12 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
+static FLUENT: AtomRef<FluentBundle<&'_ FluentResource>> = |_| {
+    // TODO: Make this dynamic we can create a util to refresh this value for usage in the settings.
+    let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
+    FluentBundle::new(vec![loc])
+};
+
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
@@ -61,13 +67,12 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-#[derive(PartialEq, Props)]
+#[derive(Props, PartialEq)]
 pub struct State {
     tesseract: Tesseract,
     account: Account,
     messaging: Messaging,
     storage: Storage,
-    lang: FluentBundle<&FluentResource, IntlLangMemoizer>,
 }
 
 #[derive(Debug, Parser)]
@@ -84,30 +89,6 @@ struct Opt {
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
 
-    let ftl_string = match fs::read_to_string("src/language/en_US.ftl") {
-        // If successful return the files text as `contents`.
-        // `c` is a local variable.
-        Ok(c) => c,
-        // Handle the `error` case.
-        Err(_) => {
-            // Write `msg` to `stderr`.
-            eprintln!("Could not read file");
-            // Exit the program with exit code `1`.
-            String::from("")
-        }
-    };
-
-    let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
-
-    // TODO: Make this dynamic we can create a util to refresh this value for usage in the settings.
-    let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
-    let mut language = FluentBundle::new(vec![loc]);
-
-    language
-        .add_resource(&res)
-        .expect("Failed to add FTL resources to the bundle.");
-
-    let app_name = language.get_message("App");
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
@@ -193,7 +174,6 @@ fn main() {
             account,
             messaging,
             storage,
-            lang: language,
         },
         |c| c.with_window(|_| window.with_menu(main_menu)),
     );
@@ -206,7 +186,6 @@ fn main() {
             account,
             messaging,
             storage,
-            lang: language,
         },
         |c| c.with_window(|_| window),
     );
@@ -248,9 +227,26 @@ fn App(cx: Scope<State>) -> Element {
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
 
+    let flu_state = use_atom_ref(&cx, FLUENT);
+
     cx.use_hook(|_| {
         cx.provide_context(cx.props.messaging.clone());
     });
+
+    if let Ok(data) = fs::read_to_string("src/language/en_US.ftl") {
+        //TODO: Look into a better way of handling resources
+        let res = Box::leak(Box::new(
+            FluentResource::try_new(data).expect("Failed to parse an FTL string."),
+        ));
+
+        flu_state
+            .write()
+            .add_resource(res)
+            .expect("Failed to add FTL resources to the bundle.");
+    }
+
+    let _app_name = flu_state.read().get_message("App");
+
     // Loads the styles for all of our UIKit elements.
     let theme_colors = Theme::load_or_default().rosetta();
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
