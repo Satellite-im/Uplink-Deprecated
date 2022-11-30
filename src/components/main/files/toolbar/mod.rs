@@ -39,7 +39,7 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }),
             div {
-                class: "usage-container",
+                id: "files-toolbar-content",
                 div {
                     class: "mobile-back-button",
                     Button {
@@ -50,13 +50,16 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         },
                     },
                 },
-                Usage {
-                    usage: UsageStats {
-                        available: 1256,
-                        total: 123456,
-                        used: 122200,
-                        percent_free: 75,
-                    }
+                div {
+                    class: "usage-container",
+                    Usage {
+                        usage: UsageStats {
+                            available: 1256,
+                            total: 123456,
+                            used: 122200,
+                            percent_free: 75,
+                        }
+                    },
                 },
             },
         },
