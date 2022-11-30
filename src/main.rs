@@ -181,7 +181,7 @@ fn main() {
     let window = WindowBuilder::new()
         .with_title(DEFAULT_WINDOW_NAME.read().clone())
         .with_resizable(true)
-        .with_inner_size(LogicalSize::new(950.0, 600.0))
+        .with_inner_size(LogicalSize::new(1000.0, 625.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(

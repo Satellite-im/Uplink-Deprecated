@@ -124,19 +124,16 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                     Err(_) => vec![],
                                 };
                                 let filename = std::path::Path::new(&path)
-                                .file_name()
-                                .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                                .to_str()
-                                .unwrap()
-                                .to_string();
+                                    .file_name()
+                                    .map(|s| s.to_string_lossy().to_string())
+                                    .unwrap_or_default();
                                 let parts_of_filename: Vec<&str> = filename.split('.').collect();
 
                                 let mime = match parts_of_filename.last() {
                                     Some(m) => {
                                         match *m {
                                             "png" => IMAGE_PNG.to_string(),
-                                            "jpg" => IMAGE_JPEG.to_string(),
-                                            "jpeg" => IMAGE_JPEG.to_string(),
+                                            "jpg" | "jpeg" => IMAGE_JPEG.to_string(),
                                             "svg" => IMAGE_SVG.to_string(),
                                             &_ => "".to_string(),
                                         }
