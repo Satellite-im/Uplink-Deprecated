@@ -58,7 +58,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     cx.render(rsx! {
         button {
-            class: "{class}",
+            class: "{class} ellipsis",
             disabled: "{disabled}",
             onclick: move |evt| cx.props.on_pressed.call(evt),
             cx.render(match cx.props.icon {
@@ -69,7 +69,10 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 },
                 None => rsx! {Fragment()},
             }),
-            "{text}"
+            div {
+                class: "button-text ellipsis",
+                "{text}"
+            }
         }
     })
 }
