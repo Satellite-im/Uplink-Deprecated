@@ -10,6 +10,9 @@ global = Application
     .create = Create
     .message = Message
 
+developer = Developer
+    .view-source = View Source
+
 account = Account
     .status = { global.status }
         .placeholder = Some { global.status } {global.message}...
