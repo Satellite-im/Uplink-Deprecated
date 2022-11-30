@@ -67,6 +67,7 @@ pub struct State {
     account: Account,
     messaging: Messaging,
     storage: Storage,
+    lang: FluentBundle<&FluentResource, IntlLangMemoizer>,
 }
 
 #[derive(Debug, Parser)]
@@ -98,7 +99,7 @@ fn main() {
 
     let res = FluentResource::try_new(ftl_string).expect("Failed to parse an FTL string.");
 
-    // TODO: Make this dynamic
+    // TODO: Make this dynamic we can create a util to refresh this value for usage in the settings.
     let loc: LanguageIdentifier = "en-US".parse().expect("Parsing failed.");
     let mut language = FluentBundle::new(vec![loc]);
 
@@ -106,6 +107,7 @@ fn main() {
         .add_resource(&res)
         .expect("Failed to add FTL resources to the bundle.");
 
+    let app_name = language.get_message("App");
     let mut main_menu = Menu::new();
     let mut app_menu = Menu::new();
     let mut edit_menu = Menu::new();
@@ -191,6 +193,7 @@ fn main() {
             account,
             messaging,
             storage,
+            lang: language,
         },
         |c| c.with_window(|_| window.with_menu(main_menu)),
     );
@@ -203,6 +206,7 @@ fn main() {
             account,
             messaging,
             storage,
+            lang: language,
         },
         |c| c.with_window(|_| window),
     );
