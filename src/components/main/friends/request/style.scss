@@ -4,7 +4,10 @@
   align-items: center;
   display: flex;
   gap: 16px;
-  padding: 8px 0 8px 0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 
   .pfp {
     background: var(--theme-text-muted);

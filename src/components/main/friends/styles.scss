@@ -12,12 +12,10 @@
     min-width: 0;
     height: 100%;
     display: inline-flex;
-    overflow-x: hidden;
-    overflow-y: scroll;
     flex-direction: column;
 
     .scroll-container {
-      overflow: hidden;
+      overflow-y: scroll;
     }
 
     .main {
