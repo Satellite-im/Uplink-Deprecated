@@ -67,6 +67,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let current_chat = state
         .read()
         .current_chat
+        .as_ref()
         .and_then(|x| state.read().all_chats.get(&x.conversation.id()).cloned());
 
     // periodically refresh message timestamps
@@ -98,7 +99,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     log::debug!("received typing indicator");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
-                        prev_current_chat = current_chat;
+                        prev_current_chat = current_chat.clone();
                     }
                     if current_chat.is_some() {
                         match indicator {
@@ -124,7 +125,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     log::debug!("received typing indicator timeout");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
-                        prev_current_chat = current_chat;
+                        prev_current_chat = current_chat.clone();
                     }
                     if current_chat.is_some() {
                         let expired_indicators: HashMap<DID, Instant> = typing_times
@@ -245,7 +246,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             Some(c) => c.to_owned(),
                             None => ConversationInfo::default(),
                         };
-                        if current_chat == convo.clone() {
+                        if current_chat == convo {
                             match rg.get_message(convo.conversation.id(), message_id).await {
                                 Ok(message) => {
                                     log::debug!("compose/messages streamed a new message ");
@@ -254,7 +255,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         iutils::get_username_from_did(message.sender(), &mp);
                                     chan2.send(ChanCmd::Indicator {
                                         users_typing: users_typing.clone(),
-                                        current_chat: Some(current_chat),
+                                        current_chat: Some(convo),
                                         remote_id: message.sender(),
                                         remote_name: username,
                                         indicator: TypingIndicator::NotTyping,
@@ -284,11 +285,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 Some(c) => c.to_owned(),
                                 None => ConversationInfo::default(),
                             };
-                            if current_chat == convo.clone() && did_key != my_did {
+                            if current_chat == convo && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
                                 chan2.send(ChanCmd::Indicator {
                                     users_typing: users_typing.clone(),
-                                    current_chat: Some(convo.clone()),
+                                    current_chat: Some(convo),
                                     remote_id: did_key,
                                     remote_name: username,
                                     indicator: TypingIndicator::Typing,
@@ -307,7 +308,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 Some(c) => c.to_owned(),
                                 None => ConversationInfo::default(),
                             };
-                            if current_chat == convo.clone() && did_key != my_did {
+                            if current_chat == convo && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
                                 chan2.send(ChanCmd::Indicator {
                                     users_typing: users_typing.clone(),
