@@ -30,29 +30,30 @@ enum Action {
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let file_over_dropzone = "document.getElementById('dropzone').style.background = 'var(--theme-secondary)'";
-    let file_leave_dropzone = "document.getElementById('dropzone').style.background = 'var(--theme-background-light)'";
     let file_storage = cx.props.storage.clone();
     let drag_over_dropzone = use_ref(&cx, || false);
     let eval_script = use_window(&cx).clone();
+    let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
+    let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone];
+        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js];
         async move {
         while let Some(action) = rx.next().await {
             match action {
                 Action::Start => {
                             log::info!("File on dropzone");
-                            tokio::time::sleep(Duration::from_millis(300)).await;
+                            tokio::time::sleep(Duration::from_millis(100)).await;
                         if *drag_over_dropzone.read() {
                             let dropped_file = DROPPED_FILE.read();
+                            eval_script.eval(&file_over_dropzone_js.replace("file_path", &dropped_file.local_path));
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
-                                eval_script.eval(&file_leave_dropzone);
+                                eval_script.eval(&file_leave_dropzone_js);
                                 println!("Upload file...");
                                 let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
                                 upload_file(file_storage.clone(), file_path).await;
-                                tokio::time::sleep(Duration::from_millis(500)).await;
+                                tokio::time::sleep(Duration::from_millis(300)).await;
                             }
                         }  
                     },
@@ -106,11 +107,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                             ondragenter: move |_| {
                                 *drag_over_dropzone.write_silent() = true;
-                                use_eval(&cx)(&file_over_dropzone);
+                                use_eval(&cx)(&file_over_dropzone_js.replace("file_path", ""));
                             },
                             ondragleave: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
-                                use_eval(&cx)(&file_leave_dropzone);
+                                use_eval(&cx)(&file_leave_dropzone_js);
                             },
                         }
                     }
