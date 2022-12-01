@@ -152,8 +152,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
         div {
             class: "add",  
             InputAddFriend{
-                    // TODO:add placeholder
-                    // placeholder: l.add_placeholder.clone(),
+                    placeholder: l.add_placeholder.clone(),
                     value: remote_friend.clone(),
                     on_change: move |_| add_error.set(String::new()),
                     on_enter: move |_| {
