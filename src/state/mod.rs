@@ -168,27 +168,25 @@ impl PersistedState {
                 total_unreads: self.total_unreads,
             },
             Actions::RemoveChat(uuid) => {
-                let mut all_chats = self.all_chats.clone();
-                all_chats.remove(&uuid);
-                self.hidden_chat.insert(uuid);
-                // If the current chat was set to this, we'll want to remove that too.
-                let mut current_chat = self.current_chat.clone();
-                match current_chat {
-                    Some(u) => {
-                        if u.eq(&uuid) {
-                            current_chat = None;
-                        }
-                    }
-                    None => {}
-                }
-                PersistedState {
-                    current_chat,
-                    all_chats,
+                let mut next = PersistedState {
+                    current_chat: self.current_chat,
+                    all_chats: self.all_chats.clone(),
                     favorites: self.favorites.clone(),
                     hidden_chat: self.hidden_chat.clone(),
                     hide_sidebar: self.hide_sidebar,
                     total_unreads: self.total_unreads,
-                }
+                };
+                next.all_chats.remove(&uuid);
+                // If the current chat was set to this, we'll want to remove that too.
+                match next.current_chat {
+                    Some(u) => {
+                        if u.eq(&uuid) {
+                            next.current_chat = None;
+                        }
+                    }
+                    None => {}
+                };
+                next
             }
             Actions::ChatWith(info) => {
                 self.hidden_chat.remove(&info.conversation.id());
