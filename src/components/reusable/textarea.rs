@@ -1,4 +1,3 @@
-// TODO: Move this file to reusable components
 use std::time::{Duration, Instant};
 
 use dioxus::prelude::*;

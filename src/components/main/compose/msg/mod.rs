@@ -12,7 +12,7 @@ use ui_kit::{
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
-    iui_kit::textarea::TextArea,
+    components::reusable::textarea::TextArea,
     iutils::{
         self,
         get_meta::{get_meta, SiteMeta},
