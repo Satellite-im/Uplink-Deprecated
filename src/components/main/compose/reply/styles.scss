@@ -9,6 +9,17 @@
     align-self: flex-start;
     align-items: center;
 
+    .reply-message-container {
+      display: flex;
+      gap: 0.25rem;
+      flex-direction: column;
+      cursor: pointer;
+    }
+
+    .reply-attachments {
+      color: var(--theme-text-muted);
+    }
+
     p {
       background: var(--theme-background-light);
       padding: 0.5rem;
