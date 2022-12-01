@@ -34,7 +34,7 @@ pub struct Props {
 pub fn Compose(cx: Scope<Props>) -> Element {
     log::debug!("rendering Compose");
     let state = use_atom_ref(&cx, STATE);
-    let current_chat = state.read().current_chat;
+    let current_chat = state.read().selected_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warning_message = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);

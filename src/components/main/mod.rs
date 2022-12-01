@@ -29,7 +29,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     let state = use_atom_ref(&cx, STATE).clone();
     let all_chats = use_atom_ref(&cx, ALL_CHATS).clone();
     let rg = cx.props.messaging.clone();
-    let display_welcome = state.read().current_chat.is_none();
+    let display_welcome = state.read().selected_chat.is_none();
     let sidebar_visibility = match state.read().hide_sidebar {
         false => "main-sidebar",
         true => "main-chat",
@@ -109,6 +109,11 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                         log::debug!("attempted to remove conversation which didn't exist");
                     } else {
                         log::debug!("removed conversation");
+                    }
+                    if state.read().active_chats.contains_key(&conversation_id) {
+                        state
+                            .write()
+                            .dispatch(Actions::RemoveConversation(conversation_id));
                     }
                 }
             }

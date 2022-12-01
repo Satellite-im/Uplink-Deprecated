@@ -26,7 +26,7 @@ pub enum Actions {
 #[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
 pub struct PersistedState {
     /// the currently selected conversation
-    pub current_chat: Option<Uuid>,
+    pub selected_chat: Option<Uuid>,
     /// all active conversations
     pub active_chats: HashMap<Uuid, ConversationInfo>,
     /// a list of favorited conversations.
@@ -144,16 +144,16 @@ impl PersistedState {
                     .collect();
                 self.active_chats.remove(&conversation_id);
                 self.favorites = favorites;
-                if self.current_chat == Some(conversation_id) {
-                    self.current_chat = None;
+                if self.selected_chat == Some(conversation_id) {
+                    self.selected_chat = None;
                 }
                 self.total_unreads = total_notifications(&self);
             }
             Actions::ClearChat => {
-                self.current_chat = None;
+                self.selected_chat = None;
             }
             Actions::ChatWith(info) => {
-                self.current_chat = Some(info.conversation.id());
+                self.selected_chat = Some(info.conversation.id());
             }
             Actions::UpdateConversation(info) => {
                 self.active_chats.insert(info.conversation.id(), info);

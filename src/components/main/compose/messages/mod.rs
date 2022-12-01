@@ -66,7 +66,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // this is used for reading the event stream.
     let current_chat = state
         .read()
-        .current_chat
+        .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
 
     // periodically refresh message timestamps
@@ -158,7 +158,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     // periodically check for timeouts
     let chan1 = chan.clone();
-    let real_current_chat = state.read().current_chat.clone();
+    let real_current_chat = state.read().selected_chat.clone();
     use_future(
         &cx,
         (&real_current_chat.clone(), &cx.props.users_typing.clone()),

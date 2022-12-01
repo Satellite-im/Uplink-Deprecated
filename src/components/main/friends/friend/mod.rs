@@ -79,10 +79,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             on_pressed: move |_| {
                                 let mut rg = rg.clone();
                                 let friend = cx.props.friend.clone();
-                                let conversation_response = warp::async_block_in_place_uncheck(
+                                let conversation = match warp::async_block_in_place_uncheck(
                                     rg.create_conversation(&friend)
-                                );
-                                let conversation = match conversation_response {
+                                ) {
                                     Ok(v) => v,
                                     Err(Error::ConversationExist { conversation }) => conversation,
                                     Err(_) => Conversation::default(),

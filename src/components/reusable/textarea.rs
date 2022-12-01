@@ -32,7 +32,7 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering reusable/textarea");
 
     let state = use_atom_ref(&cx, STATE);
-    let current_chat = state.read().current_chat;
+    let current_chat = state.read().selected_chat;
     // send typing indicators periodically
     let chan = use_coroutine(&cx, |mut rx: UnboundedReceiver<ChanCmd>| async move {
         // (conversation ID, time of last keystroke)
