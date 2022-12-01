@@ -47,15 +47,23 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         if *drag_over_dropzone.read() {
                             let dropped_file = DROPPED_FILE.read();
                             // TODO(use_eval): Try new solution in the future
-                            eval_script.eval(&file_over_dropzone_js.replace("file_path", &dropped_file.local_path));
+                            if dropped_file.files_local_path.len() > 1 {
+                                let files_to_upload = format!("{} files to upload!", dropped_file.files_local_path.len());
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
+                            } else {
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &dropped_file.files_local_path[0]));
+                            }
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
                                  // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_leave_dropzone_js);
-                                let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
-                                upload_file(file_storage.clone(), file_path).await;
-                                log::info!("{} file uploaded!", dropped_file.local_path);
-                                tokio::time::sleep(Duration::from_millis(300)).await;
+                                for file_path in &dropped_file.files_local_path {
+                                    println!("file path: {:?}", file_path);
+                                    let file_path_buf = std::path::Path::new(&file_path.trim()).to_path_buf();     
+                                    upload_file(file_storage.clone(), file_path_buf).await;
+                                    tokio::time::sleep(Duration::from_millis(300)).await;
+                                    log::info!("{} file uploaded!", file_path);
+                                }
                             }
                         }  
                     },

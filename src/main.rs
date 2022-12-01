@@ -64,7 +64,7 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
-    Lazy::new(|| RwLock::new(DroppedFile {local_path: String::new(), file_drag_event: FileDragEvent::None}));       
+    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));       
 
 #[derive(PartialEq, Clone)]
 pub enum FileDragEvent {
@@ -74,7 +74,7 @@ pub enum FileDragEvent {
 
 #[derive(Clone)]
 pub struct DroppedFile {
-    local_path: String, 
+    files_local_path: Vec<String>, 
     file_drag_event: FileDragEvent,
 }
 
@@ -219,13 +219,15 @@ fn main() {
                  } else {
                     FileDragEvent::None 
                 };
+               
                 dropped_file_local_path = 
                 dropped_file_local_path.replace("Dropped([", "")
                 .replace("Hovered([", "")
                 .replace("])", "")
                 .replace('"', "");
+                let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
                 *DROPPED_FILE.write() = DroppedFile {
-                    local_path: dropped_file_local_path, 
+                    files_local_path: files_path, 
                     file_drag_event: file_drag_event,
                 };
                 true
