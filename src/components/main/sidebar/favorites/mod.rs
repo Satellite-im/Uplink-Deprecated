@@ -42,7 +42,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                         on_pressed: move |_| {
                             // this goes to an onclick handler
                             // the onclick event should propagate up to the div with class=popout-mask and close the window
-                            if state3.read().current_chat != Some(conv_info.conversation.id()) {
+                            if state3.read().current_chat != Some(conv_info) {
                                 state3.write().dispatch(Actions::ChatWith(conv_info.clone()));
                             }
                         },

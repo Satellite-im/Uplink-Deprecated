@@ -34,10 +34,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     // todo: move this into the `impl Conversations` by creating an accessor method
     // use the uuid of the current chat to extract the ConversationInfo from the list
-    let opt = &state
-        .read()
-        .current_chat
-        .and_then(|conversation_id| state.read().all_chats.get(&conversation_id).cloned());
+    let opt = &state.read().current_chat;
 
     match opt {
         Some(conversation_info) => {

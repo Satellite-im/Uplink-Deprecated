@@ -107,10 +107,10 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             }
 
                             // clicking the send button is meaningless if there isn't a conversation.
-                            if let Some(id) = current_chat {
+                            if let Some(convo) = current_chat {
 
                                 // mutate the state
-                                let cur = state.read().all_chats.get(&id).cloned();
+                                let cur = state.read().all_chats.get(&convo.conversation.id()).cloned();
                                 if let Some( mut conversation_info) = cur {
                                     conversation_info.last_msg_sent = Some(LastMsgSent::new(&text_as_vec));
                                     state.write().dispatch(Actions::UpdateConversation(conversation_info));
@@ -118,13 +118,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
 
                                 if selected_file.is_some() {
                                     let attachments = selected_file.as_ref().unwrap().to_vec();
-                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.attach(id, attachments, text_as_vec)) {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.attach(convo.conversation.id(), attachments, text_as_vec)) {
                                         //TODO: Handle error
                                         println!("Error: {:?}", _e);
                                     }
                                     selected_file.set(None);
                                 } else {
-                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(convo.conversation.id(), None, text_as_vec)) {
                                         //TODO: Handle error
                                         println!("Error: {:?}", _e);
                                     };

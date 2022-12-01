@@ -25,7 +25,7 @@ pub enum Actions {
 #[derive(Serialize, Deserialize, Default, Eq, PartialEq, Clone)]
 pub struct PersistedState {
     /// the currently selected conversation
-    pub current_chat: Option<Uuid>,
+    pub current_chat: Option<ConversationInfo>,
     /// all active conversations
     pub all_chats: HashMap<Uuid, ConversationInfo>,
     pub hidden_chat: HashSet<Uuid>,
@@ -149,7 +149,7 @@ impl PersistedState {
                 // If the current chat was set to this, we'll want to remove that too.
                 next.current_chat = match next.current_chat {
                     Some(u) => {
-                        if u.to_string().contains(&uuid.to_string()) {
+                        if u.conversation.id().eq(&uuid) {
                             None
                         } else {
                             next.current_chat
@@ -162,7 +162,7 @@ impl PersistedState {
             Actions::ChatWith(info) => {
                 self.hidden_chat.remove(&info.conversation.id());
                 PersistedState {
-                    current_chat: Some(info.conversation.id()),
+                    current_chat: Some(info),
                     ..self.clone()
                 }
             }

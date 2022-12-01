@@ -1,13 +1,10 @@
 use crate::{
     main::{compose::Compose, sidebar::Sidebar, welcome::Welcome},
-    state::{Actions, ConversationInfo},
+    state::Actions,
     Account, Messaging, STATE,
 };
-use chrono::prelude::*;
 use dioxus::prelude::*;
 use futures::StreamExt;
-use std::{collections::HashMap, time::Duration};
-use uuid::Uuid;
 use warp::raygun::RayGunEventKind;
 
 pub mod compose;

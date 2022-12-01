@@ -40,7 +40,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().all_chats.is_empty();
 
-    let active_chat: UseState<Option<Uuid>> = use_state(&cx, || None).clone();
+    let active_chat: UseState<Option<ConversationInfo>> = use_state(&cx, || None).clone();
     let _active_chat = state.read().current_chat;
     if *active_chat != _active_chat {
         active_chat.set(_active_chat);
@@ -125,7 +125,6 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                             chats.iter().rev().map(|conv| {
                                 let key = conv.conversation.id();
                                 let conversation_info = conv.clone();
-                                let active_chat = active_chat.clone();
                                 rsx!(
                                     chat::Chat {
                                         key: "{key}",
@@ -133,14 +132,14 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
                                         last_msg_sent: conv.last_msg_sent.clone(),
-                                        is_active: active_chat == Some(conversation_info.conversation.id()),
+                                        is_active: &active_chat == &Some(conversation_info),
                                         tx_chan: notifications_tx.clone(),
-                                        on_pressed: move |uuid| {
+                                        on_pressed: move |conv: ConversationInfo| {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
-                                            if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
-                                                active_chat.set(Some(uuid));
+                                            if  &active_chat != &Some(conv) {
+                                                state.write().dispatch(Actions::ChatWith(conv));
+                                                active_chat.set(Some(conv));
                                             }
                                         }
                                     }

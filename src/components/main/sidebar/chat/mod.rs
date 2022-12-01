@@ -26,7 +26,7 @@ pub struct Props<'a> {
     is_active: bool,
     // used to send received messages to the Sidebar so they can be used to create a notification
     tx_chan: CoroutineHandle<Message>,
-    on_pressed: EventHandler<'a, Uuid>,
+    on_pressed: EventHandler<'a, ConversationInfo>,
 }
 
 #[allow(non_snake_case)]
@@ -191,7 +191,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 class: "chat {active}",
                 onclick: move |_|{
-                    cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
+                    cx.props.on_pressed.call(cx.props.conversation_info);
                 } ,
                 PFPSkeleton {},
                 div {
@@ -207,7 +207,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "chat {active}",
                 id: "chat-{did}",
                 onclick: move |_| {
-                    cx.props.on_pressed.call(cx.props.conversation_info.conversation.id());
+                    cx.props.on_pressed.call(cx.props.conversation_info);
                 },
                 ContextMenu {
                     parent: format!("chat-{}", &did),

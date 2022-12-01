@@ -6,14 +6,13 @@ use std::{
 use crate::{
     components::main::compose::{msg::Msg, reply::Reply},
     iutils,
-    state::{Actions, LastMsgSent},
+    state::{Actions, ConversationInfo, LastMsgSent},
     Account, Messaging, STATE,
 };
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 use futures::StreamExt;
-use uuid::Uuid;
 use warp::{
     crypto::DID,
     raygun::{Message, MessageEvent, MessageEventKind, MessageOptions},
@@ -28,14 +27,14 @@ enum TypingIndicator {
 enum ChanCmd {
     Indicator {
         users_typing: UseRef<HashMap<DID, String>>,
-        current_chat: Option<Uuid>,
+        current_chat: Option<ConversationInfo>,
         remote_id: DID,
         remote_name: String,
         indicator: TypingIndicator,
     },
     Timeout {
         users_typing: UseRef<HashMap<DID, String>>,
-        current_chat: Option<Uuid>,
+        current_chat: Option<ConversationInfo>,
     },
 }
 
@@ -67,7 +66,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let current_chat = state
         .read()
         .current_chat
-        .and_then(|x| state.read().all_chats.get(&x).cloned());
+        .and_then(|x| state.read().all_chats.get(&x.conversation.id()).cloned());
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -84,7 +83,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let chan = use_coroutine(&cx, |mut rx: UnboundedReceiver<ChanCmd>| async move {
         // used for timeouts
         let mut typing_times: HashMap<DID, Instant> = HashMap::new();
-        let mut prev_current_chat: Option<Uuid> = None;
+        let mut prev_current_chat: Option<ConversationInfo> = None;
 
         while let Some(cmd) = rx.next().await {
             match cmd {

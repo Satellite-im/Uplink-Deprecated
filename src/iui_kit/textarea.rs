@@ -87,7 +87,7 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx!(ui_kit::textarea::TextArea {
         on_input: move |val: String| {
             let chat_id = match current_chat {
-                Some(c) => c,
+                Some(c) => c.conversation.id(),
                 None => {
                     cx.props.on_input.call(val);
                     return;
