@@ -87,6 +87,10 @@
         p {
           margin: 0.25rem 0;
         }
+
+        .message-content {
+          width: 100%;
+        }
       }
 
       p {
@@ -171,8 +175,8 @@
       display: inline-flex;
       flex-direction: column;
       position: absolute;
-      width: max-content;
       z-index: 3;
+      padding: 8px;
 
       .controls,
       .user-message {
@@ -194,7 +198,7 @@
 
       .value {
         border-radius: 16px 16px 16px 4px;
-        max-width: 250px;
+        max-width: 280px;
         text-align: left;
         word-break: break-all;
       }
