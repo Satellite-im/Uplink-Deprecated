@@ -13,6 +13,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
 use futures::StreamExt;
+use uuid::Uuid;
 use warp::{
     crypto::DID,
     raygun::{Message, MessageEvent, MessageEventKind, MessageOptions},
@@ -240,8 +241,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         conversation_id,
                         message_id,
                     } => {
-                        if current_chat.conversation.id() == conversation_id {
-                            match rg.get_message(conversation_id, message_id).await {
+                        let convo = match state.read().all_chats.get(&conversation_id) {
+                            Some(c) => c,
+                            None => &ConversationInfo::default(),
+                        };
+                        if current_chat == convo.clone() {
+                            match rg.get_message(convo.conversation.id(), message_id).await {
                                 Ok(message) => {
                                     log::debug!("compose/messages streamed a new message ");
                                     // remove typing indicator
@@ -249,7 +254,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         iutils::get_username_from_did(message.sender(), &mp);
                                     chan2.send(ChanCmd::Indicator {
                                         users_typing: users_typing.clone(),
-                                        current_chat: Some(conversation_id),
+                                        current_chat: Some(current_chat),
                                         remote_id: message.sender(),
                                         remote_name: username,
                                         indicator: TypingIndicator::NotTyping,
@@ -275,13 +280,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         event,
                     } => match event {
                         MessageEvent::Typing => {
-                            if current_chat.conversation.id() == conversation_id
-                                && did_key != my_did
-                            {
+                            let convo = match state.read().all_chats.get(&conversation_id) {
+                                Some(c) => c,
+                                None => &ConversationInfo::default(),
+                            };
+                            if current_chat == convo.clone() && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
                                 chan2.send(ChanCmd::Indicator {
                                     users_typing: users_typing.clone(),
-                                    current_chat: Some(conversation_id),
+                                    current_chat: Some(convo.clone()),
                                     remote_id: did_key,
                                     remote_name: username,
                                     indicator: TypingIndicator::Typing,
@@ -296,13 +303,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     } => match event {
                         // this event isn't expected to be sent. handling it here anyway.
                         MessageEvent::Typing => {
-                            if current_chat.conversation.id() == conversation_id
-                                && did_key != my_did
-                            {
+                            let convo = match s.all_chats.get(&conversation_id) {
+                                Some(c) => c,
+                                None => &ConversationInfo::default(),
+                            };
+                            if current_chat == convo.clone() && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
                                 chan2.send(ChanCmd::Indicator {
                                     users_typing: users_typing.clone(),
-                                    current_chat: Some(conversation_id),
+                                    current_chat: Some(convo.clone()),
                                     remote_id: did_key,
                                     remote_name: username,
                                     indicator: TypingIndicator::NotTyping,
