@@ -111,7 +111,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             if let Some(id) = current_chat {
 
                                 // mutate the state
-                                let cur = state.read().all_chats.get(&id).cloned();
+                                let cur = state.read().active_chats.get(&id).cloned();
                                 if let Some( mut conversation_info) = cur {
                                     conversation_info.last_msg_sent = Some(LastMsgSent::new(&text_as_vec));
                                     state.write().dispatch(Actions::UpdateConversation(conversation_info));

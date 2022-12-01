@@ -28,7 +28,7 @@ pub struct PersistedState {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
     /// all active conversations
-    pub all_chats: HashMap<Uuid, ConversationInfo>,
+    pub active_chats: HashMap<Uuid, ConversationInfo>,
     /// a list of favorited conversations.
     /// Uuid is for Conversation and can be used to look things up in all_chats
     pub favorites: HashSet<Uuid>,
@@ -83,7 +83,7 @@ impl PartialOrd for ConversationInfo {
 
 pub fn total_notifications(s: &PersistedState) -> u32 {
     let mut count = 0;
-    for convo in s.all_chats.iter() {
+    for convo in s.active_chats.iter() {
         let convo_count = convo.1.clone().num_unread_messages;
         count += convo_count;
     }
@@ -124,7 +124,7 @@ impl PersistedState {
                     .cloned()
                     .collect();
 
-                self.all_chats.insert(
+                self.active_chats.insert(
                     conversation.id(),
                     ConversationInfo {
                         conversation,
@@ -142,7 +142,7 @@ impl PersistedState {
                     .filter(|id| conversation_id == **id)
                     .cloned()
                     .collect();
-                self.all_chats.remove(&conversation_id);
+                self.active_chats.remove(&conversation_id);
                 self.favorites = favorites;
                 if self.current_chat == Some(conversation_id) {
                     self.current_chat = None;
@@ -156,7 +156,7 @@ impl PersistedState {
                 self.current_chat = Some(info.conversation.id());
             }
             Actions::UpdateConversation(info) => {
-                self.all_chats.insert(info.conversation.id(), info);
+                self.active_chats.insert(info.conversation.id(), info);
                 self.total_unreads = total_notifications(&self);
             }
             Actions::UpdateFavorites(favorites) => {

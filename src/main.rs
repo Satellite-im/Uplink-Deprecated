@@ -4,6 +4,7 @@ use dioxus::desktop::tao;
 use dioxus_heroicons::outline::Shape;
 use fluent::{FluentBundle, FluentResource};
 use std::{
+    collections::HashMap,
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
@@ -14,6 +15,7 @@ use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
 use utils::Storage;
+use uuid::Uuid;
 
 use crate::iutils::config::Config;
 use ::utils::Account;
@@ -23,11 +25,14 @@ use dioxus_toast::ToastManager;
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::PersistedState;
+use state::{ConversationInfo, PersistedState};
 use themes::Theme;
 
 use warp::{
-    constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
+    constellation::Constellation,
+    multipass::MultiPass,
+    raygun::{Conversation, RayGun},
+    sync::RwLock,
     tesseract::Tesseract,
 };
 use warp_fs_ipfs::config::FsIpfsConfig;
@@ -58,7 +63,12 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
+// This only pertains to the UI.
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
+// RayGun receives messages from conversations whether or not the conversation is on the chats sidebar.
+// although these conversations aren't displayed, Uplink needs to track them so that if the user opens the chat,
+// the correct information is displayed.
+static ALL_CHATS: AtomRef<HashMap<Uuid, Conversation>> = |_| HashMap::new();
 
 #[derive(PartialEq, Props)]
 pub struct State {

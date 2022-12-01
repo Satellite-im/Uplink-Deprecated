@@ -37,7 +37,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let opt = &state
         .read()
         .current_chat
-        .and_then(|conversation_id| state.read().all_chats.get(&conversation_id).cloned());
+        .and_then(|conversation_id| state.read().active_chats.get(&conversation_id).cloned());
 
     match opt {
         Some(conversation_info) => {

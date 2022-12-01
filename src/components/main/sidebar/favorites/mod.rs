@@ -25,7 +25,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
 
     let favString = l.favorites.to_string();
 
-    let all_chats = state.read().all_chats.clone();
+    let all_chats = state.read().active_chats.clone();
 
     cx.render(rsx!(
         label {

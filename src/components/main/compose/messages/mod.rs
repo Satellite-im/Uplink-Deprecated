@@ -67,7 +67,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let current_chat = state
         .read()
         .current_chat
-        .and_then(|x| state.read().all_chats.get(&x).cloned());
+        .and_then(|x| state.read().active_chats.get(&x).cloned());
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
