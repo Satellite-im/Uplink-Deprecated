@@ -29,7 +29,7 @@ pub struct Props<'a> {
 #[allow(clippy::clone_double_ref)]
 #[allow(unused_assignments)]
 pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    log::debug!("rendering iui_kit/textarea");
+    log::debug!("rendering reusable/textarea");
 
     let state = use_atom_ref(&cx, STATE);
     let current_chat = state.read().current_chat;
