@@ -4,6 +4,7 @@
   "description": "An automation testing framework built with WebdriverIO and Appium to test mac/windows Uplink Desktop app",
   "scripts": {
     "mac.app": "wdio config/wdio.mac.app.conf.ts",
+    "mac.ci": "wdio config/wdio.mac.ci.conf.ts",
     "lint": "eslint config tests"
   },
   "repository": {

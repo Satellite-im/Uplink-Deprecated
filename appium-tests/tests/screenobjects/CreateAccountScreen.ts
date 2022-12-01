@@ -8,12 +8,11 @@ const SELECTORS = {
     WINDOW: "-ios class chain:**/XCUIElementTypeWindow",
     PROFILE_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[3]',
-    USERNAME_INPUT:
-      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[5]/XCUIElementTypeTextField',
+    USERNAME_INPUT: "-ios class chain:**/XCUIElementTypeTextField",
     CREATE_ACCOUNT_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton',
-    ERROR_MESSAGE:
-      "//XCUIElementTypeWebView/XCUIElementTypeGroup[6]/XCUIElementTypeStaticText",
+    ERROR_MESSAGE_USERNAME:
+      "//XCUIElementTypeWebView/XCUIElementTypeGroup[5]/XCUIElementTypeStaticText",
   },
 }
 
@@ -42,8 +41,8 @@ class CreateAccountScreen extends AppScreen {
     return $(SELECTORS.MACOS.USERNAME_INPUT)
   }
 
-  get errorMessage() {
-    return $(SELECTORS.MACOS.ERROR_MESSAGE)
+  get errorMessageUsername() {
+    return $(SELECTORS.MACOS.ERROR_MESSAGE_USERNAME)
   }
 
   get createAccountButton() {
