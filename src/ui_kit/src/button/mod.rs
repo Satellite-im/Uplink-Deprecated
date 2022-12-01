@@ -14,7 +14,6 @@ pub enum State {
 #[derive(Props)]
 pub struct Props<'a> {
     on_pressed: EventHandler<'a, MouseEvent>,
-    #[props(optional)]
     text: Option<String>,
     #[props(optional)]
     icon: Option<Shape>,
@@ -24,6 +23,8 @@ pub struct Props<'a> {
     state: Option<State>,
     #[props(optional)]
     disabled: Option<bool>,
+    #[props(optional)]
+    hide_text: Option<bool>,
 }
 
 #[allow(non_snake_case)]
@@ -61,6 +62,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             class: "{class} ellipsis",
             disabled: "{disabled}",
             onclick: move |evt| cx.props.on_pressed.call(evt),
+            title: "{text}",
             cx.render(match cx.props.icon {
                 Some(icon) => rsx! {
                     Icon {
@@ -69,10 +71,18 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                 },
                 None => rsx! {Fragment()},
             }),
-            div {
-                class: "button-text ellipsis",
-                "{text}"
-            }
+            cx.render(match cx.props.hide_text {
+                Some(_) => rsx! {
+                    Fragment()
+                },
+                None => rsx! {
+                div {
+                        class: "button-text ellipsis",
+                        "{text}"
+                    }
+                },
+            }),
+
         }
     })
 }
