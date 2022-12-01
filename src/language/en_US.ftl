@@ -1,3 +1,8 @@
+# Used to select this file as your language.
+# This should probably have it's own translations or be done with some crate in the future.
+identifier = English (EN)
+
+# UI Translations
 global = Application
     .location = Location
     .unknown = Unknown
