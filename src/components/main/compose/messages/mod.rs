@@ -303,7 +303,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     } => match event {
                         // this event isn't expected to be sent. handling it here anyway.
                         MessageEvent::Typing => {
-                            let convo = match s.all_chats.get(&conversation_id) {
+                            let convo = match state.read().all_chats.get(&conversation_id) {
                                 Some(c) => c,
                                 None => &ConversationInfo::default(),
                             };

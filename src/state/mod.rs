@@ -11,7 +11,7 @@ use warp::raygun::Conversation;
 use crate::DEFAULT_PATH;
 
 pub enum Actions {
-    AddConversation(Conversation),
+    AddRemoveConversations(HashMap<Uuid, ConversationInfo>),
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
@@ -121,7 +121,7 @@ impl PersistedState {
                 self.favorites = self
                     .favorites
                     .iter()
-                    .filter(|id| conversation.id() == **id) //Note: this might need to be changed
+                    .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
                 self.all_chats = new_chats;
@@ -131,7 +131,7 @@ impl PersistedState {
                 self.current_chat = None;
             }
             Actions::ChatWith(info) => {
-                self.current_chat = Some(info.conversation.id());
+                self.current_chat = Some(info);
             }
             Actions::UpdateConversation(info) => {
                 self.all_chats.insert(info.conversation.id(), info);
@@ -147,12 +147,12 @@ impl PersistedState {
                 let uuid = info.conversation.id();
                 self.all_chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
-                self.current_chat = match next.current_chat {
+                self.current_chat = match self.current_chat {
                     Some(u) => {
                         if u.conversation.id().eq(&uuid) {
                             None
                         } else {
-                            next.current_chat
+                            self.current_chat
                         }
                     }
                     None => None,
