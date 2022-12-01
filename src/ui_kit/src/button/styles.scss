@@ -9,7 +9,6 @@
   border: none;
   gap: 8px;
   color: var(--theme-text-bright);
-  stroke: var(--theme-text-bright);
   padding: 0 2rem;
   display: flex;
   justify-content: center;
@@ -17,8 +16,6 @@
 
   svg {
     fill: transparent;
-    stroke: var(--theme-text-bright);
-    stroke-width: 2px;
   }
 
   &.button-icon-only {
