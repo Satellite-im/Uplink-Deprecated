@@ -16,6 +16,7 @@ pub enum Actions {
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
+    RemoveChat(Uuid),
     ClearChat,
     SetShowPrerelaseNotice(bool),
     // SendNotification(String, String, Sounds),
@@ -140,6 +141,12 @@ impl PersistedState {
             }
             Actions::HideSidebar(slide_bar_bool) => {
                 self.hide_sidebar = slide_bar_bool;
+            }
+            Actions::RemoveChat(uuid) => {
+                self.all_chats.remove(&uuid);
+                if self.current_chat == Some(uuid) {
+                    self.current_chat = None;
+                }
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 self.show_prerelease_notice = value;
