@@ -1,4 +1,6 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use ui_kit::button::Button;
 
 use crate::{
     components::main::settings::pages::{
@@ -68,6 +70,19 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             div {
                 id: "content",
                 page_header::PageHeader {
+                    content_start: cx.render(rsx! {
+                        div {
+                            class: "mobile-back-button",
+                            Button {
+                                icon: Shape::ArrowLeft,
+                                state: ui_kit::button::State::Secondary,
+                                on_pressed: move |_| {
+                                    let state = use_atom_ref(&cx, STATE).clone();
+                                    state.write().dispatch(Actions::HideSidebar(false));
+                                },
+                            },
+                        },
+                    }),
                     content_center: cx.render(rsx! {
                         h1 { "{active_page_string}" }
                     }),
