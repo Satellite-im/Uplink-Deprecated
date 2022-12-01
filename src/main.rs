@@ -66,13 +66,13 @@ static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
     Lazy::new(|| RwLock::new(DroppedFile {local_path: String::new(), file_drag_event: FileDragEvent::None}));       
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(PartialEq, Clone)]
 pub enum FileDragEvent {
     Dropped,
     None, 
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct DroppedFile {
     local_path: String, 
     file_drag_event: FileDragEvent,

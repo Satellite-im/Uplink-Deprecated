@@ -46,13 +46,15 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             tokio::time::sleep(Duration::from_millis(100)).await;
                         if *drag_over_dropzone.read() {
                             let dropped_file = DROPPED_FILE.read();
+                            // TODO(use_eval): Try new solution in the future
                             eval_script.eval(&file_over_dropzone_js.replace("file_path", &dropped_file.local_path));
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
+                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_leave_dropzone_js);
-                                println!("Upload file...");
                                 let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
                                 upload_file(file_storage.clone(), file_path).await;
+                                log::info!("{} file uploaded!", dropped_file.local_path);
                                 tokio::time::sleep(Duration::from_millis(300)).await;
                             }
                         }  
@@ -89,9 +91,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                         }
                         hr {
-                            margin_top: "12px",
-                            margin_bottom: "12px",
-                            margin_right: "8px"
+                           class: "hr-between-input-and-dropzone",
                         }
                         input {
                             id: "dropzone",
@@ -107,11 +107,14 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             },
                             ondragenter: move |_| {
                                 *drag_over_dropzone.write_silent() = true;
+                                // TODO(use_eval): Try new solution in the future
                                 use_eval(&cx)(&file_over_dropzone_js.replace("file_path", ""));
                             },
                             ondragleave: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
+                                // TODO(use_eval): Try new solution in the future
                                 use_eval(&cx)(&file_leave_dropzone_js);
+                                upload_file_dropped_routine.send(Action::Stop);
                             },
                         }
                     }
