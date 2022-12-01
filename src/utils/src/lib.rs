@@ -1,6 +1,7 @@
 pub mod extensions;
 pub mod notifications;
 pub mod sounds;
+pub mod lang;
 
 use std::ops::{Deref, DerefMut};
 

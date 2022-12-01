@@ -253,19 +253,6 @@ fn App(cx: Scope<State>) -> Element {
 
     thread::sleep(time::Duration::from_millis(16)); // 60 Hz
 
-    // TODO: This should probably be made into a util which loads default values we know exist from the english translation.
-    // We can probably also cut this down to a one line util.
-    let l_view_source = match flu_state.read().get_message("developer.view_source") {
-        Some(msg) => {
-            let pattern = msg.value().expect("No Translation.");
-            let fluent = flu_state.read();
-            let text = fluent.format_pattern(&pattern, None, &mut vec![]);
-            text.into_owned()
-        }
-        None => "View Source".to_owned(),
-    }
-    .to_string();
-
     cx.render(rsx!(
         style {
             "{theme_colors}",
@@ -282,7 +269,7 @@ fn App(cx: Scope<State>) -> Element {
                 items: cx.render(rsx! {
                     ContextItem {
                         icon: Shape::CodeBracketSquare,
-                        text: l_view_source,
+                        text: utils::lang::translation_or_default("developer.view_source", &flu_state.read()),
                         onpressed: move |_| {
                             let _ = open::that("https://github.com/Satellite-im/Uplink");
                         },
