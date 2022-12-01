@@ -17,6 +17,7 @@ pub enum Actions {
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
     ClearChat,
+    SetShowPrerelaseNotice(bool),
     // SendNotification(String, String, Sounds),
 }
 
@@ -33,6 +34,7 @@ pub struct PersistedState {
     // show sidebar boolean, used with in mobile view
     pub hide_sidebar: bool,
     pub total_unreads: u32,
+    pub show_prerelease_notice: bool,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -93,6 +95,7 @@ impl PersistedState {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => {
                 let mut state: PersistedState = Default::default();
+                state.show_prerelease_notice = true;
                 state
             }
         }
@@ -138,30 +141,18 @@ impl PersistedState {
             Actions::HideSidebar(slide_bar_bool) => {
                 state.hide_sidebar = slide_bar_bool;
             }
-            Actions::UpdateFavorites(favorites) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
-                favorites,
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
-            Actions::HideSidebar(slide_bar_bool) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: slide_bar_bool,
-                total_unreads: self.total_unreads,
-            },
-            // Actions::SendNotification(title, content, sound) => {
-            //     let _ = PushNotification(title, content, sound);
-            //     PersistedState {
-            //         current_chat: self.current_chat,
-            //         all_chats: self.all_chats.clone(),
-            //         favorites: self.favorites.clone(),
-            //         hide_sidebar: self.hide_sidebar,
-            //         total_unreads: total_notifications(&self),
-            //     }
-            // }
+            Actions::SetShowPrerelaseNotice(value) => {
+                state.show_prerelease_notice = value;
+            } // Actions::SendNotification(title, content, sound) => {
+              //     let _ = PushNotification(title, content, sound);
+              //     PersistedState {
+              //         current_chat: self.current_chat,
+              //         all_chats: self.all_chats.clone(),
+              //         favorites: self.favorites.clone(),
+              //         hide_sidebar: self.hide_sidebar,
+              //         total_unreads: total_notifications(&self),
+              //     }
+              // }
         };
         // only save while there's a lock on PersistedState
         state.save();
