@@ -12,7 +12,6 @@ use crate::DEFAULT_PATH;
 
 pub enum Actions {
     AddConversation(Conversation),
-    RemoveConversation(Uuid),
     ChatWith(ConversationInfo),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
@@ -132,22 +131,6 @@ impl PersistedState {
                     );
                 }
 
-                PersistedState {
-                    all_chats,
-                    favorites,
-                    total_unreads: total_notifications(&self),
-                    ..self.clone()
-                }
-            }
-            Actions::RemoveConversation(conversation_id) => {
-                let favorites = self
-                    .favorites
-                    .iter()
-                    .filter(|id| conversation_id == **id)
-                    .cloned()
-                    .collect();
-                let mut all_chats = self.all_chats.clone();
-                all_chats.remove(&conversation_id);
                 PersistedState {
                     all_chats,
                     favorites,
