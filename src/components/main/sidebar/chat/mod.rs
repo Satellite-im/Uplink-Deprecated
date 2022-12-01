@@ -231,7 +231,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             icon: Shape::XMark,
                             onpressed: move |_| {
                                 let state = use_atom_ref(&cx, STATE).clone();
-                                state.write().dispatch(Actions::RemoveChat(cx.props.conversation_info.conversation.id().clone()));
+                                state.write().dispatch(Actions::RemoveChat(cx.props.conversation_info.clone()));
                             },
                             text: String::from("Remove Chat"),
                         },
