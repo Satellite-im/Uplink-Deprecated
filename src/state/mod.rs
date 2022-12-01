@@ -138,27 +138,22 @@ impl PersistedState {
             }
             Actions::HideChat(conversation_id) => {
                 self.active_chats.remove(&conversation_id);
-                let favorites = self
-                    .favorites
-                    .iter()
-                    .filter(|id| conversation_id == **id)
-                    .cloned()
-                    .collect();
-                self.favorites = favorites;
                 if self.selected_chat == Some(conversation_id) {
                     self.selected_chat = None;
                 }
+                // todo: should the hidden chat be removed from favorites too?
+                // let favorites = self
+                //     .favorites
+                //     .iter()
+                //     .filter(|id| conversation_id == **id)
+                //     .cloned()
+                //     .collect();
+                // self.favorites = favorites;
             }
             Actions::ShowChat(uuid) => {
                 // look up uuid in all_chats
                 // add to active_chats
                 // set selected_chat
-            }
-            Actions::HideChat(conversation_id) => {
-                self.active_chats.remove(&conversation_id);
-                if self.selected_chat == Some(conversation_id) {
-                    self.selected_chat = None;
-                }
             }
             //Actions::DeselectChat => {
             //    self.selected_chat = None;
