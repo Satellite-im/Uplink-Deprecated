@@ -5,6 +5,9 @@ name: Make dmg
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
+
+  workflow_call:
+
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   CARGO_TERM_COLOR: always
