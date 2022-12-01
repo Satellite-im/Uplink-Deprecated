@@ -124,6 +124,7 @@ impl PersistedState {
                     .cloned()
                     .collect();
                 state.all_chats = new_chats;
+                state.total_unreads = total_notifications(&state);
             }
             Actions::ClearChat => {
                 state.current_chat = None;
@@ -132,8 +133,8 @@ impl PersistedState {
                 state.current_chat = Some(info.conversation.id());
             }
             Actions::UpdateConversation(info) => {
-                state.total_unreads = total_notifications(&state);
                 state.all_chats.insert(info.conversation.id(), info);
+                state.total_unreads = total_notifications(&state);
             }
             Actions::UpdateFavorites(favorites) => {
                 state.favorites = favorites;
