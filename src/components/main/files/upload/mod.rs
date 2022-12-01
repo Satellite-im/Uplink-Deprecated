@@ -1,6 +1,6 @@
 use std::{path::{Path, PathBuf}, io::Cursor, time::Duration};
 
-use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*};
+use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::use_window};
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
@@ -35,22 +35,26 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_storage = cx.props.storage.clone();
     let drag_over_dropzone = use_ref(&cx, || false);
     let enable_to_upload_file = use_ref(&cx, || false);
+    let eval_script = use_window(&cx).clone();
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![file_storage, drag_over_dropzone, enable_to_upload_file];
+        to_owned![file_storage, drag_over_dropzone, enable_to_upload_file , eval_script, file_leave_dropzone];
         async move {
         while let Some(action) = rx.next().await {
             match action {
                 Action::Start => {
-                        log::info!("File on dropzone");
+                            log::info!("File on dropzone");
                             tokio::time::sleep(Duration::from_millis(300)).await;
+                        if *enable_to_upload_file.read() && *drag_over_dropzone.read() {
                             let dropped_file = DROPPED_FILE.read();
-                        if dropped_file.file_drag_event == FileDragEvent::Dropped && *enable_to_upload_file.read() && *drag_over_dropzone.read() {
-                            *enable_to_upload_file.write() = false;
-                            println!("Upload file...");
-                            let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
-                            upload_file(file_storage.clone(), file_path).await;
-                            tokio::time::sleep(Duration::from_millis(500)).await;
+                            if dropped_file.file_drag_event == FileDragEvent::Dropped {
+                                eval_script.eval(&file_leave_dropzone);
+                                *enable_to_upload_file.write_silent() = false;
+                                println!("Upload file...");
+                                let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
+                                upload_file(file_storage.clone(), file_path).await;
+                                tokio::time::sleep(Duration::from_millis(500)).await;
+                            }
                         }  
                     },
                 Action::Stop => {
@@ -97,21 +101,21 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             background: "grey",
                             prevent_default: "ondragover",
                             onmouseout: move |_| {
-                                *drag_over_dropzone.write() = false;
-                                *enable_to_upload_file.write() = false;
+                                *drag_over_dropzone.write_silent() = false;
+                                *enable_to_upload_file.write_silent() = false;
                                 upload_file_dropped_routine.send(Action::Stop);
                             },
                             ondragover: move |_| {
-                                *drag_over_dropzone.write() = true;
+                                *drag_over_dropzone.write_silent() = true;
                                 upload_file_dropped_routine.send(Action::Start);
                             },
                             ondragenter: move |_| {
-                                *enable_to_upload_file.write() = true;
+                                *enable_to_upload_file.write_silent() = true;
                                 use_eval(&cx)(&file_over_dropzone);
                             },
                             ondragleave: move |_| {
-                                *drag_over_dropzone.write() = false;
-                                *enable_to_upload_file.write() = false;
+                                *drag_over_dropzone.write_silent() = false;
+                                *enable_to_upload_file.write_silent() = false;
                                 use_eval(&cx)(&file_leave_dropzone);
                             },
                             p { 
