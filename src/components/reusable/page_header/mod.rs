@@ -1,15 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::{components::reusable::toolbar, state::Actions, STATE};
-
-use dioxus_heroicons::outline::Shape;
-use ui_kit::button::Button;
-
+use crate::components::reusable::toolbar;
 #[derive(Props)]
 pub struct Props<'a> {
-    content_start: Element<'a>,
-    content_center: Element<'a>,
-    content_end: Element<'a>,
+    content_start: Option<Element<'a>>,
+    content_center: Option<Element<'a>>,
+    content_end: Option<Element<'a>>,
     hide_on_desktop: bool,
 }
 
@@ -27,24 +23,11 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             id: "page-header",
             class: "{header_visibility}",
             toolbar::Toolbar {
-                controls: cx.render(rsx! {
-                    div {}
-                }),
+                controls: cx.render(rsx! { Fragment {} }),
                 div {
                     class: "toolbar-content",
                     div {
                         class: "toolbar-start",
-                        div {
-                            class: "mobile-back-button",
-                            Button {
-                                icon: Shape::ArrowLeft,
-                                state: ui_kit::button::State::Secondary,
-                                on_pressed: move |_| {
-                                    let state = use_atom_ref(&cx, STATE).clone();
-                                    state.write().dispatch(Actions::HideSidebar(false));
-                                },
-                            },
-                        },
                         &cx.props.content_start
                     },
                     div {

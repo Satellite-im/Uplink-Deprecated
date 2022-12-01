@@ -1,0 +1,23 @@
+#find-friends {
+  .code {
+    width: 100%;
+    margin-bottom: 1rem;
+    .button {
+      min-width: 100%;
+    }
+  }
+
+  .add {
+    width: 100%;
+    display: flex;
+    margin-bottom: 1rem;
+
+    .icon-input {
+      flex: 1;
+    }
+
+    .button {
+      margin-left: 8px;
+    }
+  }
+}

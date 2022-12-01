@@ -68,11 +68,9 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             div {
                 id: "content",
                 page_header::PageHeader {
-                    content_start: cx.render(rsx! {Fragment()}),
                     content_center: cx.render(rsx! {
                         h1 { "{active_page_string}" }
                     }),
-                    content_end: cx.render(rsx! {Fragment()}),
                     hide_on_desktop: true,
                 },
                 div {
