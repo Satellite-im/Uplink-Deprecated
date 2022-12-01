@@ -124,11 +124,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                                         println!("Error: {:?}", _e);
                                     }
                                     selected_file.set(None);
-                                } else {
-                                    if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
-                                        //TODO: Handle error
-                                        println!("Error: {:?}", _e);
-                                    };
+                                } else  if let Err(_e) = warp::async_block_in_place_uncheck(rg.send(id, None, text_as_vec)) {
+                                    //TODO: Handle error
+                                    println!("Error: {:?}", _e);
                                 };
                                 // TODO: We need to wire this message up to display differently
                                 // until we confim whether it was successfully sent or failed
