@@ -147,12 +147,12 @@ impl PersistedState {
                 let uuid = info.conversation.id();
                 self.all_chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
-                self.current_chat = match self.current_chat {
+                self.current_chat = match self.current_chat.clone() {
                     Some(u) => {
                         if u.conversation.id().eq(&uuid) {
                             None
                         } else {
-                            self.current_chat
+                            self.current_chat.clone()
                         }
                     }
                     None => None,
