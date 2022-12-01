@@ -6,7 +6,6 @@ use crate::components::{
     main::files::toolbar::usage::{Usage, UsageStats},
     reusable::toolbar,
 };
-use crate::{state::Actions, STATE};
 
 pub mod usage;
 
@@ -18,8 +17,6 @@ pub struct Props<'a> {
 
 #[allow(non_snake_case)]
 pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let st = use_atom_ref(&cx, STATE).clone();
-
     cx.render(rsx! {
         toolbar::Toolbar {
             controls: cx.render(rsx! {
@@ -40,16 +37,6 @@ pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             }),
             div {
                 id: "files-toolbar-content",
-                div {
-                    class: "mobile-back-button",
-                    Button {
-                        icon: Shape::ArrowLeft,
-                        state: ui_kit::button::State::Secondary,
-                        on_pressed: move |_| {
-                            st.write().dispatch(Actions::HideSidebar(false));
-                        },
-                    },
-                },
                 div {
                     class: "usage-container",
                     Usage {

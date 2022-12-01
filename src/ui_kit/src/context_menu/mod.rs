@@ -19,7 +19,7 @@ pub fn ContextItem<'a>(cx: Scope<'a, ItemProps<'a>>) -> Element<'a> {
         "context-item"
     };
     cx.render(rsx! {
-        div {
+        button {
             class: "{class}",
             onclick: move |_| cx.props.onpressed.call(()),
             (cx.props.icon.is_some()).then(|| {
@@ -31,7 +31,7 @@ pub fn ContextItem<'a>(cx: Scope<'a, ItemProps<'a>>) -> Element<'a> {
                     Icon { icon: icon }
                 }
             }),
-            p {"{cx.props.text}"}
+            div {"{cx.props.text}"}
         }
     })
 }

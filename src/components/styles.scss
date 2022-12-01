@@ -198,7 +198,8 @@ progress {
 
 svg {
   fill: transparent;
-  stroke: var(--theme-text);
+  stroke: currentColor;
+  stroke-width: 2px;
 }
 
 #main {
