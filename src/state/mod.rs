@@ -22,7 +22,7 @@ pub enum Actions {
 }
 
 /// tracks the active conversations. Chagnes are persisted
-#[derive(Serialize, Deserialize, Default, Eq, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
 pub struct PersistedState {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
@@ -114,36 +114,35 @@ impl PersistedState {
     }
 
     pub fn dispatch(&mut self, action: Actions) {
-        let mut state: PersistedState = self.clone();
         match action {
             Actions::AddRemoveConversations(new_chats) => {
-                state.favorites = self
+                self.favorites = self
                     .favorites
                     .iter()
                     .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
-                state.all_chats = new_chats;
-                state.total_unreads = total_notifications(&state);
+                self.all_chats = new_chats;
+                self.total_unreads = total_notifications(&self);
             }
             Actions::ClearChat => {
-                state.current_chat = None;
+                self.current_chat = None;
             }
             Actions::ChatWith(info) => {
-                state.current_chat = Some(info.conversation.id());
+                self.current_chat = Some(info.conversation.id());
             }
             Actions::UpdateConversation(info) => {
-                state.all_chats.insert(info.conversation.id(), info);
-                state.total_unreads = total_notifications(&state);
+                self.all_chats.insert(info.conversation.id(), info);
+                self.total_unreads = total_notifications(&self);
             }
             Actions::UpdateFavorites(favorites) => {
-                state.favorites = favorites;
+                self.favorites = favorites;
             }
             Actions::HideSidebar(slide_bar_bool) => {
-                state.hide_sidebar = slide_bar_bool;
+                self.hide_sidebar = slide_bar_bool;
             }
             Actions::SetShowPrerelaseNotice(value) => {
-                state.show_prerelease_notice = value;
+                self.show_prerelease_notice = value;
             } // Actions::SendNotification(title, content, sound) => {
               //     let _ = PushNotification(title, content, sound);
               //     PersistedState {
@@ -155,11 +154,7 @@ impl PersistedState {
               //     }
               // }
         };
-        // only save while there's a lock on PersistedState
-        state.save();
-
-        // modify PersistedState via assignment rather than mutation
-        *self = state;
+        self.save();
     }
 }
 
