@@ -242,8 +242,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         message_id,
                     } => {
                         let convo = match state.read().all_chats.get(&conversation_id) {
-                            Some(c) => c,
-                            None => &ConversationInfo::default(),
+                            Some(c) => c.to_owned(),
+                            None => ConversationInfo::default(),
                         };
                         if current_chat == convo.clone() {
                             match rg.get_message(convo.conversation.id(), message_id).await {
@@ -281,8 +281,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     } => match event {
                         MessageEvent::Typing => {
                             let convo = match state.read().all_chats.get(&conversation_id) {
-                                Some(c) => c,
-                                None => &ConversationInfo::default(),
+                                Some(c) => c.to_owned(),
+                                None => ConversationInfo::default(),
                             };
                             if current_chat == convo.clone() && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
@@ -304,8 +304,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         // this event isn't expected to be sent. handling it here anyway.
                         MessageEvent::Typing => {
                             let convo = match state.read().all_chats.get(&conversation_id) {
-                                Some(c) => c,
-                                None => &ConversationInfo::default(),
+                                Some(c) => c.to_owned(),
+                                None => ConversationInfo::default(),
                             };
                             if current_chat == convo.clone() && did_key != my_did {
                                 let username = iutils::get_username_from_did(did_key.clone(), &mp);
