@@ -70,6 +70,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         Some(Err(_)) => SiteMeta::default(),
         None => SiteMeta::default(),
     };
+    let meta2 = meta.clone();
 
     let popout = use_state(&cx, || false);
     // text has been lifted from the child components into Msg so that
@@ -143,6 +144,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
             message: cx.props.message.clone(),
         })
     });
+    let attachment_list2 = attachment_list.clone();
 
     cx.render(rsx! (
         div {
@@ -173,7 +175,16 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             div {
                                 class: "value popout {first} {middle} {last}",
                                 div {
-                                    dangerous_inner_html: "{output1}"
+                                    class: "message-content",
+                                    dangerous_inner_html: "{output1}",
+                                    has_links.then(|| rsx!{
+                                        LinkEmbed {
+                                            meta: meta2
+                                        }
+                                    }),
+                                    div {
+                                        attachment_list2
+                                    }
                                 },
                             },
                         }

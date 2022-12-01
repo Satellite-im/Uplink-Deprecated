@@ -4,9 +4,8 @@ use crate::{
     Messaging, LANGUAGE, STATE,
 };
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 use std::collections::HashMap;
-use ui_kit::{button::Button, profile_picture::PFP};
+use ui_kit::profile_picture::PFP;
 use utils::Account;
 use uuid::Uuid;
 
@@ -23,14 +22,10 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
     let state2 = state.clone();
     let state3 = state2.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    let popout = use_state(&cx, || false);
 
     let favString = l.favorites.to_string();
-    let newchatdString = l.new_chat.to_string();
 
-    let mut favorites = state.read().favorites.clone();
     let all_chats = state.read().all_chats.clone();
-    let all_chats2 = all_chats.clone();
 
     cx.render(rsx!(
         label {
@@ -38,42 +33,6 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
         },
         div {
             class: "favorites-container",
-            (popout).then(|| rsx!(
-                div {
-                    class: "popout-mask",
-                    onclick: move |_| {
-                        popout.set(false);
-                    },
-                    div {
-                        class: "close",
-                        Button {
-                            icon: Shape::XMark,
-                            on_pressed: move |_| {
-                                popout.set(false);
-                            }
-                        },
-                    },
-                    ConversationList {
-                        mp: cx.props.account.clone(),
-                        all_chats: all_chats2,
-                        on_pressed: move |uuid| {
-                            favorites.insert(uuid);
-                            state2.write().dispatch(Actions::UpdateFavorites(favorites.clone()));
-                        },
-                    },
-                }
-            )),
-            button {
-                class: "favorites-item",
-                Button {
-                    icon: Shape::Plus,
-                    on_pressed: move |_| popout.set(true),
-                },
-                div {
-                    class: "name",
-                    "{newchatdString}"
-                }
-            },
             state.read().favorites.clone().iter().filter_map(|chat_id| all_chats.get(chat_id)).cloned().map(|conv_info| {
                 let state3 = state3.clone();
                 cx.render(rsx!(

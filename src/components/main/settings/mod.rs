@@ -33,8 +33,8 @@ pub fn Settings(cx: Scope<Props>) -> Element {
     };
 
     let sidebar_visibility = match st.read().hide_sidebar {
-        false => "sidebar-visible",
-        true => "sidebar-hidden",
+        false => "mobile-sidebar-visible",
+        true => "mobile-sidebar-hidden",
     };
 
     let active_page = use_state(&cx, || page_to_open_on_settings);

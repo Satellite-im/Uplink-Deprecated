@@ -17,6 +17,7 @@ pub enum Actions {
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
     ClearChat,
+    SetShowPrerelaseNotice(bool),
     // SendNotification(String, String, Sounds),
 }
 
@@ -33,6 +34,7 @@ pub struct PersistedState {
     // show sidebar boolean, used with in mobile view
     pub hide_sidebar: bool,
     pub total_unreads: u32,
+    pub show_prerelease_notice: bool,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -91,7 +93,11 @@ impl PersistedState {
     pub fn load_or_initial() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
-            Err(_) => Default::default(),
+            Err(_) => {
+                let mut state: PersistedState = Default::default();
+                state.show_prerelease_notice = true;
+                state
+            }
         }
     }
 
@@ -108,78 +114,47 @@ impl PersistedState {
     }
 
     pub fn dispatch(&mut self, action: Actions) {
-        let next = match action {
+        match action {
             Actions::AddRemoveConversations(new_chats) => {
-                let favorites = self
+                self.favorites = self
                     .favorites
                     .iter()
                     .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
-                PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: new_chats,
-                    favorites,
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: total_notifications(&self),
-                }
+                self.all_chats = new_chats;
+                self.total_unreads = total_notifications(&self);
             }
-            Actions::ClearChat => PersistedState {
-                current_chat: None,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
-            Actions::ChatWith(info) => PersistedState {
-                current_chat: Some(info.conversation.id()),
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
+            Actions::ClearChat => {
+                self.current_chat = None;
+            }
+            Actions::ChatWith(info) => {
+                self.current_chat = Some(info.conversation.id());
+            }
             Actions::UpdateConversation(info) => {
-                let mut next = PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: total_notifications(&self),
-                };
-                // overwrite the existing entry
-                next.all_chats.insert(info.conversation.id(), info);
-                next
+                self.all_chats.insert(info.conversation.id(), info);
+                self.total_unreads = total_notifications(&self);
             }
-            Actions::UpdateFavorites(favorites) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
-                favorites,
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
-            Actions::HideSidebar(slide_bar_bool) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: slide_bar_bool,
-                total_unreads: self.total_unreads,
-            },
-            // Actions::SendNotification(title, content, sound) => {
-            //     let _ = PushNotification(title, content, sound);
-            //     PersistedState {
-            //         current_chat: self.current_chat,
-            //         all_chats: self.all_chats.clone(),
-            //         favorites: self.favorites.clone(),
-            //         hide_sidebar: self.hide_sidebar,
-            //         total_unreads: total_notifications(&self),
-            //     }
-            // }
+            Actions::UpdateFavorites(favorites) => {
+                self.favorites = favorites;
+            }
+            Actions::HideSidebar(slide_bar_bool) => {
+                self.hide_sidebar = slide_bar_bool;
+            }
+            Actions::SetShowPrerelaseNotice(value) => {
+                self.show_prerelease_notice = value;
+            } // Actions::SendNotification(title, content, sound) => {
+              //     let _ = PushNotification(title, content, sound);
+              //     PersistedState {
+              //         current_chat: self.current_chat,
+              //         all_chats: self.all_chats.clone(),
+              //         favorites: self.favorites.clone(),
+              //         hide_sidebar: self.hide_sidebar,
+              //         total_unreads: total_notifications(&self),
+              //     }
+              // }
         };
-        // only save while there's a lock on PersistedState
-        next.save();
-
-        // modify PersistedState via assignment rather than mutation
-        *self = next;
+        self.save();
     }
 }
 

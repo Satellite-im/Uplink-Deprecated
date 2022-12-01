@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
 
-// use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
     components::reusable::nav::Nav,
     main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
-    STATE,
 };
 pub mod browser;
 pub mod sidebar;
@@ -22,12 +20,6 @@ pub struct Props {
 pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
-
-    let st = use_atom_ref(&cx, STATE).clone();
-    let sidebar_visibility = match st.read().hide_sidebar {
-        false => "sidebar-visible",
-        true => "sidebar-hidden",
-    };
 
     cx.render(rsx! {
         div {
