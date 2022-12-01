@@ -266,18 +266,18 @@ fn App(cx: Scope<State>) -> Element {
         AppStyle {},
         span {
             id: "main-wrap",
-            ContextMenu {
-                parent: String::from("main-wrap"),
-                items: cx.render(rsx! {
-                    ContextItem {
-                        icon: Shape::CodeBracketSquare,
-                        text: String::from("View Source"),
-                        onpressed: move |_| {
-                            let _ = open::that("https://github.com/Satellite-im/Uplink");
-                        },
-                    }
-                })
-            },
+            // ContextMenu {
+            //     parent: String::from("main-wrap"),
+            //     items: cx.render(rsx! {
+            //         ContextItem {
+            //             icon: Shape::CodeBracketSquare,
+            //             text: String::from("View Source"),
+            //             onpressed: move |_| {
+            //                 let _ = open::that("https://github.com/Satellite-im/Uplink");
+            //             },
+            //         }
+            //     })
+            // },
             Router {
                 Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
                 Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },

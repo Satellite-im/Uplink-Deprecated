@@ -6,6 +6,7 @@ pub mod extension_placeholder;
 pub mod file;
 pub mod folder;
 pub mod input;
+pub mod input_add_friend;
 pub mod loader;
 pub mod new_folder;
 pub mod numeric_indicator;
