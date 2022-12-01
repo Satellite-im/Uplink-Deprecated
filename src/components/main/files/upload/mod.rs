@@ -30,8 +30,8 @@ enum Action {
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    let file_over_dropzone = "document.getElementById('dropzone').style.background = 'green'";
-    let file_leave_dropzone = "document.getElementById('dropzone').style.background = 'grey'";
+    let file_over_dropzone = "document.getElementById('dropzone').style.background = 'var(--theme-secondary)'";
+    let file_leave_dropzone = "document.getElementById('dropzone').style.background = 'var(--theme-background-light)'";
     let file_storage = cx.props.storage.clone();
     let drag_over_dropzone = use_ref(&cx, || false);
     let enable_to_upload_file = use_ref(&cx, || false);
@@ -46,10 +46,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             log::info!("File on dropzone");
                             tokio::time::sleep(Duration::from_millis(300)).await;
                         if *enable_to_upload_file.read() && *drag_over_dropzone.read() {
-                            let dropped_file = DROPPED_FILE.read();
+                            let dropped_file = DROPPED_FILE.read(); 
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
-                                eval_script.eval(&file_leave_dropzone);
                                 *enable_to_upload_file.write_silent() = false;
+                                eval_script.eval(&file_leave_dropzone);
                                 println!("Upload file...");
                                 let file_path = std::path::Path::new(&dropped_file.local_path).to_path_buf();     
                                 upload_file(file_storage.clone(), file_path).await;
@@ -71,6 +71,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 div {
                     id: "content",
                     div {
+                        width: "100%",
                         input {
                             "type": "file",
                             onclick: move |_| {
@@ -94,12 +95,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }
                         div {
                             id: "dropzone",
-                            height: "100px",
-                            width: "100%",
-                            align_content: "center",
-                            margin_right: "8px",
-                            background: "grey",
-                            prevent_default: "ondragover",
+                            class: "dropzone",
                             onmouseout: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
                                 *enable_to_upload_file.write_silent() = false;
@@ -110,17 +106,20 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 upload_file_dropped_routine.send(Action::Start);
                             },
                             ondragenter: move |_| {
-                                *enable_to_upload_file.write_silent() = true;
                                 use_eval(&cx)(&file_over_dropzone);
+                                *enable_to_upload_file.write_silent() = true;
                             },
                             ondragleave: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
                                 *enable_to_upload_file.write_silent() = false;
                                 use_eval(&cx)(&file_leave_dropzone);
                             },
+                        
+
                             p { 
                                 id: "text_inside_dropzone",
-                                "Drop file here to upload" }
+                                "Drop file here to upload"}
+                        
                         }
                     }
                 },

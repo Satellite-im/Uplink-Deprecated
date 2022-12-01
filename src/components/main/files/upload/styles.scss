@@ -36,3 +36,16 @@
     }
   }
 }
+
+.dropzone {
+  height: 100px;
+  width: 100%;
+  align-content: center;
+  align-items: center;
+  background-color: var(--theme-background-light);
+  border-radius: 10px;
+  border-width: 2px;
+  justify-content: center;
+  display: flex;
+  border-color: var(--theme-primary);
+}
