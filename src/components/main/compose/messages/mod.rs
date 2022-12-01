@@ -367,7 +367,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                             rsx!{
                                                 Reply {
                                                     // key: "{message_id}-reply",
+                                                    message_id: message.id(),
                                                     message: message.value().join("\n"),
+                                                    attachments_len: message.attachments().len(),
                                                     is_remote: is_remote,
                                                     account: cx.props.account.clone(),
                                                     sender: message.sender(),
