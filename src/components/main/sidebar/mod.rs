@@ -122,23 +122,24 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                         div {
                             class: "chats",
                             // order the chats with most recent first (descending order)
-                            chats.iter().rev().map(|conv| {
-                                let key = conv.conversation.id();
-                                let conversation_info = conv.clone();
+                            chats.iter().rev().map(|conversation_info| {
+                                let key = conversation_info.conversation.id();
+                                // cloning active_chat lets the copy be moved inside the closure
+                                let active_chat = active_chat.clone();
                                 rsx!(
                                     chat::Chat {
                                         key: "{key}",
                                         account: cx.props.account.clone(),
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
-                                        last_msg_sent: conv.last_msg_sent.clone(),
-                                        is_active: &active_chat.clone() == &Some(conversation_info.clone()),
+                                        last_msg_sent: conversation_info.last_msg_sent.clone(),
+                                        is_active: (*active_chat.current()).as_ref() == Some(&conversation_info),
                                         tx_chan: notifications_tx.clone(),
                                         on_pressed: move |conv: ConversationInfo| {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
-                                            if  &active_chat.clone() != &Some(conv) {
-                                                state.write().dispatch(Actions::ChatWith(conv));
+                                            if  (*active_chat.current()).as_ref() != Some(&conv) {
+                                                state.write().dispatch(Actions::ChatWith(conv.clone()));
                                                 active_chat.set(Some(conv));
                                             }
                                         }
