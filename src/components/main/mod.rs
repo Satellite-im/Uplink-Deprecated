@@ -54,7 +54,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         }
 
         // detect removed conversations
-        for id in &state.read().all_chats.keys() {
+        for id in state.read().all_chats.keys() {
             if !conversations.contains_key(id) {
                 log::debug!("removing chat");
                 state.write().dispatch(Actions::HideChat(*id));
