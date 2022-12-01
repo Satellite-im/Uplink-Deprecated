@@ -1,3 +1,5 @@
+use std::{path::PathBuf, ffi::OsStr};
+
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
@@ -181,19 +183,15 @@ fn format_file_size(file_size: usize) -> String {
 
 fn format_file_name_to_show(file_name: String, file_kind: String) -> String {
     let mut new_file_name = file_name.clone();
+    let file = PathBuf::from(&new_file_name);
+    let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string).unwrap_or_default();
 
-    let file_name_without_extension = std::path::Path::new(&file_name)
-        .with_extension("")
-        .to_str()
-        .unwrap()
-        .to_string();
-
-    if file_name_without_extension.len() > 10 {
+    if file_stem.len() > 10 {
         new_file_name = match &file_name.get(0..5) {
             Some(name_sliced) => format!(
                 "{}...{}.{}",
                 name_sliced,
-                &file_name_without_extension[file_name_without_extension.len() - 3..].to_string(),
+                &file_stem[file_stem.len() - 3..].to_string(),
                 file_kind
             ),
             None => file_name.clone(),
