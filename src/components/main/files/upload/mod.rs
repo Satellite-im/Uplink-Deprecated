@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, io::Cursor, time::Duration};
+use std::{path::{Path, PathBuf}, io::Cursor, time::Duration, ffi::OsStr};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::use_window};
 use dioxus_heroicons::outline::Shape;
@@ -60,8 +60,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                   // TODO(use_eval): Try new solution in the future
                                   eval_script.eval(&file_being_uploaded_js);
                                 for file_path in &dropped_file.files_local_path {
-                                    println!("file path: {:?}", file_path);
-                                    let file_path_buf = std::path::Path::new(&file_path.trim()).to_path_buf();     
+                                    let file_path_buf = PathBuf::from(file_path.trim());     
                                     upload_file(file_storage.clone(), file_path_buf).await;
                                     tokio::time::sleep(Duration::from_millis(300)).await;
                                     log::info!("{} file uploaded!", file_path);
@@ -149,58 +148,56 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
 
 async fn upload_file(file_storage: Storage, file_path: PathBuf) {
-    let filename = std::path::Path::new(&file_path)
-    .file_name()
-    .unwrap_or_else(|| std::ffi::OsStr::new(""))
-    .to_str()
-    .unwrap()
-    .to_string();
+    let mut filename = match file_path.file_name().map(|file| file.to_string_lossy().to_string()) {
+        Some(file) => file,
+        None => return
+   };
 
     let local_path = Path::new(&file_path).to_string_lossy().to_string();
-    let mut filename_to_save = filename.clone();
     let mut count_index_for_duplicate_filename = 1;
     let mut file_storage = file_storage.clone();
+    let current_directory = match file_storage.current_directory() {
+        Ok(current_directory) => current_directory, 
+        Err(error) => {
+            log::error!("Not possible to get current directory, error: {:?}", error);
+            return;
+        },
+    };
+    let original = filename.clone();
 
     loop {
-        match file_storage.put(&filename_to_save, &local_path).await {
-            Ok(_) => {  
-                log::info!("{:?} file uploaded!", &filename_to_save); 
+        if !current_directory.has_item(&filename) {
+            break;
+        }
+            let file = PathBuf::from(&original);
+            let file_extension = file.extension().and_then(OsStr::to_str).map(str::to_string);
+            let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string);
 
-                match set_thumbnail_if_file_is_image(file_storage.clone(), filename_to_save.clone()).await {
+            filename = match (file_stem, file_extension) {
+                (Some(file_stem), Some(file_extension)) => {
+                    format!("{file_stem} ({count_index_for_duplicate_filename}).{file_extension}")
+                }
+                _ => format!("{original} ({count_index_for_duplicate_filename})"),
+            };
+
+            log::info!("Duplicate name, changing file name to {}", &filename);
+            count_index_for_duplicate_filename += 1;
+        }
+
+        match file_storage.put(&filename, &local_path).await {
+            Ok(_) => {  
+                log::info!("{:?} file uploaded!", &filename); 
+
+                match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
                     Ok(success) => log::info!("{:?}", success), 
                     Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
                 }               
-                break;
             },
-            Err(error) => {
-                match &error {
-                    Error::DuplicateName => {
-
-                        let file_name_without_extension = std::path::Path::new(&filename.clone())
-                        .with_extension("")
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-
-                        let file_extension = std::path::Path::new(&filename.clone())
-                        .extension()
-                        .unwrap_or_else(|| std::ffi::OsStr::new(""))
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-
-                        filename_to_save = format!("{} ({}).{}", file_name_without_extension, count_index_for_duplicate_filename, file_extension);
-                        log::trace!("Duplicate name, changing file name to {}", &filename_to_save);
-                    },
-                    _ => {
-                        log::error!("Error to upload file: {:?}, error: {:?}", &filename_to_save, error);
-                        break;
-                    }
-                }
-                count_index_for_duplicate_filename += 1;
-            },
+            Err(error) => 
+                log::error!("Error to upload file: {:?}, error: {:?}", &filename, error)
+            ,
         };
-    };
+    
 }
 
 
