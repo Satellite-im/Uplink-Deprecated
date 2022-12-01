@@ -21,7 +21,7 @@ pub enum Actions {
 }
 
 /// tracks the active conversations. Chagnes are persisted
-#[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Default, Eq, PartialEq, Clone)]
 pub struct PersistedState {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
@@ -91,7 +91,10 @@ impl PersistedState {
     pub fn load_or_initial() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
-            Err(_) => Default::default(),
+            Err(_) => {
+                let mut state: PersistedState = Default::default();
+                state
+            }
         }
     }
 
@@ -108,47 +111,32 @@ impl PersistedState {
     }
 
     pub fn dispatch(&mut self, action: Actions) {
-        let next = match action {
+        let mut state: PersistedState = self.clone();
+        match action {
             Actions::AddRemoveConversations(new_chats) => {
-                let favorites = self
+                state.favorites = self
                     .favorites
                     .iter()
                     .filter(|id| new_chats.contains_key(id))
                     .cloned()
                     .collect();
-                PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: new_chats,
-                    favorites,
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: total_notifications(&self),
-                }
+                state.all_chats = new_chats;
             }
-            Actions::ClearChat => PersistedState {
-                current_chat: None,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
-            Actions::ChatWith(info) => PersistedState {
-                current_chat: Some(info.conversation.id()),
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
-            },
+            Actions::ClearChat => {
+                state.current_chat = None;
+            }
+            Actions::ChatWith(info) => {
+                state.current_chat = Some(info.conversation.id());
+            }
             Actions::UpdateConversation(info) => {
-                let mut next = PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: total_notifications(&self),
-                };
-                // overwrite the existing entry
-                next.all_chats.insert(info.conversation.id(), info);
-                next
+                state.total_unreads = total_notifications(&state);
+                state.all_chats.insert(info.conversation.id(), info);
+            }
+            Actions::UpdateFavorites(favorites) => {
+                state.favorites = favorites;
+            }
+            Actions::HideSidebar(slide_bar_bool) => {
+                state.hide_sidebar = slide_bar_bool;
             }
             Actions::UpdateFavorites(favorites) => PersistedState {
                 current_chat: self.current_chat,
@@ -176,10 +164,10 @@ impl PersistedState {
             // }
         };
         // only save while there's a lock on PersistedState
-        next.save();
+        state.save();
 
         // modify PersistedState via assignment rather than mutation
-        *self = next;
+        *self = state;
     }
 }
 
