@@ -36,9 +36,9 @@ pub fn Compose(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
     let current_chat = state.read().current_chat;
     let l = use_atom_ref(&cx, LANGUAGE).read();
-    let warningMessage = l.prerelease_warning.to_string();
+    let warning_message = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);
-    let show_warning = use_state(&cx, || true);
+    let show_warning = use_state(&cx, || state.read().show_prerelease_notice);
     let show_media = use_state(&cx, || false);
     let users_typing: &UseRef<HashMap<DID, String>> = use_ref(&cx, HashMap::new);
 
@@ -65,10 +65,11 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                     (**show_warning).then(|| rsx!(
                         div {
                             class: "alpha-warning animate__animated animate__slideInDown",
-                            "{warningMessage}",
+                            "{warning_message}",
                             Button {
                                 on_pressed: move |_| {
                                     show_warning.set(false);
+                                    state.write().dispatch(Actions::SetShowPrerelaseNotice(false));
                                 },
                                 icon: Shape::Check,
                             }

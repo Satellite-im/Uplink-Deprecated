@@ -18,6 +18,7 @@ pub enum Actions {
     HideSidebar(bool),
     RemoveChat(ConversationInfo),
     ClearChat,
+    SetShowPrerelaseNotice(bool),
     // SendNotification(String, String, Sounds),
 }
 
@@ -35,6 +36,7 @@ pub struct PersistedState {
     // show sidebar boolean, used with in mobile view
     pub hide_sidebar: bool,
     pub total_unreads: u32,
+    pub show_prerelease_notice: bool,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -93,7 +95,11 @@ impl PersistedState {
     pub fn load_or_initial() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
-            Err(_) => Default::default(),
+            Err(_) => {
+                let mut state: PersistedState = Default::default();
+                state.show_prerelease_notice = true;
+                state
+            }
         }
     }
 
@@ -110,44 +116,38 @@ impl PersistedState {
     }
 
     pub fn dispatch(&mut self, action: Actions) {
-        let next = match action {
-            Actions::AddConversation(conversation) => {
-                let favorites = self
+        match action {
+            Actions::AddRemoveConversations(new_chats) => {
+                self.favorites = self
                     .favorites
                     .iter()
                     .filter(|id| conversation.id() == **id) //Note: this might need to be changed
                     .cloned()
                     .collect();
-
-                let mut all_chats = self.all_chats.clone();
-                if !self.hidden_chat.contains(&conversation.id()) {
-                    all_chats.insert(
-                        conversation.id(),
-                        ConversationInfo {
-                            conversation,
-                            creation_time: DateTime::from(Local::now()),
-                            ..Default::default()
-                        },
-                    );
-                }
-
-                PersistedState {
-                    all_chats,
-                    favorites,
-                    total_unreads: total_notifications(&self),
-                    ..self.clone()
-                }
+                self.all_chats = new_chats;
+                self.total_unreads = total_notifications(&self);
             }
-            Actions::ClearChat => PersistedState {
-                current_chat: None,
-                ..self.clone()
-            },
+            Actions::ClearChat => {
+                self.current_chat = None;
+            }
+            Actions::ChatWith(info) => {
+                self.current_chat = Some(info.conversation.id());
+            }
+            Actions::UpdateConversation(info) => {
+                self.all_chats.insert(info.conversation.id(), info);
+                self.total_unreads = total_notifications(&self);
+            }
+            Actions::UpdateFavorites(favorites) => {
+                self.favorites = favorites;
+            }
+            Actions::HideSidebar(slide_bar_bool) => {
+                self.hide_sidebar = slide_bar_bool;
+            }
             Actions::RemoveChat(info) => {
                 let uuid = info.conversation.id();
-                let mut next = self.clone();
-                next.all_chats.remove(&uuid);
+                self.all_chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
-                next.current_chat = match next.current_chat {
+                self.current_chat = match next.current_chat {
                     Some(u) => {
                         if u.conversation.id().eq(&uuid) {
                             None
@@ -157,48 +157,21 @@ impl PersistedState {
                     }
                     None => None,
                 };
-                next
             }
-            Actions::ChatWith(info) => {
-                self.hidden_chat.remove(&info.conversation.id());
-                PersistedState {
-                    current_chat: Some(info),
-                    ..self.clone()
-                }
-            }
-            Actions::UpdateConversation(info) => {
-                let mut next = PersistedState {
-                    total_unreads: total_notifications(&self),
-                    ..self.clone()
-                };
-                // overwrite the existing entry
-                next.all_chats.insert(info.conversation.id(), info);
-                next
-            }
-            Actions::UpdateFavorites(favorites) => PersistedState {
-                favorites,
-                ..self.clone()
-            },
-            Actions::HideSidebar(slide_bar_bool) => PersistedState {
-                hide_sidebar: slide_bar_bool,
-                ..self.clone()
-            },
-            // Actions::SendNotification(title, content, sound) => {
-            //     let _ = PushNotification(title, content, sound);
-            //     PersistedState {
-            //         current_chat: self.current_chat,
-            //         all_chats: self.all_chats.clone(),
-            //         favorites: self.favorites.clone(),
-            //         hide_sidebar: self.hide_sidebar,
-            //         total_unreads: total_notifications(&self),
-            //     }
-            // }
+            Actions::SetShowPrerelaseNotice(value) => {
+                self.show_prerelease_notice = value;
+            } // Actions::SendNotification(title, content, sound) => {
+              //     let _ = PushNotification(title, content, sound);
+              //     PersistedState {
+              //         current_chat: self.current_chat,
+              //         all_chats: self.all_chats.clone(),
+              //         favorites: self.favorites.clone(),
+              //         hide_sidebar: self.hide_sidebar,
+              //         total_unreads: total_notifications(&self),
+              //     }
+              // }
         };
-        // only save while there's a lock on PersistedState
-        next.save();
-
-        // modify PersistedState via assignment rather than mutation
-        *self = next;
+        self.save();
     }
 }
 
