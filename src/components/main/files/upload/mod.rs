@@ -35,9 +35,11 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let eval_script = use_window(&cx).clone();
     let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
     let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
+    let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
+
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js];
+        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
         async move {
         while let Some(action) = rx.next().await {
             match action {
@@ -55,8 +57,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
-                                 // TODO(use_eval): Try new solution in the future
-                                eval_script.eval(&file_leave_dropzone_js);
+                                  // TODO(use_eval): Try new solution in the future
+                                  eval_script.eval(&file_being_uploaded_js);
                                 for file_path in &dropped_file.files_local_path {
                                     println!("file path: {:?}", file_path);
                                     let file_path_buf = std::path::Path::new(&file_path.trim()).to_path_buf();     
@@ -64,6 +66,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     tokio::time::sleep(Duration::from_millis(300)).await;
                                     log::info!("{} file uploaded!", file_path);
                                 }
+                                  // TODO(use_eval): Try new solution in the future
+                                  eval_script.eval(&file_leave_dropzone_js);
                             }
                         }  
                     },
