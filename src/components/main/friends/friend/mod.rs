@@ -89,6 +89,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         log::debug!("error removing friend");
                                     }
                                 }
+                                // todo: remove the conversation?
                             }
                         }
                     )}

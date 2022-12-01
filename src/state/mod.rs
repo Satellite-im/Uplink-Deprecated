@@ -12,13 +12,12 @@ use crate::DEFAULT_PATH;
 
 pub enum Actions {
     AddConversation(Conversation),
-    RemoveConversation(Uuid),
+    // remove the chat from active_chats but don't delete the conversation
+    HideChat(Uuid),
     // show a possibly hidden chat
     ShowChat(Uuid),
     // retrieve existing chat for DID or create a new chat
     ChatWith(DID),
-    // remove the chat from active_chats but don't delete the conversation
-    HideChat(Uuid),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
@@ -137,8 +136,7 @@ impl PersistedState {
                     },
                 );
             }
-            Actions::RemoveConversation(conversation_id) => {
-                self.all_chats.remove(&conversation_id);
+            Actions::HideChat(conversation_id) => {
                 self.active_chats.remove(&conversation_id);
                 let favorites = self
                     .favorites

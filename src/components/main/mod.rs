@@ -37,6 +37,8 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     use_future(&cx, &rg, |mut rg| async move {
         log::debug!("streaming conversations");
 
+        // todo: only accept incoming conversations from people we are friends with.
+
         // get all conversations and update state
         let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
         match rg.list_conversations().await {
@@ -55,9 +57,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         for (id, _conv) in &state.read().all_chats {
             if !conversations.contains_key(&id) {
                 log::debug!("removing chat");
-                state
-                    .write()
-                    .dispatch(Actions::RemoveConversation(id.clone()));
+                state.write().dispatch(Actions::HideChat(id.clone()));
             }
         }
 
@@ -109,9 +109,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                 }
                 RayGunEventKind::ConversationDeleted { conversation_id } => {
                     if state.read().all_chats.contains_key(&conversation_id) {
-                        state
-                            .write()
-                            .dispatch(Actions::RemoveConversation(conversation_id));
+                        state.write().dispatch(Actions::HideChat(conversation_id));
                     }
                 }
             }
