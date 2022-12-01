@@ -1,12 +1,12 @@
 use crate::{
     main::{compose::Compose, sidebar::Sidebar, welcome::Welcome},
-    state::{Actions, ConversationInfo},
-    Account, Messaging, ALL_CHATS, STATE,
+    state::Actions,
+    Account, Messaging, STATE,
 };
-use chrono::prelude::*;
+
 use dioxus::prelude::*;
 use futures::StreamExt;
-use std::{collections::HashMap, time::Duration};
+use std::collections::HashMap;
 use uuid::Uuid;
 use warp::raygun::{Conversation, RayGunEventKind};
 
@@ -27,7 +27,6 @@ pub struct Prop {
 pub fn Main(cx: Scope<Prop>) -> Element {
     log::debug!("rendering Main");
     let state = use_atom_ref(&cx, STATE).clone();
-    let all_chats = use_atom_ref(&cx, ALL_CHATS).clone();
     let rg = cx.props.messaging.clone();
     let display_welcome = state.read().selected_chat.is_none();
     let sidebar_visibility = match state.read().hide_sidebar {
@@ -38,9 +37,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     use_future(&cx, &rg, |mut rg| async move {
         log::debug!("streaming conversations");
 
-        // get all conversations and store them in glboal state
-
-        // get all conversations
+        // get all conversations and update state
         let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
         match rg.list_conversations().await {
             Ok(r) => {
@@ -54,17 +51,25 @@ pub fn Main(cx: Scope<Prop>) -> Element {
             }
         }
 
-        // create new Hashmap of all conversations
-        let mut new_chats: HashMap<Uuid, Conversation> = HashMap::new();
-        for (id, conv) in conversations {
-            match all_chats.read().get(&id) {
-                Some(c) => new_chats.insert(id, c.clone()),
-                None => new_chats.insert(id, conv),
-            };
+        // detect removed conversations
+        for (id, _conv) in &state.read().all_chats {
+            if !conversations.contains_key(&id) {
+                log::debug!("removing chat");
+                state
+                    .write()
+                    .dispatch(Actions::RemoveConversation(id.clone()));
+            }
         }
 
-        // update global state
-        *all_chats.write() = new_chats;
+        // detect added conversations
+        for (id, conv) in conversations {
+            if !state.read().all_chats.contains_key(&id) {
+                log::debug!("adding chat");
+                state
+                    .write()
+                    .dispatch(Actions::AddConversation(conv.clone()));
+            }
+        }
 
         // receive events from Warp
         let mut stream = loop {
@@ -97,20 +102,13 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                         .cloned()
                         .unwrap();
 
-                    if !all_chats.read().contains_key(&conversation.id()) {
-                        log::debug!("adding new conversation");
-                        all_chats.write().insert(conversation.id(), conversation);
-                    } else {
-                        log::debug!("received ConversationCreated event for existing conversation");
-                    }
+                    log::debug!("adding chat");
+                    state
+                        .write()
+                        .dispatch(Actions::AddConversation(conversation));
                 }
                 RayGunEventKind::ConversationDeleted { conversation_id } => {
-                    if all_chats.write().remove(&conversation_id).is_none() {
-                        log::debug!("attempted to remove conversation which didn't exist");
-                    } else {
-                        log::debug!("removed conversation");
-                    }
-                    if state.read().active_chats.contains_key(&conversation_id) {
+                    if state.read().all_chats.contains_key(&conversation_id) {
                         state
                             .write()
                             .dispatch(Actions::RemoveConversation(conversation_id));

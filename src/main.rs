@@ -63,12 +63,7 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-// This only pertains to the UI.
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
-// RayGun receives messages from conversations whether or not the conversation is on the chats sidebar.
-// although these conversations aren't displayed, Uplink needs to track them so that if the user opens the chat,
-// the correct information is displayed.
-static ALL_CHATS: AtomRef<HashMap<Uuid, Conversation>> = |_| HashMap::new();
 
 #[derive(PartialEq, Props)]
 pub struct State {

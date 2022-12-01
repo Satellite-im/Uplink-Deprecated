@@ -139,7 +139,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
                                             if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
+                                                state.write().dispatch(Actions::ShowChat(conversation_info.conversation.id()));
                                                 active_chat.set(Some(uuid));
                                             }
                                         }

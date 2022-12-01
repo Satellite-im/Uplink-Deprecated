@@ -6,13 +6,9 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, error::Error, raygun::Conversation};
+use warp::crypto::DID;
 
-use crate::{
-    iutils,
-    state::{Actions, ConversationInfo},
-    Messaging, STATE,
-};
+use crate::{iutils, state::Actions, Messaging, STATE};
 use utils::Account;
 
 #[derive(Props)]
@@ -30,7 +26,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let _rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -77,16 +73,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let mut rg = rg.clone();
-                                let friend = cx.props.friend.clone();
-                                let conversation = match warp::async_block_in_place_uncheck(
-                                    rg.create_conversation(&friend)
-                                ) {
-                                    Ok(v) => v,
-                                    Err(Error::ConversationExist { conversation }) => conversation,
-                                    Err(_) => Conversation::default(),
-                                };
-                                state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
+                                state.write().dispatch(Actions::ChatWith(cx.props.friend.clone()));
                                 cx.props.on_chat.call(());
                             }
                         },
