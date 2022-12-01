@@ -168,7 +168,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 tokio::time::sleep(Duration::from_secs(4)).await;
                 chan1.send(ChanCmd::Timeout {
                     users_typing: users_typing.clone(),
-                    current_chat,
+                    current_chat: current_chat.clone(),
                 });
             }
         },

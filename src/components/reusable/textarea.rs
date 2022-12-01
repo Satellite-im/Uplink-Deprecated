@@ -32,7 +32,7 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering iui_kit/textarea");
 
     let state = use_atom_ref(&cx, STATE);
-    let current_chat = state.read().current_chat;
+    let current_chat = state.read().current_chat.clone();
     // send typing indicators periodically
     let chan = use_coroutine(&cx, |mut rx: UnboundedReceiver<ChanCmd>| async move {
         // (conversation ID, time of last keystroke)
@@ -86,7 +86,7 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let chan3 = chan.clone();
     cx.render(rsx!(ui_kit::textarea::TextArea {
         on_input: move |val: String| {
-            let chat_id = match current_chat {
+            let chat_id = match current_chat.clone() {
                 Some(c) => c.conversation.id(),
                 None => {
                     cx.props.on_input.call(val);

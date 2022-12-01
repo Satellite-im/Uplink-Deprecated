@@ -34,7 +34,7 @@ pub struct Props {
 pub fn Compose(cx: Scope<Props>) -> Element {
     log::debug!("rendering Compose");
     let state = use_atom_ref(&cx, STATE);
-    let current_chat = state.read().current_chat;
+    let current_chat = state.read().current_chat.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let warning_message = l.prerelease_warning.to_string();
     let text = use_state(&cx, String::new);
@@ -108,7 +108,7 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             }
 
                             // clicking the send button is meaningless if there isn't a conversation.
-                            if let Some(convo) = current_chat {
+                            if let Some(convo) = current_chat.clone() {
 
                                 // mutate the state
                                 let cur = state.read().all_chats.get(&convo.conversation.id()).cloned();

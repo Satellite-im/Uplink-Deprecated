@@ -191,7 +191,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             div {
                 class: "chat {active}",
                 onclick: move |_|{
-                    cx.props.on_pressed.call(cx.props.conversation_info);
+                    cx.props.on_pressed.call(cx.props.conversation_info.clone());
                 } ,
                 PFPSkeleton {},
                 div {
@@ -207,7 +207,7 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 class: "chat {active}",
                 id: "chat-{did}",
                 onclick: move |_| {
-                    cx.props.on_pressed.call(cx.props.conversation_info);
+                    cx.props.on_pressed.call(cx.props.conversation_info.clone());
                 },
                 ContextMenu {
                     parent: format!("chat-{}", &did),

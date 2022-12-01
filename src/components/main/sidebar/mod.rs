@@ -41,7 +41,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let has_chats = !state.read().all_chats.is_empty();
 
     let active_chat: UseState<Option<ConversationInfo>> = use_state(&cx, || None).clone();
-    let _active_chat = state.read().current_chat;
+    let _active_chat = state.read().current_chat.clone();
     if *active_chat != _active_chat {
         active_chat.set(_active_chat);
     }
@@ -132,12 +132,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                         conversation_info: conversation_info.clone(),
                                         messaging: cx.props.messaging.clone(),
                                         last_msg_sent: conv.last_msg_sent.clone(),
-                                        is_active: &active_chat == &Some(conversation_info),
+                                        is_active: &active_chat.clone() == &Some(conversation_info.clone()),
                                         tx_chan: notifications_tx.clone(),
                                         on_pressed: move |conv: ConversationInfo| {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
-                                            if  &active_chat != &Some(conv) {
+                                            if  &active_chat.clone() != &Some(conv) {
                                                 state.write().dispatch(Actions::ChatWith(conv));
                                                 active_chat.set(Some(conv));
                                             }
