@@ -23,7 +23,7 @@ pub enum Actions {
 }
 
 /// tracks the active conversations. Chagnes are persisted
-#[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Default, Eq, PartialEq, Clone)]
 pub struct PersistedState {
     /// the currently selected conversation
     pub current_chat: Option<Uuid>,
@@ -133,12 +133,10 @@ impl PersistedState {
                 }
 
                 PersistedState {
-                    current_chat: self.current_chat,
                     all_chats,
                     favorites,
-                    hidden_chat: self.hidden_chat.clone(),
-                    hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
+                    ..self.clone()
                 }
             }
             Actions::RemoveConversation(conversation_id) => {
@@ -151,40 +149,29 @@ impl PersistedState {
                 let mut all_chats = self.all_chats.clone();
                 all_chats.remove(&conversation_id);
                 PersistedState {
-                    current_chat: self.current_chat,
                     all_chats,
                     favorites,
-                    hidden_chat: self.hidden_chat.clone(),
-                    hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
+                    ..self.clone()
                 }
             }
             Actions::ClearChat => PersistedState {
                 current_chat: None,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hidden_chat: self.hidden_chat.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
+                ..self.clone()
             },
             Actions::RemoveChat(uuid) => {
-                let mut next = PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hidden_chat: self.hidden_chat.clone(),
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: self.total_unreads,
-                };
+                let mut next = self.clone();
                 next.all_chats.remove(&uuid);
                 // If the current chat was set to this, we'll want to remove that too.
-                match next.current_chat {
+                next.current_chat = match next.current_chat {
                     Some(u) => {
                         if u.eq(&uuid) {
-                            next.current_chat = None;
+                            None
+                        } else {
+                            next.current_chat
                         }
                     }
-                    None => {}
+                    None => None,
                 };
                 next
             }
@@ -192,41 +179,25 @@ impl PersistedState {
                 self.hidden_chat.remove(&info.conversation.id());
                 PersistedState {
                     current_chat: Some(info.conversation.id()),
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hidden_chat: self.hidden_chat.clone(),
-                    hide_sidebar: self.hide_sidebar,
-                    total_unreads: self.total_unreads,
+                    ..self.clone()
                 }
             }
             Actions::UpdateConversation(info) => {
                 let mut next = PersistedState {
-                    current_chat: self.current_chat,
-                    all_chats: self.all_chats.clone(),
-                    favorites: self.favorites.clone(),
-                    hidden_chat: self.hidden_chat.clone(),
-                    hide_sidebar: self.hide_sidebar,
                     total_unreads: total_notifications(&self),
+                    ..self.clone()
                 };
                 // overwrite the existing entry
                 next.all_chats.insert(info.conversation.id(), info);
                 next
             }
             Actions::UpdateFavorites(favorites) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
                 favorites,
-                hidden_chat: self.hidden_chat.clone(),
-                hide_sidebar: self.hide_sidebar,
-                total_unreads: self.total_unreads,
+                ..self.clone()
             },
             Actions::HideSidebar(slide_bar_bool) => PersistedState {
-                current_chat: self.current_chat,
-                all_chats: self.all_chats.clone(),
-                favorites: self.favorites.clone(),
-                hidden_chat: self.hidden_chat.clone(),
                 hide_sidebar: slide_bar_bool,
-                total_unreads: self.total_unreads,
+                ..self.clone()
             },
             // Actions::SendNotification(title, content, sound) => {
             //     let _ = PushNotification(title, content, sound);
