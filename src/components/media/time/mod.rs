@@ -3,7 +3,7 @@ use tokio::time::{sleep, Duration};
 
 use crate::iutils::display_formatted_time;
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     start_time: u64,
 }

@@ -162,14 +162,8 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
         "
     );
 
-    let free_space = match fs2::free_space("/") {
-        Ok(space) => space,
-        Err(_) => 1,
-    };
-    let total_space = match fs2::total_space("/") {
-        Ok(space) => space,
-        Err(_) => 1,
-    };
+    let free_space = fs2::free_space("/").unwrap_or(1);
+    let total_space = fs2::total_space("/").unwrap_or(1);
     let perc = (((total_space / free_space) as f64) * 0.1) * 100.0;
     let space = format!(
         "{}/{} Free",

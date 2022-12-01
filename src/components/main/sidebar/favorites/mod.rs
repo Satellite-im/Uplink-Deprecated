@@ -20,7 +20,6 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
     log::debug!("rendering main/sidebar/Favorites");
     let state = use_atom_ref(&cx, STATE);
     let state2 = state.clone();
-    let state3 = state2.clone();
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let favString = l.favorites.to_string();
@@ -34,7 +33,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
         div {
             class: "favorites-container",
             state.read().favorites.clone().iter().filter_map(|chat_id| all_chats.get(chat_id)).cloned().map(|conv_info| {
-                let state3 = state3.clone();
+                let state2 = state2.clone();
                 cx.render(rsx!(
                     FavoriteChat {
                         mp: cx.props.account.clone(),
@@ -42,8 +41,8 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                         on_pressed: move |_| {
                             // this goes to an onclick handler
                             // the onclick event should propagate up to the div with class=popout-mask and close the window
-                            if state3.read().current_chat != Some(conv_info.conversation.id()) {
-                                state3.write().dispatch(Actions::ChatWith(conv_info.clone()));
+                            if state2.read().current_chat != Some(conv_info.conversation.id()) {
+                                state2.write().dispatch(Actions::ChatWith(conv_info.clone()));
                             }
                         },
                     }

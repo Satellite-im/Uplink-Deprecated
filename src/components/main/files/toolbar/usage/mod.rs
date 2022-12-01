@@ -39,14 +39,8 @@ pub struct UsageStats {
 
 #[allow(non_snake_case)]
 pub fn Usage(cx: Scope<Props>) -> Element {
-    let free_space = match fs2::free_space("/") {
-        Ok(space) => space,
-        Err(_) => 1,
-    };
-    let total_space = match fs2::total_space("/") {
-        Ok(space) => space,
-        Err(_) => 1,
-    };
+    let free_space = fs2::free_space("/").unwrap_or(1);
+    let total_space = fs2::total_space("/").unwrap_or(1);
     let perc = (((total_space / free_space) as f64) * 0.1) * 100.0;
     let space = format!(
         "{} / {}",
@@ -61,7 +55,7 @@ pub fn Usage(cx: Scope<Props>) -> Element {
                 id: "usage_bar_bg",
                 UsageContent {
                     space: space.clone(),
-                    available: cx.props.usage.available.clone()
+                    available: cx.props.usage.available
                 }
             },
             div {
@@ -69,7 +63,7 @@ pub fn Usage(cx: Scope<Props>) -> Element {
                 style: "-webkit-clip-path: inset(0 0 0 {perc}%);",
                 UsageContent {
                     space: space.clone(),
-                    available: cx.props.usage.available.clone()
+                    available: cx.props.usage.available
                 }
             },
         },

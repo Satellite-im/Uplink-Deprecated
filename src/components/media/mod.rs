@@ -9,6 +9,9 @@ use crate::{
 };
 
 pub mod controls;
+//TODO: Avoid using modules that are the same name as the parent module.
+//      this is to prevent confusion
+#[allow(clippy::module_inception)]
 pub mod media;
 pub mod time;
 
