@@ -8,7 +8,7 @@ use std::{
 use uuid::Uuid;
 use warp::{crypto::DID, raygun::Conversation};
 
-use crate::DEFAULT_PATH;
+use crate::{Messaging, DEFAULT_PATH};
 
 pub enum Actions {
     AddConversation(Conversation),
@@ -17,7 +17,7 @@ pub enum Actions {
     // show a possibly hidden chat
     ShowChat(Uuid),
     // retrieve existing chat for DID or create a new chat
-    ChatWith(DID),
+    ChatWith { rg: Messaging, friend: DID },
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
@@ -102,11 +102,10 @@ impl PersistedState {
     pub fn load_or_initial() -> Self {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
-            Err(_) => {
-                let mut state: PersistedState = Default::default();
-                state.show_prerelease_notice = true;
-                state
-            }
+            Err(_) => PersistedState {
+                show_prerelease_notice: true,
+                ..Default::default()
+            },
         }
     }
 
@@ -152,18 +151,51 @@ impl PersistedState {
             }
             Actions::ShowChat(uuid) => {
                 // look up uuid in all_chats
-                // add to active_chats
-                // set selected_chat
+                match self.all_chats.get(&uuid) {
+                    // add to active_chats
+                    Some(conv) => {
+                        self.active_chats.insert(
+                            uuid,
+                            ConversationInfo {
+                                conversation: conv.clone(),
+                                ..Default::default()
+                            },
+                        );
+                        // set selected_chat
+                        self.selected_chat = Some(uuid);
+                    }
+                    None => {
+                        log::error!("ShowChat called for nonexistent chat. uuid: {}", uuid);
+                    }
+                }
             }
             //Actions::DeselectChat => {
             //    self.selected_chat = None;
             //}
-            Actions::ChatWith(did) => {
-                // look up DID in self.all_chats
-                // if found, copy to active_chats
-                // if not found, create a chat
-                // todo: how to get notified that a new message came in? currently receiving a new conversation will do that but if
-                // a hidden conversation gets a message, we want to be notified of taht also
+            Actions::ChatWith { mut rg, friend } => {
+                // hopefully there isn't a race condition between this part of code and the part that receives events for new conversations. want this to be done before that
+                // event is received.
+                let conversation =
+                    match warp::async_block_in_place_uncheck(rg.create_conversation(&friend)) {
+                        Ok(v) => v,
+                        Err(warp::error::Error::ConversationExist { conversation }) => conversation,
+                        Err(_) => Conversation::default(),
+                    };
+
+                self.active_chats.insert(
+                    conversation.id(),
+                    ConversationInfo {
+                        conversation: conversation.clone(),
+                        ..Default::default()
+                    },
+                );
+                // set selected_chat
+                self.selected_chat = Some(conversation.id());
+
+                // if this conversation was newly created, add it here
+                self.all_chats
+                    .entry(conversation.id())
+                    .or_insert(conversation);
             }
             Actions::UpdateConversation(info) => {
                 self.active_chats.insert(info.conversation.id(), info);
@@ -187,7 +219,7 @@ impl PersistedState {
               //     }
               // }
         };
-        self.total_unreads = total_notifications(&self);
+        self.total_unreads = total_notifications(self);
         self.save();
     }
 }

@@ -58,7 +58,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             } else {
                 match mp.create_identity(Some(username), None) {
                     Ok(_) => {
-                        if profile_picture_is_empty == false {
+                        if !profile_picture_is_empty {
                             if let Err(e) =
                                 mp.update_identity(IdentityUpdate::set_graphics_picture(
                                     profile_picture_state.to_string(),

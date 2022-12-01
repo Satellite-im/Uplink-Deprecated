@@ -65,7 +65,7 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         let elapsed = Instant::now().duration_since(last_time);
                         if elapsed > Duration::from_secs(3) {
                             typing_state = None;
-                        } else if let Err(_) = rg.send_event(chat_id, MessageEvent::Typing).await {
+                        } else if rg.send_event(chat_id, MessageEvent::Typing).await.is_err() {
                             // todo: log error
                         }
                     }

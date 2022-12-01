@@ -26,7 +26,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
-    let _rg = cx.props.messaging.clone();
+    let rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -73,8 +73,12 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                state.write().dispatch(Actions::ChatWith(cx.props.friend.clone()));
+                                state.write().dispatch(Actions::ChatWith {
+                                    rg: rg.clone(),
+                                    friend: cx.props.friend.clone()
+                                });
                                 cx.props.on_chat.call(());
+
                             }
                         },
                         Button {

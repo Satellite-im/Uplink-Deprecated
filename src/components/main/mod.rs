@@ -102,10 +102,12 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                         .cloned()
                         .unwrap();
 
-                    log::debug!("adding chat");
-                    state
-                        .write()
-                        .dispatch(Actions::AddConversation(conversation));
+                    if !state.read().all_chats.contains_key(&conversation_id) {
+                        log::debug!("adding chat");
+                        state
+                            .write()
+                            .dispatch(Actions::AddConversation(conversation));
+                    }
                 }
                 RayGunEventKind::ConversationDeleted { conversation_id } => {
                     if state.read().all_chats.contains_key(&conversation_id) {
