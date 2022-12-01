@@ -15,6 +15,7 @@ pub mod upload;
 pub struct Props {
     account: crate::Account,
     storage: crate::Storage,
+    messaging: crate::Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -32,7 +33,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
         div {
             id: "files",
             class: "{sidebar_visibility}",
-            sidebar::Sidebar { account: cx.props.account.clone() },
+            sidebar::Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() },
             div {
                 id: "content",
                 rsx!(
@@ -61,6 +62,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         class: "hidden-on-desktop mobile-nav",
                         Nav {
                             account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone(),
                         }
                     }
                 ),

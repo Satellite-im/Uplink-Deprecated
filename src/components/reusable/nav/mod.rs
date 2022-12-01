@@ -8,7 +8,7 @@ use ui_kit::{
     numeric_indicator::NumericIndicator,
 };
 
-use crate::{Account, LANGUAGE};
+use crate::{Account, Messaging, LANGUAGE};
 use warp::multipass::MultiPassEventKind;
 
 #[derive(PartialEq, Eq, Clone, Copy)]
@@ -23,6 +23,7 @@ pub enum NavEvent {
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -47,10 +48,12 @@ pub fn Nav(cx: Scope<Props>) -> Element {
         None => todo!(),
     };
 
+    let rg = cx.props.messaging.clone();
+
     use_future(
         &cx,
-        (reqCount, &multipass),
-        |(reqCount, mut multipass)| async move {
+        (reqCount, &multipass, &rg),
+        |(reqCount, mut multipass, mut rg)| async move {
             // Used to make sure everything is initialized before proceeding.
             let new_friend_request_notification = l.new_friend_request.to_string().to_owned();
 
@@ -107,11 +110,14 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             reqCount.with_mut(|count| *count -= 1);
                         }
                     }
-                    MultiPassEventKind::FriendAdded { .. } => {
+                    MultiPassEventKind::FriendAdded { did } => {
                         log::debug!("updating friend request count");
                         if *(reqCount.get()) != 0 {
                             reqCount.with_mut(|count| *count -= 1);
                         }
+                        log::debug!("creating chat");
+                        let _result =
+                            warp::async_block_in_place_uncheck(rg.create_conversation(&did));
                     }
                     _ => {}
                 }

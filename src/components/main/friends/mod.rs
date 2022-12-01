@@ -78,7 +78,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         div {
             id: "friends",
             class: "{sidebar_visibility}",
-            Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
+            Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone(), add_error: add_error.clone()},
             div {
                 id: "content",
                 page_header::PageHeader {

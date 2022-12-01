@@ -7,7 +7,7 @@ use crate::{
     },
     components::reusable::page_header,
     state::Actions,
-    Account, STATE,
+    Account, Messaging, STATE,
 };
 
 use self::sidebar::nav::Route;
@@ -18,6 +18,7 @@ pub mod sidebar;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    messaging: Messaging,
     page_to_open: Route,
 }
 
@@ -53,6 +54,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             class: "{sidebar_visibility}",
             sidebar::SettingsSidebar {
                 account: cx.props.account.clone(),
+                messaging: cx.props.messaging.clone(),
                 on_pressed: move |ne| {
                     active_page.set(ne);
 

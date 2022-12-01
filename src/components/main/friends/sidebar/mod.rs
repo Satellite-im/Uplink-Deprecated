@@ -1,6 +1,6 @@
 use crate::{
-    components::main::friends::request::FriendRequest, state::Actions, Account, LANGUAGE, STATE,
-    TOAST_MANAGER,
+    components::main::friends::request::FriendRequest, state::Actions, Account, Messaging,
+    LANGUAGE, STATE, TOAST_MANAGER,
 };
 
 use arboard::Clipboard;
@@ -18,7 +18,12 @@ use warp::crypto::DID;
 
 #[inline_props]
 #[allow(non_snake_case)]
-pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Element {
+pub fn Sidebar(
+    cx: Scope,
+    account: Account,
+    messaging: Messaging,
+    add_error: UseState<String>,
+) -> Element {
     log::debug!("rendering friends/Sidebar");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let incomingRequestsLang = { l.incoming_requests.to_string() };
@@ -59,6 +64,7 @@ pub fn Sidebar(cx: Scope, account: Account, add_error: UseState<String>) -> Elem
     cx.render(rsx!(
         crate::components::reusable::sidebar::Sidebar {
             account: cx.props.account.clone(),
+            messaging: cx.props.messaging.clone(),
             FindFriends { account: account.clone(), add_error: add_error.clone()},
             div {
                 class: "scroll_wrap",
