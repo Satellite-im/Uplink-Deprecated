@@ -80,10 +80,14 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             account: cx.props.account.clone(),
                         }
                     }),
-                    Messages {
-                        account: cx.props.account.clone(),
-                        messaging: cx.props.messaging.clone(),
-                        users_typing: users_typing.clone(),
+                    div {
+                        id: "scroll-messages-container",
+                        class: "messages-container",
+                        Messages {
+                            account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone(),
+                            users_typing: users_typing.clone(),
+                        }
                     },
                     div {
                         "{selected_file_str}"

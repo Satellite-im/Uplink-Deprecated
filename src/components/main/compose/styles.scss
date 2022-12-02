@@ -17,6 +17,20 @@
     z-index: 90;
   }
 
+  .messages-container {
+    flex: 1;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    &:hover {
+      &::-webkit-scrollbar-thumb {
+        background: var(--theme-primary) !important;
+        opacity: 1;
+      }
+    }
+  }
+
   .writer-container {
     display: inline-flex;
     width: 100%;
