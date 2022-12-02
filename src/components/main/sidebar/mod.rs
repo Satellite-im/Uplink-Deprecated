@@ -38,10 +38,10 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let chatsdString = l.chats.to_string();
-    let has_chats = !state.read().all_chats.is_empty();
+    let has_chats = !state.read().active_chats.is_empty();
 
     let active_chat: UseState<Option<Uuid>> = use_state(&cx, || None).clone();
-    let _active_chat = state.read().current_chat;
+    let _active_chat = state.read().selected_chat;
     if *active_chat != _active_chat {
         active_chat.set(_active_chat);
     }
@@ -62,7 +62,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     // sort the chats by time (ascending order)
     let mut chats: Vec<ConversationInfo> = state
         .read()
-        .all_chats
+        .active_chats
         .iter()
         .map(|(_k, v)| v)
         .cloned()
@@ -139,7 +139,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                             // on press, change state so CSS class flips to show the chat
                                             state.write().dispatch(Actions::HideSidebar(true));
                                             if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ChatWith(conversation_info.clone()));
+                                                state.write().dispatch(Actions::ShowChat(conversation_info.conversation.id()));
                                                 active_chat.set(Some(uuid));
                                             }
                                         }

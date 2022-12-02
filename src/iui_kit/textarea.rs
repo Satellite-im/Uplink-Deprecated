@@ -29,7 +29,7 @@ pub struct Props<'a> {
 #[allow(clippy::clone_double_ref)]
 #[allow(unused_assignments)]
 pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
-    log::debug!("rendering reusable/textarea");
+    log::debug!("rendering iui_kit/textarea");
 
     let state = use_atom_ref(&cx, STATE);
     let current_chat = state.read().selected_chat;
@@ -49,10 +49,10 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                     typing_state = Some((chat_id, Instant::now()));
 
-                    if chat_id_changed
-                        && rg.send_event(chat_id, MessageEvent::Typing).await.is_err()
-                    {
-                        // todo: log error
+                    if chat_id_changed {
+                        if rg.send_event(chat_id, MessageEvent::Typing).await.is_err() {
+                            // todo: log error
+                        }
                     }
                 }
                 ChanCmd::NotTyping => {

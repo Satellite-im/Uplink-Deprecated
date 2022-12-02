@@ -1,12 +1,14 @@
 use crate::{
     main::{compose::Compose, sidebar::Sidebar, welcome::Welcome},
-    state::{Actions, ConversationInfo},
+    state::Actions,
     Account, Messaging, STATE,
 };
-use chrono::prelude::*;
+
 use dioxus::prelude::*;
-use std::{collections::HashMap, time::Duration};
+use futures::StreamExt;
+use std::collections::HashMap;
 use uuid::Uuid;
+use warp::raygun::{Conversation, RayGunEventKind};
 
 pub mod compose;
 pub mod files;
@@ -24,38 +26,95 @@ pub struct Prop {
 #[allow(non_snake_case)]
 pub fn Main(cx: Scope<Prop>) -> Element {
     log::debug!("rendering Main");
-    let st = use_atom_ref(&cx, STATE).clone();
+    let state = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
-    let state = use_atom_ref(&cx, STATE);
-    let display_welcome = state.read().current_chat.is_none();
-    let sidebar_visibility = match st.read().hide_sidebar {
+    let display_welcome = state.read().selected_chat.is_none();
+    let sidebar_visibility = match state.read().hide_sidebar {
         false => "main-sidebar",
         true => "main-chat",
     };
-    use_future(&cx, (), |_| async move {
-        loop {
-            if let Ok(list) = rg.list_conversations().await {
-                let mut current_conversations: HashMap<Uuid, ConversationInfo> = HashMap::new();
-                for item in &list {
-                    let to_insert = match st.read().all_chats.get(&item.id()) {
-                        Some(v) => v.clone(),
-                        None => ConversationInfo {
-                            conversation: item.clone(),
-                            creation_time: DateTime::from(Local::now()),
-                            ..Default::default()
-                        },
-                    };
-                    current_conversations.insert(item.id(), to_insert);
+
+    use_future(&cx, &rg, |mut rg| async move {
+        log::debug!("streaming conversations");
+
+        // todo: only accept incoming conversations from people we are friends with.
+
+        // receive events from Warp
+        let mut stream = loop {
+            match rg.subscribe().await {
+                Ok(stream) => break stream,
+                Err(warp::error::Error::MultiPassExtensionUnavailable)
+                | Err(warp::error::Error::RayGunExtensionUnavailable) => {
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
                 }
-                if current_conversations != st.read().all_chats {
-                    log::debug!("modifying chats");
-                    st.write()
-                        .dispatch(Actions::AddRemoveConversations(current_conversations));
+                Err(_e) => {
+                    //Should not reach this point but should handle an error if it does
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
                 }
             }
-            // TODO: find a way to sync this with the frame rate or create a "polling rate" value we can configure
-            // This also doesn't really seem to effect performance
-            tokio::time::sleep(Duration::from_secs(1)).await;
+        };
+
+        // get all conversations and update state
+        let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
+        match rg.list_conversations().await {
+            Ok(r) => {
+                for c in r {
+                    conversations.insert(c.id(), c.clone());
+                }
+            }
+            Err(e) => {
+                log::error!("failed to get conversations: {}", e);
+                return;
+            }
+        }
+
+        // detect removed conversations
+        for id in state.read().all_chats.keys() {
+            if !conversations.contains_key(id) {
+                log::debug!("removing chat");
+                state.write().dispatch(Actions::HideChat(*id));
+            }
+        }
+
+        // detect added conversations
+        for (id, conv) in conversations {
+            if !state.read().all_chats.contains_key(&id) {
+                log::debug!("adding chat");
+                state
+                    .write()
+                    .dispatch(Actions::AddConversation(conv.clone()));
+            }
+        }
+
+        while let Some(event) = stream.next().await {
+            match event {
+                RayGunEventKind::ConversationCreated { conversation_id } => {
+                    //For now get the conversation from list_conversation
+                    let conversation = rg
+                        .list_conversations()
+                        .await
+                        .unwrap_or_default()
+                        .iter()
+                        .filter(|convo| convo.id() == conversation_id)
+                        .cloned()
+                        .collect::<Vec<_>>()
+                        .first()
+                        .cloned()
+                        .unwrap();
+
+                    if !state.read().all_chats.contains_key(&conversation_id) {
+                        log::debug!("adding chat");
+                        state
+                            .write()
+                            .dispatch(Actions::AddConversation(conversation));
+                    }
+                }
+                RayGunEventKind::ConversationDeleted { conversation_id } => {
+                    if state.read().all_chats.contains_key(&conversation_id) {
+                        state.write().dispatch(Actions::HideChat(conversation_id));
+                    }
+                }
+            }
         }
     });
 

@@ -1,31 +1,29 @@
+use crate::iutils::config::Config;
+use ::utils::Account;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
+use dioxus::router::{Route, Router};
+use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_heroicons::outline::Shape;
+use dioxus_toast::ToastManager;
 use fluent::{FluentBundle, FluentResource};
+use language::{AvailableLanguages, Language};
+use once_cell::sync::Lazy;
+use sir::AppStyle;
+use state::PersistedState;
 use std::{
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
     thread,
 };
+use themes::Theme;
 use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
 use utils::Storage;
-
-use crate::iutils::config::Config;
-use ::utils::Account;
-use dioxus::router::{Route, Router};
-use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
-use dioxus_toast::ToastManager;
-use language::{AvailableLanguages, Language};
-use once_cell::sync::Lazy;
-use sir::AppStyle;
-use state::PersistedState;
-use themes::Theme;
-
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,

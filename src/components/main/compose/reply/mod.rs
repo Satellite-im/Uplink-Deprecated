@@ -63,7 +63,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                 }
                 div {
                     class: "reply-message-container",
-                    onclick: move |_| {
+                    onclick: move |_e| {
                         use_eval(&cx)(format!("
                             document.getElementById('{}-message').scrollIntoView({{
                                 behavior: 'smooth',
