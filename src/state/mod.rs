@@ -13,10 +13,12 @@ use crate::DEFAULT_PATH;
 pub enum Actions {
     // triggered in response to a RayGun event
     AddConversation(Conversation),
+    // triggered in response to a RayGun event
+    RemoveConversation(Uuid),
     // remove the chat from active_chats but don't delete the conversation
-    HideChat(Uuid),
+    HideConversation(Uuid),
     // show a possibly hidden chat
-    ShowChat(Uuid),
+    ShowConversation(Uuid),
     // initiated from the Friends menu. The caller is responsible for retrieving an
     // existing conversation or creating a new one.
     ChatWith(Conversation),
@@ -138,7 +140,23 @@ impl PersistedState {
                         ..Default::default()
                     });
             }
-            Actions::HideChat(conversation_id) => {
+            Actions::RemoveConversation(conversation_id) => {
+                log::debug!("PersistedState: RemoveConversation");
+                self.active_chats.remove(&conversation_id);
+                if self.selected_chat == Some(conversation_id) {
+                    self.selected_chat = None;
+                }
+                self.all_chats.remove(&conversation_id);
+
+                let favorites = self
+                    .favorites
+                    .iter()
+                    .filter(|id| conversation_id == **id)
+                    .cloned()
+                    .collect();
+                self.favorites = favorites;
+            }
+            Actions::HideConversation(conversation_id) => {
                 log::debug!("PersistedState: HideChat");
                 self.active_chats.remove(&conversation_id);
                 if self.selected_chat == Some(conversation_id) {
@@ -153,7 +171,7 @@ impl PersistedState {
                 //     .collect();
                 // self.favorites = favorites;
             }
-            Actions::ShowChat(uuid) => {
+            Actions::ShowConversation(uuid) => {
                 log::debug!("PersistedState: ShowChat");
                 // look up uuid in all_chats
                 match self.all_chats.get(&uuid) {
