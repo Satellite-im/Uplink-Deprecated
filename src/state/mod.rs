@@ -179,7 +179,10 @@ impl PersistedState {
                     match warp::async_block_in_place_uncheck(rg.create_conversation(&friend)) {
                         Ok(v) => v,
                         Err(warp::error::Error::ConversationExist { conversation }) => conversation,
-                        Err(_) => Conversation::default(),
+                        Err(e) => {
+                            log::error!("failed to chat with friend {}: {}", friend, e);
+                            return;
+                        }
                     };
 
                 self.active_chats.insert(

@@ -39,6 +39,21 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
         // todo: only accept incoming conversations from people we are friends with.
 
+        // receive events from Warp
+        let mut stream = loop {
+            match rg.subscribe().await {
+                Ok(stream) => break stream,
+                Err(warp::error::Error::MultiPassExtensionUnavailable)
+                | Err(warp::error::Error::RayGunExtensionUnavailable) => {
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                }
+                Err(_e) => {
+                    //Should not reach this point but should handle an error if it does
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                }
+            }
+        };
+
         // get all conversations and update state
         let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
         match rg.list_conversations().await {
@@ -70,21 +85,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                     .dispatch(Actions::AddConversation(conv.clone()));
             }
         }
-
-        // receive events from Warp
-        let mut stream = loop {
-            match rg.subscribe().await {
-                Ok(stream) => break stream,
-                Err(warp::error::Error::MultiPassExtensionUnavailable)
-                | Err(warp::error::Error::RayGunExtensionUnavailable) => {
-                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-                }
-                Err(_e) => {
-                    //Should not reach this point but should handle an error if it does
-                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-                }
-            }
-        };
 
         while let Some(event) = stream.next().await {
             match event {
