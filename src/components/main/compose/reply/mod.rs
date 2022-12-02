@@ -63,7 +63,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                 }
                 div {
                     class: "reply-message-container",
-                    onclick: move |e| {
+                    onclick: move |_| {
                         use_eval(&cx)(format!("
                             document.getElementById('{}-message').scrollIntoView({{
                                 behavior: 'smooth',
@@ -88,7 +88,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                     } else {
                         rsx!(Fragment {})
                     }
-                    if cx.props.message.len() > 0 {
+                    if !cx.props.message.is_empty() {
                         rsx!(p {
                             "{cx.props.message}",
                         })
