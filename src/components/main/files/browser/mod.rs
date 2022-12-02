@@ -3,7 +3,7 @@ use std::{collections::HashSet, time::Duration};
 use dioxus::prelude::*;
 
 use crate::Storage;
-use ui_kit::{file::File, folder::State, new_folder::NewFolder};
+use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
 use warp::constellation::item::ItemType;
 
 #[derive(Props, PartialEq)]
@@ -46,10 +46,26 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 div {
                     class: "item file",
                     NewFolder {
-                        state: State::Primary
+                        state: State::Primary,
+                        storage: cx.props.storage.clone(),
                     }
                 }
             )),
+            files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
+                let key = directory.id();
+
+                rsx!(
+                    Folder {
+                        key: "{key}",
+                        name: directory.name(),
+                        state: State::Primary,
+                        id: key.to_string(),
+                        size: directory.size(),
+                        children: 0,
+                        storage: cx.props.storage.clone(),
+                    }
+        )
+            })
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
 
 
