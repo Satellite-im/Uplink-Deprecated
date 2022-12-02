@@ -53,7 +53,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => "",
     };
     // add class if text length is 0
-    if text.len() == 0 {
+    if text.is_empty() {
         class += " button-icon-only";
     }
 

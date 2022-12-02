@@ -49,7 +49,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             error.set("Username needs to be between 4 and 32 characters long".into())
         } else {
             let username_regex_set =
-                RegexSet::new(&[r"@", r"[[:^alnum:]&&[:^punct:]&&[^ ]]"]).unwrap();
+                RegexSet::new([r"@", r"[[:^alnum:]&&[:^punct:]&&[^ ]]"]).unwrap();
             let matches = username_regex_set.matches(username);
             if matches.matched(0) {
                 error.set("@ is not allowed in username".into())
@@ -58,7 +58,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             } else {
                 match mp.create_identity(Some(username), None) {
                     Ok(_) => {
-                        if profile_picture_is_empty == false {
+                        if !profile_picture_is_empty {
                             if let Err(e) =
                                 mp.update_identity(IdentityUpdate::set_graphics_picture(
                                     profile_picture_state.to_string(),

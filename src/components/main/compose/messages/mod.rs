@@ -25,6 +25,7 @@ enum TypingIndicator {
     NotTyping,
 }
 
+#[allow(clippy::large_enum_variant)]
 enum ChanCmd {
     Indicator {
         users_typing: UseRef<HashMap<DID, String>>,
@@ -57,7 +58,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let mut rg = cx.props.messaging.clone();
     let ident = cx.props.account.get_own_identity().unwrap();
-    let my_did = ident.did_key().clone();
+    let my_did = ident.did_key();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
@@ -66,8 +67,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // this is used for reading the event stream.
     let current_chat = state
         .read()
-        .current_chat
-        .and_then(|x| state.read().all_chats.get(&x).cloned());
+        .selected_chat
+        .and_then(|x| state.read().active_chats.get(&x).cloned());
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -95,7 +96,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     remote_name,
                     indicator,
                 } => {
-                    log::debug!("received typing indicator");
+                    //log::debug!("received typing indicator");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
                         prev_current_chat = current_chat;
@@ -121,7 +122,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     users_typing,
                     current_chat,
                 } => {
-                    log::debug!("received typing indicator timeout");
+                    //log::debug!("received typing indicator timeout");
                     if current_chat != prev_current_chat {
                         typing_times.clear();
                         prev_current_chat = current_chat;
@@ -133,7 +134,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 let elapsed = Instant::now().duration_since(**v);
                                 elapsed > Duration::from_secs(3)
                             })
-                            .map(|(k, v)| (k.clone(), v.clone()))
+                            .map(|(k, v)| (k.clone(), *v))
                             .collect();
 
                         let new_users_typing: HashMap<DID, String> = users_typing
@@ -158,13 +159,13 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     // periodically check for timeouts
     let chan1 = chan.clone();
-    let real_current_chat = state.read().current_chat.clone();
+    let real_current_chat = state.read().selected_chat;
     use_future(
         &cx,
         (&real_current_chat.clone(), &cx.props.users_typing.clone()),
         |(current_chat, users_typing)| async move {
             loop {
-                log::debug!("checking for typing indicator timeout on rx side");
+                //log::debug!("checking for typing indicator timeout on rx side");
                 tokio::time::sleep(Duration::from_secs(4)).await;
                 chan1.send(ChanCmd::Timeout {
                     users_typing: users_typing.clone(),
