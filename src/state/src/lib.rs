@@ -4,11 +4,14 @@ use std::{
     cmp::{Ord, Ordering},
     collections::{HashMap, HashSet},
 };
+use dioxus::fermi::AtomRef;
 // use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 
-use crate::DEFAULT_PATH;
+use utils::DEFAULT_PATH;
+
+pub static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 pub enum Actions {
     // triggered in response to a RayGun event
@@ -30,7 +33,7 @@ pub enum Actions {
     // SendNotification(String, String, Sounds),
 }
 
-/// tracks the active conversations. Chagnes are persisted
+/// tracks the active conversations. Changes are persisted
 #[derive(Serialize, Deserialize, Default, Eq, PartialEq)]
 pub struct PersistedState {
     /// the currently selected conversation
@@ -48,6 +51,7 @@ pub struct PersistedState {
     pub hide_sidebar: bool,
     pub total_unreads: u32,
     pub show_prerelease_notice: bool,
+    pub send_typing: bool,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]

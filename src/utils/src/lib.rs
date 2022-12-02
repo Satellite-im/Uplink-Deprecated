@@ -2,9 +2,19 @@ pub mod extensions;
 pub mod notifications;
 pub mod sounds;
 
+use clap::Parser;
 use std::ops::{Deref, DerefMut};
+use std::path::PathBuf;
+use once_cell::sync::Lazy;
 
-use warp::{constellation::Constellation, multipass::MultiPass};
+use warp::{constellation::Constellation, multipass::MultiPass, sync::RwLock};
+
+#[derive(Debug, Parser)]
+#[clap(name = "")]
+struct Opt {
+    #[clap(long)]
+    path: Option<PathBuf>,
+}
 
 #[derive(Clone)]
 pub struct Account(pub Box<dyn MultiPass>);
@@ -49,3 +59,10 @@ impl PartialEq for Storage {
         self.0.id() == other.0.id()
     }
 }
+
+pub static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| {
+    RwLock::new(match Opt::parse().path {
+        Some(path) => path,
+        _ => dirs::home_dir().unwrap_or_default().join(".warp")
+    })
+});
