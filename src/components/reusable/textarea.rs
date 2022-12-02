@@ -49,10 +49,10 @@ pub fn TextArea<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                     typing_state = Some((chat_id, Instant::now()));
 
-                    if chat_id_changed {
-                        if rg.send_event(chat_id, MessageEvent::Typing).await.is_err() {
-                            // todo: log error
-                        }
+                    if chat_id_changed
+                        && rg.send_event(chat_id, MessageEvent::Typing).await.is_err()
+                    {
+                        // todo: log error
                     }
                 }
                 ChanCmd::NotTyping => {

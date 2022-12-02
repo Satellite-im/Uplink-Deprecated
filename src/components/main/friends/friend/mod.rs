@@ -26,7 +26,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let mut rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -73,10 +73,17 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                state.write().dispatch(Actions::ChatWith {
-                                    rg: rg.clone(),
-                                    friend: cx.props.friend.clone()
-                                });
+                                let conversation =
+                                match warp::async_block_in_place_uncheck(rg.create_conversation(&cx.props.friend)) {
+                                    Ok(v) => v,
+                                    Err(warp::error::Error::ConversationExist { conversation }) => conversation,
+                                    Err(e) => {
+                                        log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
+                                        return;
+                                    }
+                                };
+
+                                state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
                             }

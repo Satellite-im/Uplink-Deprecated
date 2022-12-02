@@ -159,7 +159,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     // periodically check for timeouts
     let chan1 = chan.clone();
-    let real_current_chat = state.read().selected_chat.clone();
+    let real_current_chat = state.read().selected_chat;
     use_future(
         &cx,
         (&real_current_chat.clone(), &cx.props.users_typing.clone()),

@@ -6,18 +6,20 @@ use std::{
 };
 // use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
-use warp::{crypto::DID, raygun::Conversation};
+use warp::raygun::Conversation;
 
-use crate::{Messaging, DEFAULT_PATH};
+use crate::DEFAULT_PATH;
 
 pub enum Actions {
+    // triggered in response to a RayGun event
     AddConversation(Conversation),
     // remove the chat from active_chats but don't delete the conversation
     HideChat(Uuid),
     // show a possibly hidden chat
     ShowChat(Uuid),
-    // retrieve existing chat for DID or create a new chat
-    ChatWith { rg: Messaging, friend: DID },
+    // initiated from the Friends menu. The caller is responsible for retrieving an
+    // existing conversation or creating a new one.
+    ChatWith(Conversation),
     UpdateConversation(ConversationInfo),
     UpdateFavorites(HashSet<Uuid>),
     HideSidebar(bool),
@@ -124,18 +126,20 @@ impl PersistedState {
     pub fn dispatch(&mut self, action: Actions) {
         match action {
             Actions::AddConversation(conversation) => {
+                log::debug!("PersistedState: AddConversation");
                 self.all_chats
-                    .insert(conversation.id(), conversation.clone());
-                self.active_chats.insert(
-                    conversation.id(),
-                    ConversationInfo {
+                    .entry(conversation.id())
+                    .or_insert_with(|| conversation.clone());
+                self.active_chats
+                    .entry(conversation.id())
+                    .or_insert(ConversationInfo {
                         conversation,
                         creation_time: DateTime::from(Local::now()),
                         ..Default::default()
-                    },
-                );
+                    });
             }
             Actions::HideChat(conversation_id) => {
+                log::debug!("PersistedState: HideChat");
                 self.active_chats.remove(&conversation_id);
                 if self.selected_chat == Some(conversation_id) {
                     self.selected_chat = None;
@@ -150,6 +154,7 @@ impl PersistedState {
                 // self.favorites = favorites;
             }
             Actions::ShowChat(uuid) => {
+                log::debug!("PersistedState: ShowChat");
                 // look up uuid in all_chats
                 match self.all_chats.get(&uuid) {
                     // add to active_chats
@@ -172,26 +177,15 @@ impl PersistedState {
             //Actions::DeselectChat => {
             //    self.selected_chat = None;
             //}
-            Actions::ChatWith { mut rg, friend } => {
-                // hopefully there isn't a race condition between this part of code and the part that receives events for new conversations. want this to be done before that
-                // event is received.
-                let conversation =
-                    match warp::async_block_in_place_uncheck(rg.create_conversation(&friend)) {
-                        Ok(v) => v,
-                        Err(warp::error::Error::ConversationExist { conversation }) => conversation,
-                        Err(e) => {
-                            log::error!("failed to chat with friend {}: {}", friend, e);
-                            return;
-                        }
-                    };
-
-                self.active_chats.insert(
-                    conversation.id(),
-                    ConversationInfo {
+            Actions::ChatWith(conversation) => {
+                log::debug!("PersistedState: ChatWith");
+                // add to active_chats if not already there
+                self.active_chats
+                    .entry(conversation.id())
+                    .or_insert(ConversationInfo {
                         conversation: conversation.clone(),
                         ..Default::default()
-                    },
-                );
+                    });
                 // set selected_chat
                 self.selected_chat = Some(conversation.id());
 
@@ -201,15 +195,19 @@ impl PersistedState {
                     .or_insert(conversation);
             }
             Actions::UpdateConversation(info) => {
+                log::debug!("PersistedState: UpdateConversation");
                 self.active_chats.insert(info.conversation.id(), info);
             }
             Actions::UpdateFavorites(favorites) => {
+                log::debug!("PersistedState: UpdateFavorites");
                 self.favorites = favorites;
             }
             Actions::HideSidebar(slide_bar_bool) => {
+                log::debug!("PersistedState: HideSidebar");
                 self.hide_sidebar = slide_bar_bool;
             }
             Actions::SetShowPrerelaseNotice(value) => {
+                log::debug!("PersistedState: SetShowPrerelaseNotice");
                 self.show_prerelease_notice = value;
             } // Actions::SendNotification(title, content, sound) => {
               //     let _ = PushNotification(title, content, sound);
