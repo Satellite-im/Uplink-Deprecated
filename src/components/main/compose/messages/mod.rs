@@ -25,6 +25,7 @@ enum TypingIndicator {
     NotTyping,
 }
 
+#[allow(clippy::large_enum_variant)]
 enum ChanCmd {
     Indicator {
         users_typing: UseRef<HashMap<DID, String>>,
@@ -57,7 +58,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let mut rg = cx.props.messaging.clone();
     let ident = cx.props.account.get_own_identity().unwrap();
-    let my_did = ident.did_key().clone();
+    let my_did = ident.did_key();
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
@@ -133,7 +134,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 let elapsed = Instant::now().duration_since(**v);
                                 elapsed > Duration::from_secs(3)
                             })
-                            .map(|(k, v)| (k.clone(), v.clone()))
+                            .map(|(k, v)| (k.clone(), *v))
                             .collect();
 
                         let new_users_typing: HashMap<DID, String> = users_typing

@@ -69,7 +69,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         .collect();
     chats.sort();
 
-    let fav_exist = state.read().favorites.clone().len() != 0;
+    let fav_exist = !state.read().favorites.clone().is_empty();
 
     cx.render(rsx!{
         div {

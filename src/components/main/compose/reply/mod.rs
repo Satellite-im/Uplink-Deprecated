@@ -88,7 +88,7 @@ pub fn Reply(cx: Scope<Props>) -> Element {
                     } else {
                         rsx!(Fragment {})
                     }
-                    if cx.props.message.len() > 0 {
+                    if !cx.props.message.is_empty() {
                         rsx!(p {
                             "{cx.props.message}",
                         })

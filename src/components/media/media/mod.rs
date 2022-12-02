@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::profile_picture::PFP;
 
-#[derive(PartialEq, Props)]
+#[derive(PartialEq, Eq, Props)]
 pub struct Props {
     name: String,
     src: String,

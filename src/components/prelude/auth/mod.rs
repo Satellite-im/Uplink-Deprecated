@@ -49,7 +49,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             error.set("Username needs to be between 4 and 32 characters long".into())
         } else {
             let username_regex_set =
-                RegexSet::new(&[r"@", r"[[:^alnum:]&&[:^punct:]&&[^ ]]"]).unwrap();
+                RegexSet::new([r"@", r"[[:^alnum:]&&[:^punct:]&&[^ ]]"]).unwrap();
             let matches = username_regex_set.matches(username);
             if matches.matched(0) {
                 error.set("@ is not allowed in username".into())
