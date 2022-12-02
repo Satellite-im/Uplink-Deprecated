@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/ci-make-dmg.yml
+    uses: ./.github/workflows/comment-PR-dmg.yml
 
   test:
     needs: build
