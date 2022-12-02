@@ -7,7 +7,7 @@ use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     small_extension_placeholder::SmallExtensionPlaceholder,
 };
-use utils::extensions::{ExtensionType, BasicExtension, get_renders};
+use utils::extensions::{get_renders, BasicExtension, ExtensionType};
 
 #[derive(Props)]
 pub struct Props<'a> {
