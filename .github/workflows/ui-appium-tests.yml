@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
+  workflow_run:
+    workflows: ["Make dmg"]
+    types: [completed]
+
 jobs:
   test:
     runs-on: macos-latest
