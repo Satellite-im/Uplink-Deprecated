@@ -89,24 +89,13 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         while let Some(event) = stream.next().await {
             match event {
                 RayGunEventKind::ConversationCreated { conversation_id } => {
-                    //For now get the conversation from list_conversation
-                    let conversation = rg
-                        .list_conversations()
-                        .await
-                        .unwrap_or_default()
-                        .iter()
-                        .filter(|convo| convo.id() == conversation_id)
-                        .cloned()
-                        .collect::<Vec<_>>()
-                        .first()
-                        .cloned()
-                        .unwrap();
-
-                    if !state.read().all_chats.contains_key(&conversation_id) {
-                        log::debug!("adding chat");
-                        state
-                            .write()
-                            .dispatch(Actions::AddConversation(conversation));
+                    if let Ok(conversation) = rg.get_conversation(conversation_id).await {
+                        if !state.read().all_chats.contains_key(&conversation_id) {
+                            log::debug!("adding chat");
+                            state
+                                .write()
+                                .dispatch(Actions::AddConversation(conversation));
+                        }
                     }
                 }
                 RayGunEventKind::ConversationDeleted { conversation_id } => {
