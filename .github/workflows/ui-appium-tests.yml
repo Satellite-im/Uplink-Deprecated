@@ -5,9 +5,6 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  build:
-    uses: ./.github/workflows/comment-PR-dmg.yml
-
   test:
     needs: build
     runs-on: macos-latest
@@ -15,6 +12,14 @@ jobs:
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
+
+      - name: Download DMG from comments
+        uses: suisei-cn/actions-download-file@v1.3.0
+        id: uplink-dmg # Remember to give an ID if you need the output
+        with:
+          url: ${{ github.event.comment.body }}
+          target: appium-tests/apps
+          auto-match: true
 
       - name: Download DMG built during action 🗳️
         uses: actions/download-artifact@v3
