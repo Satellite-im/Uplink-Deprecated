@@ -6,13 +6,9 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, error::Error, raygun::Conversation};
+use warp::crypto::DID;
 
-use crate::{
-    iutils,
-    state::{Actions, ConversationInfo},
-    Messaging, STATE,
-};
+use crate::{iutils, state::Actions, Messaging, STATE};
 use utils::Account;
 
 #[derive(Props)]
@@ -30,7 +26,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let mut rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -77,18 +73,19 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let mut rg = rg.clone();
-                                let friend = cx.props.friend.clone();
-                                let conversation_response = warp::async_block_in_place_uncheck(
-                                    rg.create_conversation(&friend)
-                                );
-                                let conversation = match conversation_response {
+                                let conversation =
+                                match warp::async_block_in_place_uncheck(rg.create_conversation(&cx.props.friend)) {
                                     Ok(v) => v,
-                                    Err(Error::ConversationExist { conversation }) => conversation,
-                                    Err(_) => Conversation::default(),
+                                    Err(warp::error::Error::ConversationExist { conversation }) => conversation,
+                                    Err(e) => {
+                                        log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
+                                        return;
+                                    }
                                 };
-                                state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
+
+                                state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
+
                             }
                         },
                         Button {
@@ -103,6 +100,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         log::debug!("error removing friend");
                                     }
                                 }
+                                // todo: remove the conversation?
                             }
                         }
                     )}

@@ -3,7 +3,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::switch::Switch;
 use utils::extensions::ExtensionInfo;
 
-#[derive(Props, PartialEq)]
+#[derive(Props, Eq, PartialEq)]
 pub struct Props {
     extension: ExtensionInfo,
 }

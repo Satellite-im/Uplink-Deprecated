@@ -15,9 +15,7 @@ use crate::components::{
 pub fn Extensions(cx: Scope) -> Element {
     log::debug!("rendering settings/pages/Extensions");
 
-    let mut extensions: Vec<ExtensionInfo> = Vec::new();
-    extensions.push(AudioFactory::info());
-    extensions.push(EmojiSelector::info());
+    let extensions: Vec<ExtensionInfo> = vec![AudioFactory::info(), EmojiSelector::info()];
 
     let extensions_path = dirs::home_dir()
         .unwrap_or_default()

@@ -3,10 +3,10 @@ use dioxus::prelude::*;
 use libloading::{Library, Symbol};
 use once_cell::sync::Lazy;
 use std::ffi::OsStr;
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::{collections::HashMap, fs};
-use std::path::PathBuf;
-use warp::logging::tracing::{info, error};
+use warp::logging::tracing::{error, info};
 use warp::sync::RwLock;
 
 type ComponentFn = unsafe fn() -> Box<Component>;
@@ -53,7 +53,6 @@ pub struct Extension {
     info: ExtensionInfo,
     component: Component,
 }
-
 
 #[derive(Default)]
 #[allow(dead_code)]
