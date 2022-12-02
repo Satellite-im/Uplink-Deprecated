@@ -6,6 +6,7 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use utils::Storage;
 
 use super::folder::State;
+use rfd::FileDialog;
 use crate::context_menu::{ContextItem, ContextMenu};
 
 // Remember: owned props must implement PartialEq!
@@ -60,8 +61,23 @@ pub fn File(cx: Scope<Props>) -> Element {
                                     icon: Shape::DocumentArrowDown,
                                     onpressed: move |_| {
                                         hide_edit_name_element(cx.clone());
-                                        // TODO(Files): Add download function here
-                                        eprintln!("Download item");
+                                        let file_storage = cx.props.storage.clone();
+                                        let file_name = &*file_name_complete_ref.read();
+                                        let file_extension = cx.props.kind.clone();
+                                        cx.spawn({
+                                            to_owned![file_storage, file_name, file_extension];
+                                            async move {
+                                                let file_path_buff = match FileDialog::new().set_directory(".").set_file_name(&file_name).add_filter("", &[&file_extension]).save_file() {
+                                                    Some(path) => path,
+                                                    None => return,
+                                                };
+                                                let file_path_str = file_path_buff.to_string_lossy().to_string();
+                                                match file_storage.get(&file_name, &file_path_str).await {
+                                                    Ok(_) => log::info!("{file_name} downloaded."),
+                                                    Err(error) => log::error!("Error downloading file {}: {error}", &file_name),
+                                                };
+                                            }
+                                        });
                                     },
                                     text: String::from("Download")
                                 },
