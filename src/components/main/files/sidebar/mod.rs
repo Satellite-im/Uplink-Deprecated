@@ -36,7 +36,7 @@ pub fn FileElem(cx: Scope, file: File) -> Element {
 
     cx.render(rsx!(
         a {
-            class: "tree_item",
+            class: "tree-item",
             div {
                 class: "row",
                 onclick: move |_| {
@@ -63,7 +63,7 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
     let folder_name = &dir.name;
     cx.render(rsx! {
         div {
-            class: "tree_folder",
+            class: "tree-item",
             div {
                 class: "row",
                 onclick: move |_| {
@@ -139,16 +139,11 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         account: cx.props.account.clone(),
         messaging: cx.props.messaging.clone(),
             div {
-                id: "files-label",
-                label {
-                    "Files"
-                },
+                class: "label",
+                "Files"
             },
             div {
-                class: "tree_wrapper",
-                label {
-                    class: "tree_folder root",
-                }
+                class: "tree-container",
                 Folder {
                     dir: directory
                 },

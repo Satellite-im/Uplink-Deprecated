@@ -18,7 +18,7 @@ pub fn UsageContent(cx: Scope<UsageContentProps>) -> Element {
             }
             div {
                 class: "usage_bar_subheading ellipsis",
-                "Disk Space: {cx.props.space}"
+                "{cx.props.space}"
             }
         }
     })
@@ -49,7 +49,7 @@ pub fn Usage(cx: Scope<Props>) -> Element {
     };
     let perc = (((total_space / free_space) as f64) * 0.1) * 100.0;
     let space = format!(
-        "{}/{} Free",
+        "{} / {}",
         format_size(free_space, DECIMAL),
         format_size(total_space, DECIMAL)
     );

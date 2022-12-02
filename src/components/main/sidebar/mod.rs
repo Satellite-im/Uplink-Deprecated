@@ -69,6 +69,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         .collect();
     chats.sort();
 
+    let fav_exist = state.read().favorites.clone().len() != 0;
+
     cx.render(rsx!{
         div {
             exts,
@@ -103,10 +105,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
-            Favorites {
-                account: cx.props.account.clone(),
-                messaging: cx.props.messaging.clone()
-            },
+            fav_exist.then(|| rsx!{
+                Favorites {
+                    account: cx.props.account.clone(),
+                    messaging: cx.props.messaging.clone()
+                }
+            }),
             label {
                 style: "margin-bottom: 0;",
                 "{chatsdString}"

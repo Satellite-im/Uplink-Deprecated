@@ -216,7 +216,8 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         ContextItem {
                             onpressed: move |_| {},
                             icon: Shape::Trash,
-                            text: String::from("Delete Account")
+                            text: String::from("Delete Account"),
+                            danger: true
                         },
                     })
                 },
