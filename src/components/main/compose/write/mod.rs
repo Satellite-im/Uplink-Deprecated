@@ -1,4 +1,6 @@
-use crate::{iui_kit::textarea::TextArea, iutils::config::Config, Messaging, LANGUAGE};
+use crate::{
+    components::reusable::textarea::TextArea, iutils::config::Config, Messaging, LANGUAGE,
+};
 use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;

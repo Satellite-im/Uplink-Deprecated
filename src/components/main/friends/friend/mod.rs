@@ -6,13 +6,9 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, error::Error, raygun::Conversation};
+use warp::crypto::DID;
 
-use crate::{
-    iutils,
-    state::{Actions, ConversationInfo},
-    Messaging, STATE,
-};
+use crate::{iutils, state::Actions, Messaging, STATE};
 use utils::Account;
 
 #[derive(Props)]
@@ -38,7 +34,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let mut rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -94,11 +90,15 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 );
                                 let conversation = match conversation_response {
                                     Ok(v) => v,
-                                    Err(Error::ConversationExist { conversation }) => conversation,
-                                    Err(_) => Conversation::default(),
+                                    Err(warp::error::Error::ConversationExist { conversation }) => conversation,
+                                    Err(e) => {
+                                        log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
+                                        return;
+                                    }
                                 };
                                 local_state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
                                 cx.props.on_chat.call(());
+
                             }
                         },
                         Button {
@@ -136,6 +136,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         remove_friend(cx.props.account.clone(), cx.props.friend.clone());
                                     }
                                 }
+                                // todo: remove the conversation?
                             }
                         }
                     )}

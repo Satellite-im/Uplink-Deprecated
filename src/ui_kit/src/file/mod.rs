@@ -19,7 +19,7 @@ pub struct Props {
 }
 
 #[allow(non_snake_case)]
-pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+pub fn File(cx: Scope<Props>) -> Element {
     let class = match cx.props.state {
         State::Primary => "primary",
         State::Secondary => "secondary",
