@@ -2,8 +2,10 @@ use dioxus::prelude::*;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
+    components::main::files::{
+        browser::FileBrowser, sidebar::Sidebar, toolbar::Toolbar, upload::Upload,
+    },
     components::reusable::nav::Nav,
-    main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
     STATE,
 };
 pub mod browser;
@@ -33,7 +35,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
         div {
             id: "files",
             class: "{sidebar_visibility}",
-            sidebar::Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() },
+            Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() },
             div {
                 id: "content",
                 rsx!(
