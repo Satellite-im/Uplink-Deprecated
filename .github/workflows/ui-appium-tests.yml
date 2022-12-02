@@ -1,9 +1,6 @@
 name: UI Automated Tests on MacOS
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
-
   workflow_run:
     workflows: ["Make dmg"]
     types: [completed]
