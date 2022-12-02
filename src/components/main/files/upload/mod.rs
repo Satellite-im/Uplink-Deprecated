@@ -207,7 +207,7 @@ async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save:
 
     let file = file_storage.get_buffer(&filename_to_save).await?;
 
-    // Gurantee that is an image that has been uploaded
+    // Guarantee that is an image that has been uploaded
     let image = ImageReader::new(Cursor::new(&file))
         .with_guessed_format()?
         .decode()?;
