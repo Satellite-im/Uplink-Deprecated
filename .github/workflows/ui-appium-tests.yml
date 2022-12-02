@@ -6,9 +6,7 @@ on:
 
 jobs:
   test:
-    needs: build
     runs-on: macos-latest
-
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3

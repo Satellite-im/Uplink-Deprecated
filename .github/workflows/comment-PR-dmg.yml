@@ -3,7 +3,6 @@ on:
   workflow_run:
     workflows: ["Make dmg"]
     types: [completed]
-
 jobs:
   pr_comment:
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
