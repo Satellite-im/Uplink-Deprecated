@@ -1,28 +1,3 @@
-.resize-container {
-  --resize-handle-size: 8px;
-  position: relative;
-
-  .resize-handle {
-    position: absolute;
-  }
-
-  &.horizontal {
-    .resize-handle {
-      inset: 0 0 0 auto;
-      width: var(--resize-handle-size);
-      cursor: ew-resize;
-    }
-  }
-
-  &.vertical {
-    .resize-handle {
-      inset: auto 0 0 0;
-      height: var(--resize-handle-size);
-      cursor: ns-resize;
-    }
-  }
-}
-
 #media-container {
   width: 100%;
   background: var(--theme-background);

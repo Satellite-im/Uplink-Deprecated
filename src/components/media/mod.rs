@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::button::Button;
+use ui_kit::{button::Button, resizable::*};
 use utils::Account;
 
 use crate::{
@@ -15,41 +15,6 @@ pub mod time;
 #[derive(PartialEq, Props)]
 pub struct Props {
     account: Account,
-}
-
-pub enum Direction {
-    Horizontal,
-    Vertical,
-}
-
-#[derive(Props)]
-pub struct ResizeProps<'a> {
-    direction: Direction,
-    children: Element<'a>,
-}
-
-#[allow(non_snake_case)]
-pub fn ResizeContainer<'a>(cx: Scope<'a, ResizeProps<'a>>) -> Element<'a> {
-    let class = format!(
-        "resize-container {}",
-        match cx.props.direction {
-            Direction::Horizontal => "horizontal",
-            Direction::Vertical => "vertical",
-        }
-    );
-
-    let script = include_str!("resize.js");
-
-    cx.render(rsx! {
-        div {
-            class: "{class}",
-            &cx.props.children,
-            div {
-                class: "resize-handle",
-            }
-            script { "{script}" }
-        }
-    })
 }
 
 #[allow(non_snake_case)]
@@ -71,8 +36,8 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let script = include_str!("responsive.js");
 
     cx.render(rsx! {
-        ResizeContainer {
-            direction: Direction::Vertical,
+        Resizable {
+            direction: ResizeDirection::Vertical,
             div {
                 id: "media-container",
                 class: "{class}",
