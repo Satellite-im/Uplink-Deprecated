@@ -72,7 +72,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         for id in state.read().all_chats.keys() {
             if !conversations.contains_key(id) {
                 log::debug!("removing chat");
-                state.write().dispatch(Actions::HideChat(*id));
+                state.write().dispatch(Actions::RemoveConversation(*id));
             }
         }
 
@@ -111,7 +111,9 @@ pub fn Main(cx: Scope<Prop>) -> Element {
                 }
                 RayGunEventKind::ConversationDeleted { conversation_id } => {
                     if state.read().all_chats.contains_key(&conversation_id) {
-                        state.write().dispatch(Actions::HideChat(conversation_id));
+                        state
+                            .write()
+                            .dispatch(Actions::RemoveConversation(conversation_id));
                     }
                 }
             }

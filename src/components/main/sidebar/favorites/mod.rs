@@ -40,7 +40,7 @@ pub fn Favorites(cx: Scope<Props>) -> Element {
                             // this goes to an onclick handler
                             // the onclick event should propagate up to the div with class=popout-mask and close the window
                             if state.read().selected_chat != Some(conv_info.conversation.id()) {
-                                state.write().dispatch(Actions::ShowChat(conv_info.conversation.id()));
+                                state.write().dispatch(Actions::ShowConversation(conv_info.conversation.id()));
                             }
                         },
                     }
