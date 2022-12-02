@@ -46,9 +46,9 @@ pub fn Attachment(cx: Scope<Props>) -> Element {
                             while let Some(progress) = stream.next().await {
                                 match progress {
                                     warp::constellation::Progression::CurrentProgress {
-                                        name,
                                         current,
                                         total,
+                                        ..
                                     } => {
                                         // println!("Written {} MB for {name}", current / 1024 / 1024);
                                         if let Some(total) = total {
