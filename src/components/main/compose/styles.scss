@@ -1,12 +1,10 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
 .compose {
-  display: inline-flex;
+  display: flex;
   flex-grow: 1;
   flex-direction: column;
-  position: relative;
   min-width: 0;
-  margin-right: 5px;
   .blurmask {
     -webkit-backdrop-filter: blur(5px);
     backdrop-filter: blur(5px);
@@ -17,12 +15,6 @@
     right: 0;
     top: 0;
     z-index: 90;
-  }
-
-  .messages-container {
-    flex: 1;
-    overflow: hidden;
-    position: relative;
   }
 
   .writer-container {
