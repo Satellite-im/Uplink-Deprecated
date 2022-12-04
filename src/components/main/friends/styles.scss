@@ -51,19 +51,19 @@
 
   @media only screen and (max-height: 569px) {
     ul {
-      font-size: 12px;
+      font-size: 0.75rem;
     }
   }
 
   @media only screen and (min-height: 570px) {
     ul {
-      font-size: 14px;
+      font-size: 0.875rem;
     }
   }
 
   @media only screen and (min-height: 650px) {
     ul {
-      font-size: 16px;
+      font-size: 1rem;
     }
   }
 }
