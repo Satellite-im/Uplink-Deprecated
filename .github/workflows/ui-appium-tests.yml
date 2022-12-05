@@ -5,25 +5,31 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  build:
-    uses: ./.github/workflows/ci-make-dmg.yml
-
-  test:
-    needs: build
+  build-and-test:
     runs-on: macos-latest
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      - name: Download APK built during action 🗳️
-        uses: actions/download-artifact@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
         with:
-          name: Uplink Universal Mac App
-          path: appium-tests/apps
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
 
-      - name: Unzip artifact
-        working-directory: ./appium-tests/apps
-        run: unzip Uplink-Mac-Universal.zip
+      - name: Install Protobuf
+        continue-on-error: true
+        run: |
+          brew update
+          brew install protobuf
+
+      - name: Make DMG 🗳️
+        run: make dmg
+
+      - name: Copy DMG to Appium Apps Directory
+        run: |
+          cp -r ./target/release/macos/Uplink.app /Applications/
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
@@ -34,13 +40,13 @@ jobs:
         run: |
           cd appium-tests && npm install
 
-      - name: Install Uplink Desktop App
-        run: |
-          cd ./appium-tests/apps
-          ls -la
-          hdiutil attach ./appium-tests/apps/Uplink.dmg
-          cp -r /Volumes/Uplink.dmg /Applications/
-          hdiutil detach ./appium-tests/apps/Uplink.dmg
+      #- name: Install Uplink Desktop App
+      #  run: |
+      #    cd ./appium-tests/apps
+      #    ls -la
+      #    hdiutil attach ./appium-tests/apps/Uplink.dmg
+      #    cp -r /Volumes/Uplink.dmg /Applications/
+      #    hdiutil detach ./appium-tests/apps/Uplink.dmg
 
       - name: Install and Run Appium Server 📱
         run: |

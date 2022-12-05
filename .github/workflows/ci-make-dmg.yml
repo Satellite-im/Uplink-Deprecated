@@ -7,7 +7,6 @@ on:
   push:
     tags:
       - "*"
-  workflow_call:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
