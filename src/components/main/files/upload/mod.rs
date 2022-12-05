@@ -87,6 +87,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         width: "100%",
                         input {
                             "type": "file",
+                            prevent_default: "onclick",
                             onclick: move |_| {
                                 let file_path = match FileDialog::new().set_directory(".").pick_file() {
                                     Some(path) => path,
