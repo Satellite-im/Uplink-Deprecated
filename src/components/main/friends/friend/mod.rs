@@ -96,7 +96,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         return;
                                     }
                                 };
-                                local_state.write().dispatch(Actions::ChatWith(ConversationInfo{conversation, ..Default::default() }));
+                                local_state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
                             }
@@ -107,23 +107,22 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             on_pressed: move |_| {
                                 let local_state = use_atom_ref(&cx, STATE).clone();
                                 let rg = cx.props.messaging.clone();
-                                let current_chat_exist = local_state.read().current_chat.clone();
+                                let current_chat_exist = local_state.read().selected_chat.clone();
                                 match current_chat_exist {
                                     Some(_) => {
-                                        let current_chat = local_state.read().current_chat.and_then(|x| local_state.read().all_chats.get(&x).cloned());
+                                        let current_chat = local_state.read().selected_chat.and_then(|x| local_state.read().all_chats.get(&x).cloned());
                                         let current_chat_condition = match current_chat {
                                             Some(c) => c,
                                             None => return,
                                         };
 
-                                        let conversation_id = current_chat_condition.conversation.id();
+                                        let conversation_id = current_chat_condition.id();
 
                                         cx.spawn({
                                             to_owned![rg, conversation_id, local_state];
                                             async move {
                                                 match rg.delete(conversation_id, None).await {
                                                     Ok(_) => {
-                                                        local_state.write().dispatch(Actions::ClearChat);
                                                         log::info!("successfully delete conversation")
                                                     },
                                                     Err(error) => log::error!("error when deleting conversation: {error}"),

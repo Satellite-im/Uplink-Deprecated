@@ -132,7 +132,7 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             })
         }
         None => {
-            state.write().dispatch(Actions::ClearChat);
+           
             cx.render(rsx! {
                 div {
                     class: "topbar-user-info",

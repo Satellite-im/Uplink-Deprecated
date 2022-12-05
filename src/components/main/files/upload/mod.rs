@@ -41,13 +41,13 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
         to_owned![
-+            file_storage,
-+            drag_over_dropzone,
-+            eval_script,
-+            file_leave_dropzone_js,
-+            file_over_dropzone_js,
-+            file_being_uploaded_js
-+        ];
+            file_storage,
+            drag_over_dropzone,
+            eval_script,
+            file_leave_dropzone_js,
+            file_over_dropzone_js,
+            file_being_uploaded_js
+        ];
         async move {
             while let Some(action) = rx.next().await {
                 match action {
