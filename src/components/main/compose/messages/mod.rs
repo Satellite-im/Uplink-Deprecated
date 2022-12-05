@@ -370,11 +370,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             }
-                            if message.id() == first_unread_message_id {
+                            (message.id() == first_unread_message_id).then(||
                                 rsx! {Divider()}
-                            } else {
-                                rsx! {Fragment()}
-                            }
+                            )
                             match message.replied() {
                                 Some(replied) => {
                                     let r = cx.props.messaging.clone();
