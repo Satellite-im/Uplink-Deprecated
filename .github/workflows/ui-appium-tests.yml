@@ -2,7 +2,7 @@ name: UI Automated Tests on MacOS
 
 on:
   workflow_run:
-    workflows: ["Make dmg", "Comment on pull request with dmg file"]
+    workflows: [Make dmg]
     types:
       - completed
 
@@ -13,19 +13,30 @@ jobs:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      - name: Download DMG from comments
-        uses: suisei-cn/actions-download-file@v1.3.0
-        id: uplink-dmg # Remember to give an ID if you need the output
+      - name: Download artifact
+        uses: actions/github-script@v6
         with:
-          url: ${{ github.event.comment.body }}
-          target: appium-tests/apps
-          auto-match: true
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr_number"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/appium-tests/apps/uplink_dmg.zip`, Buffer.from(download.data));
 
-      - name: Download DMG built during action 🗳️
-        uses: actions/download-artifact@v3
-        with:
-          name: Uplink Universal Mac App
-          path: appium-tests/apps
+      - name: Unzip artifact
+        working-directory: ./appium-tests/apps
+        run: unzip uplink_dmg.zip
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
