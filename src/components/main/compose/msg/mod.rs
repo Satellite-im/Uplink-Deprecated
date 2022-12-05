@@ -247,6 +247,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         async move {
                                             match rg.delete(conversation_id, None).await {
                                                 Ok(_) => {
+                                                    state.write().dispatch(Actions::RemoveConversation(conversation_id));
                                                     log::info!("successfully delete conversation")
                                                 },
                                                 Err(error) => log::error!("error when deleting conversation: {error}"),
@@ -268,6 +269,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         async move {
                                             match rg.delete(conversation_id, None).await {
                                                 Ok(_) => {
+                                                    state.write().dispatch(Actions::RemoveConversation(conversation_id));
                                                     log::info!("successfully delete conversation")
                                                 },
                                                 Err(error) => log::error!("error when deleting conversation: {error}"),

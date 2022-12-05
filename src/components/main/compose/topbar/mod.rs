@@ -131,27 +131,24 @@ pub fn TopBar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             })
         }
-        None => {
-           
-            cx.render(rsx! {
+        None => cx.render(rsx! {
+            div {
+                class: "topbar-user-info",
+                PFPSkeleton {},
                 div {
-                    class: "topbar-user-info",
-                    PFPSkeleton {},
-                    div {
-                        InlineSkeleton {},
-                        InlineSkeleton {}
-                    },
-                    div {
-                        class: "topbar-controls",
-                        Button {
-                            icon: Shape::Phone,
-                            on_pressed: move |_| {
-                                cx.props.on_call.call(());
-                            },
-                        }
-                    }
+                    InlineSkeleton {},
+                    InlineSkeleton {}
                 },
-            })
-        }
+                div {
+                    class: "topbar-controls",
+                    Button {
+                        icon: Shape::Phone,
+                        on_pressed: move |_| {
+                            cx.props.on_call.call(());
+                        },
+                    }
+                }
+            },
+        }),
     }
 }
