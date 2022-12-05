@@ -17,7 +17,7 @@ pub fn LinkEmbed(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         // Check if the title is empty
         if cx.props.meta.title.is_empty() {
-            // If the title is empty, return a span with no text
+            // If the title is empty, add an empty span, if it isn't empty, add the embed markup that allows a user to open the attachment
             rsx! { span {""} }
         } else {
             // If the title is not empty, return a div with two child div elements
