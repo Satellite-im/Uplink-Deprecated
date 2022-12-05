@@ -4,14 +4,10 @@ use crate::{
 };
 
 use arboard::Clipboard;
-use dioxus::{
-    core::UiEvent,
-    events::{FormEvent, MouseData},
-    prelude::*,
-};
+use dioxus::{core::UiEvent, events::MouseData, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
-use ui_kit::{button::Button, input::Input};
+use ui_kit::{button::Button, input_add_friend::InputAddFriend};
 
 use std::{collections::HashSet, time::Duration};
 use warp::crypto::DID;
@@ -154,16 +150,13 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
             "{l.add_someone}",
         },
         div {
-            class: "add",
-            Input {
-                placeholder: l.add_placeholder.clone(),
-                icon: Shape::UserPlus,
-                on_change: move |evt: FormEvent| {
-                    add_error.set(String::new());
-                    remote_friend.set(evt.value.clone());
-                },
-                on_enter: move |_| {
-                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
+            class: "add",  
+            InputAddFriend{
+                    placeholder: l.add_placeholder.clone(),
+                    value: remote_friend.clone(),
+                    on_change: move |_| add_error.set(String::new()),
+                    on_enter: move |_| {
+                    let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -197,7 +190,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                 on_pressed: move |e: UiEvent<MouseData>| {
                     e.cancel_bubble();
 
-                    let did = DID::try_from(format!("did:key:{}", remote_friend.clone())); 
+                    let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                     match did {
                         Ok(d) => {
                             match account.clone()
@@ -224,6 +217,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                         },
                         Err(_) => add_error.set(l2.invalid_code.to_string()),
                     }
+                    remote_friend.set("".into());
                 },
             },
             div {

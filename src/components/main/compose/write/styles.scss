@@ -3,7 +3,7 @@
 .write {
   align-items: end;
   display: flex;
-  flex-grow: 1;
+  flex-shrink: 0;
   padding: 1rem;
   -webkit-user-select: none; /* Safari */
   user-select: none; /* Non-prefixed version, currently */
