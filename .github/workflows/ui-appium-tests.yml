@@ -2,7 +2,7 @@ name: UI Automated Tests on MacOS
 
 on:
   workflow_run:
-    workflows: ["Make dmg"]
+    workflows: ["Make dmg", "Comment on pull request with dmg file"]
     types: [completed]
 
 jobs:
