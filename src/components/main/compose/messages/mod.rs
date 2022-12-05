@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    components::main::compose::{msg::Msg, reply::Reply},
+    components::main::compose::{divider::Divider, msg::Msg, reply::Reply},
     iutils,
     state::{Actions, LastMsgSent},
     Account, Messaging, STATE,
@@ -69,6 +69,16 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .read()
         .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
+
+    let mut first_unread_message_id: Uuid = Uuid::default();
+
+    if let Some(chat) = current_chat.as_ref() {
+        if let Ok(c) = usize::try_from(chat.num_unread_messages) {
+            if let Some(m) = messages.get(c) {
+                first_unread_message_id = m.id();
+            }
+        }
+    }
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -359,6 +369,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         //TODO: Display error?
                                     }
                                 }
+                            }
+                            if message.id() == first_unread_message_id {
+                                rsx! {Divider()}
+                            } else {
+                                rsx! {Fragment()}
                             }
                             match message.replied() {
                                 Some(replied) => {
