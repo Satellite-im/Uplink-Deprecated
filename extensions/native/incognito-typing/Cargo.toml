@@ -7,5 +7,7 @@ edition = "2021"
 
 [dependencies]
 dioxus = { version = "0.2.4", features = ["desktop", "fermi"] }
+dioxus-heroicons = { git="https://github.com/Satellite-im/dioxus-heroicons" }
+ui_kit = { path = "../../../src/ui_kit" }
 utils = { path = "../../../src/utils" }
 state = { path = "../../../src/state" }
