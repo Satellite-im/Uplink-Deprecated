@@ -1,47 +1,37 @@
 #files {
   #sidebar {
-    padding: 0 1rem 1rem 1rem;
-    .tree_wrapper {
-      flex: 1;
-    }
-
-    .tree_folder,
-    .tree_item {
-      display: inline-flex;
+    .children {
+      display: flex;
       flex-direction: column;
-      width: 100%;
-      padding-left: 0.25rem;
-      margin: 0.25rem;
-      position: relative;
-      cursor: pointer;
-      user-select: none;
-      font-family: "Poppins", sans-serif !important;
-      color: var(--theme-text-darker);
+      gap: 0.5rem;
+      overflow: hidden;
     }
 
-    .tree_folder {
-      font-size: var(--text-size);
-      color: var(--theme-text-darker);
-      font-weight: normal;
+    .label {
+      font-size: var(--label-size);
+      font-family: "Space Mono", monospace;
+      color: var(--theme-text-muted);
     }
 
-    .row {
-      display: inline-flex;
-      align-items: center;
+    .tree-container {
+      flex-grow: 1;
+      overflow: auto;
 
-      svg {
-        margin-right: 0.5rem;
+      .tree-item {
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+        .row {
+          display: flex;
+          gap: 0.5rem;
+          color: var(--theme-text-darker);
+          cursor: pointer;
+          padding: 0.2rem 0;
+        }
+        .tree-item {
+          margin-left: 8px;
+        }
       }
     }
-
-    .root {
-      color: var(--theme-text-bright);
-      padding-left: 0;
-      display: inline-flex;
-    }
-  }
-  #files-label {
-    margin-top: 1.5rem;
-    margin-bottom: -1rem;
   }
 }

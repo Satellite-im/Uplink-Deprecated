@@ -1,15 +1,11 @@
 use arboard::Clipboard;
-use dioxus::{
-    core::UiEvent,
-    events::{FormEvent, MouseData},
-    prelude::*,
-};
+use dioxus::{core::UiEvent, events::MouseData, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
 
 use crate::{Account, LANGUAGE, TOAST_MANAGER};
 
-use ui_kit::{button::Button, input::Input};
+use ui_kit::{button::Button, input_add_friend::InputAddFriend};
 
 use warp::crypto::DID;
 
@@ -27,7 +23,7 @@ pub fn FindFriends(
 
     let l2 = l.clone();
     let l3 = l.clone();
-    let code2 = { l.code_copied.to_string() };
+    let codeCopied = { l.code_copied.to_string() };
     let account2 = account.clone();
 
     let copy_friend_id = move || {
@@ -35,7 +31,7 @@ pub fn FindFriends(
         if let Ok(ident) = account2.get_own_identity() {
             let single_toast = ToastInfo {
                 position: Position::TopRight,
-                ..ToastInfo::simple(&code2)
+                ..ToastInfo::simple(&codeCopied)
             };
             let _id = toast.write().popup(single_toast); // copy to the clipboard without prefix 'did:key:'
             clipboard
@@ -52,16 +48,13 @@ pub fn FindFriends(
                 "{l.add_someone}",
             },
             div {
-                class: "add",
-                Input {
-                    placeholder: l.add_placeholder.clone(),
-                    icon: Shape::UserPlus,
-                    on_change: move |evt: FormEvent| {
-                        add_error.set(String::new());
-                        remote_friend.set(evt.value.clone());
-                    },
-                    on_enter: move |_| {
-                            let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
+                class: "add",  
+                InputAddFriend{
+                        placeholder: l.add_placeholder.clone(),
+                        value: remote_friend.clone(),
+                        on_change: move |_| add_error.set(String::new()),
+                        on_enter: move |_| {
+                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                         match did {
                             Ok(d) => {
                                 match account.clone()
@@ -95,7 +88,7 @@ pub fn FindFriends(
                     on_pressed: move |e: UiEvent<MouseData>| {
                         e.cancel_bubble();
 
-                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone())); 
+                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                         match did {
                             Ok(d) => {
                                 match account.clone()
@@ -122,6 +115,7 @@ pub fn FindFriends(
                             },
                             Err(_) => add_error.set(l2.invalid_code.to_string()),
                         }
+                        remote_friend.set("".into());
                     },
                 },
                 is_compact.then(|| rsx!{
@@ -135,7 +129,6 @@ pub fn FindFriends(
                             }
                         }
                     }
-
                 }),
             },
             div {

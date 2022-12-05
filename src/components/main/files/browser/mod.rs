@@ -30,7 +30,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     log::debug!("updating files list");
                     *files.write_silent() = files_updated.clone();
                     let mut total_files_list: Vec<_> = files_updated.iter().cloned().collect();
-                    total_files_list.sort_by(|a, b| b.modified().cmp(&a.modified()));
+                    total_files_list.sort_by_key(|b| std::cmp::Reverse(b.modified()));
                     files_sorted.set(total_files_list);
                 }
 

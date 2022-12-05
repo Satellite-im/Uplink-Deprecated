@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
-use ui_kit::button::Button;
+use ui_kit::{button::Button, resizable::*};
 use utils::Account;
 
 use crate::{
@@ -9,6 +9,9 @@ use crate::{
 };
 
 pub mod controls;
+//TODO: Avoid using modules that are the same name as the parent module.
+//      this is to prevent confusion
+#[allow(clippy::module_inception)]
 pub mod media;
 pub mod time;
 
@@ -36,44 +39,47 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     let script = include_str!("responsive.js");
 
     cx.render(rsx! {
-        div {
-            id: "media-container",
-            class: "{class}",
+        Resizable {
+            direction: ResizeDirection::Vertical,
             div {
-                class: "media-view",
+                id: "media-container",
+                class: "{class}",
                 div {
-                    class: "settings-toggle",
-                    Button {
-                        icon: Shape::Cog,
-                        state: ui_kit::button::State::Transparent,
-                        on_pressed: move |_| {},
-                    }
-                },
-                div {
-                    id: "media-content",
-                    names.iter().map(|name| rsx!(
-                        Media {
-                            name: name.to_string(),
-                            src: "".to_string()
+                    class: "media-view",
+                    div {
+                        class: "settings-toggle",
+                        Button {
+                            icon: Shape::Cog,
+                            state: ui_kit::button::State::Transparent,
+                            on_pressed: move |_| {},
                         }
-                    ))
-                },
-                div {
-                    class: "media-toggle",
-                    Button {
-                        icon: if **fullscreen { Shape::ArrowsPointingIn } else { Shape::ArrowsPointingOut },
-                        state: ui_kit::button::State::Transparent,
-                        on_pressed: move |_| fullscreen.set(!fullscreen),
-                    }
-                },
-            }
-            Controls {}
-            script { "{script}" }
-            config.audiovideo.call_timer.then(|| rsx!{
-                Time {
-                    start_time: 0
+                    },
+                    div {
+                        id: "media-content",
+                        names.iter().map(|name| rsx!(
+                            Media {
+                                name: name.to_string(),
+                                src: "".to_string()
+                            }
+                        ))
+                    },
+                    div {
+                        class: "media-toggle",
+                        Button {
+                            icon: if **fullscreen { Shape::ArrowsPointingIn } else { Shape::ArrowsPointingOut },
+                            state: ui_kit::button::State::Transparent,
+                            on_pressed: move |_| fullscreen.set(!fullscreen),
+                        }
+                    },
                 }
-            })
+                Controls {}
+                script { "{script}" }
+                config.audiovideo.call_timer.then(|| rsx!{
+                    Time {
+                        start_time: 0
+                    }
+                })
+            }
         }
     })
 }

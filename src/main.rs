@@ -1,31 +1,29 @@
+use crate::iutils::config::Config;
+use ::utils::Account;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
+use dioxus::router::{Route, Router};
+use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_heroicons::outline::Shape;
+use dioxus_toast::ToastManager;
 use fluent::{FluentBundle, FluentResource};
+use language::{AvailableLanguages, Language};
+use once_cell::sync::Lazy;
+use sir::AppStyle;
+use state::PersistedState;
 use std::{
     fs,
     ops::{Deref, DerefMut},
     path::PathBuf,
     thread,
 };
+use themes::Theme;
 use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
 use utils::Storage;
-
-use crate::iutils::config::Config;
-use ::utils::Account;
-use dioxus::router::{Route, Router};
-use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
-use dioxus_toast::ToastManager;
-use language::{AvailableLanguages, Language};
-use once_cell::sync::Lazy;
-use sir::AppStyle;
-use state::PersistedState;
-use themes::Theme;
-
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -39,7 +37,6 @@ use crate::components::main;
 use crate::components::prelude::{auth, loading, unlock};
 
 pub mod components;
-pub mod iui_kit;
 pub mod iutils;
 pub mod language;
 pub mod themes;
@@ -53,6 +50,8 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
+
+
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
@@ -61,6 +60,21 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
+static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
+    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));       
+
+#[derive(PartialEq, Clone)]
+pub enum FileDragEvent {
+    Dropped,
+    None, 
+}
+
+#[derive(Clone)]
+pub struct DroppedFile {
+    files_local_path: Vec<String>, 
+    file_drag_event: FileDragEvent,
+}
+
 #[derive(PartialEq, Props)]
 pub struct State {
     tesseract: Tesseract,
@@ -68,7 +82,6 @@ pub struct State {
     messaging: Messaging,
     storage: Storage,
 }
-
 #[derive(Debug, Parser)]
 #[clap(name = "")]
 struct Opt {
@@ -183,6 +196,8 @@ fn main() {
         .with_resizable(true)
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
+
+
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -192,7 +207,29 @@ fn main() {
             messaging,
             storage,
         },
-        |c| c.with_window(|_| window.with_menu(main_menu)),
+        |c| {
+            c.with_window(|_| window.with_menu(main_menu));
+            c.with_file_drop_handler(|_w, e| {
+                let mut dropped_file_local_path = format!("{:?}", e);
+                let file_drag_event = if dropped_file_local_path.contains("Dropped") {
+                    FileDragEvent::Dropped
+                 } else {
+                    FileDragEvent::None 
+                };
+               
+                dropped_file_local_path = 
+                dropped_file_local_path.replace("Dropped([", "")
+                .replace("Hovered([", "")
+                .replace("])", "")
+                .replace('"', "");
+                let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
+                *DROPPED_FILE.write() = DroppedFile {
+                    files_local_path: files_path, 
+                    file_drag_event: file_drag_event,
+                };
+                true
+            })
+        },
     );
 
     #[cfg(not(target_os = "macos"))]
@@ -243,7 +280,7 @@ fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
-
+ 
     cx.use_hook(|_| {
         cx.provide_context(cx.props.messaging.clone());
     });
