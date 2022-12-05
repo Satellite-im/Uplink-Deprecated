@@ -38,17 +38,16 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
     let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &file_id);
 
- let file_component =  
-    if cx.props.thumbnail.is_empty() {
-        rsx!(Icon { icon: Shape::Document })
-    } else {
-        rsx!(img {
-            src: "{file_thumb}",
-            width: "70px",
-            border_radius: "8px",
-            height: "70px",
-            })
-    };
+    let file_component =  
+        if cx.props.thumbnail.is_empty() {
+            rsx!(Icon { icon: Shape::Document })
+        } else {
+            rsx!(img {
+                src: "{file_thumb}",
+                width: "100%",
+                border_radius: "8px",
+                })
+        };
 
     cx.render(rsx! {
         div {
@@ -152,13 +151,15 @@ pub fn File<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                     }
                     
                 },
-            
+            div {
+                class: "file_info",
                 p { 
                             id: "{file_id}-name-normal",
                             "{file_name_formatted_state}" },
                 label {
                             "{file_size}"
-                        },     
+                        }, 
+            }
             }
         }
     })
