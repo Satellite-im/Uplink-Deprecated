@@ -1,42 +1,29 @@
 name: UI Automated Tests on MacOS
 
 on:
-  workflow_run:
-    workflows: [Make dmg]
-    types:
-      - completed
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
+  build:
+    uses: ./.github/workflows/ci-make-dmg.yml
+
   test:
+    needs: build
     runs-on: macos-latest
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      - name: Download artifact
-        uses: actions/github-script@v6
+      - name: Download APK built during action 🗳️
+        uses: actions/download-artifact@v3
         with:
-          script: |
-            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: context.payload.workflow_run.id,
-            });
-            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "pr_number"
-            })[0];
-            let download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-            let fs = require('fs');
-            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/appium-tests/apps/uplink_dmg.zip`, Buffer.from(download.data));
+          name: Uplink Universal Mac App
+          path: appium-tests/apps
 
       - name: Unzip artifact
         working-directory: ./appium-tests/apps
-        run: unzip uplink_dmg.zip
+        run: unzip Uplink-Mac-Universal.zip
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
