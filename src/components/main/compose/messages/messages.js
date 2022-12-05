@@ -33,12 +33,19 @@ function callback(mutationList) {
       const node = mutation.addedNodes[0]
       const isSameAuthor = node?.dataset?.remote === "false"
 
-      if (isLockedToBottom || isSameAuthor) {
+      if (isSameAuthor) {
         scrollToBottom()
       }
     }
   }
 }
 
+var resizeObserver = new ResizeObserver(() => {
+  if (isLockedToBottom) {
+    scrollToBottom()
+  }
+})
+if (container) resizeObserver.observe(container)
+
 var observer = new MutationObserver(callback)
-observer.observe(messages, config)
+if (messages) observer.observe(messages, config)

@@ -22,6 +22,7 @@
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
+    display: flex;
 
     &:hover {
       &::-webkit-scrollbar-thumb {
