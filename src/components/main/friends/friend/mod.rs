@@ -92,7 +92,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 let conversation_response = warp::async_block_in_place_uncheck(
                                     rg.create_conversation(&friend)
                                 );
-                                let _conversation = match conversation_response {
+                                let conversation = match conversation_response {
                                     Ok(v) => v,
                                     Err(warp::error::Error::ConversationExist { conversation }) => conversation,
                                     Err(e) => {
@@ -100,13 +100,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         return;
                                     }
                                 };
-                                let conversation_params = Conversation::Default::default();
-                                local_state.write().dispatch(Actions::ChatWith(Conversation{
-                                    id: conversation_params.id(), 
-                                    name: conversation_params.name(), 
-                                    conversation_type: conversation_params.conversation_type(), 
-                                    recipients: conversation_params.recipients()
-                                }));
+                                local_state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
                             }
