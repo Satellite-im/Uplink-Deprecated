@@ -20,7 +20,6 @@ pub fn LinkEmbed(cx: Scope<Props>) -> Element {
             // If the title is empty, add an empty span, if it isn't empty, add the embed markup that allows a user to open the attachment
             rsx! { span {""} }
         } else {
-            // If the title is not empty, return a div with two child div elements
             rsx! {
                 div {
                     class: "link-embed",
