@@ -10,7 +10,7 @@ use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 
-use crate::{Storage, FileDragEvent};
+use crate::{Storage, FileDragEvent, DroppedFile};
 use crate::DROPPED_FILE;
 
 
@@ -52,9 +52,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             if dropped_file.files_local_path.len() > 1 {
                                 let files_to_upload = format!("{} files to upload!", dropped_file.files_local_path.len());
                                 eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
-                            } else {
+                            }  else if dropped_file.files_local_path.len() == 1 {
                                 eval_script.eval(&file_over_dropzone_js.replace("file_path", &dropped_file.files_local_path[0]));
                             }
+
                             if dropped_file.file_drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
                                   // TODO(use_eval): Try new solution in the future
@@ -71,7 +72,12 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         }  
                     },
                 Action::Stop => {
+                            eval_script.eval(&file_leave_dropzone_js);
                             log::info!("File not able to upload");
+                            *DROPPED_FILE.write() = DroppedFile {
+                                files_local_path: vec![String::new()],
+                                file_drag_event: FileDragEvent::None,
+                            };
                         },
                     }
                 }
@@ -110,6 +116,16 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             readonly: "true",
                             class: "dropzone",
                             value: "Drop file here to upload",
+                            onmouseover: move |_| {
+                                #[cfg(target_os = "windows")] 
+                                {
+                                let dropped_file = DROPPED_FILE.read();
+                                if dropped_file.file_drag_event == FileDragEvent::Dropped {
+                                        *drag_over_dropzone.write_silent() = true;
+                                        upload_file_dropped_routine.send(Action::Start);
+                                    }
+                                }
+                            },
                             onmouseout: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
                                 upload_file_dropped_routine.send(Action::Stop);
