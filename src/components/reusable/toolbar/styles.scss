@@ -1,9 +1,9 @@
 #toolbar {
   min-height: 0;
-  display: inline-flex;
+  display: flex;
   padding: 1rem;
   width: 100%;
-  flex-direction: row;
+  flex-shrink: 0;
 
   #content {
     flex: 1;

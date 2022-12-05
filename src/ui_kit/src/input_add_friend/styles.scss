@@ -1,0 +1,29 @@
+.input-add-friend {
+  height: 40px;
+  width: 100%;
+  position: relative;
+  white-space: nowrap;
+  text-overflow: clip;
+  overflow: hidden;
+
+  .textfield-add-friend {
+    height: 40px;
+    width: 100%;
+    padding: 10px;
+    white-space: nowrap;
+    text-overflow: clip;
+    overflow: hidden;
+    background: var(--theme-foreground);
+    caret-color: var(--theme-text);
+    border-radius: 4px;
+  }
+
+  .add-friend-placeholder {
+    position: fixed;
+    z-index: 2;
+    color: var(--theme-placeholder);
+    pointer-events: none;
+    margin-top: 10px;
+    margin-left: 10px;
+  }
+}

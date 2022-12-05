@@ -3,10 +3,10 @@
 
 :root {
   --heading-size: 18px;
-  --subheading-size: 12pt;
-  --text-size: 11pt;
-  --label-size: 10pt;
-  --text-small: 9pt;
+  --subheading-size: 1rem;
+  --text-size: 0.9169rem;
+  --label-size: 0.8331rem;
+  --text-small: 0.75rem;
 
   --padding: 2rem;
   --padding-small: 1rem;
@@ -215,7 +215,7 @@ label {
   color: var(--theme-red);
   opacity: 1;
   transition: 0.2s;
-  font-size: 10pt;
+  font-size: 0.8331rem;
 }
 
 .m-top {

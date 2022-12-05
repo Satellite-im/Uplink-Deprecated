@@ -4,22 +4,18 @@
   display: inline-flex;
   flex-direction: column;
   min-height: 300px;
-  max-height: calc(100% - 15rem);
+  max-height: calc(100vh - 15rem);
   border-bottom: 1px solid var(--theme-borders);
   overflow-y: hidden;
-  resize: vertical;
   position: relative;
 
   &.fullscreen {
     position: fixed;
     z-index: 100;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: fixed;
+    inset: 0;
     max-height: unset;
     height: 100% !important;
-    resize: none;
   }
 
   .media-view {
