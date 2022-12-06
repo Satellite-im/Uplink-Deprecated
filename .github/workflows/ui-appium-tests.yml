@@ -4,13 +4,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
 
-  workflow_call:
-    inputs:
-      rust-version:
-        type: string
-        required: false
-        default: nightly
-
 jobs:
   build-and-test:
     runs-on: macos-latest
@@ -22,7 +15,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ inputs.rust-version }}
+          toolchain: stable
           override: true
           components: rustfmt, clippy
 
