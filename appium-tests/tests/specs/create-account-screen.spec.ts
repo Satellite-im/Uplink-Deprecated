@@ -41,18 +41,18 @@ describe("Create Account on Uplink Desktop", async () => {
     )
   })
 
-  xit("Type a valid PIN with 4 characters and go to next page", async () => {
+  it("Type a valid PIN with 4 characters and go to next page", async () => {
     await (await CreatePinScreen.pinInput).setValue("1234" + "\n")
     await expect(await CreateAccountScreen.headerText).toBeDisplayed()
     await driver.reset()
   })
 
-  xit("Type a valid PIN with 6 characters and go to next page", async () => {
+  it("Type a valid PIN with 6 characters and go to next page", async () => {
     await (await CreatePinScreen.pinInput).setValue("123456" + "\n")
     await expect(await CreateAccountScreen.headerText).toBeDisplayed()
   })
 
-  xit("Assert Create Username screen texts", async () => {
+  it("Assert Create Username screen texts", async () => {
     await expect(CreateAccountScreen.headerText).toHaveTextContaining(
       "Create Account",
     )
@@ -61,7 +61,7 @@ describe("Create Account on Uplink Desktop", async () => {
     )
   })
 
-  xit("Attempt to provide an empty username", async () => {
+  it("Attempt to provide an empty username", async () => {
     await (await CreateAccountScreen.userInput).addValue("\n")
     await expect(await CreateAccountScreen.errorMessageUsername).toBeDisplayed()
     await expect(
@@ -69,7 +69,7 @@ describe("Create Account on Uplink Desktop", async () => {
     ).toHaveTextContaining("Username is required")
   })
 
-  xit("Attempt to provide a username with less than 4 characters", async () => {
+  it("Attempt to provide a username with less than 4 characters", async () => {
     await (await CreateAccountScreen.userInput).setValue("a" + "\n")
     await expect(await CreateAccountScreen.errorMessageUsername).toBeDisplayed()
     await expect(
@@ -79,7 +79,7 @@ describe("Create Account on Uplink Desktop", async () => {
     )
   })
 
-  xit("Attempt to provide a username with less more than 32 characters", async () => {
+  it("Attempt to provide a username with less more than 32 characters", async () => {
     await (
       await CreateAccountScreen.userInput
     ).setValue("12345678901234567890123456789012345" + "\n") // Typing 35 characters
@@ -91,7 +91,7 @@ describe("Create Account on Uplink Desktop", async () => {
     )
   })
 
-  xit("Provide a valid username and go to next page", async () => {
+  it("Provide a valid username and go to next page", async () => {
     await (await CreateAccountScreen.userInput).setValue("qatest01" + "\n")
     await expect(await UplinkMainScreen.noActiveChatsText).toBeDisplayed()
     await driver.reset()

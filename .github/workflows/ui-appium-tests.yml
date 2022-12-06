@@ -5,48 +5,29 @@ on:
     types: [opened, synchronize, reopened, edited]
 
 jobs:
-  build-and-test:
+  build:
+    uses: ./.github/workflows/ci-make-dmg.yml
+
+  test:
+    needs: build
     runs-on: macos-latest
+
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      - name: Download DMG build during action 🗳️
+        uses: actions/download-artifact@v3
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+          name: Uplink Universal Mac App
+          path: appium-tests/apps
 
-      - name: Set up cargo cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-      - name: Install Protobuf
-        continue-on-error: true
+      - name: Copy DMG to Appium Apps Directory
+        working-directory: appium-tests/apps
         run: |
-          brew update
-          brew install protobuf
-
-      - name: Cargo Update
-        run: cargo update
-
-      - name: Cargo run
-        run: cargo run &&
-
-      #- name: Copy DMG to Appium Apps Directory
-      #  run: |
-      #    cp -r ./target/release/macos/Uplink.app /Applications/
+          unzip "Uplink Universal Mac App.zip"
+          unzip Uplink-Mac-Universal.zip
+          cp -r ./Uplink.app /Applications/
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
