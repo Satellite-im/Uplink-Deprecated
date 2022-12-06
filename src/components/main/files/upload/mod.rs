@@ -231,7 +231,7 @@ async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save:
 
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(image_thumbnail.as_bytes().to_vec());
+        let base64_image = base64::encode(&file);
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())

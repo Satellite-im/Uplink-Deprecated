@@ -37,8 +37,19 @@ pub fn File(cx: Scope<Props>) -> Element {
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let file_size = format_file_size(cx.props.size);
+    let file_thumb = &cx.props.thumbnail.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
+    let file_component =  
+    if cx.props.thumbnail.is_empty() {
+        rsx!(Icon { icon: Shape::Document })
+    } else {
+        rsx!(img {
+            src: "{file_thumb}",
+            width: "100%",
+            border_radius: "8px",
+            })
+    };
 
     cx.render(rsx! {
         div {
@@ -105,7 +116,10 @@ pub fn File(cx: Scope<Props>) -> Element {
                 },
             div {
                 class: "folder {class}",
-                    Icon { icon: Shape::Document},
+                div {
+                    class: "thumb_icon",
+                    file_component,
+                }
                    {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
@@ -156,7 +170,9 @@ pub fn File(cx: Scope<Props>) -> Element {
                         }
                     }
                 }
-                rsx!(
+                div {
+                    class: "file_info",
+                    rsx!(
                     p {
                         id: "{file_id}-name-normal",
                         "{file_name_formatted_state}" }
@@ -164,7 +180,8 @@ pub fn File(cx: Scope<Props>) -> Element {
                 
                 label {
                         "{file_size}"
-                    }
+                    }}
+                
             }
         }
     })
