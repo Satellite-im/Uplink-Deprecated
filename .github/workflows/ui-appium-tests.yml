@@ -38,12 +38,15 @@ jobs:
           brew update
           brew install protobuf
 
-      - name: Make DMG 🗳️
-        run: make dmg
+      - name: Cargo Update
+        run: cargo update
 
-      - name: Copy DMG to Appium Apps Directory
-        run: |
-          cp -r ./target/release/macos/Uplink.app /Applications/
+      - name: Cargo run
+        run: cargo run &&
+
+      #- name: Copy DMG to Appium Apps Directory
+      #  run: |
+      #    cp -r ./target/release/macos/Uplink.app /Applications/
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
