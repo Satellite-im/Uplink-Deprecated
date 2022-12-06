@@ -50,8 +50,6 @@ mod state;
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-
-
 static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
     Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
@@ -60,18 +58,22 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
-    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));       
+static DROPPED_FILE: Lazy<RwLock<DroppedFile>> = Lazy::new(|| {
+    RwLock::new(DroppedFile {
+        files_local_path: Vec::new(),
+        file_drag_event: FileDragEvent::None,
+    })
+});
 
 #[derive(PartialEq, Clone)]
 pub enum FileDragEvent {
     Dropped,
-    None, 
+    None,
 }
 
 #[derive(Clone)]
 pub struct DroppedFile {
-    files_local_path: Vec<String>, 
+    files_local_path: Vec<String>,
     file_drag_event: FileDragEvent,
 }
 
@@ -197,7 +199,6 @@ fn main() {
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
 
-
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -213,18 +214,21 @@ fn main() {
                 let mut dropped_file_local_path = format!("{:?}", e);
                 let file_drag_event = if dropped_file_local_path.contains("Dropped") {
                     FileDragEvent::Dropped
-                 } else {
-                    FileDragEvent::None 
+                } else {
+                    FileDragEvent::None
                 };
-               
-                dropped_file_local_path = 
-                dropped_file_local_path.replace("Dropped([", "")
-                .replace("Hovered([", "")
-                .replace("])", "")
-                .replace('"', "");
-                let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
+
+                dropped_file_local_path = dropped_file_local_path
+                    .replace("Dropped([", "")
+                    .replace("Hovered([", "")
+                    .replace("])", "")
+                    .replace('"', "");
+                let files_path: Vec<String> = dropped_file_local_path
+                    .split(",")
+                    .map(|file_path| String::from(file_path))
+                    .collect();
                 *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: files_path, 
+                    files_local_path: files_path,
                     file_drag_event: file_drag_event,
                 };
                 true
@@ -280,7 +284,7 @@ fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
- 
+
     cx.use_hook(|_| {
         cx.provide_context(cx.props.messaging.clone());
     });
