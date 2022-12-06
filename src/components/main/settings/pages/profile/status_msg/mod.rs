@@ -70,12 +70,12 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                             } else {
                                 edit_status_msg_state.set(false);
                             }
-                            }
-                        },
+                        }
                     },
-                    Button {
-                        text: l.save.to_string(),
-                      on_pressed: move |_|{
+                },
+                Button {
+                    text: l.save.to_string(),
+                    on_pressed: move |_|{
                         let status_msg_text = status_msg_state.trim();
                         if status_msg_text != status_msg2 {
                             if status_msg_text.len() > 128 {
@@ -93,10 +93,9 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                         } else {
                             edit_status_msg_state.set(false);
                         }
-                      }
-                  },
+                    }
                 },
-
+            },
         )} else {rsx! (
             div{
                 class: "change-profile",
