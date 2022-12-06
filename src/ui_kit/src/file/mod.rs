@@ -46,7 +46,8 @@ pub fn File(cx: Scope<Props>) -> Element {
     } else {
         rsx!(img {
             src: "{file_thumb}",
-            width: "100%",
+            width: "80%",
+            height: "80%",
             border_radius: "8px",
             })
     };
@@ -170,19 +171,19 @@ pub fn File(cx: Scope<Props>) -> Element {
                         }
                     }
                 }
-                div {
-                    class: "file_info",
-                    rsx!(
-                    p {
-                        id: "{file_id}-name-normal",
-                        "{file_name_formatted_state}" }
-                    )
-                
-                label {
-                        "{file_size}"
-                    }}
-                
             }
+            
+            div {
+                class: "file_info",
+                rsx!(
+                p {
+                    id: "{file_id}-name-normal",
+                    "{file_name_formatted_state}" }
+                )
+            
+            label {
+                    "{file_size}"
+                }}
         }
     })
 }
