@@ -213,44 +213,7 @@ fn main() {
         |c| {
             c.with_window(|_| window.with_menu(main_menu))
                 .with_file_drop_handler(|_w, drag_event| {
-                    match drag_event {
-                        FileDropEvent::Dropped(files_path) => {
-                            let files_local_path = files_path
-                                .iter()
-                                .map(|it| {
-                                    it.clone()
-                                        .into_os_string()
-                                        .into_string()
-                                        .unwrap_or_default()
-                                })
-                                .collect();
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: Some(files_local_path),
-                                file_drag_event: FileDragEvent::Dropped,
-                            };
-                        }
-                        FileDropEvent::Hovered(files_path) => {
-                            let files_local_path = files_path
-                                .iter()
-                                .map(|it| {
-                                    it.clone()
-                                        .into_os_string()
-                                        .into_string()
-                                        .unwrap_or_default()
-                                })
-                                .collect();
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: Some(files_local_path),
-                                file_drag_event: FileDragEvent::Hovered,
-                            };
-                        }
-                        _ => {
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: None,
-                                file_drag_event: FileDragEvent::None,
-                            };
-                        }
-                    }
+                    set_drag_and_drop_data(drag_event);
                     true
                 })
         },
@@ -268,44 +231,7 @@ fn main() {
         |c| {
             c.with_window(|_| window)
                 .with_file_drop_handler(|_w, drag_event| {
-                    match drag_event {
-                        FileDropEvent::Dropped(files_path) => {
-                            let files_local_path = files_path
-                                .iter()
-                                .map(|it| {
-                                    it.clone()
-                                        .into_os_string()
-                                        .into_string()
-                                        .unwrap_or_default()
-                                })
-                                .collect();
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: Some(files_local_path),
-                                file_drag_event: FileDragEvent::Dropped,
-                            };
-                        }
-                        FileDropEvent::Hovered(files_path) => {
-                            let files_local_path = files_path
-                                .iter()
-                                .map(|it| {
-                                    it.clone()
-                                        .into_os_string()
-                                        .into_string()
-                                        .unwrap_or_default()
-                                })
-                                .collect();
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: Some(files_local_path),
-                                file_drag_event: FileDragEvent::Hovered,
-                            };
-                        }
-                        _ => {
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: None,
-                                file_drag_event: FileDragEvent::None,
-                            };
-                        }
-                    }
+                    set_drag_and_drop_data(drag_event);
                     true
                 })
         },
@@ -400,6 +326,47 @@ fn App(cx: Scope<State>) -> Element {
             }
         }
     ))
+}
+
+fn set_drag_and_drop_data(drag_event: FileDropEvent) {
+    match drag_event {
+        FileDropEvent::Dropped(files_path) => {
+            let files_local_path = files_path
+                .iter()
+                .map(|it| {
+                    it.clone()
+                        .into_os_string()
+                        .into_string()
+                        .unwrap_or_default()
+                })
+                .collect();
+            *DROPPED_FILE.write() = DroppedFile {
+                files_local_path: Some(files_local_path),
+                file_drag_event: FileDragEvent::Dropped,
+            };
+        }
+        FileDropEvent::Hovered(files_path) => {
+            let files_local_path = files_path
+                .iter()
+                .map(|it| {
+                    it.clone()
+                        .into_os_string()
+                        .into_string()
+                        .unwrap_or_default()
+                })
+                .collect();
+            *DROPPED_FILE.write() = DroppedFile {
+                files_local_path: Some(files_local_path),
+                file_drag_event: FileDragEvent::Hovered,
+            };
+        }
+        _ => {
+            *DROPPED_FILE.write() = DroppedFile {
+                files_local_path: None,
+                file_drag_event: FileDragEvent::None,
+            };
+        }
+    }
 }
 
 #[derive(Clone)]
