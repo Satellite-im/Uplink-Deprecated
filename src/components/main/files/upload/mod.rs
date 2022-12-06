@@ -1,6 +1,7 @@
 use std::{path::{Path, PathBuf}, io::Cursor, time::Duration, ffi::OsStr};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::use_window};
+use dioxus_elements::p;
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
@@ -10,9 +11,8 @@ use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 
-use crate::{Storage, FileDragEvent, DroppedFile};
+use crate::{Storage, FileDragEvent};
 use crate::DROPPED_FILE;
-
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -26,8 +26,6 @@ enum Action {
         Stop,
     }
 
-
-
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_storage = cx.props.storage.clone();
@@ -35,8 +33,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let eval_script = use_window(&cx).clone();
     let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
     let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
-    let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
 
+    let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
         to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
@@ -45,10 +43,9 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             match action {
                 Action::Start => {
                             log::info!("File on dropzone");
-                            tokio::time::sleep(Duration::from_millis(100)).await;
+                            tokio::time::sleep(Duration::from_millis(150)).await;
                         if *drag_over_dropzone.read() {
-                            let dropped_file = DROPPED_FILE.read();
-                            let files_local_path = dropped_file.clone().files_local_path.unwrap_or_default();
+                            let (files_local_path, drag_event) = get_dropped_file_params();
                             
                             // TODO(use_eval): Try new solution in the future
                             if files_local_path.len() > 1 {
@@ -57,15 +54,14 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }  else if files_local_path.len() == 1 {
                                 eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0]));
                             }
-
-                            if dropped_file.file_drag_event == FileDragEvent::Dropped {
+                            if drag_event == FileDragEvent::Dropped {
                                 *drag_over_dropzone.write_silent() = false;
                                   // TODO(use_eval): Try new solution in the future
                                   eval_script.eval(&file_being_uploaded_js);
                                 for file_path in &files_local_path {
                                     let file_path_buf = PathBuf::from(file_path.trim());     
                                     upload_file(file_storage.clone(), file_path_buf).await;
-                                    tokio::time::sleep(Duration::from_millis(300)).await;
+                                    tokio::time::sleep(Duration::from_millis(150)).await;
                                     log::info!("{} file uploaded!", file_path);
                                 }
                                   // TODO(use_eval): Try new solution in the future
@@ -76,10 +72,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 Action::Stop => {
                             eval_script.eval(&file_leave_dropzone_js);
                             log::info!("File not able to upload");
-                            *DROPPED_FILE.write() = DroppedFile {
-                                files_local_path: None,
-                                file_drag_event: FileDragEvent::None,
-                            };
                         },
                     }
                 }
@@ -89,6 +81,16 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         (cx.props.show).then(|| rsx! (
             div {
                 id: "upload",
+                onmouseover: move |evt| {
+                    if evt.client_y > 238 || evt.client_y < 145 {
+                        *drag_over_dropzone.write_silent() = false;
+                        upload_file_dropped_routine.send(Action::Stop);
+                    }
+                },
+                onmouseout:  move |_| {
+                    *drag_over_dropzone.write_silent() = false;
+                    upload_file_dropped_routine.send(Action::Stop);
+                },
                 div {
                     id: "content",
                     div {
@@ -119,7 +121,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             class: "dropzone",
                             value: "Drop file here to upload",
                             onmouseover: move |_| {
-                                #[cfg(not(target_os = "macos"))]
+                                #[cfg(target_os = "windows")]
                                 {
                                 let dropped_file = DROPPED_FILE.read();
                                 if dropped_file.file_drag_event == FileDragEvent::Dropped {
@@ -159,9 +161,18 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         icon: Shape::XMark
                     }
                 }
+                
             }
         ))
+        
     })
+}
+
+fn get_dropped_file_params() -> (Vec<String>, FileDragEvent) {
+    let dropped_file = DROPPED_FILE.read();
+    let files_local_path = dropped_file.clone().files_local_path.unwrap_or_default();
+    let drag_event = dropped_file.clone().file_drag_event;
+    (files_local_path, drag_event)
 }
 
 

@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 use crate::{
     components::reusable::nav::Nav,
     main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
+    DroppedFile, FileDragEvent, DROPPED_FILE,
 };
 pub mod browser;
 pub mod sidebar;
@@ -23,6 +24,12 @@ pub fn Files(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "files",
+            onmouseover: |_| {
+                *DROPPED_FILE.write() = DroppedFile {
+                    files_local_path: None,
+                    file_drag_event: FileDragEvent::None,
+                };
+            },
             class: "mobile-sidebar-hidden",
             sidebar::Sidebar { account: cx.props.account.clone() },
             div {
