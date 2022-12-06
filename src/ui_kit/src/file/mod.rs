@@ -172,7 +172,6 @@ pub fn File(cx: Scope<Props>) -> Element {
                     }
                 }
             }
-            
             div {
                 class: "file_info",
                 rsx!(

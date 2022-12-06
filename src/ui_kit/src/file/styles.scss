@@ -1,9 +1,11 @@
 .file_info {
   bottom: 0;
-  margin: 0.25rem;
+  margin-top: 0.25rem;
 }
 
 .thumb_icon {
+  margin: auto;
+  display: block;
   max-height: 100px;
 }
 
@@ -18,11 +20,3 @@
   cursor: pointer;
   max-height: fit-content;
 }
-// img {
-//   display: block;
-//   height: 80%;
-//   align-items: center;
-//   justify-content: center;
-//   margin-left: auto;
-//   margin-right: auto;
-// }
