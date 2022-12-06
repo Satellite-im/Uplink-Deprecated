@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::{HashMap, BTreeSet},
     time::{Duration, Instant},
 };
 
@@ -60,7 +60,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let ident = cx.props.account.get_own_identity().unwrap();
     let my_did = ident.did_key();
     // this one has a special name because of the other variable names within the use_future
-    let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
+    let list: &UseRef<BTreeSet<Message>> = use_ref(&cx, BTreeSet::new);
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
     let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
 
@@ -180,11 +180,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     use_future(
         &cx,
         (
+            list,
             &current_chat,
             &cx.props.users_typing.clone(),
             &cx.props.account.clone(),
         ),
-        |(current_chat, users_typing, mp)| async move {
+        |(list, current_chat, users_typing, mp)| async move {
             // don't stream messages from a nonexistent conversation
             let mut current_chat = match current_chat {
                 // this better not panic
@@ -221,10 +222,10 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 }
             };
 
-            let messages = rg
+            let messages = BTreeSet::from_iter(rg
                 .get_messages(current_chat.conversation.id(), MessageOptions::default())
                 .await
-                .unwrap_or_default();
+                .unwrap_or_default());
 
             //This is to prevent the future updating the state and causing a rerender
             if *list.read() != messages {
@@ -258,7 +259,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     });
                                     // update messages
                                     // todo: check if sidebar gets updated
-                                    list.write().push(message.clone());
+                                    list.write().insert(message.clone());
                                     current_chat.last_msg_sent =
                                         Some(LastMsgSent::new(&message.value()));
                                     state.write().dispatch(Actions::UpdateConversation(
