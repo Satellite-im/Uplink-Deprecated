@@ -3,6 +3,8 @@ name: UI Automated Tests on MacOS
 on:
   pull_request:
     types: [opened, synchronize, reopened, edited]
+
+  workflow_call:
     inputs:
       rust-version:
         type: string
