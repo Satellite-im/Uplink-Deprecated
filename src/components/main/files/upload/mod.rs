@@ -1,7 +1,6 @@
 use std::{path::{Path, PathBuf}, io::Cursor, time::Duration, ffi::OsStr};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::use_window};
-use dioxus_elements::p;
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
@@ -11,7 +10,7 @@ use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 
-use crate::{Storage, FileDragEvent};
+use crate::{Storage, FileDragEvent, DroppedFile};
 use crate::DROPPED_FILE;
 
 #[derive(Props)]
@@ -81,10 +80,14 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         (cx.props.show).then(|| rsx! (
             div {
                 id: "upload",
-                onmouseover: move |evt| {
-                    if evt.client_y > 238 || evt.client_y < 145 {
-                        *drag_over_dropzone.write_silent() = false;
-                        upload_file_dropped_routine.send(Action::Stop);
+                onmouseover: move |_| {
+                    // TODO(Temp): Temp solution to drag and drop work on Windows
+                    #[cfg(target_os = "windows")]
+                    if *drag_over_dropzone.read() == false {
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: None,
+                            file_drag_event: FileDragEvent::None,
+                        };
                     }
                 },
                 onmouseout:  move |_| {
@@ -121,6 +124,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             class: "dropzone",
                             value: "Drop file here to upload",
                             onmouseover: move |_| {
+                                // TODO(Temp): Temp solution to drag and drop work on Windows
                                 #[cfg(target_os = "windows")]
                                 {
                                 let dropped_file = DROPPED_FILE.read();
@@ -174,8 +178,6 @@ fn get_dropped_file_params() -> (Vec<String>, FileDragEvent) {
     let drag_event = dropped_file.clone().file_drag_event;
     (files_local_path, drag_event)
 }
-
-
 
 async fn upload_file(file_storage: Storage, file_path: PathBuf) {
     let mut filename = match file_path.file_name().map(|file| file.to_string_lossy().to_string()) {
