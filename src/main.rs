@@ -1,4 +1,5 @@
 use crate::iutils::config::Config;
+use dioxus::desktop::wry::webview::FileDropEvent;
 use ::utils::Account;
 use clap::Parser;
 use core::time;
@@ -60,7 +61,7 @@ static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 static DROPPED_FILE: Lazy<RwLock<DroppedFile>> = Lazy::new(|| {
     RwLock::new(DroppedFile {
-        files_local_path: Vec::new(),
+        files_local_path: None,
         file_drag_event: FileDragEvent::None,
     })
 });
@@ -74,7 +75,7 @@ pub enum FileDragEvent {
 
 #[derive(Clone)]
 pub struct DroppedFile {
-    files_local_path: Vec<String>,
+    files_local_path: Option<Vec<String>>,
     file_drag_event: FileDragEvent,
 }
 
@@ -210,34 +211,40 @@ fn main() {
             storage,
         },
         |c| {
-            c.with_window(|_| window.with_menu(main_menu));
-            c.with_file_drop_handler(|_w, e| {
-                let mut dropped_file_local_path = format!("{:?}", e);
-                let file_drag_event = if dropped_file_local_path.contains("Dropped") {
-                    FileDragEvent::Dropped
-                } else {
-                    FileDragEvent::None
-                };
-
-                dropped_file_local_path = dropped_file_local_path
-                    .replace("Dropped([", "")
-                    .replace("Hovered([", "")
-                    .replace("])", "")
-                    .replace('"', "");
-                let files_path: Vec<String> = dropped_file_local_path
-                    .split(",")
-                    .map(|file_path| String::from(file_path))
-                    .collect();
-                *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: files_path,
-                    file_drag_event: file_drag_event,
-                };
+            c.with_window(|_| window.with_menu(main_menu))
+            .with_file_drop_handler(|_w, drag_event| {
+                match drag_event {
+                    FileDropEvent::Dropped(files_path) => {
+                        let files_local_path = files_path.iter().map(
+                            |it| it.clone().into_os_string().into_string().unwrap_or_default()
+                        ).collect();
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: Some(files_local_path),
+                            file_drag_event: FileDragEvent::Dropped,
+                        };
+                    }, 
+                    FileDropEvent::Hovered(files_path) => {
+                        let files_local_path = files_path.iter().map(
+                            |it| it.clone().into_os_string().into_string().unwrap_or_default()
+                        ).collect();
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: Some(files_local_path),
+                            file_drag_event: FileDragEvent::Hovered,
+                        };
+                    }, 
+                    _ => {
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: None,
+                            file_drag_event: FileDragEvent::None,
+                        };
+                    }
+                }
                 true
             })
         },
     );
 
-    #[cfg(target_os = "windows")]
+    #[cfg(not(target_os = "macos"))]
     dioxus::desktop::launch_with_props(
         App,
         State {
@@ -247,31 +254,35 @@ fn main() {
             storage,
         },
         |c| {
-            c.with_window(|_| window.with_menu(main_menu));
-            c.with_file_drop_handler(|_w, e| {
-                let mut dropped_file_local_path = format!("{:?}", e);
-                let file_drag_event = if dropped_file_local_path.contains("Dropped") {
-                    FileDragEvent::Dropped
-                } else if dropped_file_local_path.contains("Hovered") {
-                    FileDragEvent::Hovered
-                } else {
-                    FileDragEvent::None
-                };
-
-                dropped_file_local_path = dropped_file_local_path
-                    .replace("Dropped([", "")
-                    .replace("Hovered([", "")
-                    .replace("])", "")
-                    .replace('"', "");
-                let files_path: Vec<String> = dropped_file_local_path
-                    .split(",")
-                    .map(|file_path| String::from(file_path))
-                    .collect();
-                *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: files_path,
-                    file_drag_event: file_drag_event.clone(),
-                };
-                false
+            c.with_window(|_| window)
+            .with_file_drop_handler(|_w, drag_event| {
+                match drag_event {
+                    FileDropEvent::Dropped(files_path) => {
+                        let files_local_path = files_path.iter().map(
+                            |it| it.clone().into_os_string().into_string().unwrap_or_default()
+                        ).collect();
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: Some(files_local_path),
+                            file_drag_event: FileDragEvent::Dropped,
+                        };
+                    }, 
+                    FileDropEvent::Hovered(files_path) => {
+                        let files_local_path = files_path.iter().map(
+                            |it| it.clone().into_os_string().into_string().unwrap_or_default()
+                        ).collect();
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: Some(files_local_path),
+                            file_drag_event: FileDragEvent::Hovered,
+                        };
+                    }, 
+                    _ => {
+                        *DROPPED_FILE.write() = DroppedFile {
+                            files_local_path: None,
+                            file_drag_event: FileDragEvent::None,
+                        };
+                    }
+                }
+                true
             })
         },
     );
