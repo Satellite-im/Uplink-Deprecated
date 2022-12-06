@@ -60,7 +60,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let ident = cx.props.account.get_own_identity().unwrap();
     let my_did = ident.did_key();
     // this one has a special name because of the other variable names within the use_future
-    let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
+    let list: &UseRef<Vec<Message>> = use_ref(&cx, Vec::new);
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
     let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
 
@@ -180,11 +180,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     use_future(
         &cx,
         (
+            list,
             &current_chat,
             &cx.props.users_typing.clone(),
             &cx.props.account.clone(),
         ),
-        |(current_chat, users_typing, mp)| async move {
+        |(list, current_chat, users_typing, mp)| async move {
             // don't stream messages from a nonexistent conversation
             let mut current_chat = match current_chat {
                 // this better not panic
