@@ -2,9 +2,11 @@
 # notarization info from here^
 name: Make dmg
 
+# Watch for tags being created, after self hosted runner setup we can change this back, or make it when a user manually requests a dmg
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
+  push:
+    tags:
+      - '*' 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   CARGO_TERM_COLOR: always
