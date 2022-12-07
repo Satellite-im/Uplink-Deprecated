@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use futures::StreamExt;
 use std::collections::HashMap;
 use uuid::Uuid;
-use warp::raygun::{Conversation, RayGunEventKind};
+use warp::{raygun::{Conversation, RayGunEventKind}};
 
 pub mod compose;
 pub mod files;
@@ -28,13 +28,14 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     log::debug!("rendering Main");
     let state = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
+    let mp = cx.props.account.clone();
     let display_welcome = state.read().selected_chat.is_none();
     let sidebar_visibility = match state.read().hide_sidebar {
         false => "main-sidebar",
         true => "main-chat",
     };
 
-    use_future(&cx, &rg, |mut rg| async move {
+    use_future(&cx, (&rg, &mp), |(mut rg, mp)| async move {
         log::debug!("streaming conversations");
 
         // todo: only accept incoming conversations from people we are friends with.
@@ -59,6 +60,16 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         match rg.list_conversations().await {
             Ok(r) => {
                 for c in r {
+                    let other_user_did = c.recipients()
+                    .last()
+                    .cloned()
+                    .unwrap_or_default();
+
+                    match mp.has_friend(&other_user_did.clone()) {
+                        Ok(_) =>  state.write().dispatch(Actions::ShowConversation(c.id())),
+                        Err(_) => state.write().dispatch(Actions::HideConversation(c.id())),
+                    };
+
                     conversations.insert(c.id(), c.clone());
                 }
             }

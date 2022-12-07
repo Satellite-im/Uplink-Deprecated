@@ -1,4 +1,4 @@
-use dioxus::{core::to_owned, prelude::*};
+use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
     activity_indicator::ActivityIndicator,
@@ -6,11 +6,11 @@ use ui_kit::{
     profile_picture::PFP,
     skeletons::{inline::InlineSkeleton, pfp::PFPSkeleton},
 };
-use warp::{crypto::DID, raygun::Conversation};
+use warp::crypto::DID;
 
 use crate::{
     iutils,
-    state::{Actions, ConversationInfo},
+    state::Actions,
     Messaging, STATE,
 };
 use utils::Account;
@@ -25,20 +25,22 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-fn remove_friend(mut multipass: Account, did: DID) {
+fn remove_friend(mut multipass: Account, did: DID) -> Result<(), ()> {
     match multipass.remove_friend(&did) {
-        Ok(_) => {}
-        Err(_) => {
-            log::debug!("error removing friend");
-        }
+        Ok(_) => Ok(()),
+        Err(error) => {
+            log::debug!("error removing friend: {error}");
+            Err(())
+        },
     }
 }
 
+#[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
     let mp = cx.props.account.clone();
-    let mut rg = cx.props.messaging.clone();
+    let rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -109,35 +111,20 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
-                                let local_state = use_atom_ref(&cx, STATE).clone();
-                                let rg = cx.props.messaging.clone();
+                                let local_state = state.clone();
                                 let current_chat_exist = local_state.read().selected_chat.clone();
                                 match current_chat_exist {
-                                    Some(_) => {
-                                        let current_chat = local_state.read().selected_chat.and_then(|x| local_state.read().active_chats.get(&x).cloned());
-                                        let current_chat_condition = match current_chat {
-                                            Some(c) => c,
-                                            None => return,
+                                    Some(conversatio_uuid) => {
+                                        let conversation_id = conversatio_uuid;
+                                        if let Ok(_) = remove_friend(cx.props.account.clone(), cx.props.friend.clone()) {
+                                            local_state.write().dispatch(Actions::HideConversation(conversation_id));
+                                            log::info!("successfully remove chat from sidebar");
                                         };
-
-                                        let conversation_id = current_chat_condition.conversation.id();
-
-                                        cx.spawn({
-                                            to_owned![rg, conversation_id, local_state];
-                                            async move {
-                                                match rg.delete(conversation_id, None).await {
-                                                    Ok(_) => {
-                                                        local_state.write().dispatch(Actions::RemoveConversation(conversation_id));
-                                                        log::info!("successfully delete conversation")
-                                                    },
-                                                    Err(error) => log::error!("error when deleting conversation: {error}"),
-                                                };
-                                            }
-                                        });
-                                        remove_friend(cx.props.account.clone(), cx.props.friend.clone());
                                     },
                                     None => {
-                                        remove_friend(cx.props.account.clone(), cx.props.friend.clone());
+                                        if let Ok(_) = remove_friend(cx.props.account.clone(), cx.props.friend.clone()) {
+                                            log::info!("Removed friend, but not chat from sidebar!");
+                                        };
                                     }
                                 }
                                 // todo: remove the conversation?

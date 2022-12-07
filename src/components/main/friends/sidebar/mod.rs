@@ -1,6 +1,6 @@
 use crate::{
-    components::main::friends::request::FriendRequest, state::Actions, Account, Messaging,
-    LANGUAGE, STATE, TOAST_MANAGER,
+    components::main::friends::request::FriendRequest, state::Actions, Account,
+    LANGUAGE, STATE, TOAST_MANAGER, Messaging,
 };
 
 use arboard::Clipboard;
@@ -60,7 +60,7 @@ pub fn Sidebar(
     cx.render(rsx!(
         crate::components::reusable::sidebar::Sidebar {
             account: cx.props.account.clone(),
-            messaging: cx.props.messaging.clone(),
+            messaging: messaging.clone(),
             FindFriends { account: account.clone(), add_error: add_error.clone()},
             div {
                 class: "scroll_wrap",

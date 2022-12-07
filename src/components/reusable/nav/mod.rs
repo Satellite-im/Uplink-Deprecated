@@ -117,7 +117,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         }
                         log::debug!("creating chat");
                         let _result =
-                            warp::async_block_in_place_uncheck(rg.create_conversation(&did));
+                            rg.create_conversation(&did).await;
                     }
                     _ => {}
                 }
