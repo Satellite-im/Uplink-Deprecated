@@ -4,7 +4,6 @@ use std::{
     cmp::{Ord, Ordering},
     collections::{HashMap, HashSet},
 };
-// use utils::{notifications::PushNotification, sounds::Sounds};
 use uuid::Uuid;
 use warp::raygun::Conversation;
 

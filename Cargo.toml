@@ -34,7 +34,7 @@ dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
 dioxus-heroicons = { git="https://github.com/Satellite-im/dioxus-heroicons" }
 dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
 dioxus-html = "0.2.1"
-notify-rust = "4.5.10"
+notify-rust = "=4.5.10"
 sir = { version = "0.2.2", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }

@@ -56,6 +56,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                     },
                     div {
                         id: "media-content",
+                        // This maps over the names array and creates a media component for each name
                         names.iter().map(|name| rsx!(
                             Media {
                                 name: name.to_string(),
@@ -65,6 +66,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                     },
                     div {
                         class: "media-toggle",
+                        // This button toggles between fullscreen and windowed mode
                         Button {
                             icon: if **fullscreen { Shape::ArrowsPointingIn } else { Shape::ArrowsPointingOut },
                             state: ui_kit::button::State::Transparent,
@@ -72,8 +74,11 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
                         }
                     },
                 }
+                // This is the media controls component
                 Controls {}
+                // This adds the responsive.js script to the page
                 script { "{script}" }
+                // This conditionally adds the time component if the call_timer setting is enabled
                 config.audiovideo.call_timer.then(|| rsx!{
                     Time {
                         start_time: 0
