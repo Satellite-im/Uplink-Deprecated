@@ -1,6 +1,5 @@
 #files {
   #browser {
-    width: 100%;
     min-height: 0;
     flex: 1;
     overflow-y: scroll;
@@ -9,6 +8,7 @@
     flex-wrap: wrap;
     display: inline-flex;
     align-content: flex-start;
+
     &:hover {
       &::-webkit-scrollbar-thumb {
         background: var(--theme-primary);
