@@ -41,7 +41,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             match action {
                 Action::Start => {
                             log::info!("File on dropzone");
-                            tokio::time::sleep(Duration::from_millis(150)).await;
                         if *drag_over_dropzone.read() {
                             let dropped_file_event = get_dropped_file_event();
                             let files_local_path = match dropped_file_event.clone() {
@@ -57,20 +56,17 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0].to_string_lossy().to_string()));
                             }
 
-                            match dropped_file_event {
-                                FileDropEvent::Dropped(files_local_path) => {
-                                    *drag_over_dropzone.write_silent() = false;
-                                    // TODO(use_eval): Try new solution in the future
-                                    eval_script.eval(&file_being_uploaded_js);
-                                  for file_path in &files_local_path {
-                                      upload_file(file_storage.clone(), file_path.clone()).await;
-                                      tokio::time::sleep(Duration::from_millis(150)).await;
-                                      log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
-                                  }
-                                    // TODO(use_eval): Try new solution in the future
-                                    eval_script.eval(&file_leave_dropzone_js);
-                                }
-                                _ => {},
+                            if let FileDropEvent::Dropped(files_local_path) = dropped_file_event {
+                                *drag_over_dropzone.write_silent() = false;
+                                // TODO(use_eval): Try new solution in the future
+                                eval_script.eval(&file_being_uploaded_js);
+                              for file_path in &files_local_path {
+                                  upload_file(file_storage.clone(), file_path.clone()).await;
+                                  tokio::time::sleep(Duration::from_millis(100)).await;
+                                  log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
+                              }
+                                // TODO(use_eval): Try new solution in the future
+                                eval_script.eval(&file_leave_dropzone_js);
                             }
                            
                         }  
@@ -159,7 +155,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 {
                                 let dropped_file_event = get_dropped_file_event();
                                 match dropped_file_event {
-                                    FileDropEvent::Dropped(files_local_path) => {
+                                    FileDropEvent::Dropped(_) => {
                                         *drag_over_dropzone.write_silent() = true;
                                         upload_file_dropped_routine.send(Action::Start);
                                     },

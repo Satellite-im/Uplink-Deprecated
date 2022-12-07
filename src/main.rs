@@ -59,9 +59,8 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-static DROPPED_FILE_EVENT: Lazy<RwLock<FileDropEvent>> = Lazy::new(|| {
-    RwLock::new(FileDropEvent::Cancelled)
-});
+static DROPPED_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
+    Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -197,7 +196,7 @@ fn main() {
         |c| {
             c.with_window(|_| window.with_menu(main_menu))
                 .with_file_drop_handler(|_w, drag_event| {
-                    set_drag_and_drop_data(drag_event);
+                    *DROPPED_FILE_EVENT.write() = drag_event;
                     true
                 })
         },
@@ -215,7 +214,7 @@ fn main() {
         |c| {
             c.with_window(|_| window)
                 .with_file_drop_handler(|_w, drag_event| {
-                    set_drag_and_drop_data(drag_event);
+                    *DROPPED_FILE_EVENT.write() = drag_event;
                     true
                 })
         },
@@ -310,20 +309,6 @@ fn App(cx: Scope<State>) -> Element {
             }
         }
     ))
-}
-
-fn set_drag_and_drop_data(drag_event: FileDropEvent) {
-    match drag_event {
-        FileDropEvent::Dropped(files_path) => {
-            *DROPPED_FILE_EVENT.write() = FileDropEvent::Dropped(files_path);
-        }
-        FileDropEvent::Hovered(files_path) => {
-            *DROPPED_FILE_EVENT.write() = FileDropEvent::Hovered(files_path);
-        }
-        _ => {
-            *DROPPED_FILE_EVENT.write() = FileDropEvent::Cancelled;
-        }
-    }
 }
 
 #[derive(Clone)]
