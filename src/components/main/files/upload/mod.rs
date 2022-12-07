@@ -123,15 +123,17 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             "type": "file",
                             prevent_default: "onclick",
                             onclick: move |_| {
-                                let file_path = match FileDialog::new().set_directory(".").pick_file() {
+                                let files_local_path = match FileDialog::new().set_directory(".").pick_files() {
                                     Some(path) => path,
                                     None => return
                                 };
                                 let file_storage = cx.props.storage.clone();
                                 cx.spawn({
-                                    to_owned![file_storage, file_path];
+                                    to_owned![file_storage, files_local_path];
                                     async move {
-                                        upload_file(file_storage, file_path).await;
+                                        for file_path in &files_local_path {
+                                            upload_file(file_storage.clone(), file_path.clone()).await;
+                                        }
                                     }
                                 }); 
                             }
