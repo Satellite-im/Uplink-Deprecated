@@ -59,7 +59,7 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-static DROPPED_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
+static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
     Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
 
 #[derive(PartialEq, Props)]
@@ -196,7 +196,7 @@ fn main() {
         |c| {
             c.with_window(|_| window.with_menu(main_menu))
                 .with_file_drop_handler(|_w, drag_event| {
-                    *DROPPED_FILE_EVENT.write() = drag_event;
+                    *DRAG_FILE_EVENT.write() = drag_event;
                     true
                 })
         },
@@ -214,7 +214,7 @@ fn main() {
         |c| {
             c.with_window(|_| window)
                 .with_file_drop_handler(|_w, drag_event| {
-                    *DROPPED_FILE_EVENT.write() = drag_event;
+                    *DRAG_FILE_EVENT.write() = drag_event;
                     true
                 })
         },
