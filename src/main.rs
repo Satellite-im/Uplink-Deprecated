@@ -59,25 +59,9 @@ static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-static DROPPED_FILE: Lazy<RwLock<DroppedFile>> = Lazy::new(|| {
-    RwLock::new(DroppedFile {
-        files_local_path: None,
-        file_drag_event: FileDragEvent::None,
-    })
+static DROPPED_FILE_EVENT: Lazy<RwLock<FileDropEvent>> = Lazy::new(|| {
+    RwLock::new(FileDropEvent::Cancelled)
 });
-
-#[derive(PartialEq, Clone, Debug)]
-pub enum FileDragEvent {
-    Dropped,
-    Hovered,
-    None,
-}
-
-#[derive(Clone, Debug)]
-pub struct DroppedFile {
-    files_local_path: Option<Vec<String>>,
-    file_drag_event: FileDragEvent,
-}
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -331,40 +315,13 @@ fn App(cx: Scope<State>) -> Element {
 fn set_drag_and_drop_data(drag_event: FileDropEvent) {
     match drag_event {
         FileDropEvent::Dropped(files_path) => {
-            let files_local_path = files_path
-                .iter()
-                .map(|it| {
-                    it.clone()
-                        .into_os_string()
-                        .into_string()
-                        .unwrap_or_default()
-                })
-                .collect();
-            *DROPPED_FILE.write() = DroppedFile {
-                files_local_path: Some(files_local_path),
-                file_drag_event: FileDragEvent::Dropped,
-            };
+            *DROPPED_FILE_EVENT.write() = FileDropEvent::Dropped(files_path);
         }
         FileDropEvent::Hovered(files_path) => {
-            let files_local_path = files_path
-                .iter()
-                .map(|it| {
-                    it.clone()
-                        .into_os_string()
-                        .into_string()
-                        .unwrap_or_default()
-                })
-                .collect();
-            *DROPPED_FILE.write() = DroppedFile {
-                files_local_path: Some(files_local_path),
-                file_drag_event: FileDragEvent::Hovered,
-            };
+            *DROPPED_FILE_EVENT.write() = FileDropEvent::Hovered(files_path);
         }
         _ => {
-            *DROPPED_FILE.write() = DroppedFile {
-                files_local_path: None,
-                file_drag_event: FileDragEvent::None,
-            };
+            *DROPPED_FILE_EVENT.write() = FileDropEvent::Cancelled;
         }
     }
 }

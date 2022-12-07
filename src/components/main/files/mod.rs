@@ -1,9 +1,9 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, desktop::wry::webview::FileDropEvent};
 
 use crate::{
     components::reusable::nav::Nav,
-    main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
-    DroppedFile, FileDragEvent, DROPPED_FILE,
+    main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload}, DROPPED_FILE_EVENT,
+    
 };
 pub mod browser;
 pub mod sidebar;
@@ -27,10 +27,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
             onmouseover: |_| {
                 // HACK(Windows): Block upload file if drop it anywhere on screen out
                 // TODO(Temp): Temp solution to drag and drop work on Windows
-                *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: None,
-                    file_drag_event: FileDragEvent::None,
-                };
+                *DROPPED_FILE_EVENT.write() = FileDropEvent::Cancelled;
             },
             class: "mobile-sidebar-hidden",
             sidebar::Sidebar { account: cx.props.account.clone() },
