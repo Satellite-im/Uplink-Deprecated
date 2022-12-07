@@ -1,4 +1,5 @@
 use audio_factory::AudioFactory;
+use incognito_typing::ExtIncognitoTyping;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use emoji_selector::EmojiSelector;
@@ -15,7 +16,11 @@ use crate::components::{
 pub fn Extensions(cx: Scope) -> Element {
     log::debug!("rendering settings/pages/Extensions");
 
-    let extensions: Vec<ExtensionInfo> = vec![AudioFactory::info(), EmojiSelector::info()];
+    let extensions: Vec<ExtensionInfo> = vec![
+        AudioFactory::info(),
+        EmojiSelector::info(),
+        ExtIncognitoTyping::info(),
+    ];
 
     let extensions_path = dirs::home_dir()
         .unwrap_or_default()
