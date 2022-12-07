@@ -39,8 +39,8 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
     let show_friend_list = use_state(&cx, || true);
 
-    let st = use_atom_ref(&cx, STATE).clone();
-    let sidebar_visibility = match st.read().hide_sidebar {
+    let state = use_atom_ref(&cx, STATE);
+    let sidebar_visibility = match state.read().hide_sidebar {
         false => "mobile-sidebar-visible",
         true => "mobile-sidebar-hidden",
     };
