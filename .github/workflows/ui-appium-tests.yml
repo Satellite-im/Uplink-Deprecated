@@ -57,7 +57,7 @@ jobs:
 
       - name: Build the app
         run: |
-          cargo build --release
+          make dmg
 
       - name: Archive the app
         uses: actions/upload-artifact@v1
