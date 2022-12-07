@@ -178,6 +178,9 @@ pub fn File(cx: Scope<Props>) -> Element {
                 p {
                     id: "{file_id}-name-normal",
                     "{file_name_formatted_state}" }
+                    div {
+                        class: "file_id-input_space_holder"
+                    }
                 )
             
             label {

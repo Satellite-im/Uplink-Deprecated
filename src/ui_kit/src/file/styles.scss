@@ -1,22 +1,28 @@
 .file_info {
   bottom: 0;
+  display: block;
+  height: 80px;
   margin-top: 0.25rem;
+}
+.file_id-input_space_holder {
+  height: 24px;
+  width: 114px;
 }
 
 .thumb_icon {
   margin: auto;
   display: block;
-  max-height: 100px;
+  height: 100px;
 }
 
 .folder {
   display: inline-flex;
   flex-direction: column;
-  contain: content;
+  // contain: content;
   align-items: center;
   width: fit-content;
   justify-content: flex-start;
   height: 80px;
   cursor: pointer;
-  max-height: fit-content;
+  // max-height: fit-content;
 }
