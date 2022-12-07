@@ -75,12 +75,37 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                     }
                 }
             }});
+
+            // HACK(Temp): Just to improve a little feedback for user on windows
+            // TODO(Temp): Temp solution to drag and drop work on Windows
+            #[cfg(target_os = "windows")]
+            cx.spawn({
+                to_owned![eval_script, file_over_dropzone_js, file_leave_dropzone_js];
+                async move {
+                    loop {
+                        let (files_local_path, drag_event) = get_dropped_file_params();
+                        if drag_event == FileDragEvent::Hovered {
+                            if files_local_path.len() > 1 {
+                                let files_to_upload = format!("{} files to upload, drop here to upload them!",files_local_path.len());
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
+                            }  else if files_local_path.len() == 1 {
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", "You are dragging 1 file, drop here to upload it!"));
+                            }
+                        } else {
+                            eval_script.eval(&file_leave_dropzone_js);
+                        }
+                    
+                    tokio::time::sleep(Duration::from_millis(200)).await;
+                }
+                }
+            }); 
             
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (
             div {
                 id: "upload",
                 onmouseover: move |_| {
+                    // HACK(Windows): Not allow upload if drop file outside dropzone
                     // TODO(Temp): Temp solution to drag and drop work on Windows
                     #[cfg(target_os = "windows")]
                     if *drag_over_dropzone.read() == false {
@@ -122,8 +147,9 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             id: "dropzone",
                             readonly: "true",
                             class: "dropzone",
-                            value: "Drop file here to upload",
+                            value: "Drop files here to upload",
                             onmouseover: move |_| {
+                                // HACK(Windows): When drop over dropzone, onmouseover is pushed
                                 // TODO(Temp): Temp solution to drag and drop work on Windows
                                 #[cfg(target_os = "windows")]
                                 {
