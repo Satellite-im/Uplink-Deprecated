@@ -116,16 +116,21 @@ pub fn File(cx: Scope<Props>) -> Element {
                     }),
                 },
             div {
-                class: "folder {class}",
-                div {
-                    class: "thumb_icon",
-                    file_component,
-                }
-                   {
+                rsx!(    
+                    div {
+                        class: "folder {class}",
+                        div {
+                            class: "thumb_icon",
+                            file_component,
+                        }
+                        {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
                         let file_id = file_id.clone();
                         rsx! {
+                            p {
+                                id: "{file_id}-name-normal",
+                                "{file_name_formatted_state}" }
                             input {
                             id: "{file_id}-input",
                             display: "none",
@@ -169,20 +174,13 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 }
                             }
                         }
+                        label {
+                            "{file_size}"
+                        }
+                        }
+                        }
                     }
-                }
-            }
-            div {
-                class: "file_info",
-                rsx!(
-                p {
-                    id: "{file_id}-name-normal",
-                    "{file_name_formatted_state}" }
-                )
-            
-            label {
-                    "{file_size}"
-                }}
+                )}
         }
     })
 }
