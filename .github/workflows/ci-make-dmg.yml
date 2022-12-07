@@ -42,7 +42,7 @@ jobs:
         run: |
           echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
           security delete-keychain builduplink.keychain 
-          rm /Library/Keychains/builduplink.keychain
+          rm ~/Library/Keychains/builduplink.keychain-db
           security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
           security default-keychain -s builduplink.keychain
           security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
