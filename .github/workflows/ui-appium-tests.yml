@@ -57,13 +57,13 @@ jobs:
 
       - name: Build the app
         run: |
-          make dmg
+          cargo build --release
 
       - name: Archive the app
         uses: actions/upload-artifact@v1
         with:
           name: app-macos
-          path: target/release/macos
+          path: target/release
 
   test:
     needs: build
