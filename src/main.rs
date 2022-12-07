@@ -11,7 +11,6 @@ use fluent::{FluentBundle, FluentResource};
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::PersistedState;
 use std::{
     fs,
     ops::{Deref, DerefMut},
@@ -23,7 +22,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
-use utils::Storage;
+use utils::{Storage, DEFAULT_PATH};
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -44,26 +43,19 @@ pub mod themes;
 use tao::window::WindowBuilder;
 
 use tao::menu::{MenuBar as Menu, MenuItem};
-
-mod state;
+use state::STATE;
+use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
-    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
-static DROPPED_FILE: Lazy<RwLock<DroppedFile>> = Lazy::new(|| {
-    RwLock::new(DroppedFile {
-        files_local_path: Vec::new(),
-        file_drag_event: FileDragEvent::None,
-    })
-});
+static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
+    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));
 
 #[derive(PartialEq, Clone)]
 pub enum FileDragEvent {
@@ -153,10 +145,6 @@ fn main() {
 
     let opt = Opt::parse();
 
-    if let Some(path) = opt.path {
-        *DEFAULT_PATH.write() = path;
-    }
-
     let file_appender =
         tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
@@ -199,6 +187,7 @@ fn main() {
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
 
+
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -214,19 +203,16 @@ fn main() {
                 let mut dropped_file_local_path = format!("{:?}", e);
                 let file_drag_event = if dropped_file_local_path.contains("Dropped") {
                     FileDragEvent::Dropped
-                } else {
+                 } else {
                     FileDragEvent::None
                 };
 
-                dropped_file_local_path = dropped_file_local_path
-                    .replace("Dropped([", "")
-                    .replace("Hovered([", "")
-                    .replace("])", "")
-                    .replace('"', "");
-                let files_path: Vec<String> = dropped_file_local_path
-                    .split(",")
-                    .map(|file_path| String::from(file_path))
-                    .collect();
+                dropped_file_local_path =
+                dropped_file_local_path.replace("Dropped([", "")
+                .replace("Hovered([", "")
+                .replace("])", "")
+                .replace('"', "");
+                let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
                 *DROPPED_FILE.write() = DroppedFile {
                     files_local_path: files_path,
                     file_drag_event: file_drag_event,

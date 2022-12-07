@@ -1,13 +1,11 @@
-use clap::Parser;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
 use once_cell::sync::Lazy;
 use std::ffi::OsStr;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::{collections::HashMap, fs};
 use warp::logging::tracing::{error, info};
-use warp::sync::RwLock;
+use crate::DEFAULT_PATH;
 
 type ComponentFn = unsafe fn() -> Box<Component>;
 type InfoFn = unsafe fn() -> Box<ExtensionInfo>;
@@ -15,8 +13,6 @@ type InfoFn = unsafe fn() -> Box<ExtensionInfo>;
 type Extensions = HashMap<ExtensionType, Vec<Extension>>;
 
 static EXTENSION_MANAGER: Lazy<ExtensionManager> = Lazy::new(ExtensionManager::load_or_default);
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
-    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 
 #[cfg(target_os = "macos")]
 static FILE_EXT: &str = "dylib";
@@ -24,13 +20,6 @@ static FILE_EXT: &str = "dylib";
 static FILE_EXT: &str = "so";
 #[cfg(target_os = "windows")]
 static FILE_EXT: &str = "dll";
-
-#[derive(Debug, Parser)]
-#[clap(name = "")]
-struct Opt {
-    #[clap(long)]
-    path: Option<PathBuf>,
-}
 
 #[derive(PartialEq, Eq, Hash, Clone, Debug, Copy)]
 pub enum ExtensionType {
@@ -105,10 +94,6 @@ impl ExtensionManager {
     }
 
     fn load() -> Result<Self, anyhow::Error> {
-        let opt = Opt::parse();
-        if let Some(path) = opt.path {
-            *DEFAULT_PATH.write() = path;
-        }
         let extensions_path = DEFAULT_PATH.read().join("extensions");
         fs::create_dir_all(&extensions_path)?;
         let paths = fs::read_dir(&extensions_path).expect("Directory is empty");
