@@ -107,7 +107,7 @@ jobs:
 
       - name: Install and Run Appium Server 📱
         run: |
-          chmod +x ./appium-tests/scripts/run_appium_android_server.sh
+          chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
 
       - name: Run WebdriverIO tests on MacOS
