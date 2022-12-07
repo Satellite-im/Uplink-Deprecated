@@ -40,7 +40,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         while let Some(action) = rx.next().await {
             match action {
                 Action::Start => {
-                            log::info!("File on dropzone");
+                        log::info!("File on dropzone");
+                        // Time necessary to work on macOS and Linux
+                        #[cfg(not(target_os = "windows"))]
+                        tokio::time::sleep(std::time::Duration::from_millis(150)).await;
                         if *drag_over_dropzone.read() {
                             let drag_file_event = get_drag_file_event();
                             let files_local_path = match drag_file_event.clone() {
