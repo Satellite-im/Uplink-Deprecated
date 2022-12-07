@@ -12,7 +12,6 @@ use fluent::{FluentBundle, FluentResource};
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::PersistedState;
 use std::{
     fs,
     ops::{Deref, DerefMut},
@@ -24,7 +23,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
-use utils::Storage;
+use utils::{Storage, DEFAULT_PATH};
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -45,19 +44,16 @@ pub mod themes;
 use tao::window::WindowBuilder;
 
 use tao::menu::{MenuBar as Menu, MenuItem};
-
-mod state;
+use state::STATE;
+use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
-    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
     Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
@@ -137,10 +133,6 @@ fn main() {
     main_menu.add_submenu("Window", true, window_menu);
 
     let opt = Opt::parse();
-
-    if let Some(path) = opt.path {
-        *DEFAULT_PATH.write() = path;
-    }
 
     let file_appender =
         tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
