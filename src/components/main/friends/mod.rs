@@ -42,8 +42,8 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     let disp_friends = use_state(&cx, Vec::new);
     let friends = use_ref(&cx, HashSet::new);
 
-    let st = use_atom_ref(&cx, STATE).clone();
-    let sidebar_visibility = match st.read().hide_sidebar {
+    let state = use_atom_ref(&cx, STATE).clone();
+    let sidebar_visibility = match state.read().hide_sidebar {
         false => "mobile-sidebar-visible",
         true => "mobile-sidebar-hidden",
     };

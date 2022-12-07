@@ -32,7 +32,7 @@ pub enum FolderDisplay {
 #[allow(non_snake_case)]
 pub fn FileElem(cx: Scope, file: File) -> Element {
     let name = file.name.clone();
-    let st = use_atom_ref(&cx, STATE).clone();
+    let state = use_atom_ref(&cx, STATE).clone();
 
     cx.render(rsx!(
         a {
@@ -40,7 +40,7 @@ pub fn FileElem(cx: Scope, file: File) -> Element {
             div {
                 class: "row",
                 onclick: move |_| {
-                    st.write().dispatch(Actions::HideSidebar(true));
+                    state.write().dispatch(Actions::HideSidebar(true));
                 },
                 Icon {
                     icon: Shape::Document,

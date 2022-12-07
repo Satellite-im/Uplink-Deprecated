@@ -27,6 +27,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
+
     cx.render(rsx! {
         div {
             class: "write",

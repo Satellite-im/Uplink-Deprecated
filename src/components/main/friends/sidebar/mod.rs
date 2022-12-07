@@ -146,9 +146,10 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
     let toast = use_atom_ref(&cx, TOAST_MANAGER);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let remote_friend = use_state(&cx, String::new);
+    let state = use_atom_ref(&cx, STATE).clone();
 
     let l2 = l.clone();
-    let codeCopied = { l.code_copied.to_string() };
+    let code_copied = { l.code_copied.to_string() };
     let account2 = account.clone();
 
     cx.render(rsx!(
@@ -232,7 +233,6 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     icon: Shape::ArrowRight,
                     state: ui_kit::button::State::Secondary,
                     on_pressed: move |_| {
-                        let state = use_atom_ref(&cx, STATE).clone();
                         state.write().dispatch(Actions::HideSidebar(true));
                     },
                 }
@@ -259,7 +259,7 @@ pub fn FindFriends(cx: Scope, account: Account, add_error: UseState<String>) -> 
                     {
                         let single_toast = ToastInfo {
                             position: Position::TopRight,
-                            ..ToastInfo::simple(&codeCopied)
+                            ..ToastInfo::simple(&code_copied)
                         };
                         let _id = toast.write().popup(single_toast);  //copy to the clipboard without prefix 'did:key:'
                         clipboard.set_text(&ident.did_key().to_string()[8..]).unwrap();
