@@ -10,7 +10,7 @@ env:
 
 jobs:
   build_sign_macos:
-    runs-on: self-hosted
+    runs-on: macos-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
