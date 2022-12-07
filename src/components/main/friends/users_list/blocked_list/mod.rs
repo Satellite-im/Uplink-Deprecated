@@ -9,12 +9,12 @@ use crate::components::main::friends::users_list::{
 };
 
 #[derive(Props, PartialEq)]
-pub struct BlockedListProps<'a> {
-    account: &'a Account,
+pub struct BlockedListProps {
+    account: Account,
 }
 
 #[allow(non_snake_case)]
-pub fn BlockedList<'a>(cx: Scope<'a, BlockedListProps<'a>>) -> Element {
+pub fn BlockedList(cx: Scope<BlockedListProps>) -> Element {
     let block_users = use_ref(&cx, HashSet::new);
     let disp_block_users = use_state(&cx, Vec::new);
     let alpha = get_alpha();

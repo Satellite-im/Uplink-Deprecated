@@ -12,13 +12,13 @@ use crate::{
 };
 
 #[derive(Props, PartialEq)]
-pub struct FriendListProps<'a> {
-    account: &'a Account,
-    messaging: &'a Messaging,
+pub struct FriendListProps {
+    account: Account,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
-pub fn FriendList<'a>(cx: Scope<'a, FriendListProps<'a>>) -> Element {
+pub fn FriendList(cx: Scope<FriendListProps>) -> Element {
     let disp_friends = use_state(&cx, Vec::new);
     let friends = use_ref(&cx, HashSet::new);
     let alpha = get_alpha();

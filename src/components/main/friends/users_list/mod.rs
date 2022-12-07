@@ -26,12 +26,12 @@ pub struct UserListProps<'a> {
 pub fn UsersList<'a>(cx: Scope<'a, UserListProps<'a>>) -> Element {
     let users_list = match cx.props.show_friend_list {
         true => rsx!(FriendList {
-            account: cx.props.account,
-            messaging: cx.props.messaging,
+            account: cx.props.account.clone(),
+            messaging: cx.props.messaging.clone(),
         }),
         //show blocked users list
         false => rsx!(BlockedList {
-            account: cx.props.account
+            account: cx.props.account.clone(),
         }),
     };
 
