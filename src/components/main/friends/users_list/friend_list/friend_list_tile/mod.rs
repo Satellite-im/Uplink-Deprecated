@@ -21,7 +21,7 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
     let state = use_atom_ref(&cx, STATE);
 
@@ -102,7 +102,21 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 }
                                 // todo: remove the conversation?
                             }
-                        }
+                        },   
+                        Button {
+                            text:"Block".to_string(),
+                            state: ui_kit::button::State::Secondary,
+                            on_pressed: move |_| {
+                                 let mut multipass = cx.props.account.clone();
+                                 let did_to_block = cx.props.friend.clone();
+                                 match multipass.block(&did_to_block) {
+                                     Ok(_) => {}
+                                     Err(e) => {
+                                         log::debug!("faied to block friend {}:{}", &cx.props.friend, e);
+                                     }
+                                 }
+                             }
+                         },
                     )}
                 }
             }
