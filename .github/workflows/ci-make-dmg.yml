@@ -40,9 +40,6 @@ jobs:
           MACOS_CI_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
           MACOS_KEYCHAIN_NAME: ${{ secrets.MACOS_KEYCHAIN_NAME }}
         run: |
-          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" "/Library/Keychains/$MACOS_KEYCHAIN_NAME"
-          security set-keychain-settings "/Library/Keychains/$MACOS_KEYCHAIN_NAME"
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" "/Library/Keychains/$MACOS_KEYCHAIN_NAME"
           make dmg-universal
       - name: "Notarize executable"
         env:
