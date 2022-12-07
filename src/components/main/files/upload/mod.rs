@@ -95,7 +95,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         },
                                         _ => eval_script.eval(&file_leave_dropzone_js)
                                     }
-                                    tokio::time::sleep(Duration::from_millis(100)).await;
+                                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                             }
                         },
                     }
