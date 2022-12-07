@@ -38,8 +38,19 @@ jobs:
           MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
           MACOS_CERTIFICATE_NAME: ${{ secrets.MACOS_CERTIFICATE_NAME }}
           MACOS_CI_KEYCHAIN_PWD: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
-          MACOS_KEYCHAIN_NAME: ${{ secrets.MACOS_KEYCHAIN_NAME }}
+          MACOS_KEYCHAIN_NAME: ${{ MACOS_KEYCHAIN_NAME }}
         run: |
+          echo $MACOS_CERTIFICATE | base64 --decode > certificate.p12
+          security delete-keychain builduplink.keychain 
+          rm /Library/Keychains/builduplink.keychain
+          security create-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
+          security default-keychain -s builduplink.keychain
+          security unlock-keychain -p "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
+          security set-keychain-settings builduplink.keychain
+          security import certificate.p12 -k builduplink.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$MACOS_CI_KEYCHAIN_PWD" builduplink.keychain
+          security find-identity -p codesigning -v
+          security list-keychains
           make dmg-universal
       - name: "Notarize executable"
         env:
