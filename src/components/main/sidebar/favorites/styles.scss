@@ -1,11 +1,16 @@
 // Styles are globally scoped, please use unique names and nested selectors to avoid conflicts.
 
+.favorites-label {
+  padding: 1rem;
+}
+
 .favorites-container {
   display: flex;
   align-items: center;
   gap: 1rem;
   overflow-x: auto;
   overflow-y: hidden;
+  padding: 0 1rem;
 
   .favorites-item {
     width: 40px;

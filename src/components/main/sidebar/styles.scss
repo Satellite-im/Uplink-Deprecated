@@ -17,12 +17,8 @@
       margin-top: 1rem;
     }
 
-    .label {
-      font-size: var(--label-size);
-      font-family: "Space Mono", monospace;
-      color: var(--theme-text-muted);
+    .chat-label {
       padding: 1rem 1rem 0;
-      text-align: left;
     }
 
     .chats {

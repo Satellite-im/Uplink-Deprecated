@@ -168,7 +168,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 }
             }),
             div {
-                class: "label",
+                class: "label chat-label",
                 "{chatsdString}"
             },
             if has_chats {
