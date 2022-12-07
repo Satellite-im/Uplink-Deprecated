@@ -25,7 +25,7 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn Settings(cx: Scope<Props>) -> Element {
-    let st = use_atom_ref(&cx, STATE).clone();
+    let state = use_atom_ref(&cx, STATE).clone();
     log::debug!("rendering Settings");
     let page_to_open_on_settings = match cx.props.page_to_open {
         Route::Profile => Route::Profile,
@@ -33,7 +33,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
         _ => Route::General,
     };
 
-    let sidebar_visibility = match st.read().hide_sidebar {
+    let sidebar_visibility = match state.read().hide_sidebar {
         false => "mobile-sidebar-visible",
         true => "mobile-sidebar-hidden",
     };
@@ -57,8 +57,6 @@ pub fn Settings(cx: Scope<Props>) -> Element {
                 account: cx.props.account.clone(),
                 on_pressed: move |ne| {
                     active_page.set(ne);
-
-                    let state = use_atom_ref(&cx, STATE).clone();
                     state.write().dispatch(Actions::HideSidebar(true));
                 },
                 initial_value: match active_page.get() {

@@ -32,6 +32,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     } else {
         "error_text"
     };
+
     cx.render(rsx!{
         div{
             label {
@@ -76,10 +77,10 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                 } else {
                                     edit_username_state.set(false);
                                 }
+                            },
+                        },
                     },
-                },
-            },
-            Button {
+                    Button {
                         text: l.save.to_string(),
                         on_pressed: move |_|{
                             let username_text = username_state.trim();
@@ -87,7 +88,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                 if username_text.is_empty() {
                                     username_error.set(l3.username_error_required.to_string())
                                 } else if username_text.len() < 4 || username_text.len() > 32 {
-                                     username_error.set(l3.username_error_length.to_string())
+                                    username_error.set(l3.username_error_length.to_string())
                                 } else {
                                     let username_regex_set =
                                         RegexSet::new([r"@", r"[[:^alnum:]&&[:^punct:]&&[^ ]]"]).unwrap();
@@ -116,21 +117,20 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                     class: "change-profile",
                     span {
                         "{username}"
-                },
-                   Button {
-                            text: l.edit.to_string(),
-                            state: button::State::Secondary,
-                            on_pressed: move |_| {
-                                edit_username_state.set(true);
-                            },
                     },
-                },)
-            },
+                    Button {
+                        text: l.edit.to_string(),
+                        state: button::State::Secondary,
+                        on_pressed: move |_| {
+                            edit_username_state.set(true);
+                        },
+                    },
+                },
+            )},
             p {
                 class: "{username_error_class}",
                 "{username_error}"
             },
         }
-
     })
 }
