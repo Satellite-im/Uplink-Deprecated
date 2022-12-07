@@ -42,6 +42,7 @@ jobs:
           path: target/release/macos
 
   test:
+    needs: build
     runs-on: macos-latest
 
     steps:
