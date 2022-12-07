@@ -34,7 +34,7 @@ dioxus = { version = "0.2.4", features = ["desktop", "router", "fermi"] }
 dioxus-heroicons = { git="https://github.com/Satellite-im/dioxus-heroicons" }
 dioxus-toast =  { git = "https://github.com/sdwoodbury/dioxus-toast"}
 dioxus-html = "0.2.1"
-notify-rust = "4.5.10"
+notify-rust = "=4.5.10"
 sir = { version = "0.2.2", features = ["dioxus"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -60,6 +60,7 @@ mime = "0.3.16"
 image = "0.24.5"
 ui_kit = { path = "src/ui_kit" }
 utils = { path = "src/utils" }
+state = { path = "src/state" }
 
 warp = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f"}
 warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f" }
@@ -71,6 +72,7 @@ humansize = "2.0.0"
 
 audio-factory = { path = "extensions/native/audio-factory" }
 emoji-selector = { path = "extensions/native/emoji-selector" }
+incognito-typing = { path = "extensions/native/incognito-typing" }
 
 [build-dependencies]
 glob = "0.3.0"
@@ -95,4 +97,10 @@ winres = "0.1.12"
 
 
 [workspace]
-members = ["extensions/native/audio-factory", "src/ui_kit", "src/utils"]
+members = [
+    "extensions/native/audio-factory",
+    "extensions/native/incognito-typing",
+    "src/ui_kit",
+    "src/utils",
+    "src/state"
+]

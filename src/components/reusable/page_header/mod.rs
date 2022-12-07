@@ -22,6 +22,8 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Log a debug message
     log::debug!("rendering PageHeading");
 
+    let state = use_atom_ref(&cx, STATE).clone();
+
     // Determine the visibility class for the page header
     let header_visibility = match cx.props.hide_on_desktop {
         true => "header-hidden",
@@ -49,7 +51,6 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 state: ui_kit::button::State::Secondary,
                                 // When the button is pressed, hide the sidebar
                                 on_pressed: move |_| {
-                                    let state = use_atom_ref(&cx, STATE).clone();
                                     state.write().dispatch(Actions::HideSidebar(false));
                                 },
                             },

@@ -11,7 +11,6 @@ use fluent::{FluentBundle, FluentResource};
 use language::{AvailableLanguages, Language};
 use once_cell::sync::Lazy;
 use sir::AppStyle;
-use state::PersistedState;
 use std::{
     fs,
     ops::{Deref, DerefMut},
@@ -23,7 +22,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
-use utils::Storage;
+use utils::{Storage, DEFAULT_PATH};
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -44,34 +43,29 @@ pub mod themes;
 use tao::window::WindowBuilder;
 
 use tao::menu::{MenuBar as Menu, MenuItem};
-
-mod state;
+use state::STATE;
+use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
 
-
-
-static DEFAULT_PATH: Lazy<RwLock<PathBuf>> =
-    Lazy::new(|| RwLock::new(dirs::home_dir().unwrap_or_default().join(".warp")));
 pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-static STATE: AtomRef<PersistedState> = |_| PersistedState::load_or_initial();
 
 static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
-    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));       
+    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));
 
 #[derive(PartialEq, Clone)]
 pub enum FileDragEvent {
     Dropped,
-    None, 
+    None,
 }
 
 #[derive(Clone)]
 pub struct DroppedFile {
-    files_local_path: Vec<String>, 
+    files_local_path: Vec<String>,
     file_drag_event: FileDragEvent,
 }
 
@@ -151,10 +145,6 @@ fn main() {
 
     let opt = Opt::parse();
 
-    if let Some(path) = opt.path {
-        *DEFAULT_PATH.write() = path;
-    }
-
     let file_appender =
         tracing_appender::rolling::hourly(DEFAULT_PATH.read().join("logs"), "warp-gui.log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
@@ -214,17 +204,17 @@ fn main() {
                 let file_drag_event = if dropped_file_local_path.contains("Dropped") {
                     FileDragEvent::Dropped
                  } else {
-                    FileDragEvent::None 
+                    FileDragEvent::None
                 };
-               
-                dropped_file_local_path = 
+
+                dropped_file_local_path =
                 dropped_file_local_path.replace("Dropped([", "")
                 .replace("Hovered([", "")
                 .replace("])", "")
                 .replace('"', "");
                 let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
                 *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: files_path, 
+                    files_local_path: files_path,
                     file_drag_event: file_drag_event,
                 };
                 true
@@ -280,7 +270,7 @@ fn App(cx: Scope<State>) -> Element {
     //TODO: Display an error instead of panicing
     std::fs::create_dir_all(DEFAULT_PATH.read().clone()).expect("Error creating directory");
     Config::new_file();
- 
+
     cx.use_hook(|_| {
         cx.provide_context(cx.props.messaging.clone());
     });

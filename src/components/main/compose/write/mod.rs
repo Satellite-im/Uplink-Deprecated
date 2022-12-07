@@ -2,6 +2,7 @@ use crate::{
     components::reusable::textarea::TextArea, iutils::config::Config, Messaging, LANGUAGE,
 };
 use audio_factory::AudioFactory;
+use incognito_typing::ExtIncognitoTyping;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -27,6 +28,7 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
+
     cx.render(rsx! {
         div {
             class: "write",
@@ -63,7 +65,8 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             })
             div {
                 class: "chatbar_extensions",
-                AudioFactory::render()
+                AudioFactory::render(),
+                ExtIncognitoTyping::render(),
             },
             div {
                 id: "send",
