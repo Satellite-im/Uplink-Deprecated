@@ -25,11 +25,35 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
+      #- name: Update Homebrew
+      #  run: |
+      #    brew update --preinstall
+      #    cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/protobuf.rb" > .github/brew-formulae
+
+      #- name: Configure Homebrew cache
+      #  uses: actions/cache@v3
+      #  with:
+      #    path: |
+      #      ~/Library/Caches/Homebrew/protobuf--*
+      #      ~/Library/Caches/Homebrew/downloads/*--protobuf-*
+      #    key: brew-${{ hashFiles('.github/brew-formulae') }}
+      #    restore-keys: brew-
+
+      #- name: Install Homebrew dependencies
+      #  run: |
+      #    env HOMEBREW_NO_AUTO_UPDATE=1 brew install protobuf
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
+
+      - name: Install Protobuf
+        continue-on-error: true
+        run: |
+          brew update
+          brew install protobuf
 
       - name: Build the app
         run: |
