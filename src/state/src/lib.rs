@@ -111,6 +111,7 @@ impl PersistedState {
         match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
             Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
             Err(_) => PersistedState {
+                send_typing: true,
                 show_prerelease_notice: true,
                 ..Default::default()
             },
