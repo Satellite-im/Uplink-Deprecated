@@ -6,18 +6,17 @@
 .thumb_icon {
   margin: auto;
   display: block;
+  height: 100px;
 }
 
 .folder {
   display: inline-flex;
   flex-direction: column;
-  // contain: content;
+  height: 150px;
   align-items: center;
   width: fit-content;
   justify-content: flex-start;
-  height: 80px;
   cursor: pointer;
-  // max-height: fit-content;
 }
 label {
   margin-top: 0.1rem;
