@@ -52,6 +52,8 @@ pub fn Compose(cx: Scope<Props>) -> Element {
         .collect::<Vec<String>>()
         .join(", ");
 
+    let areTyping = !users_typing.clone().read().is_empty();
+
     cx.render(rsx! {
         div {
             class: "compose",
@@ -141,8 +143,13 @@ pub fn Compose(cx: Scope<Props>) -> Element {
                             selected_file.set(file);
                         }
                     },
-                    TypingIndicator{
-                        users: users_typing.clone()
+                    div {
+                        class: "chatbar-footer",
+                        areTyping.then(|| rsx! {
+                            TypingIndicator{
+                                users: users_typing.clone()
+                            }
+                        })
                     }
                 )
         }

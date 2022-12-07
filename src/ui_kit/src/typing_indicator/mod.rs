@@ -14,9 +14,7 @@ pub fn TypingIndicator(cx: Scope, users: UseRef<HashMap<DID, String>>) -> Elemen
     } else {
         users_list.len().to_string() + " users"
     };
-    let article = if users_list.is_empty() {
-        return None;
-    } else if users_list.len() == 1 {
+    let article = if users_list.len() == 1 {
         String::from(" is")
     } else {
         String::from(" are")
