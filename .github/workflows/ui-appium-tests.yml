@@ -48,6 +48,7 @@ jobs:
         with:
           toolchain: stable
           profile: minimal
+          override: true
 
       - name: Install Protobuf
         continue-on-error: true
@@ -63,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: app-macos
-          path: target/release
+          path: target/release/uplink
 
   test:
     needs: build
@@ -72,6 +73,9 @@ jobs:
     steps:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
+
+      - name: Enable opening app not codesigned
+        run: sudo spctl --master-disable
 
       - name: Download the app 🗳️
         uses: actions/download-artifact@v1
@@ -82,9 +86,7 @@ jobs:
       - name: Copy DMG to Appium Apps Directory
         working-directory: appium-tests/apps
         run: |
-          unzip "Uplink Universal Mac App.zip"
-          unzip Uplink-Mac-Universal.zip
-          cp -r ./Uplink.app /Applications/
+          cp -r ./uplink /Applications/
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
