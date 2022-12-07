@@ -1,10 +1,16 @@
-use dioxus::{desktop::wry::webview::FileDropEvent, prelude::*};
+use dioxus::prelude::*;
 
 use crate::{
     components::reusable::nav::Nav,
     main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
-    DRAG_FILE_EVENT,
 };
+
+#[cfg(target_os = "windows")]  
+use crate::DRAG_FILE_EVENT;
+#[cfg(target_os = "windows")] 
+use dioxus::desktop::wry::webview::FileDropEvent;
+
+
 pub mod browser;
 pub mod sidebar;
 pub mod toolbar;

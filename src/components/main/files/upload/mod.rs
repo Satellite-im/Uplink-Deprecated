@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, io::Cursor, time::Duration, ffi::OsStr};
+use std::{path::{Path, PathBuf}, io::Cursor, ffi::OsStr};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_heroicons::outline::Shape;
