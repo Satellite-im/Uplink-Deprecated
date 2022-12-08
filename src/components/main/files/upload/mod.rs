@@ -17,7 +17,7 @@ pub struct Props<'a> {
     storage: crate::Storage,
     show: bool,
     on_hide: EventHandler<'a, MouseEvent>,
-    parent_directory: UseState<Directory>,
+    parent_directory: UseRef<Directory>,
 }
 
 enum Action {
@@ -35,10 +35,12 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
 
-    let parent_directory = cx.props.parent_directory.clone();
+    let parent_directory_ref = cx.props.parent_directory.clone();
+
+    let parent_directory = cx.props.parent_directory.read().clone();
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![parent_directory, file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
+        to_owned![parent_directory_ref, file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
         async move {
         while let Some(action) = rx.next().await {
             match action {
@@ -63,11 +65,12 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
+                                let parent_directory_to_upload_file = parent_directory_ref.read().clone();
                                 *drag_over_dropzone.write_silent() = false;
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
                               for file_path in &files_local_path {
-                                  upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
+                                  upload_file(file_storage.clone(), file_path.clone(), parent_directory_to_upload_file.clone()).await;
                                   log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
                               }
                                 // TODO(use_eval): Try new solution in the future
@@ -215,7 +218,7 @@ fn get_drag_file_event() -> FileDropEvent {
     drag_file_event
 }
 
-async fn upload_file(file_storage: Storage, file_path: PathBuf, current_directory: UseState<Directory>) {
+async fn upload_file(file_storage: Storage, file_path: PathBuf, current_directory: Directory) {
     let mut filename = match file_path.file_name().map(|file| file.to_string_lossy().to_string()) {
         Some(file) => file,
         None => return
@@ -224,13 +227,6 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
     let local_path = Path::new(&file_path).to_string_lossy().to_string();
     let mut count_index_for_duplicate_filename = 1;
     let mut file_storage = file_storage.clone();
-    // let current_directory = match file_storage.current_directory() {
-    //     Ok(current_directory) => current_directory, 
-    //     Err(error) => {
-    //         log::error!("Not possible to get current directory, error: {:?}", error);
-    //         return;
-    //     },
-    // };
     let original = filename.clone();
 
     loop {
@@ -269,8 +265,6 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
                     }, 
                     Err(_) => println!("error")
                 };
-
-            
 
                 match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
                     Ok(success) => log::info!("{:?}", success), 

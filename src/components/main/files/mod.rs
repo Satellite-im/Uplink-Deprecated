@@ -46,7 +46,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
     }
     let main_directory = root_directory.get_item("main_directory").unwrap().directory().unwrap_or_default();
 
-    let parent_directory = use_state(&cx, || main_directory);
+    let parent_directory = use_ref(&cx, || main_directory);
 
     cx.render(rsx! {
         div {

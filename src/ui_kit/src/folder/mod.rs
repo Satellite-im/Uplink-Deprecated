@@ -23,7 +23,7 @@ pub struct Props {
     // Seems to align closet to the 32 bit uint range.
     children: u32,
     storage: Storage,
-    parent_directory: UseState<Directory>,
+    parent_directory: UseRef<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -68,7 +68,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 onpressed: move |_| {
                                     let folder_name = cx.props.name.clone();
-                                    match parent_directory.remove_item(&folder_name) {
+                                    match parent_directory.write().remove_item(&folder_name) {
                                         Ok(_) => {
                                             println!("Folder deleted: ");
                                             log::info!("{folder_name} was deleted.");
@@ -92,8 +92,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     let parent_directory = cx.props.parent_directory.clone();
                     match file_storage.open_directory(&folder_name) {
                         Ok(directory) => {
-                            parent_directory.set(directory);
-                            println!("{folder_name} was opened.");
+                            *parent_directory.write() = directory.clone();
+                            println!("{folder_name} was opened. {:?}", directory.name());
                         },
                         Err(error) => {
                             println!("Error opening folder: {error}")},

@@ -11,7 +11,7 @@ pub struct Props {
     account: crate::Account,
     storage: Storage,
     show_new_folder: UseState<bool>,
-    parent_directory: UseState<Directory>,
+    parent_directory: UseRef<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -25,6 +25,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         (files, files_sorted, &parent_directory),
         |(files, files_sorted, parent_directory)| async move {
             loop {
+
+                let parent_directory = parent_directory.read().clone();
                 let files_updated: HashSet<_> = HashSet::from_iter(parent_directory.get_items());
 
                 if *files.read() != files_updated {
