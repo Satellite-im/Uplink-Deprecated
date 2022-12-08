@@ -67,19 +67,19 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         }
                     }
                 }),
-                    None => rsx! {
-                        input {
-                            class: "input",
-                            placeholder: "{cx.props.placeholder}",
-                            oninput: |evt| cx.props.on_change.call(evt),
-                            onkeyup: |evt| {
-                                if evt.key_code == KeyCode::Enter {
-                                    cx.props.on_enter.call(())
-                                }
+                None => rsx! {
+                    input {
+                        class: "input",
+                        placeholder: "{cx.props.placeholder}",
+                        oninput: |evt| cx.props.on_change.call(evt),
+                        onkeyup: |evt| {
+                            if evt.key_code == KeyCode::Enter {
+                                cx.props.on_enter.call(())
                             }
                         }
-                    },
-                }),
+                    }
+                },
+            }),
         }
     })
 }
