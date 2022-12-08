@@ -168,8 +168,8 @@ jobs:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      #- name: Enable opening app not codesigned
-      #  run: sudo spctl --master-disable
+      - name: Enable opening app not codesigned
+        run: sudo spctl --master-disable
 
       - name: Download the app 🗳️
         uses: actions/download-artifact@v1
@@ -182,8 +182,7 @@ jobs:
         run: |
           ls -la
           unzip Uplink-Mac-Universal.zip
-          unzip app-macos/Uplink-Mac-Universal.zip
-          cp -r ./app-macos/Uplink.app /Applications/
+          cp -r ./Uplink.app /Applications/
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
