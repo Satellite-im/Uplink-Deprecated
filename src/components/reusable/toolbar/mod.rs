@@ -9,6 +9,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Toolbar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     log::debug!("rendering reusable Toolbar");
+
     cx.render(rsx! {
         div {
             id: "toolbar",

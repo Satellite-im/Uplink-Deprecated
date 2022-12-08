@@ -20,3 +20,10 @@ src/.styles.css
 
 src/.styles.css
 .vscode/launch.json
+
+# Appium Tests
+appium-tests/apps/
+appium-tests/node_modules/
+appium-tests/package-lock.json
+appium-tests/appium.log
+appium-tests/test-results/
