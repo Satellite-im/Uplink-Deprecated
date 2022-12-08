@@ -1,4 +1,4 @@
-use std::{path::PathBuf, ffi::OsStr};
+use std::{ffi::OsStr, path::PathBuf};
 
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
@@ -6,8 +6,8 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use utils::Storage;
 
 use super::folder::State;
-use rfd::FileDialog;
 use crate::context_menu::{ContextItem, ContextMenu};
+use rfd::FileDialog;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -37,8 +37,20 @@ pub fn File(cx: Scope<Props>) -> Element {
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let file_size = format_file_size(cx.props.size);
+    let file_thumb = &cx.props.thumbnail.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
+    let file_component =  
+    if cx.props.thumbnail.is_empty() {
+        rsx!(Icon { icon: Shape::Document })
+    } else {
+        rsx!(img {
+            src: "{file_thumb}",
+            width: "80%",
+            height: "80%",
+            border_radius: "8px",
+            })
+    };
 
     cx.render(rsx! {
         div {
@@ -60,7 +72,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 ContextItem {
                                     icon: Shape::DocumentArrowDown,
                                     onpressed: move |_| {
-                                        hide_edit_name_element(cx.clone());
+                                        hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
                                         let file_extension = cx.props.kind.clone();
@@ -84,7 +96,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 hr {},
                                 ContextItem {
                                     onpressed: move |_| {
-                                        hide_edit_name_element(cx.clone());
+                                        hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
                                         cx.spawn({
@@ -104,13 +116,21 @@ pub fn File(cx: Scope<Props>) -> Element {
                     }),
                 },
             div {
-                class: "folder {class}",
-                    Icon { icon: Shape::Document},
-                   {
+                rsx!(    
+                    div {
+                        class: "folder {class}",
+                        div {
+                            class: "thumb_icon",
+                            file_component,
+                        }
+                        {
                         let val = use_ref(&cx, String::new);
                         let complete_file_name = file_name_complete_ref.read();
                         let file_id = file_id.clone();
                         rsx! {
+                            p {
+                                id: "{file_id}-name-normal",
+                                "{file_name_formatted_state}" }
                             input {
                             id: "{file_id}-input",
                             display: "none",
@@ -125,7 +145,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-                                    hide_edit_name_element(cx.clone());
+                                    hide_edit_name_element(cx);
 
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
@@ -154,18 +174,13 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 }
                             }
                         }
+                        label {
+                            "{file_size}"
+                        }
+                        }
+                        }
                     }
-                }
-                rsx!(
-                    p {
-                        id: "{file_id}-name-normal",
-                        "{file_name_formatted_state}" }
-                    )
-                
-                label {
-                        "{file_size}"
-                    }
-            }
+                )}
         }
     })
 }
@@ -173,7 +188,8 @@ pub fn File(cx: Scope<Props>) -> Element {
 fn hide_edit_name_element(cx: Scope<Props>) {
     //TODO(File): Investigate in a way to replace use_eval in the future
     // Use js script to hide edit file name element
-    let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &cx.props.id.clone());
+    let hide_edit_name_script =
+        include_str!("./hide_edit_name.js").replace("file_id", &cx.props.id.clone());
     use_eval(&cx)(&hide_edit_name_script);
 }
 
@@ -200,7 +216,11 @@ fn format_file_size(file_size: usize) -> String {
 fn format_file_name_to_show(file_name: String, file_kind: String) -> String {
     let mut new_file_name = file_name.clone();
     let file = PathBuf::from(&new_file_name);
-    let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string).unwrap_or_default();
+    let file_stem = file
+        .file_stem()
+        .and_then(OsStr::to_str)
+        .map(str::to_string)
+        .unwrap_or_default();
 
     if file_stem.len() > 10 {
         new_file_name = match &file_name.get(0..5) {
