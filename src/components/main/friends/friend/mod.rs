@@ -108,17 +108,17 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
                                 let local_state = state.clone();
-                                let current_chat_exist = local_state.read().selected_chat.clone();
+                                let current_chat_exist = local_state.read().selected_chat;
                                 match current_chat_exist {
-                                    Some(conversatio_uuid) => {
-                                        let conversation_id = conversatio_uuid;
-                                        if let Ok(_) = remove_friend(cx.props.account.clone(), cx.props.friend.clone()) {
+                                    Some(uuid) => {
+                                        let conversation_id = uuid;
+                                        if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {
                                             local_state.write().dispatch(Actions::HideConversation(conversation_id));
                                             log::info!("successfully remove chat from sidebar");
                                         };
                                     },
                                     None => {
-                                        if let Ok(_) = remove_friend(cx.props.account.clone(), cx.props.friend.clone()) {
+                                        if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {
                                             log::info!("Removed friend, but not chat from sidebar!");
                                         };
                                     }
