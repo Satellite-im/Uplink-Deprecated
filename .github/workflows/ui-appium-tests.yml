@@ -35,6 +35,7 @@ jobs:
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
       - name: Make Build for Appium to run
         run: |
+          cargo update
           make dmg
       - name: Copy DMG to Appium Apps Directory
         working-directory: appium-tests/apps
