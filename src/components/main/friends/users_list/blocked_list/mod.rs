@@ -41,38 +41,38 @@ pub fn BlockedList(cx: Scope<BlockedListProps>) -> Element {
     );
 
     let blocked_list = rsx!(
-    div {
-         class: "users-list",
-                      disp_block_users.iter().map(|friends_per_char_list| {
-                        let first_username_char = friends_per_char_list.letter;
+        div {
+            class: "users-list",
+            disp_block_users.iter().map(|friends_per_char_list| {
+                let first_username_char = friends_per_char_list.letter;
+                rsx!(
+                    div {
+                        class: "users-separator",
+                        h5 {
+                            id: "{first_username_char}",
+                            "{first_username_char}"
+                        }
+                    }
+                    friends_per_char_list.friends.iter().map(|user| {
                         rsx!(
-                            div {
-                                class: "users-separator",
-                                h5 {
-                                    id: "{first_username_char}",
-                                    "{first_username_char}"
-                                }
+                            BlockedListTile {
+                                account: cx.props.account.clone(),
+                                friend: user.did.clone(),
+                                friend_username: user.username.clone(),
                             }
-                            friends_per_char_list.friends.iter().map(|user| {
-                                    rsx!(
-                                       BlockedListTile {
-                                            account: cx.props.account.clone(),
-                                            friend: user.did.clone(),
-                                            friend_username: user.username.clone(),
-                                        }
-                                    )
-                            }),
                         )
                     }),
-                },
-                ul {
-                    class: "a-z-list",
-                    alpha.iter().map(|letter| {
-                        rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
-                    })
-                }
+                )
+            }),
+        },
+        ul {
+            class: "a-z-list",
+            alpha.iter().map(|letter| {
+                rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
+            })
+        }
 
-            );
+    );
 
     cx.render(blocked_list)
 }

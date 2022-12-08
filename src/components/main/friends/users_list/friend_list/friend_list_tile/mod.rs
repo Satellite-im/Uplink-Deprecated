@@ -102,7 +102,7 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 }
                                 // todo: remove the conversation?
                             }
-                        },   
+                        },
                         Button {
                             text:"Block".to_string(),
                             state: ui_kit::button::State::Secondary,
