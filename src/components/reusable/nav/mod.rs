@@ -1,5 +1,5 @@
 use ::utils::notifications::PushNotification;
-use dioxus::prelude::*;
+use dioxus::{core::to_owned, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use state::{Actions, STATE};
@@ -35,6 +35,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
     log::debug!("rendering reusable Nav");
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read().clone();
+    let rg = cx.props.messaging.clone();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
@@ -52,8 +53,6 @@ pub fn Nav(cx: Scope<Props>) -> Element {
         },
         None => todo!(),
     };
-
-    let rg = cx.props.messaging.clone();
 
     use_future(
         &cx,
@@ -132,7 +131,15 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                                 .filter(|c| c.recipients().contains(&did))
                                 .collect();
                             for c in to_remove {
-                                state.write().dispatch(Actions::RemoveConversation(c.id()));
+                                match rg.delete(c.id(), None).await {
+                                    Ok(_) => {
+                                        state.write().dispatch(Actions::RemoveConversation(c.id()));
+                                        log::info!("successfully deleted conversation")
+                                    }
+                                    Err(error) => {
+                                        log::error!("error when deleting conversation: {error}")
+                                    }
+                                };
                             }
                         }
                     }

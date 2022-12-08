@@ -96,6 +96,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
+                                // the RemoveFriend event will be detected and the conversation will be removed
                                 if let Err(e) = mp.remove_friend(cx.props.friend) {
                                     log::error!("failed to remove friend: {e}"); 
                                 }

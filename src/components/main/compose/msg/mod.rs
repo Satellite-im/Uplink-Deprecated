@@ -239,18 +239,13 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             ContextItem {
                                 onpressed: move |_| {
-                                    let state = use_atom_ref(&cx, STATE).clone();
                                     let rg = cx.props.messaging.clone();
                                     let conversation_id = cx.props.message.clone().conversation_id();
                                     cx.spawn({
-                                        to_owned![rg, conversation_id, state];
+                                        to_owned![rg, conversation_id];
                                         async move {
-                                            match rg.delete(conversation_id, None).await {
-                                                Ok(_) => {
-                                                    state.write().dispatch(Actions::RemoveConversation(conversation_id));
-                                                    log::info!("successfully delete conversation")
-                                                },
-                                                Err(error) => log::error!("error when deleting conversation: {error}"),
+                                            if let Err(e) =  rg.delete(conversation_id, None).await {
+                                                log::error!("error deleting conversation: {e}");
                                             };
                                         }
                                     });
@@ -261,21 +256,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             ContextItem {
                                 onpressed: move |_| {
-                                    let state = use_atom_ref(&cx, STATE).clone();
-                                    let rg = cx.props.messaging.clone();
-                                    let conversation_id = cx.props.message.clone().conversation_id();
-                                    cx.spawn({
-                                        to_owned![rg, conversation_id, state];
-                                        async move {
-                                            match rg.delete(conversation_id, None).await {
-                                                Ok(_) => {
-                                                    state.write().dispatch(Actions::RemoveConversation(conversation_id));
-                                                    log::info!("successfully delete conversation")
-                                                },
-                                                Err(error) => log::error!("error when deleting conversation: {error}"),
-                                            };
-                                        }
-                                    });
+                                    // when the FriendRemoved event is detected, the covnersation will be removed
+                                    // todo: do we want to be able to delete and re-add a friend and keep the previous conversation? maybe the users won't care if they don't know they can have that feature. 
                                     let mut multipass = cx.props.account.clone();
                                     let did_to_remove = cx.props.sender.clone();
                                     if multipass.remove_friend(&did_to_remove).is_err() {

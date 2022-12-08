@@ -35,7 +35,7 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         true => "main-chat",
     };
 
-    use_future(&cx, (&rg, &mp), |(mut rg, mp)| async move {
+    use_future(&cx, (&rg, &mp), |(mut rg, _mp)| async move {
         log::debug!("streaming conversations");
 
         // todo: only accept incoming conversations from people we are friends with.
@@ -57,7 +57,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
         // get all conversations and update state
         let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
-        // RayGun doesn't delete conversations...
         match rg.list_conversations().await {
             Ok(r) => {
                 for c in r {
@@ -81,15 +80,6 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         // detect added conversations
         for (id, conv) in conversations {
             if !state.read().all_chats.contains_key(&id) {
-                // prevent conversations from deleted friends from being re-added here
-                if conv.conversation_type() == ConversationType::Direct {
-                    let other_user_did = conv.recipients().last().cloned().unwrap_or_default();
-                    if mp.has_friend(&other_user_did.clone()).is_err() {
-                        // skip adding the chat
-                        continue;
-                    }
-                }
-                // conversation wasn't from a deleted friend. add it now.
                 log::debug!("adding chat");
                 state
                     .write()
