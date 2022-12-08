@@ -28,13 +28,14 @@ pub fn Main(cx: Scope<Prop>) -> Element {
     log::debug!("rendering Main");
     let state = use_atom_ref(&cx, STATE).clone();
     let rg = cx.props.messaging.clone();
+    let mp = cx.props.account.clone();
     let display_welcome = state.read().selected_chat.is_none();
     let sidebar_visibility = match state.read().hide_sidebar {
         false => "main-sidebar",
         true => "main-chat",
     };
 
-    use_future(&cx, &rg, |mut rg| async move {
+    use_future(&cx, (&rg, &mp), |(mut rg, _mp)| async move {
         log::debug!("streaming conversations");
 
         // todo: only accept incoming conversations from people we are friends with.

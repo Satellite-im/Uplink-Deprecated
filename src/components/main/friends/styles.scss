@@ -18,15 +18,20 @@
       overflow-y: scroll;
     }
 
+    .user-category {
+      display: inline-flex;
+      border-bottom: 1px solid var(--theme-borders);
+    }
+
     .main {
       display: flex;
 
-      .friends-list {
+      .users-list {
         padding: 1rem;
         flex-grow: 1;
       }
 
-      .friends-separator {
+      .users-separator {
         align-items: center;
         padding: 0.25rem 0;
         text-align: left;
