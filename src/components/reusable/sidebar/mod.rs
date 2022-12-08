@@ -1,13 +1,14 @@
 use dioxus::prelude::*;
 use ui_kit::extension_placeholder::ExtensionPlaceholder;
 
-use crate::{components::reusable::nav::Nav, iutils::config::Config};
+use crate::{components::reusable::nav::Nav, iutils::config::Config, Messaging};
 use ::utils::Account;
 
 #[derive(Props)]
 pub struct Props<'a> {
     account: Account,
     children: Element<'a>,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -27,6 +28,7 @@ pub fn Sidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             },
             Nav {
                 account: cx.props.account.clone(),
+                messaging: cx.props.messaging.clone(),
             }
         }
     })

@@ -11,10 +11,10 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Time(cx: Scope<Props>) -> Element {
     log::debug!("rendering Media time");
-// Define a state variable to store the current time.
+    // Define a state variable to store the current time.
     let time = use_state(&cx, || cx.props.start_time);
 
-// Spawn a new task to increment the time state variable by 1 every second.
+    // Spawn a new task to increment the time state variable by 1 every second.
     cx.spawn({
         to_owned![time];
         async move {
@@ -25,9 +25,9 @@ pub fn Time(cx: Scope<Props>) -> Element {
         }
     });
 
-// Format the time to be displayed in the UI.
+    // Format the time to be displayed in the UI.
     let formatted_time = display_formatted_time(**time);
-// Render the time in the UI.
+    // Render the time in the UI.
     cx.render(rsx! {
         div {
             class: "media-time",

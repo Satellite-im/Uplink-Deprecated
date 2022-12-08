@@ -1,15 +1,18 @@
 use dioxus::prelude::*;
 
+// use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
+    components::main::files::{
+        browser::FileBrowser, sidebar::Sidebar, toolbar::Toolbar, upload::Upload,
+    },
     components::reusable::nav::Nav,
-    main::files::{browser::FileBrowser, toolbar::Toolbar, upload::Upload},
+    STATE,
 };
 
-#[cfg(target_os = "windows")]  
+#[cfg(target_os = "windows")]
 use crate::DRAG_FILE_EVENT;
-#[cfg(target_os = "windows")] 
+#[cfg(target_os = "windows")]
 use dioxus::desktop::wry::webview::FileDropEvent;
-
 
 pub mod browser;
 pub mod sidebar;
@@ -20,6 +23,7 @@ pub mod upload;
 pub struct Props {
     account: crate::Account,
     storage: crate::Storage,
+    messaging: crate::Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -27,19 +31,25 @@ pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
 
+    let st = use_atom_ref(&cx, STATE).clone();
+    let sidebar_visibility = match st.read().hide_sidebar {
+        false => "sidebar-visible",
+        true => "sidebar-hidden",
+    };
+
     cx.render(rsx! {
         div {
             id: "files",
             onmouseover: |_| {
                 // HACK(Windows): Block upload file if drop it anywhere on screen out
                 // TODO(Temp): Temp solution to drag and drop work on Windows
-                #[cfg(target_os = "windows")] 
+                #[cfg(target_os = "windows")]
                 {
                 *DRAG_FILE_EVENT.write() = FileDropEvent::Cancelled;
                 }
             },
-            class: "mobile-sidebar-hidden",
-            sidebar::Sidebar { account: cx.props.account.clone() },
+            class: "{sidebar_visibility}",
+            Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() },
             div {
                 id: "content",
                 rsx!(
@@ -68,6 +78,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         class: "hidden-on-desktop mobile-nav",
                         Nav {
                             account: cx.props.account.clone(),
+                            messaging: cx.props.messaging.clone(),
                         }
                     }
                 ),

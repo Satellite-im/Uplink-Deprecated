@@ -9,6 +9,11 @@ pub enum State {
     Success,
     Danger,
 }
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct SelectOption {
+    pub value: String,
+    pub label: String,
+}
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -18,6 +23,8 @@ pub struct Props<'a> {
     #[props(optional)]
     value: Option<String>,
     icon: Option<Shape>,
+    options: Option<Vec<SelectOption>>,
+    on_item_selected: Option<EventHandler<'a, String>>,
 }
 
 #[allow(non_snake_case)]
@@ -77,8 +84,29 @@ pub fn Input<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 cx.props.on_enter.call(())
                             }
                         }
+                    },
+                },
+            }),
+            cx.render(match &cx.props.options {
+                Some(options) => rsx!{
+                    div {
+                        class: "select-options",
+                        options.iter().map(|option|
+                            rsx! {
+                                div {
+                                    class: "select-option",
+                                    onclick: move |_| {
+                                        if let Some(on_item_selected) = &cx.props.on_item_selected {
+                                            on_item_selected.call(option.value.clone())
+                                        }
+                                    },
+                                    "{option.label}"
+                                }
+                            }
+                        )
                     }
                 },
+                None => rsx! {Fragment()},
             }),
         }
     })

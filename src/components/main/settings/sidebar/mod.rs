@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 
 use self::nav::Route;
-use crate::{components::main::settings::sidebar::nav::Nav, Account};
+use crate::{components::main::settings::sidebar::nav::Nav, Account, Messaging};
 use ui_kit::input::Input;
 
 pub mod nav;
@@ -12,6 +12,7 @@ pub struct Props<'a> {
     on_pressed: EventHandler<'a, Route>,
     account: Account,
     initial_value: Route,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -26,6 +27,7 @@ pub fn SettingsSidebar<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
             account: cx.props.account.clone(),
+            messaging: cx.props.messaging.clone(),
             Input {
                 icon: Shape::MagnifyingGlass,
                 placeholder: String::from("Search"),
