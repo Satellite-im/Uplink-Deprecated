@@ -1,0 +1,23 @@
+.file_info {
+  bottom: 0;
+  margin-top: 0.25rem;
+}
+
+.thumb_icon {
+  margin: auto;
+  display: block;
+  height: 100px;
+}
+
+.folder {
+  display: inline-flex;
+  flex-direction: column;
+  height: 150px;
+  align-items: center;
+  width: fit-content;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+label {
+  margin-top: 0.1rem;
+}
