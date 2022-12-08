@@ -41,15 +41,13 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         .account
         .list_incoming_request()
         .unwrap_or_default()
-        .len()
-        > 0;
+        .is_empty();
     let outgoing_requests = cx
         .props
         .account
         .list_outgoing_request()
         .unwrap_or_default()
-        .len()
-        > 0;
+        .is_empty();
 
     cx.render(rsx! {
         div {
