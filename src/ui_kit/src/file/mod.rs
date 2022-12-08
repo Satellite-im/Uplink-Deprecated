@@ -40,16 +40,17 @@ pub fn File(cx: Scope<Props>) -> Element {
     let file_thumb = &cx.props.thumbnail.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
-    let file_component =  
-    if cx.props.thumbnail.is_empty() {
-        rsx!(Icon { icon: Shape::Document })
+    let file_component = if cx.props.thumbnail.is_empty() {
+        rsx!(Icon {
+            icon: Shape::Document
+        })
     } else {
         rsx!(img {
             src: "{file_thumb}",
             width: "80%",
             height: "80%",
             border_radius: "8px",
-            })
+        })
     };
 
     cx.render(rsx! {
@@ -116,7 +117,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                     }),
                 },
             div {
-                rsx!(    
+                rsx!(
                     div {
                         class: "folder {class}",
                         div {
