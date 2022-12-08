@@ -204,7 +204,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     }
                 )
             }
-            else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
+            else { rsx!( SkeletalChats{} ) },
             Nav {
                 account: cx.props.account.clone(),
             }
