@@ -1,10 +1,14 @@
 .skeletal-stack {
-  padding-top: 1rem;
+  padding: 1rem 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+
   .skele-chat {
-    display: inline-flex;
-    flex-direction: row;
-    width: 100%;
+    display: flex;
     opacity: 0.15;
+    gap: 1rem;
 
     &:nth-child(2) {
       opacity: 0.1;
@@ -14,20 +18,21 @@
     }
 
     .right-side {
-      flex: 1;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 0.5rem;
       .rect {
-        width: 100%;
         height: 2rem;
         background-color: var(--theme-placeholder);
         border-radius: 4px;
-        margin-bottom: 0.5rem;
       }
     }
 
     .circle {
       width: 40px;
       height: 40px;
-      margin-right: 1rem;
+      flex-shrink: 0;
       border-radius: 20px;
       background-color: var(--theme-placeholder);
     }

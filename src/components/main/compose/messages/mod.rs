@@ -62,7 +62,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
-    let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
+    let messages: Vec<Message> = list.read().iter().cloned().collect();
 
     // this is used for reading the event stream.
     let current_chat = state
@@ -75,6 +75,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .unwrap_or_default()
         .first_unread_message_id
         .unwrap_or_default();
+
+    let msg_script = include_str!("messages.js");
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -333,7 +335,17 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
+            id: "scroll-messages",
             class: "messages",
+            div {
+                class: "encrypted-notif",
+                Icon {
+                    icon: Shape::LockClosed
+                }
+                p {
+                    "Messages secured by local E2E encryption."
+                }
+            },
             messages.iter()
                 .zip(next_sender)
                 .zip(prev_sender)
@@ -350,6 +362,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         div {
                             key: "{message_id}",
                             style: "display: contents",
+                            "data-remote": "{is_remote}",
                             Msg {
                                 // key: "{message_id}-reply",
                                 messaging: cx.props.messaging.clone(),message: message.clone(),
@@ -357,8 +370,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 sender: message.sender(),
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                                last:  is_first,
-                                first: is_last,
+                                last:  is_last,
+                                first: is_first,
                                 middle: !is_last && !is_first,
                                 on_reply: move |reply| {
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
@@ -394,16 +407,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         }
                     }
                 }),
-            div {
-                // key: "encrypted-notification-0001",
-                class: "encrypted-notif",
-                Icon {
-                    icon: Shape::LockClosed
-                }
-                p {
-                    "Messages secured by local E2E encryption."
-                }
-            }
+                script { "{msg_script}" }
         }
     })
 }
