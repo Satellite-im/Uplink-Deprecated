@@ -40,6 +40,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
          div {
             id: "{folder_id}-folder",
+            class: "item file",
             ContextMenu {
                 parent: format!("{}-folder", folder_id),
                 items: cx.render(

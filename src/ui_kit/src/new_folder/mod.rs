@@ -12,6 +12,7 @@ use super::folder::State;
 pub struct Props {
     state: State,
     storage: Storage,
+    show_new_folder: UseState<bool>,
 }
 
 #[allow(non_snake_case)]
@@ -23,16 +24,17 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
 
     let folder_name = use_state(&cx, || String::from("New Folder"));
     let is_renaming = use_ref(&cx, || true);    
+    let show_new_folder = cx.props.show_new_folder.clone();
 
-
-    let folder_id = "12345";
+    let new_folder_js = include_str!("./new_folder.js");
 
     cx.render(rsx! {
-
+        script { "{new_folder_js}" }
         div {
-            id: "{folder_id}-folder",
+            id: "new-folder-id",
+
             ContextMenu {
-                parent: format!("{}-folder", folder_id),
+                parent: format!("{}-folder", "new-folder-id"),
                 items: cx.render(
                     rsx! {
                             ContextItem {
@@ -63,42 +65,32 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
             },
             div {
                 class: "folder {class}",
+   
                 Icon { icon: Shape::Folder },
                 if *is_renaming.read() {
                     rsx! ( input {
+                        id: "new-folder-input",
                         class: "new_folder_input",
                         autofocus: "true",
                         placeholder: "New Folder",
                         onchange: move |evt| {
                             folder_name.set(evt.value.to_string());
                         },
-                        
                         onkeyup: move |evt| {
                             if evt.key_code == KeyCode::Enter {
                                 *is_renaming.write() = false;
+                                show_new_folder.set(false);
                                 let file_storage = cx.props.storage.clone();
-                                let current_directory = match file_storage.current_directory() {
-                                    Ok(current_directory) => current_directory, 
-                                    Err(error) => {
-                                        log::error!("Not possible to get current directory, error: {:?}", error);
-                                        return;
-                                    },
-                                };
-                                println!("Folder name: {:?}", folder_name.clone());
                                 let new_directory_path = format!("{}", folder_name.clone());
-                            
                                 cx.spawn({
                                     to_owned![file_storage, new_directory_path];
-                                    async move {
-                                        println!("New directory path: {:?}", new_directory_path.clone());
-                            
+                                    async move {                            
                                         match file_storage.create_directory(&new_directory_path, true).await {
-                                            Ok(_) => println!(" New directory createad."),
-                                            Err(error) => println!("Error creating directory: {error}"),
+                                            Ok(_) => log::info!(" New directory createad."),
+                                            Err(error) => log::error!("Error creating directory: {error}"),
                                         };
                                     }
                                 });
-                                println!("Create new folder: {}", folder_name.clone());
                             }
                         }
                     })

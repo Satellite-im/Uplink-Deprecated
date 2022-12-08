@@ -10,7 +10,7 @@ use warp::constellation::item::ItemType;
 pub struct Props {
     account: crate::Account,
     storage: Storage,
-    show_new_folder: bool,
+    show_new_folder: UseState<bool>,
 }
 
 #[allow(non_snake_case)]
@@ -48,6 +48,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     NewFolder {
                         state: State::Primary,
                         storage: cx.props.storage.clone(),
+                        show_new_folder: cx.props.show_new_folder.clone(),
                     }
                 }
             )),
