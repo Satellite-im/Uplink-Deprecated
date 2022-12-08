@@ -1,5 +1,8 @@
+pub mod find;
 pub mod friend;
+pub mod list;
 pub mod request;
+pub mod requests;
 pub mod sidebar;
 
 use std::{
@@ -8,12 +11,13 @@ use std::{
 };
 
 use crate::{
-    components::main::friends::{friend::Friend, sidebar::Sidebar},
-    components::reusable::page_header,
-    Account, Messaging, STATE,
+    components::main::friends::{
+        find::FindFriends, list::FriendsList, requests::FriendRequests, sidebar::Sidebar,
+    },
+    components::reusable::nav::Nav,
+    iutils::get_username_from_did,
+    Account, Messaging,
 };
-
-use crate::iutils::get_username_from_did;
 
 use dioxus::prelude::*;
 
@@ -24,7 +28,7 @@ struct UsernameAndDID {
 }
 
 #[derive(PartialEq)]
-struct FriendListAlpha {
+pub struct FriendListAlpha {
     letter: char,
     friends: Vec<UsernameAndDID>,
 }
@@ -41,12 +45,6 @@ pub fn Friends(cx: Scope<Props>) -> Element {
     let add_error = use_state(&cx, String::new);
     let disp_friends = use_state(&cx, Vec::new);
     let friends = use_ref(&cx, HashSet::new);
-
-    let state = use_atom_ref(&cx, STATE).clone();
-    let sidebar_visibility = match state.read().hide_sidebar {
-        false => "mobile-sidebar-visible",
-        true => "mobile-sidebar-hidden",
-    };
 
     use_future(
         &cx,
@@ -69,64 +67,32 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         },
     );
 
-    let alpha: Vec<_> = "abcdefghijklmnopqrstuvwxyz"
-        .to_uppercase()
-        .chars()
-        .collect();
-
     cx.render(rsx! {
         div {
             id: "friends",
-            class: "{sidebar_visibility}",
+            class: "mobile-sidebar-hidden",
             Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
             div {
                 id: "content",
-                page_header::PageHeader {
-                    content_start: cx.render(rsx! {Fragment()}),
-                    content_center: cx.render(rsx! {
-                        h1 { "Friends" }
-                    }),
-                    content_end: cx.render(rsx! {Fragment()}),
-                    hide_on_desktop: true,
+                div {
+                    class: "mobile-wrap",
+                    FindFriends { account: cx.props.account.clone(), add_error: add_error.clone(), is_compact: true },
                 },
                 div {
-                    class: "main",
+                    class: "scroll-container",
                     div {
-                        class: "friends-list",
-                        disp_friends.iter().map(|friends_per_char_list| {
-                            let first_username_char = friends_per_char_list.letter;
-                            rsx!(
-                                div {
-                                    class: "friends-separator",
-                                    h5 {
-                                        id: "{first_username_char}",
-                                        "{first_username_char}"
-                                    }
-                                }
-                                friends_per_char_list.friends.iter().map(|user| {
-                                    rsx!(
-                                        Friend {
-                                            account: cx.props.account.clone(),
-                                            messaging: cx.props.messaging.clone(),
-                                            friend: user.did.clone(),
-                                            friend_username: user.username.clone(),
-                                            on_chat: move |_| {
-                                                add_error.set("".into());
-                                                use_router(&cx).push_route("/main", None, None);
-                                            }
-                                        }
-                                    )
-                                }),
-                            )
-                        }),
-                    },
-                    ul {
-                        alpha.iter().map(|letter| {
-                            rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
-                        })
+                    class: "mobile-wrap",
+                        FriendRequests { account: cx.props.account.clone(), add_error: add_error.clone() },
+                    }
+                    FriendsList { account: cx.props.account.clone(), messaging: cx.props.messaging.clone(), add_error: add_error.clone(), disp_friends: disp_friends.clone() },
+                }
+                span {
+                    class: "hidden-on-desktop mobile-nav",
+                    Nav {
+                        account: cx.props.account.clone(),
                     }
                 }
-            }
+            },
         }
     })
 }

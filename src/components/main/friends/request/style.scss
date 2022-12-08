@@ -4,7 +4,10 @@
   align-items: center;
   display: flex;
   gap: 16px;
-  padding: 8px 0 8px 0;
+
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 
   .pfp {
     background: var(--theme-text-muted);
@@ -15,6 +18,8 @@
   }
 
   .who {
+    display: flex;
+    align-items: center;
     height: 40px;
     text-align: left;
     flex-grow: 1;
@@ -32,6 +37,6 @@
     display: flex;
     flex-shrink: 0;
     height: 40px;
-    gap: 16px;
+    gap: 0.5rem;
   }
 }
