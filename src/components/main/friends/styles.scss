@@ -12,9 +12,11 @@
     min-width: 0;
     height: 100%;
     display: inline-flex;
-    overflow-x: hidden;
-    overflow-y: scroll;
     flex-direction: column;
+
+    .scroll-container {
+      overflow-y: scroll;
+    }
 
     .main {
       display: flex;
@@ -37,7 +39,21 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        color: var(--theme-text-muted);
       }
+    }
+
+    .mobile-wrap {
+      border-bottom: 1px solid var(--theme-borders);
+      padding: 1rem;
+
+      @media (min-width: 601px) {
+        display: none;
+      }
+    }
+
+    .mobile-nav {
+      padding: 1rem;
     }
   }
 
