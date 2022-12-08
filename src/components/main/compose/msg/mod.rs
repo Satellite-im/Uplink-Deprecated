@@ -9,7 +9,7 @@ use ui_kit::{
     context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
 };
-use warp::{crypto::DID, raygun::Message};
+use warp::raygun::Message;
 
 use crate::{
     components::reusable::textarea::TextArea,
@@ -17,7 +17,7 @@ use crate::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
-    Account, Messaging, LANGUAGE,
+    Messaging, LANGUAGE,
 };
 
 mod attachment;
@@ -28,12 +28,11 @@ use attachment::Attachment;
 pub struct Props<'a> {
     messaging: Messaging,
     message: Message,
-    account: Account,
-    sender: DID,
     remote: bool,
     first: bool,
     middle: bool,
     last: bool,
+    profile_picture: std::option::Option<std::string::String>,
     on_reply: EventHandler<'a, String>,
 }
 
@@ -112,10 +111,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
-    let profile_picture =
-        iutils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
-    let profile_picture2 = profile_picture.clone();
-    let profile_picture3 = profile_picture.clone();
+    let profile_picture2 = cx.props.profile_picture.clone();
+    let profile_picture3 = cx.props.profile_picture.clone();
 
     // Set up options and parser. Strikethroughs are not part of the CommonMark standard
     // and we therefore must enable it explicitly.
@@ -168,7 +165,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 e.cancel_bubble();
                             },
                             PFP {
-                                src: profile_picture,
+                                src: cx.props.profile_picture.clone(),
                                 size: ui_kit::profile_picture::Size::Normal
                             },
                             div {
