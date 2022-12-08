@@ -310,9 +310,11 @@ async fn set_thumbnail_if_file_is_image(
     let file = file_storage.get_buffer(&filename_to_save).await?;
 
     // Guarantee that is an image that has been uploaded
-    let _image = ImageReader::new(Cursor::new(&file))
+    let image = ImageReader::new(Cursor::new(&file))
         .with_guessed_format()?
         .decode()?;
+
+    let image_thumbnail = image.thumbnail(70, 70);
 
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
     let mime = match parts_of_filename
@@ -332,7 +334,7 @@ async fn set_thumbnail_if_file_is_image(
 
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(&file);
+        let base64_image = base64::encode(image_thumbnail.as_bytes());
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())
