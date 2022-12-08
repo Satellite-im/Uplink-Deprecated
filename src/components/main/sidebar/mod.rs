@@ -146,15 +146,18 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     },
                 })
             },
-            Input {
-                icon: Shape::MagnifyingGlass,
-                placeholder: String::from("Search"),
-                value: search_value.to_string(),
-                on_change: move |e: FormEvent| {
-                    search_value.set(e.value.clone());
+            div {
+                class: "search-input",
+                Input {
+                    icon: Shape::MagnifyingGlass,
+                    placeholder: String::from("Search"),
+                    value: search_value.to_string(),
+                    on_change: move |e: FormEvent| {
+                        search_value.set(e.value.clone());
+                    },
+                    on_enter: move |_| {},
                 },
-                on_enter: move |_| {},
-            },
+            }
             config.developer.developer_mode.then(|| rsx! {
                 ExtensionPlaceholder {},
             }),
@@ -164,46 +167,44 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                     messaging: cx.props.messaging.clone()
                 }
             }),
-            label {
-                style: "margin-bottom: 0;",
+            div {
+                class: "label chat-label",
                 "{chatsdString}"
             },
             if has_chats {
                 rsx!(
                     div {
-                        class: "chat_wrap",
-                        div {
-                            class: "chats",
-                            // order the chats with most recent first (descending order)
-                            filtered_chats.rev().map(|conv| {
-                                let key = conv.conversation.id();
-                                let conversation_info = conv.clone();
-                                let active_chat = active_chat.clone();
+                        class: "chats",
+                        // order the chats with most recent first (descending order)
+                        filtered_chats.rev().map(|conv| {
+                            let key = conv.conversation.id();
+                            let conversation_info = conv.clone();
+                            let active_chat = active_chat.clone();
 
-                                rsx!(
-                                    chat::Chat {
-                                        key: "{key}",
-                                        account: cx.props.account.clone(),
-                                        conversation_info: conversation_info.clone(),
-                                        messaging: cx.props.messaging.clone(),
-                                        last_msg_sent: conv.last_msg_sent.clone(),
-                                        is_active: active_chat == Some(conversation_info.conversation.id()),
-                                        tx_chan: notifications_tx.clone(),
-                                        on_pressed: move |uuid| {
-                                            // on press, change state so CSS class flips to show the chat
-                                            state.write().dispatch(Actions::HideSidebar(true));
-                                            if *active_chat != Some(uuid) {
-                                                state.write().dispatch(Actions::ShowConversation(conversation_info.conversation.id()));
-                                                active_chat.set(Some(uuid));
-                                            }
+                            rsx!(
+                                chat::Chat {
+                                    key: "{key}",
+                                    account: cx.props.account.clone(),
+                                    conversation_info: conversation_info.clone(),
+                                    messaging: cx.props.messaging.clone(),
+                                    last_msg_sent: conv.last_msg_sent.clone(),
+                                    is_active: active_chat == Some(conversation_info.conversation.id()),
+                                    tx_chan: notifications_tx.clone(),
+                                    on_pressed: move |uuid| {
+                                        // on press, change state so CSS class flips to show the chat
+                                        state.write().dispatch(Actions::HideSidebar(true));
+                                        if *active_chat != Some(uuid) {
+                                            state.write().dispatch(Actions::ShowConversation(conversation_info.conversation.id()));
+                                            active_chat.set(Some(uuid));
                                         }
                                     }
-                                )
-                            })
-                        }
+                                })
+                            }
+                        )
                     }
                 )
-            } else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
+            }
+            else { rsx!( SkeletalChats {}, div { class: "flex-1" } ) },
             Nav {
                 account: cx.props.account.clone(),
             }

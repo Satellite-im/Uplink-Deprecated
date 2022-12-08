@@ -7,29 +7,28 @@
     flex-direction: column;
     height: 100%;
     min-width: 300px;
-    padding: 1rem;
-    position: relative;
     width: var(--sidebar-width);
+
+    .search-input {
+      padding: 1rem 1rem 0;
+    }
 
     .extension-renderer {
       margin-top: 1rem;
     }
 
+    .chat-label {
+      padding: 1rem 1rem 0;
+    }
+
     .chats {
-      overflow-y: scroll;
-      overflow-x: hidden;
-      display: inline-flex;
-      flex: 1;
-      padding-top: 7px;
+      overflow-y: auto;
+      display: flex;
+      flex-grow: 1;
       min-height: 0;
       flex-direction: column;
-      position: absolute;
-      padding-right: 10px;
-      top: 0;
-      left: 0;
-      right: -10px;
-      bottom: 0;
-      padding-right: 0.5rem;
+      padding: 0 1rem;
+      gap: 0.5rem;
       &:hover {
         &::-webkit-scrollbar-thumb {
           background: var(--theme-primary) !important;
@@ -38,13 +37,8 @@
       }
     }
 
-    .chat_wrap {
-      position: relative;
-      flex: 1;
-      margin-bottom: 1rem;
-      display: flex;
-      max-height: 100%;
-      width: 100%;
+    .nav {
+      padding: 0 1rem 1rem;
     }
 
     .fill-vertical {
