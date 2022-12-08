@@ -15,7 +15,7 @@ pub fn SkeletalChats(cx: Scope) -> Element {
                 }
             },
             div {
-                class: "skele-chat dim",
+                class: "skele-chat",
                 div { class: "circle" },
                 div {
                     class: "right-side",
@@ -24,7 +24,7 @@ pub fn SkeletalChats(cx: Scope) -> Element {
                 }
             },
             div {
-                class: "skele-chat dimmer",
+                class: "skele-chat",
                 div { class: "circle" },
                 div {
                     class: "right-side",
