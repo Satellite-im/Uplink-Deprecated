@@ -84,6 +84,8 @@ pub struct State {
 }
 #[derive(Debug, Parser)]
 #[clap(name = "")]
+#![cfg_attr(not(test), windows_subsystem = "windows")]
+
 struct Opt {
     #[clap(long)]
     path: Option<PathBuf>,
@@ -92,7 +94,6 @@ struct Opt {
     #[clap(long)]
     experimental_node: bool,
 }
-#![windows_subsystem = "windows"]
 
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
