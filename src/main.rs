@@ -1,3 +1,4 @@
+#![cfg_attr(not(run), windows_subsystem = "windows")]
 use crate::iutils::config::Config;
 use ::utils::Account;
 use clap::Parser;
