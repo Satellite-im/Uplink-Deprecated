@@ -63,23 +63,16 @@ pub fn FindFriends(
             return;
         }
 
-        match account.get_identity(Identifier::user_name(value.clone().as_str())) {
-            Ok(results) => {
-                let opts = results
-                    .iter()
-                    .map(|result| SelectOption {
-                        value: result.did_key().to_string().replace("did:key:", ""),
-                        label: format!(
-                            "{}#{}",
-                            result.username().to_string(),
-                            result.short_id().to_string()
-                        ),
-                    })
-                    .collect();
+        if let Ok(results) = account.get_identity(Identifier::user_name(value.as_str())) {
+            let opts = results
+                .iter()
+                .map(|result| SelectOption {
+                    value: result.did_key().to_string().replace("did:key:", ""),
+                    label: format!("{}#{}", result.username(), result.short_id()),
+                })
+                .collect();
 
-                search_results.set(opts);
-            }
-            Err(_) => {}
+            search_results.set(opts);
         };
     };
 
@@ -97,7 +90,7 @@ pub fn FindFriends(
                     on_enter: move |_| {}
                     options: search_results.get().clone(),
                     on_item_selected: move |item:String| {
-                        remote_friend.set(item.clone());
+                        remote_friend.set(item);
                         search_results.set(Vec::new());
                     },
                     value: remote_friend.get().clone(),
