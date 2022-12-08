@@ -1,4 +1,4 @@
-use std::{path::PathBuf, ffi::OsStr};
+use std::{ffi::OsStr, path::PathBuf};
 
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
@@ -6,8 +6,8 @@ use dioxus_heroicons::{outline::Shape, Icon};
 use utils::Storage;
 
 use super::folder::State;
-use rfd::FileDialog;
 use crate::context_menu::{ContextItem, ContextMenu};
+use rfd::FileDialog;
 
 // Remember: owned props must implement PartialEq!
 #[derive(PartialEq, Props)]
@@ -161,7 +161,6 @@ pub fn File(cx: Scope<Props>) -> Element {
                         id: "{file_id}-name-normal",
                         "{file_name_formatted_state}" }
                     )
-                
                 label {
                         "{file_size}"
                     }
@@ -173,7 +172,8 @@ pub fn File(cx: Scope<Props>) -> Element {
 fn hide_edit_name_element(cx: Scope<Props>) {
     //TODO(File): Investigate in a way to replace use_eval in the future
     // Use js script to hide edit file name element
-    let hide_edit_name_script = include_str!("./hide_edit_name.js").replace("file_id", &cx.props.id.clone());
+    let hide_edit_name_script =
+        include_str!("./hide_edit_name.js").replace("file_id", &cx.props.id.clone());
     use_eval(&cx)(&hide_edit_name_script);
 }
 
@@ -200,7 +200,11 @@ fn format_file_size(file_size: usize) -> String {
 fn format_file_name_to_show(file_name: String, file_kind: String) -> String {
     let mut new_file_name = file_name.clone();
     let file = PathBuf::from(&new_file_name);
-    let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string).unwrap_or_default();
+    let file_stem = file
+        .file_stem()
+        .and_then(OsStr::to_str)
+        .map(str::to_string)
+        .unwrap_or_default();
 
     if file_stem.len() > 10 {
         new_file_name = match &file_name.get(0..5) {
