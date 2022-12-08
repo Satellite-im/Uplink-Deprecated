@@ -90,6 +90,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         size: file.size(),
                         thumbnail: file.thumbnail(),
                         storage: cx.props.storage.clone(),
+                        parent_directory: cx.props.parent_directory.clone(),
                     } )
             })
         }
