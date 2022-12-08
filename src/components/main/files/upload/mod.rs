@@ -132,7 +132,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             "type": "file",
                             prevent_default: "onclick",
                             onclick: move |_| {
-
                                 let files_local_path = match FileDialog::new().set_directory(".").pick_files() {
                                     Some(path) => path,
                                     None => return
@@ -254,26 +253,20 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
                 log::info!("{:?} file uploaded!", &filename); 
                 match file_storage.root_directory().get_item(&filename) {
                     Ok(item) => {
-                        println!("Current directory {:?}, items: {:?}", current_directory.name(), current_directory.get_items().len());
-                        match current_directory.add_item(item) {
-                            Ok(_) => {
-                                println!("Current directory {:?}, items: {:?}", current_directory.name(), current_directory.get_items().len());
-                            },
-                            Err(_) => {},
+                        let current_directory_name = current_directory.name();
+                        match current_directory.add_item(item.clone()) {
+                            Ok(_) => log::info!("Added {:?} to current directory {current_directory_name}", item),
+                            Err(error) => log::error!("add item to current directory {current_directory_name}: {error}"),
                         };
-                        
                     }, 
-                    Err(_) => println!("error")
+                    Err(error) => log::error!("get item from root directory: {error}")
                 };
-
                 match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
                     Ok(success) => log::info!("{:?}", success), 
                     Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
                 }               
             },
-            Err(error) => 
-                log::error!("Error to upload file: {:?}, error: {:?}", &filename, error)
-            ,
+            Err(error) => log::error!("Error to upload file: {:?}, error: {:?}", &filename, error),
         };
     
 }

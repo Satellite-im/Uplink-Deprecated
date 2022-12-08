@@ -52,17 +52,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 icon: Shape::PencilSquare,
                                 onpressed: move |_| {
-                            
+                                    *is_renaming.write() = true;
                                 },
                                 text: String::from("Rename")
-                            },
-                            ContextItem {
-                                icon: Shape::DocumentArrowDown,
-                                onpressed: move |_| {
-                                    *is_renaming.write() = true;
-
-                                },
-                                text: String::from("Download")
                             },
                             hr {},
                             ContextItem {
@@ -93,10 +85,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     match file_storage.open_directory(&folder_name) {
                         Ok(directory) => {
                             *parent_directory.write() = directory.clone();
-                            println!("{folder_name} was opened. {:?}", directory.name());
+                            log::info!("{folder_name} was opened. {:?}", directory.name());
                         },
-                        Err(error) => {
-                            println!("Error opening folder: {error}")},
+                        Err(error) => log::error!("Error opening folder: {error}"),
                     };
                 },
                 Icon { icon: Shape::Folder },
@@ -108,7 +99,6 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         oninput: move |evt| {
                             folder_name.set(evt.value.to_string());
                         },
-                        
                         onkeyup: move |evt| {
                             if evt.key_code == KeyCode::Enter {
                                 *is_renaming.write() = false;

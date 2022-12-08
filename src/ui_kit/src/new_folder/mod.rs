@@ -4,8 +4,6 @@ use dioxus_html::KeyCode;
 use utils::Storage;
 use warp::constellation::directory::Directory;
 
-use crate::context_menu::{ContextItem, ContextMenu};
-
 use super::folder::State;
 
 // Remember: owned props must implement PartialEq!
@@ -36,41 +34,9 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
         script { "{new_folder_js}" }
         div {
             id: "new-folder-id",
-
-            ContextMenu {
-                parent: format!("{}-folder", "new-folder-id"),
-                items: cx.render(
-                    rsx! {
-                            ContextItem {
-                                icon: Shape::PencilSquare,
-                                onpressed: move |_| {
-                            
-                                },
-                                text: String::from("Rename")
-                            },
-                            ContextItem {
-                                icon: Shape::DocumentArrowDown,
-                                onpressed: move |_| {
-                                    *is_renaming.write() = true;
-
-                                },
-                                text: String::from("Download")
-                            },
-                            hr {},
-                            ContextItem {
-                                onpressed: move |_| {
-                                 
-                                },
-                                icon: Shape::Trash,
-                                danger: true,
-                                text: String::from("Delete")
-                            },
-                }),
-            },
             div {
                 class: "folder {class}",
-   
-                Icon { icon: Shape::Folder },
+                Icon { icon: Shape::Folder }, 
                 if *is_renaming.read() {
                     rsx! ( input {
                         id: "new-folder-input",
@@ -84,37 +50,28 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                             if evt.key_code == KeyCode::Enter {
                                 *is_renaming.write() = false;
                                 let file_storage = cx.props.storage.clone();
-                                println!("Arriving here 1");
-
                                 let root_directory = match file_storage.current_directory() {
                                     Ok(current_directory) => current_directory, 
                                     Err(error) => {
                                         log::error!("Not possible to get root directory, error: {:?}", error);
-                                        println!("Error {:?}", error);
                                         Directory::default()
                                     },
                                 };
-                                println!("Arriving here 2");
                                 let new_directory_path = format!("{}", folder_name.clone());
-                                
                                 cx.spawn({
                                     to_owned![file_storage, new_directory_path, root_directory, parent_directory_ref, show_new_folder];
                                     async move {                            
                                         match file_storage.create_directory(&new_directory_path, true).await {
                                             Ok(_) => {
-                                                println!("Directory added");
                                                 let new_directory = root_directory.get_item(&new_directory_path).unwrap().directory().unwrap_or_default();
-                                                parent_directory_ref.write().add_directory(new_directory).unwrap();
+                                                parent_directory_ref.write().add_directory(new_directory.clone()).unwrap();
                                                 show_new_folder.set(false);
-                                                log::info!("New directory createad.");
+                                                log::info!("New directory created. {:?}", new_directory);
                                             },
-                                            Err(error) => {
-                                                println!("Error {:?}", error);
-                                                log::error!("Error creating directory: {error}")},
+                                            Err(error) => log::error!("Error creating directory: {error}"),
                                         };
                                     }
                                 });
-                             
                             }
                         }
                     })
