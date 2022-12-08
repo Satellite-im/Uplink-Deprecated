@@ -25,7 +25,7 @@ fn remove_friend(mut multipass: Account, did: DID) -> Result<(), ()> {
     match multipass.remove_friend(&did) {
         Ok(_) => Ok(()),
         Err(error) => {
-            log::debug!("error removing friend: {error}");
+            log::error!("error removing friend: {error}");
             Err(())
         }
     }
@@ -36,7 +36,8 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let mut rg = cx.props.messaging.clone();
+    let friend = cx.props.friend.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -84,8 +85,6 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let mut rg = rg.clone();
-                                let friend = cx.props.friend.clone();
                                 let conversation_response = warp::async_block_in_place_uncheck(
                                     rg.create_conversation(&friend)
                                 );
@@ -106,8 +105,7 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
-                                let current_chat_exist = state.read().selected_chat;
-                                match current_chat_exist {
+                                match state.read().selected_chat {
                                     Some(uuid) => {
                                         let conversation_id = uuid;
                                         if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {

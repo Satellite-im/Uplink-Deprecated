@@ -25,7 +25,8 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
     let mp = cx.props.account.clone();
-    let rg = cx.props.messaging.clone();
+    let mut rg = cx.props.messaging.clone();
+    let friend = cx.props.friend.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -73,9 +74,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let local_state = state.clone();
-                                let mut rg = rg.clone();
-                                let friend = cx.props.friend.clone();
                                 let conversation_response = warp::async_block_in_place_uncheck(
                                     rg.create_conversation(&friend)
                                 );
@@ -87,7 +85,7 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         return;
                                     }
                                 };
-                                local_state.write().dispatch(Actions::ChatWith(conversation));
+                                state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
                             }
