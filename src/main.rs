@@ -1,3 +1,4 @@
+#![cfg_attr(not(run), windows_subsystem = "windows")]
 use crate::iutils::config::Config;
 use ::utils::Account;
 use clap::Parser;
@@ -43,9 +44,8 @@ pub mod themes;
 
 use tao::window::WindowBuilder;
 
+use state::{self, STATE};
 use tao::menu::{MenuBar as Menu, MenuItem};
-use state::STATE;
-use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
