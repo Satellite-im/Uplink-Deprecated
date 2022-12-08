@@ -4,6 +4,7 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
+use state::{Actions, STATE};
 use ui_kit::{
     button::Button,
     context_menu::{ContextItem, ContextMenu},
@@ -40,6 +41,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering compose/Msg");
+    let state = use_atom_ref(&cx, STATE).clone();
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
     let attachments = cx.props.message.attachments();
@@ -240,12 +242,18 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 onpressed: move |_| {
                                     let rg = cx.props.messaging.clone();
                                     let conversation_id = cx.props.message.clone().conversation_id();
+                                    let state = state.clone();
                                     cx.spawn({
                                         to_owned![rg, conversation_id];
                                         async move {
                                             if let Err(e) =  rg.delete(conversation_id, None).await {
                                                 log::error!("error deleting conversation: {e}");
-                                            };
+                                            } else {
+                                                // not quite sure why the event doesn't get generated for the local side. 
+                                                state
+                                                .write()
+                                                .dispatch(Actions::RemoveConversation(conversation_id));
+                                            }
                                         }
                                     });
                                 },
