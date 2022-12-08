@@ -214,15 +214,10 @@ jobs:
           cd /Applications/
           ls -la
 
-      - name: Open Application
+      - name: Open Application for the first time
         run: open /Applications/Uplink.app
 
-      - name: Take screenshot of GH runner
-        uses: OrbitalOwen/desktop-screenshot-action@0.1
-        with:
-          file-name: "desktop.jpg"
-
-      - name: Quit Applications
+      - name: Quit Application before starting tests
         run: osascript -e 'quit app "Uplink.app"'
 
       - name: Run WebdriverIO tests on MacOS
