@@ -21,17 +21,6 @@ pub struct Props<'a> {
 }
 
 #[allow(non_snake_case)]
-fn remove_friend(mut multipass: Account, did: DID) -> Result<(), ()> {
-    match multipass.remove_friend(&did) {
-        Ok(_) => Ok(()),
-        Err(error) => {
-            log::debug!("error removing friend: {error}");
-            Err(())
-        }
-    }
-}
-
-#[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
@@ -107,23 +96,9 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
-                                let local_state = state.clone();
-                                let current_chat_exist = local_state.read().selected_chat;
-                                match current_chat_exist {
-                                    Some(uuid) => {
-                                        let conversation_id = uuid;
-                                        if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {
-                                            local_state.write().dispatch(Actions::HideConversation(conversation_id));
-                                            log::info!("successfully remove chat from sidebar");
-                                        };
-                                    },
-                                    None => {
-                                        if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {
-                                            log::info!("Removed friend, but not chat from sidebar!");
-                                        };
-                                    }
+                                if let Err(e) = mp.remove_friend(cx.props.friend) {
+                                    log::error!("failed to remove friend: {e}"); 
                                 }
-                                // todo: remove the conversation?
                             }
                         }
                     )}

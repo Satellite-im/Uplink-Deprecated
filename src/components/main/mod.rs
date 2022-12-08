@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use futures::StreamExt;
 use std::collections::HashMap;
 use uuid::Uuid;
-use warp::raygun::{Conversation, RayGunEventKind};
+use warp::raygun::{Conversation, ConversationType, RayGunEventKind};
 
 pub mod compose;
 pub mod files;
@@ -57,16 +57,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
 
         // get all conversations and update state
         let mut conversations: HashMap<Uuid, Conversation> = HashMap::new();
+        // RayGun doesn't delete conversations...
         match rg.list_conversations().await {
             Ok(r) => {
                 for c in r {
-                    let other_user_did = c.recipients().last().cloned().unwrap_or_default();
-
-                    match mp.has_friend(&other_user_did.clone()) {
-                        Ok(_) => state.write().dispatch(Actions::ShowConversation(c.id())),
-                        Err(_) => state.write().dispatch(Actions::HideConversation(c.id())),
-                    };
-
                     conversations.insert(c.id(), c.clone());
                 }
             }
@@ -87,6 +81,15 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         // detect added conversations
         for (id, conv) in conversations {
             if !state.read().all_chats.contains_key(&id) {
+                // prevent conversations from deleted friends from being re-added here
+                if conv.conversation_type() == ConversationType::Direct {
+                    let other_user_did = conv.recipients().last().cloned().unwrap_or_default();
+                    if mp.has_friend(&other_user_did.clone()).is_err() {
+                        // skip adding the chat
+                        continue;
+                    }
+                }
+                // conversation wasn't from a deleted friend. add it now.
                 log::debug!("adding chat");
                 state
                     .write()

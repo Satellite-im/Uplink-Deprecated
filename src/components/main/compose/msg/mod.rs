@@ -278,11 +278,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     });
                                     let mut multipass = cx.props.account.clone();
                                     let did_to_remove = cx.props.sender.clone();
-                                    match multipass.remove_friend(&did_to_remove) {
-                                        Ok(_) => {}
-                                        Err(_) => {
-                                            log::debug!("error removing friend");
-                                        }
+                                    if multipass.remove_friend(&did_to_remove).is_err() {
+                                        log::debug!("error removing friend");
                                     }
                                 },
                                 text: String::from("Remove Friend"),

@@ -2,6 +2,7 @@ use ::utils::notifications::PushNotification;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
+use state::{Actions, STATE};
 use ui_kit::{
     button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
@@ -9,7 +10,10 @@ use ui_kit::{
 };
 
 use crate::{Account, Messaging, LANGUAGE};
-use warp::multipass::MultiPassEventKind;
+use warp::{
+    multipass::MultiPassEventKind,
+    raygun::{Conversation, ConversationType},
+};
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum NavEvent {
@@ -29,6 +33,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn Nav(cx: Scope<Props>) -> Element {
     log::debug!("rendering reusable Nav");
+    let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read().clone();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
@@ -97,26 +102,39 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         reqCount.with_mut(|count| *count += 1);
                     }
                     MultiPassEventKind::IncomingFriendRequestRejected { .. } => {
-                        log::debug!("updating friend request count");
+                        log::debug!("friend request rejected");
                         if *(reqCount.get()) != 0 {
                             log::debug!("close friend request");
                             reqCount.with_mut(|count| *count -= 1);
                         }
                     }
                     MultiPassEventKind::IncomingFriendRequestClosed { .. } => {
-                        log::debug!("updating friend request count");
+                        log::debug!("friend reqeust cancelled");
                         if *(reqCount.get()) != 0 {
                             log::debug!("close friend request");
                             reqCount.with_mut(|count| *count -= 1);
                         }
                     }
                     MultiPassEventKind::FriendAdded { did } => {
-                        log::debug!("updating friend request count");
+                        log::debug!("added friend: {}", &did);
                         if *(reqCount.get()) != 0 {
                             reqCount.with_mut(|count| *count -= 1);
                         }
                         log::debug!("creating chat");
                         let _result = rg.create_conversation(&did).await;
+                    }
+                    MultiPassEventKind::FriendRemoved { did } => {
+                        log::debug!("removing friend {}", &did);
+                        if let Ok(convs) = rg.list_conversations().await {
+                            let to_remove: Vec<&Conversation> = convs
+                                .iter()
+                                .filter(|c| c.conversation_type() == ConversationType::Direct)
+                                .filter(|c| c.recipients().contains(&did))
+                                .collect();
+                            for c in to_remove {
+                                state.write().dispatch(Actions::RemoveConversation(c.id()));
+                            }
+                        }
                     }
                     _ => {}
                 }
