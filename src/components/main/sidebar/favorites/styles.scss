@@ -10,6 +10,7 @@
   gap: 1rem;
   overflow-x: auto;
   padding: 0 1rem;
+  flex-shrink: 0;
 
   .favorites-item {
     width: 40px;
