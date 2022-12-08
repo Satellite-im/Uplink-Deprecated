@@ -1,5 +1,5 @@
 use ::utils::notifications::PushNotification;
-use dioxus::{prelude::*};
+use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use state::{Actions, STATE};
