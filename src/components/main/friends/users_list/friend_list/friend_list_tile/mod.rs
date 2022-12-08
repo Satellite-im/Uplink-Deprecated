@@ -84,7 +84,6 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let local_state = state.clone();
                                 let mut rg = rg.clone();
                                 let friend = cx.props.friend.clone();
                                 let conversation_response = warp::async_block_in_place_uncheck(
@@ -98,7 +97,7 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         return;
                                     }
                                 };
-                                local_state.write().dispatch(Actions::ChatWith(conversation));
+                                state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
                             }
@@ -107,13 +106,12 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
-                                let local_state = state.clone();
-                                let current_chat_exist = local_state.read().selected_chat;
+                                let current_chat_exist = state.read().selected_chat;
                                 match current_chat_exist {
                                     Some(uuid) => {
                                         let conversation_id = uuid;
                                         if remove_friend(cx.props.account.clone(), cx.props.friend.clone()).is_ok() {
-                                            local_state.write().dispatch(Actions::HideConversation(conversation_id));
+                                            state.write().dispatch(Actions::HideConversation(conversation_id));
                                             log::info!("successfully remove chat from sidebar");
                                         };
                                     },
