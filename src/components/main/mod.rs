@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use futures::StreamExt;
 use std::collections::HashMap;
 use uuid::Uuid;
-use warp::raygun::{Conversation, ConversationType, RayGunEventKind};
+use warp::raygun::{Conversation, RayGunEventKind};
 
 pub mod compose;
 pub mod files;
