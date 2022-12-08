@@ -138,7 +138,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 }
             }
         }
-    );
+    });
 
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (

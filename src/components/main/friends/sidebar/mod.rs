@@ -1,8 +1,10 @@
-
 use dioxus::prelude::*;
 use utils::Account;
 
-use crate::{Messaging, components::main::friends::{find::FindFriends, requests::FriendRequests}};
+use crate::{
+    components::main::friends::{find::FindFriends, requests::FriendRequests},
+    Messaging,
+};
 
 #[inline_props]
 #[allow(non_snake_case)]

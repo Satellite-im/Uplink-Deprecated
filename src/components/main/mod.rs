@@ -8,7 +8,7 @@ use dioxus::prelude::*;
 use futures::StreamExt;
 use std::collections::HashMap;
 use uuid::Uuid;
-use warp::{raygun::{Conversation, RayGunEventKind}};
+use warp::raygun::{Conversation, RayGunEventKind};
 
 pub mod compose;
 pub mod files;
@@ -60,13 +60,10 @@ pub fn Main(cx: Scope<Prop>) -> Element {
         match rg.list_conversations().await {
             Ok(r) => {
                 for c in r {
-                    let other_user_did = c.recipients()
-                    .last()
-                    .cloned()
-                    .unwrap_or_default();
+                    let other_user_did = c.recipients().last().cloned().unwrap_or_default();
 
                     match mp.has_friend(&other_user_did.clone()) {
-                        Ok(_) =>  state.write().dispatch(Actions::ShowConversation(c.id())),
+                        Ok(_) => state.write().dispatch(Actions::ShowConversation(c.id())),
                         Err(_) => state.write().dispatch(Actions::HideConversation(c.id())),
                     };
 

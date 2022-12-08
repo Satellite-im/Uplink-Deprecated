@@ -8,11 +8,7 @@ use ui_kit::{
 };
 use warp::crypto::DID;
 
-use crate::{
-    iutils,
-    state::Actions,
-    Messaging, STATE,
-};
+use crate::{iutils, state::Actions, Messaging, STATE};
 use utils::Account;
 
 #[derive(Props)]
@@ -31,7 +27,7 @@ fn remove_friend(mut multipass: Account, did: DID) -> Result<(), ()> {
         Err(error) => {
             log::debug!("error removing friend: {error}");
             Err(())
-        },
+        }
     }
 }
 

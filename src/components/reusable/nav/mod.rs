@@ -116,8 +116,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                             reqCount.with_mut(|count| *count -= 1);
                         }
                         log::debug!("creating chat");
-                        let _result =
-                            rg.create_conversation(&did).await;
+                        let _result = rg.create_conversation(&did).await;
                     }
                     _ => {}
                 }
