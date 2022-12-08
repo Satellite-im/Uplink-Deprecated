@@ -2,17 +2,11 @@
 
 .messages {
   display: flex;
-  flex-direction: column-reverse;
-  overflow-y: auto;
+  flex-direction: column;
+  min-width: 300px;
   padding: 0 1rem;
   flex-grow: 1;
-
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background: var(--theme-primary) !important;
-      opacity: 1;
-    }
-  }
+  margin-top: auto;
 
   .encrypted-notif {
     display: inline-flex;
