@@ -40,7 +40,7 @@ jobs:
         continue-on-error: true
         run: |
           brew update
-          brew install protobuf
+          brew install protobuf cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
 
       - name: Make Build for Appium to run
         run: |
