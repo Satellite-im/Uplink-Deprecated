@@ -357,6 +357,27 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             key: "{message_id}",
                             style: "display: contents",
                             "data-remote": "{is_remote}",
+                            message.replied().map(|replied| {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        rsx!{
+                                            Reply {
+                                                // key: "{message_id}-reply",
+                                                message_id: message.id(),
+                                                message: message.value().join("\n"),
+                                                attachments_len: message.attachments().len(),
+                                                is_remote: is_remote,
+                                                account: cx.props.account.clone(),
+                                                sender: message.sender(),
+                                            }
+                                        }
+                                    },
+                                    // todo: if we don't want to display this, change message.replied().map to message.replied.and_then(), then 
+                                    // in the match statement return Some(Element) on Ok and None on error, with error logging as desired. 
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            }),
                             Msg {
                                 // key: "{message_id}-reply",
                                 messaging: cx.props.messaging.clone(),message: message.clone(),
@@ -372,28 +393,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         //TODO: Display error?
                                     }
                                 }
-                            }
-                            match message.replied() {
-                                Some(replied) => {
-                                    let r = cx.props.messaging.clone();
-                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                        Ok(message) => {
-                                            rsx!{
-                                                Reply {
-                                                    // key: "{message_id}-reply",
-                                                    message_id: message.id(),
-                                                    message: message.value().join("\n"),
-                                                    attachments_len: message.attachments().len(),
-                                                    is_remote: is_remote,
-                                                    account: cx.props.account.clone(),
-                                                    sender: message.sender(),
-                                                }
-                                            }
-                                        },
-                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                    }
-                                },
-                                _ => rsx!{ div {  } }
                             }
                         }
                     }
