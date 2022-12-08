@@ -363,6 +363,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             key: "{message_id}",
                             style: "display: contents",
                             "data-remote": "{is_remote}",
+                            (message_id == first_unread_message_id).then(||
+                                rsx! {Divider()}
+                            )
                             Msg {
                                 // key: "{message_id}-reply",
                                 messaging: cx.props.messaging.clone(),message: message.clone(),
@@ -379,9 +382,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             }
-                            (message.id() == first_unread_message_id).then(||
-                                rsx! {Divider()}
-                            )
                             match message.replied() {
                                 Some(replied) => {
                                     let r = cx.props.messaging.clone();
