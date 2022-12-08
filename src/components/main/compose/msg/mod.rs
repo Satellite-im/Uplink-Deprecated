@@ -1,4 +1,4 @@
-use dioxus::{core::to_owned, prelude::*};
+use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use embeds::LinkEmbed;
 use linkify::LinkFinder;
@@ -240,24 +240,11 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             ContextItem {
                                 onpressed: move |_| {
-                                    let rg = cx.props.messaging.clone();
-                                    let conversation_id = cx.props.message.clone().conversation_id();
-                                    let state = state.clone();
-                                    cx.spawn({
-                                        to_owned![rg, conversation_id];
-                                        async move {
-                                            if let Err(e) =  rg.delete(conversation_id, None).await {
-                                                log::error!("error deleting conversation: {e}");
-                                            } else {
-                                                // not quite sure why the event doesn't get generated for the local side. 
-                                                state
-                                                .write()
-                                                .dispatch(Actions::RemoveConversation(conversation_id));
-                                            }
-                                        }
-                                    });
+                                    state
+                                    .write()
+                                    .dispatch(Actions::HideConversation(cx.props.message.conversation_id()));
                                 },
-                                text: String::from("Clear Chat"),
+                                text: String::from("Hide Chat"),
                                 danger: true,
                                 icon: Shape::Trash,
                             },
