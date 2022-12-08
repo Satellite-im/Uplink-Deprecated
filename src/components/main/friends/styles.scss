@@ -17,8 +17,10 @@
     .scroll-container {
       overflow-y: scroll;
     }
+
     .user-category {
       display: inline-flex;
+      border-bottom: 1px solid var(--theme-borders);
     }
 
     .main {

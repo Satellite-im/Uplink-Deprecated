@@ -7,15 +7,12 @@ pub mod users_list;
 
 use crate::{
     components::main::friends::sidebar::Sidebar,
-    components::reusable::nav::Nav,
-    components::{
-        main::friends::{
-            find::FindFriends, list_type_button::ListTypeButton, requests::FriendRequests,
-            users_list::UsersList,
-        },
-        reusable::page_header,
+    components::main::friends::{
+        find::FindFriends, list_type_button::ListTypeButton, requests::FriendRequests,
+        users_list::UsersList,
     },
-    Account, Messaging, STATE,
+    components::reusable::nav::Nav,
+    Account, Messaging,
 };
 
 use dioxus::prelude::*;
@@ -39,11 +36,20 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
     let show_friend_list = use_state(&cx, || true);
 
-    let state = use_atom_ref(&cx, STATE);
-    let sidebar_visibility = match state.read().hide_sidebar {
-        false => "mobile-sidebar-visible",
-        true => "mobile-sidebar-hidden",
-    };
+    let incoming_requests = cx
+        .props
+        .account
+        .list_incoming_request()
+        .unwrap_or_default()
+        .len()
+        > 0;
+    let outgoing_requests = cx
+        .props
+        .account
+        .list_outgoing_request()
+        .unwrap_or_default()
+        .len()
+        > 0;
 
     cx.render(rsx! {
         div {
@@ -57,32 +63,36 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                     FindFriends { account: cx.props.account.clone(), add_error: add_error.clone(), is_compact: true },
                 },
                 div{
+                    class: "user-category",
+                    ListTypeButton{
+                        text:String::from("All"),
+                        active: **show_friend_list,
+                        on_pressed:move |_|show_friend_list.set(true)
+                    },
+                    ListTypeButton{
+                        text:String::from("Blocked"),
+                        active: !**show_friend_list,
+                        on_pressed: move |_|show_friend_list.set(false)
+                    },
+                },
+                div{
                    class: "scroll-container",
-                   div {
-                    class: "mobile-wrap",
-                        FriendRequests { account: cx.props.account.clone(), add_error: add_error.clone() },
-                    }
-                    div{
-                        class: "user-category",
-                        ListTypeButton{
-                            text:String::from("All"),
-                            active: **show_friend_list,
-                            on_pressed:move |_|show_friend_list.set(true)
-                        },
-                        ListTypeButton{
-                            text:String::from("Blocked"),
-                            active: !**show_friend_list,
-                            on_pressed: move |_|show_friend_list.set(false)
-                        },
-                    },
-                    div{
-                        class:"main",
-                        UsersList{
-                            account:&cx.props.account,
-                            messaging: &cx.props.messaging,
-                            show_friend_list:**show_friend_list,}
-
-                    },
+                   (incoming_requests || outgoing_requests).then(|| {
+                       rsx! {
+                           div {
+                               class: "mobile-wrap",
+                                   FriendRequests { account: cx.props.account.clone(), add_error: add_error.clone() },
+                           },
+                       }
+                   }),
+                   div{
+                       class:"main",
+                       UsersList {
+                           account:&cx.props.account,
+                           messaging: &cx.props.messaging,
+                           show_friend_list:**show_friend_list,
+                       },
+                   },
                 },
                 span {
                     class: "hidden-on-desktop mobile-nav",
