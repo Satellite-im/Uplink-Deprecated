@@ -217,6 +217,11 @@ jobs:
       - name: Open Application for the first time
         run: open /Applications/Uplink.app
 
+      - name: Take screenshot of GH runner
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: "desktop.jpg"
+
       - name: Quit Application before starting tests
         run: osascript -e 'quit app "Uplink.app"'
 
