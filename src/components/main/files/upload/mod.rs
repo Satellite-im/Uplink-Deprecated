@@ -1,10 +1,16 @@
 use std::{
+    cmp::Ordering,
     ffi::OsStr,
     io::Cursor,
     path::{Path, PathBuf},
 };
 
-use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::{use_window, wry::webview::FileDropEvent}};
+use dioxus::{
+    core::to_owned,
+    desktop::{use_window, wry::webview::FileDropEvent},
+    events::MouseEvent,
+    prelude::*,
+};
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
@@ -24,9 +30,9 @@ pub struct Props<'a> {
 }
 
 enum Action {
-        Start,
-        Stop,
-    }
+    Start,
+    Stop,
+}
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
@@ -48,9 +54,9 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             file_being_uploaded_js
         ];
         async move {
-        while let Some(action) = rx.next().await {
-            match action {
-                Action::Start => {
+            while let Some(action) = rx.next().await {
+                match action {
+                    Action::Start => {
                         log::info!("File on dropzone");
                         // Time necessary to work on macOS and Linux
                         #[cfg(not(target_os = "windows"))]
@@ -58,57 +64,76 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         if *drag_over_dropzone.read() {
                             let drag_file_event = get_drag_file_event();
                             let files_local_path = match drag_file_event.clone() {
-                                FileDropEvent::Hovered(files_path) | FileDropEvent::Dropped(files_path) => files_path,
-                                _ => Vec::new()
+                                FileDropEvent::Hovered(files_path)
+                                | FileDropEvent::Dropped(files_path) => files_path,
+                                _ => Vec::new(),
                             };
-                            
+
                             // TODO(use_eval): Try new solution in the future
-                            if files_local_path.len() > 1 {
-                                let files_to_upload = format!("{} files to upload!",files_local_path.len());
-                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
-                            }  else if files_local_path.len() == 1 {
-                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0].to_string_lossy().to_string()));
+                            match files_local_path.len().cmp(&1) {
+                                Ordering::Greater => {
+                                    let files_to_upload =
+                                        format!("{} files to upload!", files_local_path.len());
+                                    eval_script.eval(
+                                        &file_over_dropzone_js
+                                            .replace("file_path", &files_to_upload),
+                                    );
+                                }
+                                Ordering::Equal => {
+                                    eval_script.eval(&file_over_dropzone_js.replace(
+                                        "file_path",
+                                        &files_local_path[0].to_string_lossy(),
+                                    ));
+                                }
+                                _ => {}
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
                                 *drag_over_dropzone.write_silent() = false;
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
-                              for file_path in &files_local_path {
-                                  upload_file(file_storage.clone(), file_path.clone()).await;
-                                  log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
-                              }
+                                for file_path in &files_local_path {
+                                    upload_file(file_storage.clone(), file_path.clone()).await;
+                                    log::info!("{} file uploaded!", file_path.to_string_lossy());
+                                }
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_leave_dropzone_js);
                             }
-                           
-                        }  
-                    },
-                Action::Stop => {
-                            eval_script.eval(&file_leave_dropzone_js);
-                            log::info!("File not able to upload");
-                            // HACK(Temp): Just to improve a little feedback for user on windows
-                            // TODO(Temp): Temp solution to drag and drop work on Windows
-                            #[cfg(target_os = "windows")]
-                                loop {
-                                    if *drag_over_dropzone.read() {
-                                        break;
-                                    }
-                                    let drag_file_event = get_drag_file_event();
-                                    match drag_file_event {
-                                        FileDropEvent::Hovered(files_path) => {
-                                            if files_path.len() > 1 {
-                                                let files_to_upload = format!("Dragging {} files. Drop here to upload them!",files_path.len());
-                                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
-                                            }  else if files_path.len() == 1 {
-                                                eval_script.eval(&file_over_dropzone_js.replace("file_path", "Dragging 1 file. Drop here to upload it!"));
-                                            }
-                                        },
-                                        _ => eval_script.eval(&file_leave_dropzone_js)
-                                    }
-                                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                        }
+                    }
+                    Action::Stop => {
+                        eval_script.eval(&file_leave_dropzone_js);
+                        log::info!("File not able to upload");
+                        // HACK(Temp): Just to improve a little feedback for user on windows
+                        // TODO(Temp): Temp solution to drag and drop work on Windows
+                        #[cfg(target_os = "windows")]
+                        loop {
+                            if *drag_over_dropzone.read() {
+                                break;
                             }
-                        },
+                            let drag_file_event = get_drag_file_event();
+                            match drag_file_event {
+                                FileDropEvent::Hovered(files_path) => {
+                                    if files_path.len() > 1 {
+                                        let files_to_upload = format!(
+                                            "Dragging {} files. Drop here to upload them!",
+                                            files_path.len()
+                                        );
+                                        eval_script.eval(
+                                            &file_over_dropzone_js
+                                                .replace("file_path", &files_to_upload),
+                                        );
+                                    } else if files_path.len() == 1 {
+                                        eval_script.eval(&file_over_dropzone_js.replace(
+                                            "file_path",
+                                            "Dragging 1 file. Drop here to upload it!",
+                                        ));
+                                    }
+                                }
+                                _ => eval_script.eval(&file_leave_dropzone_js),
+                            }
+                            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                        }
                     }
                 }
             }
@@ -174,7 +199,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         *drag_over_dropzone.write_silent() = true;
                                         upload_file_dropped_routine.send(Action::Start);
                                     },
-                                    _ => {  
+                                    _ => {
                                         *drag_over_dropzone.write_silent() = false;
                                         upload_file_dropped_routine.send(Action::Stop);
                                     }
@@ -212,10 +237,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         icon: Shape::XMark
                     }
                 }
-                
             }
         ))
-        
     })
 }
 
@@ -290,6 +313,7 @@ async fn set_thumbnail_if_file_is_image(
     let image = ImageReader::new(Cursor::new(&file))
         .with_guessed_format()?
         .decode()?;
+
     let image_thumbnail = image.thumbnail(70, 70);
 
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
@@ -310,7 +334,7 @@ async fn set_thumbnail_if_file_is_image(
 
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(image_thumbnail.as_bytes().to_vec());
+        let base64_image = base64::encode(image_thumbnail.as_bytes());
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())

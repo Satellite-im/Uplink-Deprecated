@@ -12,9 +12,9 @@ pub fn InputAddFriend<'a>(
     on_enter: EventHandler<'a, String>,
 ) -> Element<'a> {
     let clearing_state = &*cx.use_hook(|_| std::cell::Cell::new(false));
-    let mut inner_html = cx.use_hook(|_| " ").clone();
+    let inner_html = cx.use_hook(|_| " ");
     if !inner_html.is_empty() && value.is_empty() && !clearing_state.get() {
-        inner_html = "";
+        *inner_html = "";
         clearing_state.set(true);
         cx.needs_update();
     } else {

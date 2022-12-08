@@ -44,8 +44,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     let chatsdString = l.chats.to_string();
     let has_chats = !state.read().active_chats.is_empty();
 
-    let search_value = use_state(&cx, || String::new());
-    let participant_usernames = RefCell::new(HashMap::new());
+    let search_value = use_state(&cx, String::new);
+    let participant_usernames: RefCell<HashMap<Uuid, String>> = RefCell::new(HashMap::new());
 
     let active_chat: UseState<Option<Uuid>> = use_state(&cx, || None).clone();
     let _active_chat = state.read().selected_chat;
@@ -104,7 +104,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
 
             participant_usernames
                 .borrow_mut()
-                .insert(conv.conversation.id(), username.clone());
+                .insert(conv.conversation.id(), username);
         }
 
         let search = search_value.clone().get().to_lowercase();
