@@ -183,6 +183,7 @@ jobs:
           ls -la
           unzip Uplink-Mac-Universal.zip
           cp -r ./Uplink.app /Applications/
+          sudo xattr -r -d com.apple.quarantine /Applications/Uplink.app
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
