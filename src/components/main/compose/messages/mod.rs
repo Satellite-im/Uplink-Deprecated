@@ -62,13 +62,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // this one has a special name because of the other variable names within the use_future
     let list: &UseRef<BTreeSet<Message>> = use_ref(&cx, BTreeSet::new);
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
-    let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
+    let messages: Vec<Message> = list.read().iter().cloned().collect();
 
     // this is used for reading the event stream.
     let current_chat = state
         .read()
         .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
+
+    let msg_script = include_str!("messages.js");
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -328,7 +330,17 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
+            id: "scroll-messages",
             class: "messages",
+            div {
+                class: "encrypted-notif",
+                Icon {
+                    icon: Shape::LockClosed
+                }
+                p {
+                    "Messages secured by local E2E encryption."
+                }
+            },
             messages.iter()
                 .zip(next_sender)
                 .zip(prev_sender)
@@ -345,6 +357,28 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         div {
                             key: "{message_id}",
                             style: "display: contents",
+                            "data-remote": "{is_remote}",
+                            message.replied().map(|replied| {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        rsx!{
+                                            Reply {
+                                                // key: "{message_id}-reply",
+                                                message_id: message.id(),
+                                                message: message.value().join("\n"),
+                                                attachments_len: message.attachments().len(),
+                                                is_remote: is_remote,
+                                                account: cx.props.account.clone(),
+                                                sender: message.sender(),
+                                            }
+                                        }
+                                    },
+                                    // todo: if we don't want to display this, change message.replied().map to message.replied.and_then(), then 
+                                    // in the match statement return Some(Element) on Ok and None on error, with error logging as desired. 
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            }),
                             Msg {
                                 // key: "{message_id}-reply",
                                 messaging: cx.props.messaging.clone(),message: message.clone(),
@@ -352,8 +386,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 sender: message.sender(),
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                                last:  is_first,
-                                first: is_last,
+                                last:  is_last,
+                                first: is_first,
                                 middle: !is_last && !is_first,
                                 on_reply: move |reply| {
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
@@ -361,41 +395,10 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             }
-                            match message.replied() {
-                                Some(replied) => {
-                                    let r = cx.props.messaging.clone();
-                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                        Ok(message) => {
-                                            rsx!{
-                                                Reply {
-                                                    // key: "{message_id}-reply",
-                                                    message_id: message.id(),
-                                                    message: message.value().join("\n"),
-                                                    attachments_len: message.attachments().len(),
-                                                    is_remote: is_remote,
-                                                    account: cx.props.account.clone(),
-                                                    sender: message.sender(),
-                                                }
-                                            }
-                                        },
-                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                    }
-                                },
-                                _ => rsx!{ div {  } }
-                            }
                         }
                     }
                 }),
-            div {
-                // key: "encrypted-notification-0001",
-                class: "encrypted-notif",
-                Icon {
-                    icon: Shape::LockClosed
-                }
-                p {
-                    "Messages secured by local E2E encryption."
-                }
-            }
+                script { "{msg_script}" }
         }
     })
 }

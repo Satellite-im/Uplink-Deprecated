@@ -51,7 +51,8 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                         value: status_msg_state.to_string(),
                         on_change: move |e: FormEvent| {
                             status_msg_error.set("".into());
-                            status_msg_state.set(e.value.clone())},
+                            status_msg_state.set(e.value.clone())
+                        },
                         on_enter:move |_|{
                             let status_msg_text = status_msg_state.trim();
                             if status_msg_text != status_msg {

@@ -8,25 +8,21 @@ use ui_kit::{
 };
 use warp::crypto::DID;
 
-use crate::{iutils, state::Actions, Messaging, STATE};
+use crate::iutils;
 use utils::Account;
 
-#[derive(Props)]
-pub struct Props<'a> {
+#[derive(Props, PartialEq)]
+pub struct Props {
     account: Account,
-    messaging: Messaging,
     friend: DID,
     friend_username: String,
-    on_chat: EventHandler<'a, ()>,
 }
 
 #[allow(non_snake_case)]
-pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
-    log::debug!("rendering Friend");
-    let state = use_atom_ref(&cx, STATE);
+pub fn BlockedListTile(cx: Scope<Props>) -> Element {
+    log::debug!("rendering Blocked Users");
 
     let mp = cx.props.account.clone();
-    let mut rg = cx.props.messaging.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
@@ -71,38 +67,19 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         }
                     )} else {rsx!(
                         Button {
-                            icon: Shape::ChatBubbleBottomCenterText,
-                            on_pressed: move |_| {
-                                let conversation =
-                                match warp::async_block_in_place_uncheck(rg.create_conversation(&cx.props.friend)) {
-                                    Ok(v) => v,
-                                    Err(warp::error::Error::ConversationExist { conversation }) => conversation,
-                                    Err(e) => {
-                                        log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
-                                        return;
-                                    }
-                                };
-
-                                state.write().dispatch(Actions::ChatWith(conversation));
-                                cx.props.on_chat.call(());
-
-                            }
-                        },
-                        Button {
-                            icon: Shape::XMark,
-                            state: ui_kit::button::State::Danger,
+                            text:"Unblock".to_string(),
+                            state: ui_kit::button::State::Secondary,
                             on_pressed: move |_| {
                                 let mut multipass = cx.props.account.clone();
-                                let did_to_remove = cx.props.friend.clone();
-                                match multipass.remove_friend(&did_to_remove) {
+                                let did_to_unblock = cx.props.friend.clone();
+                                match multipass.unblock(&did_to_unblock) {
                                     Ok(_) => {}
-                                    Err(_) => {
-                                        log::debug!("error removing friend");
+                                    Err(e) => {
+                                        log::debug!("faied to unblock friend {}:{}", &cx.props.friend, e);
                                     }
                                 }
-                                // todo: remove the conversation?
                             }
-                        }
+                        },
                     )}
                 }
             }

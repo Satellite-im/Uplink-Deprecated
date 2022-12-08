@@ -1,0 +1,29 @@
+#find-friends {
+  .code {
+    width: 100%;
+    margin-bottom: 0.5rem;
+
+    .button {
+      min-width: 100%;
+    }
+  }
+
+  .add {
+    width: 100%;
+    display: flex;
+
+    .icon-input {
+      flex: 1;
+    }
+
+    .button {
+      margin-left: 8px;
+    }
+  }
+
+  @media only screen and (min-width: 601px) {
+    .copy-friend-code {
+      margin-top: 0.5rem;
+    }
+  }
+}
