@@ -2,6 +2,7 @@ use dioxus::{prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::Storage;
+use warp::constellation::directory::{Directory};
 
 use crate::context_menu::{ContextItem, ContextMenu};
 
@@ -22,6 +23,7 @@ pub struct Props {
     // Seems to align closet to the 32 bit uint range.
     children: u32,
     storage: Storage,
+    parent_directory: UseState<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -36,6 +38,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
 
     let children = use_state(&cx, || cx.props.children.clone());
     let is_renaming = use_ref(&cx, || false);   
+
+    let parent_directory = cx.props.parent_directory.clone();
 
     cx.render(rsx! {
          div {
@@ -63,7 +67,16 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             hr {},
                             ContextItem {
                                 onpressed: move |_| {
-                                 
+                                    let folder_name = cx.props.name.clone();
+                                    match parent_directory.remove_item(&folder_name) {
+                                        Ok(_) => {
+                                            println!("Folder deleted: ");
+                                            log::info!("{folder_name} was deleted.");
+                                        },
+                                        Err(error) => {
+                                            println!("error: {:?}", error);
+                                            log::error!("Error deleting folder: {error}")},
+                                    }
                                 },
                                 icon: Shape::Trash,
                                 danger: true,
@@ -73,6 +86,19 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             },
             div {
                 class: "folder {class}",
+                onclick: move |_| {
+                    let file_storage = cx.props.storage.clone();
+                    let folder_name = cx.props.name.clone();
+                    let parent_directory = cx.props.parent_directory.clone();
+                    match file_storage.open_directory(&folder_name) {
+                        Ok(directory) => {
+                            parent_directory.set(directory);
+                            println!("{folder_name} was opened.");
+                        },
+                        Err(error) => {
+                            println!("Error opening folder: {error}")},
+                    };
+                },
                 Icon { icon: Shape::Folder },
                 if *is_renaming.read() {
                     rsx! ( input {

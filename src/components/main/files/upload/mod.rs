@@ -5,7 +5,7 @@ use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
 use ui_kit::button::Button;
-use warp::error::Error;
+use warp::{error::Error, constellation::directory::Directory};
 use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
@@ -17,6 +17,7 @@ pub struct Props<'a> {
     storage: crate::Storage,
     show: bool,
     on_hide: EventHandler<'a, MouseEvent>,
+    parent_directory: UseState<Directory>,
 }
 
 enum Action {
@@ -34,8 +35,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
 
+    let parent_directory = cx.props.parent_directory.clone();
+
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
+        to_owned![parent_directory, file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js, file_being_uploaded_js];
         async move {
         while let Some(action) = rx.next().await {
             match action {
@@ -64,7 +67,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
                               for file_path in &files_local_path {
-                                  upload_file(file_storage.clone(), file_path.clone()).await;
+                                  upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
                                   log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
                               }
                                 // TODO(use_eval): Try new solution in the future
@@ -126,16 +129,17 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             "type": "file",
                             prevent_default: "onclick",
                             onclick: move |_| {
+
                                 let files_local_path = match FileDialog::new().set_directory(".").pick_files() {
                                     Some(path) => path,
                                     None => return
                                 };
                                 let file_storage = cx.props.storage.clone();
                                 cx.spawn({
-                                    to_owned![file_storage, files_local_path];
+                                    to_owned![file_storage, files_local_path, parent_directory];
                                     async move {
                                         for file_path in &files_local_path {
-                                            upload_file(file_storage.clone(), file_path.clone()).await;
+                                            upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
                                         }
                                     }
                                 }); 
@@ -211,7 +215,7 @@ fn get_drag_file_event() -> FileDropEvent {
     drag_file_event
 }
 
-async fn upload_file(file_storage: Storage, file_path: PathBuf) {
+async fn upload_file(file_storage: Storage, file_path: PathBuf, current_directory: UseState<Directory>) {
     let mut filename = match file_path.file_name().map(|file| file.to_string_lossy().to_string()) {
         Some(file) => file,
         None => return
@@ -220,13 +224,13 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
     let local_path = Path::new(&file_path).to_string_lossy().to_string();
     let mut count_index_for_duplicate_filename = 1;
     let mut file_storage = file_storage.clone();
-    let current_directory = match file_storage.current_directory() {
-        Ok(current_directory) => current_directory, 
-        Err(error) => {
-            log::error!("Not possible to get current directory, error: {:?}", error);
-            return;
-        },
-    };
+    // let current_directory = match file_storage.current_directory() {
+    //     Ok(current_directory) => current_directory, 
+    //     Err(error) => {
+    //         log::error!("Not possible to get current directory, error: {:?}", error);
+    //         return;
+    //     },
+    // };
     let original = filename.clone();
 
     loop {
@@ -247,10 +251,26 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
             log::info!("Duplicate name, changing file name to {}", &filename);
             count_index_for_duplicate_filename += 1;
         }
+       
 
         match file_storage.put(&filename, &local_path).await {
             Ok(_) => {  
                 log::info!("{:?} file uploaded!", &filename); 
+                match file_storage.root_directory().get_item(&filename) {
+                    Ok(item) => {
+                        println!("Current directory {:?}, items: {:?}", current_directory.name(), current_directory.get_items().len());
+                        match current_directory.add_item(item) {
+                            Ok(_) => {
+                                println!("Current directory {:?}, items: {:?}", current_directory.name(), current_directory.get_items().len());
+                            },
+                            Err(_) => {},
+                        };
+                        
+                    }, 
+                    Err(_) => println!("error")
+                };
+
+            
 
                 match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
                     Ok(success) => log::info!("{:?}", success), 

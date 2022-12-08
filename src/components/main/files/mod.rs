@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use warp::constellation::directory::Directory;
 
 use crate::{
     components::reusable::nav::Nav,
@@ -26,6 +27,26 @@ pub struct Props {
 pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
+
+    let root_directory = match cx.props.storage.current_directory() {
+        Ok(current_directory) => current_directory, 
+        Err(error) => {
+            log::error!("Not possible to get root directory, error: {:?}", error);
+            Directory::default()
+        },
+    };
+
+    if !root_directory.has_item("main_directory") {
+        match root_directory.add_directory(Directory::default()) {
+            Ok(_) => {
+                root_directory.rename_item("un-named directory", "main_directory").unwrap();   
+            },
+            Err(error) => println!("{error}"),
+        }
+    }
+    let main_directory = root_directory.get_item("main_directory").unwrap().directory().unwrap_or_default();
+
+    let parent_directory = use_state(&cx, || main_directory);
 
     cx.render(rsx! {
         div {
@@ -57,12 +78,14 @@ pub fn Files(cx: Scope<Props>) -> Element {
                             storage: cx.props.storage.clone(),
                             show: **show_upload,
                             on_hide: move |_| show_upload.set(false),
+                            parent_directory: parent_directory.clone()
                         },
                     },
                     FileBrowser {
                         account: cx.props.account.clone(),
                         storage: cx.props.storage.clone(),
                         show_new_folder: show_new_folder.clone(),
+                        parent_directory: parent_directory.clone(),
                     }
                     span {
                         class: "hidden-on-desktop mobile-nav",

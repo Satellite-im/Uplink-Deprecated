@@ -2,6 +2,7 @@ use dioxus::{prelude::*, core::to_owned};
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 use utils::Storage;
+use warp::constellation::directory::Directory;
 
 use crate::context_menu::{ContextItem, ContextMenu};
 
@@ -13,6 +14,7 @@ pub struct Props {
     state: State,
     storage: Storage,
     show_new_folder: UseState<bool>,
+    parent_directory: UseState<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -27,6 +29,8 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
     let show_new_folder = cx.props.show_new_folder.clone();
 
     let new_folder_js = include_str!("./new_folder.js");
+
+    let parent_directory = cx.props.parent_directory.clone();
 
     cx.render(rsx! {
         script { "{new_folder_js}" }
@@ -81,13 +85,28 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                                 *is_renaming.write() = false;
                                 show_new_folder.set(false);
                                 let file_storage = cx.props.storage.clone();
+                                let root_directory = match file_storage.current_directory() {
+                                    Ok(current_directory) => current_directory, 
+                                    Err(error) => {
+                                        log::error!("Not possible to get root directory, error: {:?}", error);
+                                        Directory::default()
+                                    },
+                                };
                                 let new_directory_path = format!("{}", folder_name.clone());
                                 cx.spawn({
-                                    to_owned![file_storage, new_directory_path];
+                                    to_owned![file_storage, new_directory_path, root_directory, parent_directory];
                                     async move {                            
                                         match file_storage.create_directory(&new_directory_path, true).await {
-                                            Ok(_) => log::info!(" New directory createad."),
-                                            Err(error) => log::error!("Error creating directory: {error}"),
+                                            Ok(_) => {
+                                                // let new_directory = root_directory.get_item(&new_directory_path).unwrap().directory().unwrap_or_default();
+                                                // parent_directory.add_directory(new_directory).unwrap();
+                                                // parent_directory.needs_update();
+                                                println!("DIrectory added");
+                                                log::info!(" New directory createad.")
+                                            },
+                                            Err(error) => {
+                                                println!("Error {:?}", error);
+                                                log::error!("Error creating directory: {error}")},
                                         };
                                     }
                                 });
