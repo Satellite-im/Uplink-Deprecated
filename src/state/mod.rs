@@ -64,6 +64,8 @@ pub struct ConversationInfo {
     pub num_unread_messages: u32,
     /// the first two lines of the last message sent
     pub last_msg_sent: Option<LastMsgSent>,
+    /// the first unread message set when the chat is not active
+    pub first_unread_message_id: Option<Uuid>,
     /// the time the conversation was created. used to sort the chats
     pub creation_time: DateTime<Utc>,
 }
@@ -176,13 +178,15 @@ impl PersistedState {
                 match self.all_chats.get(&uuid) {
                     // add to active_chats
                     Some(conv) => {
-                        self.active_chats.insert(
-                            uuid,
-                            ConversationInfo {
-                                conversation: conv.clone(),
-                                ..Default::default()
-                            },
-                        );
+                        if !self.active_chats.contains_key(&uuid) {
+                            self.active_chats.insert(
+                                uuid,
+                                ConversationInfo {
+                                    conversation: conv.clone(),
+                                    ..Default::default()
+                                },
+                            );
+                        }
                         // set selected_chat
                         self.selected_chat = Some(uuid);
                     }

@@ -70,15 +70,11 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
 
-    let mut first_unread_message_id: Uuid = Uuid::default();
-
-    if let Some(chat) = current_chat.as_ref() {
-        if let Ok(c) = usize::try_from(chat.num_unread_messages) {
-            if let Some(m) = messages.get(c) {
-                first_unread_message_id = m.id();
-            }
-        }
-    }
+    let first_unread_message_id = current_chat
+        .clone()
+        .unwrap_or_default()
+        .first_unread_message_id
+        .unwrap_or_default();
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
