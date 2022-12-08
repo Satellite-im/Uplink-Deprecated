@@ -92,6 +92,7 @@ struct Opt {
     #[clap(long)]
     experimental_node: bool,
 }
+#![windows_subsystem = "windows"]
 
 fn main() {
     if fdlimit::raise_fd_limit().is_none() {}
