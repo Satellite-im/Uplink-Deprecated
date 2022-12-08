@@ -2,10 +2,9 @@ use std::{
     ffi::OsStr,
     io::Cursor,
     path::{Path, PathBuf},
-    time::Duration,
 };
 
-use dioxus::{core::to_owned, desktop::use_window, events::MouseEvent, prelude::*};
+use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
@@ -15,8 +14,7 @@ use rfd::FileDialog;
 use ui_kit::button::Button;
 use warp::error::Error;
 
-use crate::DROPPED_FILE;
-use crate::{FileDragEvent, Storage};
+use crate::{Storage, DRAG_FILE_EVENT};
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -26,9 +24,9 @@ pub struct Props<'a> {
 }
 
 enum Action {
-    Start,
-    Stop,
-}
+        Start,
+        Stop,
+    }
 
 #[allow(non_snake_case)]
 pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
@@ -37,6 +35,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let eval_script = use_window(&cx).clone();
     let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
     let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
+
     let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
 
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
@@ -49,71 +48,108 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             file_being_uploaded_js
         ];
         async move {
-            while let Some(action) = rx.next().await {
-                match action {
-                    Action::Start => {
+        while let Some(action) = rx.next().await {
+            match action {
+                Action::Start => {
                         log::info!("File on dropzone");
-                        tokio::time::sleep(Duration::from_millis(100)).await;
+                        // Time necessary to work on macOS and Linux
+                        #[cfg(not(target_os = "windows"))]
+                        tokio::time::sleep(std::time::Duration::from_millis(150)).await;
                         if *drag_over_dropzone.read() {
-                            let dropped_file = DROPPED_FILE.read();
+                            let drag_file_event = get_drag_file_event();
+                            let files_local_path = match drag_file_event.clone() {
+                                FileDropEvent::Hovered(files_path) | FileDropEvent::Dropped(files_path) => files_path,
+                                _ => Vec::new()
+                            };
+                            
                             // TODO(use_eval): Try new solution in the future
-                            if dropped_file.files_local_path.len() > 1 {
-                                let files_to_upload = format!(
-                                    "{} files to upload!",
-                                    dropped_file.files_local_path.len()
-                                );
-                                eval_script.eval(
-                                    &file_over_dropzone_js.replace("file_path", &files_to_upload),
-                                );
-                            } else {
-                                eval_script.eval(
-                                    &file_over_dropzone_js
-                                        .replace("file_path", &dropped_file.files_local_path[0]),
-                                );
+                            if files_local_path.len() > 1 {
+                                let files_to_upload = format!("{} files to upload!",files_local_path.len());
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
+                            }  else if files_local_path.len() == 1 {
+                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0].to_string_lossy().to_string()));
                             }
-                            if dropped_file.file_drag_event == FileDragEvent::Dropped {
+
+                            if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
                                 *drag_over_dropzone.write_silent() = false;
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
-                                for file_path in &dropped_file.files_local_path {
-                                    let file_path_buf = PathBuf::from(file_path.trim());
-                                    upload_file(file_storage.clone(), file_path_buf).await;
-                                    tokio::time::sleep(Duration::from_millis(300)).await;
-                                    log::info!("{} file uploaded!", file_path);
-                                }
+                              for file_path in &files_local_path {
+                                  upload_file(file_storage.clone(), file_path.clone()).await;
+                                  log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
+                              }
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_leave_dropzone_js);
                             }
-                        }
-                    }
-                    Action::Stop => {
-                        log::info!("File not able to upload");
+                           
+                        }  
+                    },
+                Action::Stop => {
+                            eval_script.eval(&file_leave_dropzone_js);
+                            log::info!("File not able to upload");
+                            // HACK(Temp): Just to improve a little feedback for user on windows
+                            // TODO(Temp): Temp solution to drag and drop work on Windows
+                            #[cfg(target_os = "windows")]
+                                loop {
+                                    if *drag_over_dropzone.read() {
+                                        break;
+                                    }
+                                    let drag_file_event = get_drag_file_event();
+                                    match drag_file_event {
+                                        FileDropEvent::Hovered(files_path) => {
+                                            if files_path.len() > 1 {
+                                                let files_to_upload = format!("Dragging {} files. Drop here to upload them!",files_path.len());
+                                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
+                                            }  else if files_path.len() == 1 {
+                                                eval_script.eval(&file_over_dropzone_js.replace("file_path", "Dragging 1 file. Drop here to upload it!"));
+                                            }
+                                        },
+                                        _ => eval_script.eval(&file_leave_dropzone_js)
+                                    }
+                                    tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                            }
+                        },
                     }
                 }
             }
         }
-    });
+    );
 
     cx.render(rsx! {
         (cx.props.show).then(|| rsx! (
             div {
                 id: "upload",
+                onmouseover: move |_| {
+                    // HACK(Windows): Not allow upload if drop file outside dropzone
+                    // TODO(Temp): Temp solution to drag and drop work on Windows
+                    #[cfg(target_os = "windows")]
+                    if *drag_over_dropzone.read() == false {
+                        *DRAG_FILE_EVENT.write() = FileDropEvent::Cancelled;
+                    }
+                },
+                onmouseout:  move |_| {
+                    *drag_over_dropzone.write_silent() = false;
+                    upload_file_dropped_routine.send(Action::Stop);
+                },
                 div {
                     id: "content",
                     div {
                         width: "100%",
                         input {
                             "type": "file",
+                            prevent_default: "onclick",
                             onclick: move |_| {
-                                let file_path = match FileDialog::new().set_directory(".").pick_file() {
+                                let files_local_path = match FileDialog::new().set_directory(".").pick_files() {
                                     Some(path) => path,
                                     None => return
                                 };
                                 let file_storage = cx.props.storage.clone();
                                 cx.spawn({
-                                    to_owned![file_storage, file_path];
+                                    to_owned![file_storage, files_local_path];
                                     async move {
-                                        upload_file(file_storage, file_path).await;
+                                        for file_path in &files_local_path {
+                                            upload_file(file_storage.clone(), file_path.clone()).await;
+                                        }
                                     }
                                 });
                             }
@@ -125,7 +161,26 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             id: "dropzone",
                             readonly: "true",
                             class: "dropzone",
-                            value: "Drop file here to upload",
+                            value: "Drop files here to upload",
+                            prevent_default: "onmouseover",
+                            onmouseover: move |_| {
+                                // HACK(Windows): When drop over dropzone, onmouseover is pushed
+                                // TODO(Temp): Temp solution to drag and drop work on Windows
+                                #[cfg(target_os = "windows")]
+                                {
+                                let drag_file_event = get_drag_file_event();
+                                match drag_file_event {
+                                    FileDropEvent::Dropped(_) => {
+                                        *drag_over_dropzone.write_silent() = true;
+                                        upload_file_dropped_routine.send(Action::Start);
+                                    },
+                                    _ => {  
+                                        *drag_over_dropzone.write_silent() = false;
+                                        upload_file_dropped_routine.send(Action::Stop);
+                                    }
+                                }
+                                }
+                            },
                             onmouseout: move |_| {
                                 *drag_over_dropzone.write_silent() = false;
                                 upload_file_dropped_routine.send(Action::Stop);
@@ -157,9 +212,16 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                         icon: Shape::XMark
                     }
                 }
+                
             }
         ))
+        
     })
+}
+
+fn get_drag_file_event() -> FileDropEvent {
+    let drag_file_event = DRAG_FILE_EVENT.read().clone();
+    drag_file_event
 }
 
 async fn upload_file(file_storage: Storage, file_path: PathBuf) {

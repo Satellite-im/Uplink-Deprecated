@@ -239,8 +239,11 @@ label {
   margin-bottom: 4rem;
 }
 
-.flex-1 {
-  flex: 1;
+.label {
+  font-family: "Space Mono", monospace;
+  font-size: var(--label-size);
+  text-align: left;
+  color: var(--theme-text-muted);
 }
 
 label {

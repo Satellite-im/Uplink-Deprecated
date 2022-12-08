@@ -1,7 +1,7 @@
 name: Comment on pull request with dmg file
 on:
   workflow_run:
-    workflows: ['Make dmg']
+    workflows: ["Make dmg"]
     types: [completed]
 jobs:
   pr_comment:

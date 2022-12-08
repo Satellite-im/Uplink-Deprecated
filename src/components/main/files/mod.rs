@@ -8,6 +8,13 @@ use crate::{
     components::reusable::nav::Nav,
     STATE,
 };
+
+#[cfg(target_os = "windows")]  
+use crate::DRAG_FILE_EVENT;
+#[cfg(target_os = "windows")] 
+use dioxus::desktop::wry::webview::FileDropEvent;
+
+
 pub mod browser;
 pub mod sidebar;
 pub mod toolbar;
@@ -34,6 +41,14 @@ pub fn Files(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "files",
+            onmouseover: |_| {
+                // HACK(Windows): Block upload file if drop it anywhere on screen out
+                // TODO(Temp): Temp solution to drag and drop work on Windows
+                #[cfg(target_os = "windows")] 
+                {
+                *DRAG_FILE_EVENT.write() = FileDropEvent::Cancelled;
+                }
+            },
             class: "{sidebar_visibility}",
             Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() },
             div {
