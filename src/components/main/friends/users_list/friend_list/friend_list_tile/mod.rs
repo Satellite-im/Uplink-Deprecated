@@ -1,3 +1,4 @@
+mod more_menu;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use ui_kit::{
@@ -8,7 +9,7 @@ use ui_kit::{
 };
 use warp::crypto::DID;
 
-use crate::{iutils, state::Actions, Messaging, STATE};
+use crate::{iutils, state::Actions, Messaging, STATE, components::main::friends::users_list::friend_list::friend_list_tile::more_menu::MoreMenu};
 use utils::Account;
 
 #[derive(Props)]
@@ -33,6 +34,7 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
 
     let profile_picture = iutils::get_pfp_from_did(cx.props.friend.clone(), &mp);
     let state = use_atom_ref(&cx, STATE);
+    let show_more_menu = use_state(&cx, || false);
 
     cx.render(rsx! {
         div {
@@ -71,45 +73,45 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             on_pressed: move |_| {}
                         }
                     )} else {rsx!(
-                        Button {
-                            icon: Shape::ChatBubbleBottomCenterText,
-                            on_pressed: move |_| {
-                                let conversation_response = warp::async_block_in_place_uncheck(
-                                    rg.create_conversation(&friend)
-                                );
-                                let conversation = match conversation_response {
-                                    Ok(v) => v,
-                                    Err(warp::error::Error::ConversationExist { conversation }) => conversation,
-                                    Err(e) => {
-                                        log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
-                                        return;
-                                    }
-                                };
-                                state.write().dispatch(Actions::ChatWith(conversation));
-                                cx.props.on_chat.call(());
-
-                            }
-                        },
-                        Button {
-                            icon: Shape::XMark,
-                            state: ui_kit::button::State::Danger,
-                            on_pressed: move |_| {
-                                if let Err(e) =  mp.remove_friend(&cx.props.friend) {
-                                    log::error!("error removing friend: {e}");
+                            Button {
+                                icon: Shape::ChatBubbleBottomCenterText,
+                                // add tooltip text on hover
+                                text: "Message".to_string(),
+                                hide_text: true,
+                                on_pressed: move |_| {
+                                    let conversation =
+                                    match warp::async_block_in_place_uncheck(rg.create_conversation(&cx.props.friend)) {
+                                        Ok(v) => v,
+                                        Err(warp::error::Error::ConversationExist { conversation }) => conversation,
+                                        Err(e) => {
+                                            log::error!("failed to chat with friend {}: {}", &cx.props.friend, e);
+                                            return;
+                                        }
+                                    };
+    
+                                    state.write().dispatch(Actions::ChatWith(conversation));
+                                    cx.props.on_chat.call(());
+    
                                 }
-                            }
                         },
-                        Button {
-                            text:"Block".to_string(),
-                            state: ui_kit::button::State::Secondary,
-                            on_pressed: move |_| {
-                                 let mut multipass = cx.props.account.clone();
-                                 let did_to_block = cx.props.friend.clone();
-                                 if let Err(e) =  multipass.block(&did_to_block) {
-                                    log::debug!("faied to block friend {}:{}", &cx.props.friend, e);
-                                 }
-                             }
-                         },
+                        div{
+                            class:"more-menu",
+                            Button{
+                                icon:Shape::EllipsisVertical,
+                                state: ui_kit::button::State::Secondary,
+                                text: "More".to_string(),
+                                hide_text: true,
+                                on_pressed: move |_| {
+                                    show_more_menu.set(!show_more_menu)
+                                }
+                            }, 
+                            (show_more_menu).then(||rsx!{
+                                MoreMenu{
+                                    account: cx.props.account.clone(),
+                                    friend:cx.props.friend.clone(),
+                                }                          
+                            })
+                        }
                     )}
                 }
             }
