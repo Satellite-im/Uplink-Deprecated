@@ -15,15 +15,15 @@ use self::friend_list::FriendList;
 use super::UsernameAndDID;
 
 #[derive(Props, PartialEq)]
-pub struct UserListProps<'a> {
-    account: &'a Account,
-    messaging: &'a Messaging,
+pub struct UserListProps {
+    account: Account,
+    messaging: Messaging,
     //show blocked users list when it is false
     show_friend_list: bool,
 }
 
 #[allow(non_snake_case)]
-pub fn UsersList<'a>(cx: Scope<'a, UserListProps<'a>>) -> Element {
+pub fn UsersList(cx: Scope<UserListProps>) -> Element {
     let users_list = match cx.props.show_friend_list {
         true => rsx!(FriendList {
             account: cx.props.account.clone(),

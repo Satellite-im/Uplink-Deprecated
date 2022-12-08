@@ -88,8 +88,8 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                    div{
                        class:"main",
                        UsersList {
-                           account:&cx.props.account,
-                           messaging: &cx.props.messaging,
+                           account:cx.props.account.clone(),
+                           messaging: cx.props.messaging.clone(),
                            show_friend_list:**show_friend_list,
                        },
                    },
