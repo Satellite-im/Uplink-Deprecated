@@ -171,6 +171,9 @@ jobs:
       - name: Enable opening app not codesigned
         run: sudo spctl --master-disable
 
+      - name: Enable Automation Without Authentication
+        run: automationmodetool enable-automationmode-without-authentication
+
       - name: Download the app 🗳️
         uses: actions/download-artifact@v1
         with:
@@ -213,6 +216,17 @@ jobs:
           ls -la
           cd /Applications/
           ls -la
+
+      - name: Open Application
+        run: open /Applications/Uplink.app
+
+      - name: Take screenshot of GH runner
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: "desktop.jpg"
+
+      - name: Quit Applications
+        run: osascript -e 'quit app "Uplink.app"'
 
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
