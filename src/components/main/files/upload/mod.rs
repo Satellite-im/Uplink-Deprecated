@@ -1,4 +1,4 @@
-use std::{path::{Path, PathBuf}, io::Cursor, ffi::OsStr};
+use std::{path::{Path, PathBuf}, io::Cursor, ffi::OsStr, cmp::Ordering};
 
 use dioxus::{core::to_owned, events::{MouseEvent}, prelude::*, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_heroicons::outline::Shape;
@@ -52,11 +52,15 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             };
                             
                             // TODO(use_eval): Try new solution in the future
-                            if files_local_path.len() > 1 {
-                                let files_to_upload = format!("{} files to upload!",files_local_path.len());
-                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
-                            }  else if files_local_path.len() == 1 {
-                                eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0].to_string_lossy().to_string()));
+                            match files_local_path.len().cmp(&1) {
+                                Ordering::Greater => {
+                                    let files_to_upload = format!("{} files to upload!",files_local_path.len());
+                                    eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_to_upload));
+                                }
+                                Ordering::Equal => {
+                                    eval_script.eval(&file_over_dropzone_js.replace("file_path", &files_local_path[0].to_string_lossy()));
+                                }
+                                _ => {}
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
@@ -65,7 +69,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 eval_script.eval(&file_being_uploaded_js);
                               for file_path in &files_local_path {
                                   upload_file(file_storage.clone(), file_path.clone()).await;
-                                  log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
+                                  log::info!("{} file uploaded!", file_path.to_string_lossy());
                               }
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_leave_dropzone_js);
@@ -295,7 +299,7 @@ async fn set_thumbnail_if_file_is_image(file_storage: Storage, filename_to_save:
 
     if !file.is_empty() || !mime.is_empty() {
         let prefix = format!("data:{};base64,", mime);
-        let base64_image = base64::encode(image_thumbnail.as_bytes().to_vec());
+        let base64_image = base64::encode(image_thumbnail.as_bytes());
         let img = prefix + base64_image.as_str();
         item.set_thumbnail(&img);
         Ok(format_args!("{} thumbnail updated with success!", item.name()).to_string())

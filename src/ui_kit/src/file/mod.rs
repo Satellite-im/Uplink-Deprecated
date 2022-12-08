@@ -60,7 +60,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 ContextItem {
                                     icon: Shape::DocumentArrowDown,
                                     onpressed: move |_| {
-                                        hide_edit_name_element(cx.clone());
+                                        hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
                                         let file_extension = cx.props.kind.clone();
@@ -84,7 +84,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 hr {},
                                 ContextItem {
                                     onpressed: move |_| {
-                                        hide_edit_name_element(cx.clone());
+                                        hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
                                         cx.spawn({
@@ -125,7 +125,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-                                    hide_edit_name_element(cx.clone());
+                                    hide_edit_name_element(cx);
 
                                     if !new_file_name.trim().is_empty() {
                                         cx.spawn({
