@@ -1,8 +1,8 @@
 use audio_factory::AudioFactory;
-use incognito_typing::ExtIncognitoTyping;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use emoji_selector::EmojiSelector;
+use incognito_typing::ExtIncognitoTyping;
 use ui_kit::button::Button;
 use utils::extensions::{BasicExtension, ExtensionInfo};
 
