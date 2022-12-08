@@ -38,4 +38,30 @@
       padding-left: 35px;
     }
   }
+
+  .select-options {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    width: 100%;
+    background: var(--theme-foreground);
+    border-radius: 4px;
+    z-index: 2;
+    box-shadow: 0 0 10px 0 var(--theme-shadow);
+    overflow: hidden;
+    max-height: 200px;
+    overflow-y: auto;
+    color: var(--theme-text);
+
+    .select-option {
+      padding: 5px;
+      cursor: pointer;
+      color: var(--theme-text);
+
+      &:hover,
+      &.selected {
+        background: var(--theme-background);
+      }
+    }
+  }
 }
