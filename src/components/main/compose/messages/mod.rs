@@ -321,11 +321,26 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     );
 
     let rg = cx.props.messaging.clone();
-    let senders: Vec<DID> = messages.iter().map(|msg| msg.sender()).collect();
-    // messages has already been reversed
-    let idx_range = 0..messages.len();
-    let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
-    let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
+    let senders: Vec<DID> = match current_chat {
+        Some(chat) => chat
+            .conversation
+            .recipients()
+            .iter()
+            .map(|sender| sender.clone())
+            .collect(),
+        None => Vec::new(),
+    };
+
+    // get profile pictures for all senders in the conversation and cache them
+    let mut profile_pictures = HashMap::new();
+    for sender in senders.iter() {
+        if profile_pictures.contains_key(&sender) {
+            continue;
+        }
+
+        let profile_picture = iutils::get_pfp_from_did(sender.clone(), &cx.props.account.clone());
+        profile_pictures.insert(sender, profile_picture);
+    }
 
     cx.render(rsx! {
         div {
@@ -341,16 +356,28 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 }
             },
             messages.iter()
-                .zip(next_sender)
-                .zip(prev_sender)
-                .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
-                .map(|(mut rg, message, next_sender, prev_sender)| {
+                .enumerate()
+                .map(|(idx, message)| {
                     let message_id = message.id();
                     let conversation_id = message.conversation_id();
                     let msg_sender = message.sender();
                     let is_remote = ident.did_key() != msg_sender;
-                    let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
-                    let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
+                    let mut rg = rg.clone();
+                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
+
+                    let is_first = if idx == 0 {
+                        false
+                    } else {
+                        let prev_message = &messages[idx - 1];
+                        prev_message.sender() != msg_sender
+                    };
+
+                    let is_last = if idx == messages.len() - 1 {
+                        true
+                    } else {
+                        let next_message = &messages[idx + 1];
+                        next_message.sender() != msg_sender
+                    };
 
                     rsx! {
                         div {
@@ -379,15 +406,16 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 }
                             }),
                             Msg {
-                                // key: "{message_id}-reply",
-                                messaging: cx.props.messaging.clone(),message: message.clone(),
+                                messaging: cx.props.messaging.clone(),
+                                message: message.clone(),
                                 account: cx.props.account.clone(),
-                                sender: message.sender(),
+                                sender: msg_sender,
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
                                 last:  is_last,
                                 first: is_first,
                                 middle: !is_last && !is_first,
+                                profile_picture: sender_picture,
                                 on_reply: move |reply| {
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
                                         //TODO: Display error?
@@ -397,7 +425,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         }
                     }
                 }),
-                script { "{msg_script}" }
+                script { "{msg_script}" 
+            }
         }
     })
 }

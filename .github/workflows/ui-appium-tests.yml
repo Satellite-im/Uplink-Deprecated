@@ -44,9 +44,9 @@ jobs:
 
       - name: Add Targets
         env:
-          MACOSX_DEPLOYMENT_TARGET: "10.13"
+          MACOSX_DEPLOYMENT_TARGET: "11.7.1"
         run: |
-          rustup target add x86_64-apple-darwin aarch64-apple-darwin
+          rustup target add x86_64-apple-darwin
 
       - name: Codesign and Build executable
         env:
@@ -98,68 +98,6 @@ jobs:
             Uplink-Mac-Universal.zip
             Uplink-Mac-Universal.zip.sha256.txt
 
-  #jobs:
-  #build:
-  #runs-on: macos-latest
-
-  #steps:
-  #- name: Checkout working directory 🔖
-  #  uses: actions/checkout@v3
-
-  #- name: Set up cargo cache
-  #  uses: actions/cache@v3
-  #  continue-on-error: false
-  #  with:
-  #    path: |
-  #      ~/.cargo/bin/
-  #      ~/.cargo/registry/index/
-  #      ~/.cargo/registry/cache/
-  #      ~/.cargo/git/db/
-  #      target/
-  #    key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-  #    restore-keys: ${{ runner.os }}-cargo-
-
-  #- name: Update Homebrew
-  #  run: |
-  #    brew update --preinstall
-  #    cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/protobuf.rb" > .github/brew-formulae
-
-  #- name: Configure Homebrew cache
-  #  uses: actions/cache@v3
-  #  with:
-  #    path: |
-  #      ~/Library/Caches/Homebrew/protobuf--*
-  #      ~/Library/Caches/Homebrew/downloads/*--protobuf-*
-  #    key: brew-${{ hashFiles('.github/brew-formulae') }}
-  #    restore-keys: brew-
-
-  #- name: Install Homebrew dependencies
-  #  run: |
-  #    env HOMEBREW_NO_AUTO_UPDATE=1 brew install protobuf
-
-  #- name: Install Rust
-  #  uses: actions-rs/toolchain@v1
-  #  with:
-  #    toolchain: stable
-  #    profile: minimal
-  #    override: true
-
-  #- name: Install Protobuf
-  #  continue-on-error: true
-  #  run: |
-  #    brew update
-  #    brew install protobuf
-
-  #- name: Build the app
-  #  run: |
-  #    cargo build --release
-
-  #- name: Archive the app
-  #  uses: actions/upload-artifact@v1
-  #  with:
-  #    name: app-macos
-  #    path: target/release/uplink
-
   test:
     needs: build-app
     runs-on: macos-latest
@@ -194,14 +132,6 @@ jobs:
         run: |
           cd appium-tests && npm install
 
-      #- name: Install Uplink Desktop App
-      #  run: |
-      #    cd ./appium-tests/apps
-      #    ls -la
-      #    hdiutil attach ./appium-tests/apps/Uplink.dmg
-      #    cp -r /Volumes/Uplink.dmg /Applications/
-      #    hdiutil detach ./appium-tests/apps/Uplink.dmg
-
       - name: Install and Run Appium Server 📱
         run: |
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
@@ -213,6 +143,17 @@ jobs:
           ls -la
           cd /Applications/
           ls -la
+
+      - name: Open Application for the first time
+        run: open /Applications/Uplink.app
+
+      - name: Take screenshot of GH runner
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: "desktop.jpg"
+
+      - name: Quit Application before starting tests
+        run: osascript -e 'quit app "Uplink.app"'
 
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
