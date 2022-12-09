@@ -331,6 +331,17 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         None => Vec::new(),
     };
 
+    // get profile pictures for all senders in the conversation and cache them
+    let mut profile_pictures = HashMap::new();
+    for sender in senders.iter() {
+        if profile_pictures.contains_key(&sender) {
+            continue;
+        }
+
+        let profile_picture = iutils::get_pfp_from_did(sender.clone(), &cx.props.account.clone());
+        profile_pictures.insert(sender, profile_picture);
+    }
+
     cx.render(rsx! {
         div {
             id: "scroll-messages",
@@ -366,6 +377,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         let next_message = &messages[idx + 1];
                         next_message.sender() != msg_sender
                     };
+                    
+                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
 
                     rsx! {
                         div {
@@ -394,25 +407,48 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 }
                             }),
                             Msg {
-                                // key: "{message_id}-reply",
-                                messaging: cx.props.messaging.clone(),message: message.clone(),
+                                messaging: cx.props.messaging.clone(),
+                                message: message.clone(),
                                 account: cx.props.account.clone(),
-                                sender: message.sender(),
+                                sender: msg_sender,
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
                                 last:  is_last,
                                 first: is_first,
                                 middle: !is_last && !is_first,
+                                profile_picture: sender_picture,
                                 on_reply: move |reply| {
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
                                         //TODO: Display error?
                                     }
                                 }
                             }
+                            match message.replied() {
+                                Some(replied) => {
+                                    let r = cx.props.messaging.clone();
+                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                        Ok(message) => {
+                                            rsx!{
+                                                Reply {
+                                                    message_id: message.id(),
+                                                    message: message.value().join("\n"),
+                                                    attachments_len: message.attachments().len(),
+                                                    is_remote: is_remote,
+                                                    account: cx.props.account.clone(),
+                                                    sender: message.sender(),
+                                                }
+                                            }
+                                        },
+                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                    }
+                                },
+                                _ => rsx!{ div {  } }
+                            }
                         }
                     }
                 }),
-                script { "{msg_script}" }
+                script { "{msg_script}" 
+            }
         }
     })
 }
