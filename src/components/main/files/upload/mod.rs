@@ -21,6 +21,8 @@ use ui_kit::button::Button;
 use warp::error::Error;
 
 use crate::{Storage, DRAG_FILE_EVENT};
+use tokio::io::AsyncWriteExt;
+use tokio_util::io::ReaderStream;
 
 #[derive(Props)]
 pub struct Props<'a> {
@@ -267,12 +269,12 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
         }
     };
     let original = filename.clone();
+    let file = PathBuf::from(&original);
 
     loop {
         if !current_directory.has_item(&filename) {
             break;
         }
-        let file = PathBuf::from(&original);
         let file_extension = file.extension().and_then(OsStr::to_str).map(str::to_string);
         let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string);
 
@@ -287,8 +289,25 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
         count_index_for_duplicate_filename += 1;
     }
 
-    match file_storage.put(&filename, &local_path).await {
-        Ok(_) => {
+    // let file_stream = file_storage.get_stream(&filename).await;
+    let tokio_file = tokio::fs::File::open(&filename).await;
+    let file_stream = ReaderStream::new(tokio_file)
+        .filter_map(|x| async { x.ok() })
+        .map(|x| x.into());
+    // let total_size_for_stream = match tokio_file.clone().metadata() {
+    //     Ok(data) => return data.len() as usize,
+    //     Err(error) => log::error!("Error getting metadata: {:?}", error),
+    // };
+    let total_size_for_stream = match tokio_file.clone().metadata() {
+        Ok(data) => data.len() as usize,
+        Err(error) => log::error!("Error getting metadata: {:?}", error),
+    };
+
+    match file_storage
+        .put_stream(&filename, Some(total_size_for_stream), file_stream.boxed())
+        .await
+    {
+        Ok(ConstellationProgressStream) => {
             log::info!("{:?} file uploaded!", &filename);
 
             match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
