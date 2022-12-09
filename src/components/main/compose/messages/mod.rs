@@ -332,6 +332,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let idx_range = 0..messages.len();
     let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
     let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
+    let messages_len = messages.len();
 
     cx.render(rsx! {
         div {
@@ -350,7 +351,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 .zip(next_sender)
                 .zip(prev_sender)
                 .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
-                .map(|(mut rg, message, next_sender, prev_sender)| {
+                .enumerate()
+                .map(|(i, (mut rg, message, next_sender, prev_sender))| {
                     let message_id = message.id();
                     let conversation_id = message.conversation_id();
                     let msg_sender = message.sender();
@@ -385,11 +387,17 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                 }
                             }),
                             (message_id == first_unread_message_id).then(||
-                                rsx! {Divider()}
+                                rsx! {
+                                    Divider {
+                                        date: message.date(),
+                                        num_unread: (messages_len - i).try_into().unwrap(),
+                                    }
+                                }
                             )
                             Msg {
                                 // key: "{message_id}-reply",
-                                messaging: cx.props.messaging.clone(),message: message.clone(),
+                                messaging: cx.props.messaging.clone(),
+                                message: message.clone(),
                                 account: cx.props.account.clone(),
                                 sender: message.sender(),
                                 remote: is_remote,
