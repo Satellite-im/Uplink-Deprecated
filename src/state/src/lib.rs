@@ -3,7 +3,7 @@ use dioxus::fermi::AtomRef;
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::{Ord, Ordering},
-    collections::{HashMap, HashSet},
+    collections::{hash_map::Entry, HashMap, HashSet},
 };
 use uuid::Uuid;
 use warp::raygun::Conversation;
@@ -183,18 +183,22 @@ impl PersistedState {
             }
             Actions::ShowConversation(uuid) => {
                 log::debug!("PersistedState: ShowChat");
+                if let Some(prev_uuid) = self.selected_chat {
+                    let mut selected_chat = self.active_chats.get_mut(&prev_uuid).unwrap();
+                    selected_chat.first_unread_message_id = None;
+                }
                 // look up uuid in all_chats
                 match self.all_chats.get(&uuid) {
                     // add to active_chats
                     Some(conv) => {
-                        if !self.active_chats.contains_key(&uuid) {
-                            self.active_chats.insert(
-                                uuid,
-                                ConversationInfo {
+                        match self.active_chats.entry(uuid) {
+                            Entry::Occupied(_) => {}
+                            Entry::Vacant(vacant) => {
+                                vacant.insert(ConversationInfo {
                                     conversation: conv.clone(),
                                     ..Default::default()
-                                },
-                            );
+                                });
+                            }
                         }
                         // set selected_chat
                         self.selected_chat = Some(uuid);
