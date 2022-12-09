@@ -2,10 +2,9 @@ use std::{
     borrow::Borrow,
     cell::RefCell,
     collections::HashMap,
-    sync::{Arc, Mutex},
 };
 
-use dioxus::{events::FormEvent, prelude::*, router::RouterCore};
+use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use fuzzy_matcher::skim::SkimMatcherV2;
