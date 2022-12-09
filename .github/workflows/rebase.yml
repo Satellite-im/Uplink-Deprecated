@@ -15,5 +15,5 @@ jobs:
           COMMENT_BODY=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/comments/$GITHUB_EVENT_ID" | jq -r .body)
           if [[ "$COMMENT_BODY" == *"/rebase"* ]]; then
             # Rebase the pull request
-            git rebase origin/main
+            git rebase origin/dev
           fi
