@@ -40,6 +40,10 @@ jobs:
         continue-on-error: true
         run: |
           cargo run
+      - name: Install Uplink Desktop App
+        run: |
+          cp -r target/release/macos/Uplink.app /Applications/
+          xattr -r -d com.apple.quarantine /Applications/Uplink.app
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
         with:
@@ -54,6 +58,9 @@ jobs:
           appium driver uninstall mac2
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
+      - name: Open Application for the first time
+        run: open /Applications/Uplink.app
+
       - name: Take screenshot of GH runner
         uses: OrbitalOwen/desktop-screenshot-action@0.1
         with:
