@@ -322,7 +322,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     let rg = cx.props.messaging.clone();
     let senders: Vec<DID> = messages.iter().map(|msg| msg.sender()).collect();
-    let senders2 = senders.clone();
     // messages has already been reversed
     let idx_range = 0..messages.len();
     let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
@@ -330,7 +329,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
 
     // get profile pictures for all senders in the conversation and cache them
     let mut profile_pictures = HashMap::new();
-    for sender in senders2 {
+    for sender in senders.iter() {
         if profile_pictures.contains_key(&sender) {
             continue;
         }
@@ -364,12 +363,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
                     let mut rg = rg.clone();
 
-                    let mut sender_picture = String::new();
-                    if let Some(pfp) = profile_pictures.get(&msg_sender) {
-                        if let Some(pfp) = pfp {
-                            sender_picture = pfp.clone();
-                        }
-                    }
+
+                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
 
                     rsx! {
                         div {
