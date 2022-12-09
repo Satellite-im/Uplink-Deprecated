@@ -53,7 +53,8 @@ jobs:
           cd appium-tests && npm install
 
       - name: Install and Run Appium Server 📱
-        run: |
+        run: | ## try to uninstall first
+          appium driver uninstall mac2
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
       - name: Open Application for the first time
@@ -69,8 +70,7 @@ jobs:
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
         continue-on-error: true ## If driver already installed this prevents fail here
-        run: | ## try to uninstall first
-          appium driver install mac2
+        run: |
           npm run mac.ci
 
       - name: Upload Screenshots if tests failed 📷
