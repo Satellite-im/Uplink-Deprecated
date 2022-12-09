@@ -60,13 +60,6 @@ jobs:
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
 
-      - name: Validations before starting appium
-        run: |
-          cd appium-tests/apps
-          ls -la
-          cd /Applications/
-          ls -la
-
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
         run: npm run mac.ci
