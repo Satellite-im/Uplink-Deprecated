@@ -37,8 +37,9 @@ jobs:
         run: |
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
       - name: Make Build for Appium to run
+        continue-on-error: true
         run: |
-          make dmg-local
+          make dmg SIGNING_KEY=LOCAL
       - name: Install Uplink Desktop App
         run: |
           hdiutil attach ./target/release/macos/Uplink.dmg
