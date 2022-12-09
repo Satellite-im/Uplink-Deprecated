@@ -39,7 +39,7 @@ jobs:
       - name: Make Build for Appium to run
         run: |
           cargo update
-          make dmg
+          make dmg-local
       - name: Copy DMG to Appium Apps Directory
         working-directory: appium-tests/apps
         run: |
