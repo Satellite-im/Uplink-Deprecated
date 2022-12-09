@@ -1,3 +1,4 @@
+#![cfg_attr(not(run), windows_subsystem = "windows")]
 use crate::iutils::config::Config;
 use ::utils::Account;
 use clap::Parser;
@@ -43,9 +44,8 @@ pub mod themes;
 
 use tao::window::WindowBuilder;
 
+use state::{self, STATE};
 use tao::menu::{MenuBar as Menu, MenuItem};
-use state::STATE;
-use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
@@ -287,15 +287,17 @@ fn App(cx: Scope<State>) -> Element {
                 Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
                 Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
                 Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-                Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
+                Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/settings", main::settings::Settings {
                     account: cx.props.account.clone(),
                     page_to_open: main::settings::sidebar::nav::Route::General,
+                    messaging: cx.props.messaging.clone()
                 }},
                 Route { to: "/main/settings/profile", main::settings::Settings {
                     account: cx.props.account.clone(),
                     page_to_open: main::settings::sidebar::nav::Route::Profile,
+                    messaging: cx.props.messaging.clone()
                 }},
                 Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             }

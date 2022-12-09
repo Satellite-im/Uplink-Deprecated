@@ -1,13 +1,20 @@
 use arboard::Clipboard;
-use dioxus::{core::UiEvent, events::MouseData, prelude::*};
+use dioxus::{
+    core::UiEvent,
+    events::{FormEvent, MouseData},
+    prelude::*,
+};
 use dioxus_heroicons::outline::Shape;
 use dioxus_toast::{Position, ToastInfo};
 
 use crate::{Account, LANGUAGE, TOAST_MANAGER};
 
-use ui_kit::{button::Button, input_add_friend::InputAddFriend};
+use ui_kit::{
+    button::Button,
+    input::{Input, SelectOption},
+};
 
-use warp::crypto::DID;
+use warp::{crypto::DID, multipass::identity::Identifier};
 
 #[inline_props]
 #[allow(non_snake_case)]
@@ -41,6 +48,34 @@ pub fn FindFriends(
     };
     let copy_friend_id2 = copy_friend_id.clone();
 
+    let search_results = use_state(&cx, Vec::<SelectOption>::new);
+
+    let on_change = move |ev: FormEvent| {
+        let value = ev.data.value.clone();
+
+        remote_friend.set(value.clone());
+
+        if value.len() < 3 {
+            if !search_results.is_empty() {
+                search_results.set(Vec::new());
+            }
+
+            return;
+        }
+
+        if let Ok(results) = account.get_identity(Identifier::user_name(value.as_str())) {
+            let opts = results
+                .iter()
+                .map(|result| SelectOption {
+                    value: result.did_key().to_string().replace("did:key:", ""),
+                    label: format!("{}#{}", result.username(), result.short_id()),
+                })
+                .collect();
+
+            search_results.set(opts);
+        };
+    };
+
     cx.render(rsx!(
         div {
             id: "find-friends",
@@ -49,39 +84,16 @@ pub fn FindFriends(
             },
             div {
                 class: "add",  
-                InputAddFriend{
-                        placeholder: l.add_placeholder.clone(),
-                        value: remote_friend.clone(),
-                        on_change: move |_| add_error.set(String::new()),
-                        on_enter: move |_| {
-                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
-                        match did {
-                            Ok(d) => {
-                                match account.clone()
-                                    .send_request(&d)
-                                {
-                                    Ok(_) => {
-                                        let single_toast = ToastInfo {
-                                            position: Position::TopRight,
-                                            ..ToastInfo::simple(l.request_sent.clone().as_ref())
-                                        };
-                                        let _id = toast.write().popup(single_toast);
-                                        add_error.set("".into());
-                                    }
-                                    Err(e) => {
-                                        add_error.set(match e {
-                                            warp::error::Error::CannotSendFriendRequest => l.couldnt_send.to_string(),
-                                            warp::error::Error::FriendRequestExist => l.already_sent.to_string(),
-                                            warp::error::Error::CannotSendSelfFriendRequest => l.add_self.clone(),
-                                            warp::error::Error::FriendExist => l.friend_exist.to_string(),
-                                            _ => l.something_went_wrong.to_string()
-                                        })
-                                    },
-                                };
-                            },
-                            Err(_) => add_error.set(l.invalid_code.clone()),
-                        }
-                    }
+                Input {
+                    placeholder: l.add_placeholder.clone(),
+                    on_change: on_change,
+                    on_enter: move |_| {}
+                    options: search_results.get().clone(),
+                    on_item_selected: move |item:String| {
+                        remote_friend.set(item);
+                        search_results.set(Vec::new());
+                    },
+                    value: remote_friend.get().clone(),
                 }
                 Button {
                     icon: Shape::Plus,

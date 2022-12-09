@@ -376,9 +376,32 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                             key: "{message_id}",
                             style: "display: contents",
                             "data-remote": "{is_remote}",
+                            message.replied().map(|replied| {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        rsx!{
+                                            Reply {
+                                                // key: "{message_id}-reply",
+                                                message_id: message.id(),
+                                                message: message.value().join("\n"),
+                                                attachments_len: message.attachments().len(),
+                                                is_remote: is_remote,
+                                                account: cx.props.account.clone(),
+                                                sender: message.sender(),
+                                            }
+                                        }
+                                    },
+                                    // todo: if we don't want to display this, change message.replied().map to message.replied.and_then(), then 
+                                    // in the match statement return Some(Element) on Ok and None on error, with error logging as desired. 
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            }),
                             Msg {
                                 messaging: cx.props.messaging.clone(),
                                 message: message.clone(),
+                                account: cx.props.account.clone(),
+                                sender: msg_sender,
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
                                 last:  is_last,
@@ -415,7 +438,8 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         }
                     }
                 }),
-                script { "{msg_script}" }
+                script { "{msg_script}" 
+            }
         }
     })
 }

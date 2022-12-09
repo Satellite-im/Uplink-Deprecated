@@ -1,8 +1,8 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{outline::Shape};
+use dioxus_heroicons::outline::Shape;
 use state::STATE;
+use ui_kit::button::{self, Button};
 use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
-use ui_kit::{button::{self, Button}};
 
 pub struct ExtIncognitoTyping;
 
@@ -11,7 +11,9 @@ impl BasicExtension for ExtIncognitoTyping {
         ExtensionInfo {
             name: String::from("Incognito Typing"),
             author: String::from("matt@satellite.im"),
-            description: String::from("Incognito Typing allows you to disable the typing notification in chat"),
+            description: String::from(
+                "Incognito Typing allows you to disable the typing notification in chat",
+            ),
             location: ExtensionType::ChatbarIcon,
         }
     }

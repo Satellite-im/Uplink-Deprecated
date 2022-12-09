@@ -4,12 +4,14 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
+use state::{Actions, STATE};
 use ui_kit::{
     button::Button,
     context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
 };
-use warp::raygun::Message;
+use utils::Account;
+use warp::{crypto::DID, raygun::Message};
 
 use crate::{
     components::reusable::textarea::TextArea,
@@ -26,8 +28,10 @@ use attachment::Attachment;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    messaging: Messaging,
     message: Message,
+    messaging: Messaging,
+    account: Account,
+    sender: DID,
     remote: bool,
     first: bool,
     middle: bool,
@@ -39,6 +43,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering compose/Msg");
+    let state = use_atom_ref(&cx, STATE).clone();
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
     let attachments = cx.props.message.attachments();
@@ -232,6 +237,30 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
                                 icon: Shape::ArrowUturnLeft,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    state
+                                    .write()
+                                    .dispatch(Actions::HideConversation(cx.props.message.conversation_id()));
+                                },
+                                text: String::from("Hide Chat"),
+                                danger: true,
+                                icon: Shape::Trash,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    // when the FriendRemoved event is detected, the covnersation will be removed
+                                    // todo: do we want to be able to delete and re-add a friend and keep the previous conversation? maybe the users won't care if they don't know they can have that feature. 
+                                    let mut multipass = cx.props.account.clone();
+                                    let did_to_remove = cx.props.sender.clone();
+                                    if multipass.remove_friend(&did_to_remove).is_err() {
+                                        log::debug!("error removing friend");
+                                    }
+                                },
+                                text: String::from("Remove Friend"),
+                                danger: true,
+                                icon: Shape::XCircle,
                             }
                         }} else {rsx!{
                             ContextItem {

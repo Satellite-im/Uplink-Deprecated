@@ -107,13 +107,17 @@ pub fn total_notifications(s: &PersistedState) -> u32 {
 
 impl PersistedState {
     pub fn load_or_initial() -> Self {
-        match std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
-            Ok(b) => serde_json::from_slice::<PersistedState>(&b).unwrap_or_default(),
-            Err(_) => PersistedState {
-                send_typing: true,
-                show_prerelease_notice: true,
-                ..Default::default()
-            },
+        if let Ok(b) = std::fs::read(DEFAULT_PATH.read().join(".uplink.state.json")) {
+            // if a field is added to the state, parsing will fail. in that case, want to return the same struct that is created by default.
+            // todo: add versioning to PersistedState
+            if let Ok(c) = serde_json::from_slice::<PersistedState>(&b) {
+                return c;
+            }
+        }
+        PersistedState {
+            send_typing: true,
+            show_prerelease_notice: true,
+            ..Default::default()
         }
     }
 
