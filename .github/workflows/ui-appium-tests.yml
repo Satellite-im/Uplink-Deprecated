@@ -68,6 +68,7 @@ jobs:
         run: osascript -e 'quit app "Uplink.app"'
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
+        continue-on-error: true ## If driver already installed this prevents fail here
         run: npm run mac.ci
 
       - name: Upload Screenshots if tests failed 📷
