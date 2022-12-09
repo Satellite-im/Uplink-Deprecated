@@ -53,7 +53,7 @@ a different value has been selected in comparison to the default values Webdrive
 Since we do not have Appium installed as part of this package we are going to use the globally installed version of Appium. This is
 configured in [`wdio.shared.local.appium.conf.ts`](./config/wdio.shared.local.appium.conf.ts).
 
-Finally, since there will be a GitHub action setup to run the appium tests on macOS, there will be one configuration file used to run these tests on CI. This will be configured in [`wdio. macOS.ci.conf.ts`](./config/wdio.macos.ci.conf.ts).
+Finally, since there will be a GitHub action setup to run the appium tests on macOS, there will be one configuration file used to run these tests on CI. This will be configured in [`wdio.macos.ci.conf.ts`](./config/wdio.macos.ci.conf.ts).
 
 ## Locator strategy for native apps
 
