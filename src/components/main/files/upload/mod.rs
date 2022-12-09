@@ -82,16 +82,16 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         &files_local_path[0].to_string_lossy(),
                                     ));
                                 }
-                                _ => {}
+                                _ => ()
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
-                                let parent_directory_to_upload_file = parent_directory_ref.read().clone();
+                                let parent_directory = parent_directory_ref.with(|dir| dir.clone());
                                 *drag_over_dropzone.write_silent() = false;
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
                               for file_path in &files_local_path {
-                                  upload_file(file_storage.clone(), file_path.clone(), parent_directory_to_upload_file.clone()).await;
+                                  upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
                                   log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
                               }
                                 // TODO(use_eval): Try new solution in the future

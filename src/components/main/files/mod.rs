@@ -78,7 +78,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         class: "flex-row top-container",
                         Toolbar {
                             on_new_folder: move |_| {
-                                show_new_folder.set(true);
+                                show_new_folder.set(!show_new_folder);
                             },
                             on_show_upload: move |_| {
                                 show_upload.set(true);

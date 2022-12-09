@@ -23,21 +23,20 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
     };
 
     let folder_name = use_state(&cx, || String::from("New Folder"));
-    let is_renaming = use_ref(&cx, || true);    
     let show_new_folder = cx.props.show_new_folder.clone();
     let parent_directory_ref = cx.props.parent_directory.clone();
     
     let new_folder_js = include_str!("./new_folder.js");
 
     cx.render(rsx! {
-        script { "{new_folder_js}" }
+       
         div {
             id: "new-folder-id",
             div {
                 class: "folder {class}",
                 Icon { icon: Shape::Folder }, 
-                if *is_renaming.read() {
-                    rsx! ( input {
+               
+                    input {
                         id: "new-folder-input",
                         class: "new_folder_input",
                         autofocus: "true",
@@ -50,7 +49,7 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                                 show_new_folder.set(false);
                             }
                             if evt.key_code == KeyCode::Enter {
-                                *is_renaming.write() = false;
+
                                 let file_storage = cx.props.storage.clone();
                                 let root_directory = match file_storage.current_directory() {
                                     Ok(current_directory) => current_directory, 
@@ -76,15 +75,9 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                                 });
                             }
                         }
-                    })
-                } else {
-                   rsx!( p {
-                        "{folder_name}"
-                    })
-                }
-    
+                    }
             }
         }
-        
+        script { "{new_folder_js}" }
     })
 }

@@ -21,7 +21,7 @@ pub struct Props {
     size: usize,
     // Maximum amount of items something like HFS Plus could store is 2 billion items
     // Seems to align closet to the 32 bit uint range.
-    children: u32,
+    children: usize,
     storage: Storage,
     parent_directory: UseRef<Directory>,
 }
@@ -37,6 +37,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let folder_id = use_state(&cx, || cx.props.id.clone());
 
     let children = use_state(&cx, || cx.props.children.clone());
+
     let is_renaming = use_ref(&cx, || false);   
 
     let parent_directory = cx.props.parent_directory.clone();
