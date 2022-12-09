@@ -33,7 +33,7 @@ jobs:
           brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
       - name: Add Targets
         env:
-          MACOSX_DEPLOYMENT_TARGET: "10.13"
+          MACOSX_DEPLOYMENT_TARGET: "10.7.1"
         run: |
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
       - name: Make Build for Appium to run
@@ -56,7 +56,16 @@ jobs:
         run: |
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
+      - name: Open Application for the first time
+        run: open /Applications/Uplink.app
 
+      - name: Take screenshot of GH runner
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        with:
+          file-name: "desktop.jpg"
+
+      - name: Quit Application before starting tests
+        run: osascript -e 'quit app "Uplink.app"'
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
         run: npm run mac.ci
