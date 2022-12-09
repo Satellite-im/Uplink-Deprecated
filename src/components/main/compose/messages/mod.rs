@@ -363,6 +363,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                     let msg_sender = message.sender();
                     let is_remote = ident.did_key() != msg_sender;
                     let mut rg = rg.clone();
+                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
 
                     let is_first = if idx == 0 {
                         false
@@ -377,8 +378,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         let next_message = &messages[idx + 1];
                         next_message.sender() != msg_sender
                     };
-                    
-                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
 
                     rsx! {
                         div {
