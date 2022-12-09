@@ -40,12 +40,7 @@ jobs:
         run: |
           cargo update
           make dmg-local
-      - name: Copy DMG to Appium Apps Directory
-        working-directory: appium-tests/apps
-        run: |
-          ls -la
-          unzip Uplink-Mac-Universal.zip
-          cp -r target/release/macos/Uplink.app /Applications/
+          cp -r ./target/release/macos/Uplink.app /Applications/
           sudo xattr -r -d com.apple.quarantine /Applications/Uplink.app
 
       - name: Setup Node.js 🔨
@@ -57,14 +52,8 @@ jobs:
         run: |
           cd appium-tests && npm install
 
-      #- name: Install Uplink Desktop App
-      #  run: |
-      #    cd ./appium-tests/apps
-      #    ls -la
-      #    hdiutil attach ./appium-tests/apps/Uplink.dmg
-      #    cp -r /Volumes/Uplink.dmg /Applications/
-      #    hdiutil detach ./appium-tests/apps/Uplink.dmg
-
+      - name: Enable opening app not codesigned
+        run: sudo spctl --master-disable
       - name: Install and Run Appium Server 📱
         run: |
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
