@@ -92,6 +92,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 eval_script.eval(&file_being_uploaded_js);
                               for file_path in &files_local_path {
                                   upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
+                                  tokio::time::sleep(std::time::Duration::from_millis(150)).await;
                                   log::info!("{} file uploaded!", file_path.to_string_lossy().to_string());
                               }
                                 // TODO(use_eval): Try new solution in the future
@@ -172,6 +173,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     async move {
                                         for file_path in &files_local_path {
                                             upload_file(file_storage.clone(), file_path.clone(), parent_directory.clone()).await;
+                                            
                                         }
                                     }
                                 });
@@ -273,7 +275,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
 
             log::info!("Duplicate name, changing file name to {}", &filename);
             count_index_for_duplicate_filename += 1;
-        }
+        };
        
 
         match file_storage.put(&filename, &local_path).await {
@@ -283,7 +285,10 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
                     Ok(item) => {
                         let current_directory_name = current_directory.name();
                         match current_directory.add_item(item.clone()) {
-                            Ok(_) => log::info!("Added {:?} to current directory {current_directory_name}", item),
+                            Ok(_) => {
+                                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                                log::info!("Added {:?} to current directory {current_directory_name}", item);
+                            },
                             Err(error) => log::error!("add item to current directory {current_directory_name}: {error}"),
                         };
                     }, 

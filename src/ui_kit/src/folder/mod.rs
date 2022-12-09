@@ -1,4 +1,4 @@
-use dioxus::{prelude::*, core::to_owned};
+use dioxus::{prelude::*, core::to_owned, desktop::use_window};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
@@ -35,30 +35,66 @@ pub fn Folder(cx: Scope<Props>) -> Element {
 
     let folder_name = use_state(&cx, || cx.props.name.clone());
     let folder_id = use_state(&cx, || cx.props.id.clone());
-
     let children = use_state(&cx, || cx.props.children.clone());
-
     let is_renaming = use_ref(&cx, || false);   
-
     let parent_directory_ref = cx.props.parent_directory.clone();
-
     let drag_over_folder = use_ref(&cx, || false);
+    let eval_script = use_window(&cx).clone();
+
+    let file_over_folder_js = include_str!("./file_over_folder.js").replace("folder-id", folder_id);
+    let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
 
     cx.render(rsx! {
          div {
             id: "{folder_id}-folder",
             class: "item file",
-            onclick: move |_| {
+            ondragleave: move |_| {
+                use_eval(&cx)(&file_leave_folder_js);
+                *drag_over_folder.write_silent() = false;
+            },
+            ondragover: move |_| {
+                use_eval(&cx)(&file_over_folder_js);
+                *drag_over_folder.write_silent() = true;
                 let file_storage = cx.props.storage.clone();
-                let folder_name = cx.props.name.clone();
-                let parent_directory = cx.props.parent_directory.clone();
-                match file_storage.open_directory(&folder_name) {
-                    Ok(directory) => {
-                        parent_directory.with_mut(|dir| *dir = directory.clone());
-                        log::info!("{folder_name} was opened. {:?}", directory.name());
-                    },
-                    Err(error) => log::error!("Error opening folder: {error}"),
-                };
+                let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
+                cx.spawn({
+                    to_owned![parent_directory, file_storage, folder_name, drag_over_folder, eval_script, folder_id];
+                    async move {
+                        loop {
+                            let drop_allowed = *drag_over_folder.read();
+                            println!("Drop allowed: {:?}", drop_allowed);
+                            if drop_allowed == false {
+                                break;
+                            }
+                            let drag_file_event_in_app = get_drag_file_event_in_app();
+                            if let Some(file_name) = drag_file_event_in_app.file_name {
+                                let root_directory = match file_storage.current_directory() {
+                                    Ok(current_directory) => current_directory, 
+                                    Err(_) => return,
+                                };
+                                let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
+                                let file = root_directory.get_item(&file_name).unwrap();
+                                match current_directory.add_item(file.clone()) {
+                                    Ok(_) => {
+                                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                                        match parent_directory.remove_item(&file_name) {
+                                            Ok(_) => {
+                                                let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
+                                                eval_script.eval(&file_leave_folder_js);
+                                                *drag_over_folder.write_silent() = false;
+                                                // TODO: Remove all files inside this folder
+                                                log::info!("file from directory was deleted.");
+                                            },
+                                            Err(error) => log::error!("Error deleting file from directory: {error}"),
+                                        }
+                                },
+                                    Err(error) => log::error!("Error adding file into directory: {error}"),
+                                };
+                            }
+                            tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                        }
+                    }
+                });
             },
             ContextMenu {
                 parent: format!("{}-folder", folder_id),
@@ -91,76 +127,45 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 }),
             },
             div {
-            class: "folder {class}",
-            ondragleave: move |_| {
-                *drag_over_folder.write_silent() = false;
-            },
-            ondragenter: move |_| {
-                *drag_over_folder.write_silent() = true;
+            class: "folder {class}",  
+            onclick: move |_| {
                 let file_storage = cx.props.storage.clone();
-                let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
-                cx.spawn({
-                    to_owned![parent_directory, file_storage, folder_name, drag_over_folder];
-                    async move {
-                        loop {
-                            let drop_allowed = *drag_over_folder.read();
-                            println!("Drop allowed: {:?}", drop_allowed);
-                            if drop_allowed == false {
-                                break;
-                            }
-                            let drag_file_event_in_app = get_drag_file_event_in_app();
-                            if let Some(file_name) = drag_file_event_in_app.file_name {
-                                let root_directory = match file_storage.current_directory() {
-                                    Ok(current_directory) => current_directory, 
-                                    Err(_) => return,
-                                };
-                                let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
-                                let file = root_directory.get_item(&file_name).unwrap();
-                                match current_directory.add_item(file.clone()) {
-                                    Ok(_) => {
-                                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                                        match parent_directory.remove_item(&file_name) {
-                                            Ok(_) => {
-                                                *drag_over_folder.write_silent() = false;
-                                                // TODO: Remove all files inside this folder
-                                                log::info!("file from directory was deleted.");
-                                            },
-                                            Err(error) => log::error!("Error deleting file from directory: {error}"),
-                                        }
-                                },
-                                    Err(error) => log::error!("Error adding file into directory: {error}"),
-                                };
-                            }
-                            tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-                        }
-                    }
-                });
-            },
-
-                Icon { icon: Shape::Folder },
-                if *is_renaming.read() {
-                    rsx! ( input {
-                        class: "new_folder_input-{folder_id}",
-                        autofocus: "true",
-                        placeholder: "New Folder",
-                        oninput: move |evt| {
-                            folder_name.set(evt.value.to_string());
-                        },
-                        onkeyup: move |evt| {
-                            if evt.key_code == KeyCode::Enter {
-                                *is_renaming.write() = false;
-                                println!("Create new folder: {}", folder_name.clone());
-                            }
-                        }
-                    })
-                } else {
-                   rsx!(
-                    p { "{folder_name}" },
-                   )
+                let folder_name = cx.props.name.clone();
+                let parent_directory = cx.props.parent_directory.clone();
+                match file_storage.open_directory(&folder_name) {
+                    Ok(directory) => {
+                        parent_directory.with_mut(|dir| *dir = directory.clone());
+                        log::info!("{folder_name} was opened. {:?}", directory.name());
+                    },
+                    Err(error) => log::error!("Error opening folder: {error}"),
+                };
+            },         
+            Icon { icon: Shape::Folder },
+                p { "{folder_name}" },
+                label {
+                "{children} item(s)"
                 }
-                rsx!(label {
-                    "{children} item(s)"
-                })
+                // if *is_renaming.read() {
+                //     rsx! ( input {
+                //         class: "new_folder_input-{folder_id}",
+                //         autofocus: "true",
+                //         placeholder: "New Folder",
+                //         oninput: move |evt| {
+                //             folder_name.set(evt.value.to_string());
+                //         },
+                //         onkeyup: move |evt| {
+                //             if evt.key_code == KeyCode::Enter {
+                //                 *is_renaming.write() = false;
+                //                 println!("Create new folder: {}", folder_name.clone());
+                //             }
+                //         }
+                //     })
+                // } else {
+                //    rsx!(
+                    
+                //    )
+                // }
+              
             }
         }
     })
