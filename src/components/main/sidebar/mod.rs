@@ -1,6 +1,11 @@
-use std::{borrow::Borrow, cell::RefCell, collections::HashMap};
+use std::{
+    borrow::Borrow,
+    cell::RefCell,
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
-use dioxus::{events::FormEvent, prelude::*};
+use dioxus::{events::FormEvent, prelude::*, router::RouterCore};
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
 use fuzzy_matcher::skim::SkimMatcherV2;
@@ -38,6 +43,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     log::debug!("rendering main/Sidebar");
     let config = Config::load_config_or_default();
     let mp = cx.props.account.clone();
+    let router = use_router(&cx).clone();
+    let router2 = router.clone();
+    let router3 = router.clone();
 
     let state = use_atom_ref(&cx, STATE);
     let l = use_atom_ref(&cx, LANGUAGE).read();
@@ -133,15 +141,15 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 parent: String::from("main-sidebar"),
                 items: cx.render(rsx! {
                     ContextItem {
-                        onpressed: move |_| use_router(&cx).push_route("/main/files", None, None),
+                        onpressed:  move |_|router.replace_route("/main/files", None, None),
                         text: String::from("Upload Files"),
                     },
                     ContextItem {
-                        onpressed: move |_| use_router(&cx).push_route("/main/friends", None, None),
+                        onpressed:  move |_|router2.replace_route("/main/friends", None, None),
                         text: String::from("Manage Friends"),
                     },
                     ContextItem {
-                        onpressed: move |_| use_router(&cx).push_route("/main/settings", None, None),
+                        onpressed: move |_| router3.replace_route("/main/settings", None, None),
                         text: String::from("Settings"),
                     },
                 })
@@ -192,7 +200,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                     tx_chan: notifications_tx.clone(),
                                     on_pressed: move |uuid| {
                                         // on press, change state so CSS class flips to show the chat
-                                        state.write().dispatch(Actions::HideSidebar(true));
+                                        //state.write().dispatch(Actions::HideSidebar(true));
                                         if *active_chat != Some(uuid) {
                                             state.write().dispatch(Actions::ShowConversation(conversation_info.conversation.id()));
                                             active_chat.set(Some(uuid));
