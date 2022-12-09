@@ -41,7 +41,7 @@ pub fn File(cx: Scope<Props>) -> Element {
     let file_size = format_file_size(cx.props.size);
     let file_thumb = &cx.props.thumbnail.clone();
 
-    let parent_directory = cx.props.parent_directory.clone();
+    let parent_directory_ref = cx.props.parent_directory.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
     let file_component = if cx.props.thumbnail.is_empty() {
@@ -104,13 +104,14 @@ pub fn File(cx: Scope<Props>) -> Element {
                                         hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
+                                        let parent_directory = parent_directory_ref.with(|dir| dir.clone());
                                         cx.spawn({
                                             to_owned![file_storage, file_name, parent_directory];
                                             async move {
                                                 match file_storage.remove(&file_name, true).await {
                                                     Ok(_) => {
-                                                        if let Err(error) = parent_directory.write().remove_item(&file_name) {
-                                                            log::error!("Error removing file from directory: {}, error: {error}", parent_directory.read().name());
+                                                        if let Err(error) = parent_directory.remove_item(&file_name) {
+                                                            log::error!("Error removing file from directory: {}, error: {error}", parent_directory.name());
                                                         }
                                                         log::info!("{file_name} was deleted.");
                                                     },

@@ -23,10 +23,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     use_future(
         &cx,
         (files, files_sorted, &parent_directory),
-        |(files, files_sorted, parent_directory)| async move {
+        |(files, files_sorted, parent_directory_ref)| async move {
             loop {
 
-                let parent_directory = parent_directory.read().clone();
+                let parent_directory = parent_directory_ref.with(|dir| dir.clone());
                 let files_updated: HashSet<_> = HashSet::from_iter(parent_directory.get_items());
 
                 if *files.read() != files_updated {
@@ -41,8 +41,11 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             }
         },
     );
-
+    let parent_directory_name = parent_directory.read().name();
     cx.render(rsx! {
+        h5 {
+            margin_left: "8px",
+            "{parent_directory_name}"},
         div {
          id: "browser",
             (cx.props.show_new_folder).then(|| 
