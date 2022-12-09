@@ -42,6 +42,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             }
         },
     );
+
     let parent_directory_name = parent_directory.read().name();
     cx.render(rsx! {
         h5 {
@@ -51,6 +52,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
          id: "browser",
             (cx.props.show_new_folder).then(|| 
                 rsx!(
+                    
                 div {
                     class: "item file",
                     NewFolder {

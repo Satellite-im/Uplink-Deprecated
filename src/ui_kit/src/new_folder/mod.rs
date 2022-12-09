@@ -29,13 +29,11 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
     let new_folder_js = include_str!("./new_folder.js");
 
     cx.render(rsx! {
-       
         div {
             id: "new-folder-id",
             div {
                 class: "folder {class}",
                 Icon { icon: Shape::Folder }, 
-               
                     input {
                         id: "new-folder-input",
                         class: "new_folder_input",
@@ -80,4 +78,6 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
         }
         script { "{new_folder_js}" }
     })
+
+
 }

@@ -62,7 +62,6 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
-                            println!("Drop allowed: {:?}", drop_allowed);
                             if drop_allowed == false {
                                 break;
                             }
