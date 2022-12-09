@@ -16,6 +16,8 @@ pub struct Props {
 
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
+
+
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
     let parent_directory = cx.props.parent_directory.clone();
@@ -36,7 +38,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     total_files_list.sort_by_key(|b| std::cmp::Reverse(b.modified()));
                     files_sorted.set(total_files_list);
                 }
-
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         },

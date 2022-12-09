@@ -10,6 +10,11 @@
     color: var(--theme-primary);
   }
 
+  &:-moz-drag-over {
+    cursor: pointer;
+    background-color: var(--theme-background-light);
+  }
+
   .new_folder_input {
     width: 100%;
     background-color: var(--theme-background-light);

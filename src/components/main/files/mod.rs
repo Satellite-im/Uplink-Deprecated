@@ -1,4 +1,7 @@
+use std::time::Duration;
+
 use dioxus::prelude::*;
+
 use warp::constellation::directory::Directory;
 
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
@@ -11,7 +14,7 @@ use crate::{
 };
 
 #[cfg(target_os = "windows")]
-use crate::DRAG_FILE_EVENT;
+use utils::DRAG_FILE_EVENT;
 #[cfg(target_os = "windows")]
 use dioxus::desktop::wry::webview::FileDropEvent;
 
@@ -32,26 +35,44 @@ pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
 
-    let root_directory = match cx.props.storage.current_directory() {
+    let file_storage = cx.props.storage.clone();
+
+    let root_directory = match file_storage.current_directory() {
         Ok(current_directory) => current_directory, 
         Err(error) => {
             log::error!("Not possible to get root directory, error: {:?}", error);
             Directory::default()
         },
-    };
+    };   
 
-    if !root_directory.has_item("main_directory") {
-        match root_directory.add_directory(Directory::default()) {
-            Ok(_) => {
-                root_directory.rename_item("un-named directory", "main_directory").unwrap();   
-            },
-            Err(error) => println!("{error}"),
+    let parent_directory = use_ref(&cx, || root_directory.clone());
+
+    
+    use_future(&cx, (&file_storage, parent_directory, &root_directory), |(mut file_storage, parent_directory, root_directory)| async move {
+        if !root_directory.has_item("main_directory") {
+            match file_storage.create_directory("main_directory", true).await {
+                Ok(_) => {
+                    log::info!("main directory created.")
+                },
+                Err(error) => log::error!("Error creating directory: {error}"),
+            };
+        };
+
+        if &*parent_directory.read().name() == "root" {
+            match file_storage.open_directory("main_directory") {
+                Ok(directory) => {
+                    println!("Arrivind here");
+                    parent_directory.with_mut(|dir| *dir = directory.clone());
+                    log::info!("Main directory was opened. {:?}", directory.name());
+                },
+                Err(error) => log::error!("Error opening folder: {error}"),
+            };
         }
-    }
-    let main_directory = root_directory.get_item("main_directory").unwrap().directory().unwrap_or_default();
-
-    let parent_directory = use_ref(&cx, || main_directory);
-
+            tokio::time::sleep(Duration::from_millis(100)).await;
+            return;
+        });
+        
+  
     let st = use_atom_ref(&cx, STATE).clone();
     let sidebar_visibility = match st.read().hide_sidebar {
         false => "sidebar-visible",

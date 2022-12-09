@@ -282,7 +282,6 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
                 match file_storage.root_directory().get_item(&filename) {
                     Ok(item) => {
                         let current_directory_name = current_directory.name();
-                
                         match current_directory.add_item(item.clone()) {
                             Ok(_) => log::info!("Added {:?} to current directory {current_directory_name}", item),
                             Err(error) => log::error!("add item to current directory {current_directory_name}: {error}"),

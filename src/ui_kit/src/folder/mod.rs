@@ -1,7 +1,7 @@
-use dioxus::{prelude::*};
+use dioxus::{prelude::*, core::to_owned};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
-use utils::Storage;
+use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
 use warp::constellation::directory::{Directory};
 
 use crate::context_menu::{ContextItem, ContextMenu};
@@ -40,7 +40,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
 
     let is_renaming = use_ref(&cx, || false);   
 
-    let parent_directory = cx.props.parent_directory.clone();
+    let parent_directory_ref = cx.props.parent_directory.clone();
+
+    let drag_over_folder = use_ref(&cx, || false);
 
     cx.render(rsx! {
          div {
@@ -61,7 +63,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 onpressed: move |_| {
                                     let folder_name = cx.props.name.clone();
-                                    match parent_directory.write().remove_item(&folder_name) {
+                                    let parent_directory = parent_directory_ref.with(|dir| dir.clone());
+                                    match parent_directory.remove_item(&folder_name) {
                                         Ok(_) => {
                                             // TODO: Remove all files inside this folder
                                             log::info!("{folder_name} was deleted.");
@@ -76,14 +79,58 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 }),
             },
             div {
-                class: "folder {class}",
+            class: "folder {class}",
+            ondragleave: move |_| {
+                *drag_over_folder.write_silent() = false;
+            },
+            ondragenter: move |_| {
+                *drag_over_folder.write_silent() = true;
+                let file_storage = cx.props.storage.clone();
+                let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
+                cx.spawn({
+                    to_owned![parent_directory, file_storage, folder_name, drag_over_folder];
+                    async move {
+                        loop {
+                            let drop_allowed = *drag_over_folder.read();
+                            println!("Drop allowed: {:?}", drop_allowed);
+                            if drop_allowed == false {
+                                break;
+                            }
+                            let drag_file_event_in_app = get_drag_file_event_in_app();
+                            if let Some(file_name) = drag_file_event_in_app.file_name {
+                                let root_directory = match file_storage.current_directory() {
+                                    Ok(current_directory) => current_directory, 
+                                    Err(_) => return,
+                                };
+                                let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
+                                let file = root_directory.get_item(&file_name).unwrap();
+                                match current_directory.add_item(file.clone()) {
+                                    Ok(_) => {
+                                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                                        match parent_directory.remove_item(&file_name) {
+                                            Ok(_) => {
+                                                *drag_over_folder.write_silent() = false;
+                                                // TODO: Remove all files inside this folder
+                                                log::info!("file from directory was deleted.");
+                                            },
+                                            Err(error) => log::error!("Error deleting file from directory: {error}"),
+                                        }
+                                },
+                                    Err(error) => log::error!("Error adding file into directory: {error}"),
+                                };
+                            }
+                            tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+                        }
+                    }
+                });
+            },
                 onclick: move |_| {
                     let file_storage = cx.props.storage.clone();
                     let folder_name = cx.props.name.clone();
                     let parent_directory = cx.props.parent_directory.clone();
                     match file_storage.open_directory(&folder_name) {
                         Ok(directory) => {
-                            *parent_directory.write() = directory.clone();
+                            parent_directory.with_mut(|dir| *dir = directory.clone());
                             log::info!("{folder_name} was opened. {:?}", directory.name());
                         },
                         Err(error) => log::error!("Error opening folder: {error}"),
@@ -101,26 +148,6 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         onkeyup: move |evt| {
                             if evt.key_code == KeyCode::Enter {
                                 *is_renaming.write() = false;
-                                // let file_storage = cx.props.storage.clone();
-                                // let current_directory = match file_storage.current_directory() {
-                                //     Ok(current_directory) => current_directory, 
-                                //     Err(error) => {
-                                //         log::error!("Not possible to get current directory, error: {:?}", error);
-                                //         return;
-                                //     },
-                                // };
-                                // let new_directory_path = format!("{}/{}", current_directory.name(), folder_name.clone());
-                            
-                                // cx.spawn({
-                                //     to_owned![file_storage, new_directory_path];
-                                //     async move {
-                            
-                                //         match file_storage.create_directory(&new_directory_path, true).await {
-                                //             Ok(_) => println!(" New directory createad."),
-                                //             Err(error) => println!("Error creating direcoty: {error}"),
-                                //         };
-                                //     }
-                                // });
                                 println!("Create new folder: {}", folder_name.clone());
                             }
                         }
@@ -136,4 +163,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             }
         }
     })
+}
+
+fn get_drag_file_event_in_app() -> DragFileInApp {
+    let drag_file_event_in_app = DRAG_FILE_IN_APP_EVENT.read().clone();
+    drag_file_event_in_app
 }

@@ -3,7 +3,7 @@ use std::{ffi::OsStr, path::PathBuf};
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
-use utils::Storage;
+use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
 use warp::constellation::directory::Directory;
 
 use super::folder::State;
@@ -60,6 +60,16 @@ pub fn File(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             class: "item file",
+            draggable: "true", 
+            float: "right",
+            ondragend: move |_| {
+                println!("Drag start");
+                let file_name = &*file_name_complete_ref.read();
+                *DRAG_FILE_IN_APP_EVENT.write() = DragFileInApp::new_file(file_name.clone());
+            },
+            ondragstart: move |_| {
+                *DRAG_FILE_IN_APP_EVENT.write() = DragFileInApp::cancel();
+            },
             id: "{file_id}-file",
                 ContextMenu {
                     parent: format!("{}-file", file_id.clone()),
@@ -115,7 +125,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                                         }
                                                         log::info!("{file_name} was deleted.");
                                                     },
-                                                    Err(error) => log::error!("Error deleting file: {error}"),
+                                                    Err(error) => log::info!("Error deleting file: {error}"),
                                                 };
                                             }
                                         });

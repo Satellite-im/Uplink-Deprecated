@@ -65,7 +65,7 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                                         match file_storage.create_directory(&new_directory_path, true).await {
                                             Ok(_) => {
                                                 let new_directory = root_directory.get_item(&new_directory_path).unwrap().directory().unwrap_or_default();
-                                                parent_directory_ref.write().add_directory(new_directory.clone()).unwrap();
+                                                parent_directory_ref.with_mut(|dir| dir.add_directory(new_directory.clone()).unwrap());
                                                 show_new_folder.set(false);
                                                 log::info!("New directory created. {:?}", new_directory);
                                             },
