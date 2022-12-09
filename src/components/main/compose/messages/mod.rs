@@ -321,15 +321,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     );
 
     let rg = cx.props.messaging.clone();
-    let senders: Vec<DID> = match current_chat {
-        Some(chat) => chat
-            .conversation
-            .recipients()
-            .iter()
-            .map(|sender| sender.clone())
-            .collect(),
-        None => Vec::new(),
-    };
+    let senders: Vec<DID> = current_chat
+        .map(|info| info.conversation.recipients())
+        .unwrap_or_default();
 
     // get profile pictures for all senders in the conversation and cache them
     let mut profile_pictures = HashMap::new();

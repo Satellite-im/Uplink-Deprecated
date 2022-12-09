@@ -19,6 +19,7 @@ pub fn Loading(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
     let loaded = use_state(&cx, || false);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let router = use_router(&cx).clone();
     let tx: &CoroutineHandle<bool> = use_coroutine(&cx, |mut rx: UnboundedReceiver<bool>| {
         to_owned![loaded];
         async move {
@@ -47,14 +48,14 @@ pub fn Loading(cx: Scope<Props>) -> Element {
                 //     std::thread::sleep(std::time::Duration::from_secs(2));
                 // }
                 window.set_title(&format!("{} - {}", i.username(), WINDOW_SUFFIX_NAME));
-                use_router(&cx).push_route("/main", None, None);
+                router.replace_route("/main", None, None);
             } else {
                 tx.send(true);
             }
             false
         }
         Err(_) => {
-            use_router(&cx).push_route("/auth", None, None);
+            router.replace_route("/auth", None, None);
             true
         }
     };

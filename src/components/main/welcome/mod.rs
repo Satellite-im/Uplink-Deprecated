@@ -8,6 +8,7 @@ use ui_kit::button::{self, Button};
 pub fn Welcome(cx: Scope) -> Element {
     log::debug!("rendering Welcome");
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let router = use_router(&cx).clone();
 
     cx.render(rsx! {
         div {
@@ -24,7 +25,7 @@ pub fn Welcome(cx: Scope) -> Element {
                 text: l.start_one.to_string(),
                 state: button::State::Secondary,
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main/friends", None, None);
+                    router.replace_route("/main/friends", None, None);
                 }
             },
         }
