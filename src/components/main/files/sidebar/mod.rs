@@ -3,7 +3,7 @@
 use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 
-use crate::{state::Actions, Account, STATE};
+use crate::{state::Actions, Account, Messaging, STATE};
 
 #[derive(Eq, PartialEq, Clone)]
 pub struct Directory {
@@ -102,6 +102,7 @@ pub fn Folder(cx: Scope, dir: Directory) -> Element {
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
@@ -136,6 +137,7 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         crate::components::reusable::sidebar::Sidebar {
         account: cx.props.account.clone(),
+        messaging: cx.props.messaging.clone(),
             div {
                 class: "label",
                 "Files"

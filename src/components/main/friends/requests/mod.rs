@@ -65,8 +65,9 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                         Ok(_) => {
                                             add_error.set("".into());
                                         },
-                                        Err(_) => {
+                                        Err(e) => {
                                             // TODO: Catch this and display it
+                                            log::error!("error accepting friend request: {e}");
                                             println!("Error");
                                         },
                                     }
@@ -78,8 +79,9 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                         Ok(_) => {
                                             add_error.set("".into());
                                         },
-                                        Err(_) => {
+                                        Err(e) => {
                                             // TODO: Catch this and display it
+                                            log::error!("error denying friend request: {e}");
                                             println!("Error");
                                         },
                                     }
@@ -105,8 +107,9 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                         Ok(_) => {
                                             add_error.set("".into());
                                         },
-                                        Err(_) => {
+                                        Err(e) => {
                                             // TODO: Catch this and display it
+                                            log::error!("error canceling friend request: {e}");
                                             println!("Error");
                                         },
                                     }

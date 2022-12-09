@@ -41,21 +41,19 @@ pub fn Friends(cx: Scope<Props>) -> Element {
         .account
         .list_incoming_request()
         .unwrap_or_default()
-        .len()
-        > 0;
+        .is_empty();
     let outgoing_requests = cx
         .props
         .account
         .list_outgoing_request()
         .unwrap_or_default()
-        .len()
-        > 0;
+        .is_empty();
 
     cx.render(rsx! {
         div {
             id: "friends",
             class: "mobile-sidebar-hidden",
-            Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
+            Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone(), add_error: add_error.clone()},
             div {
                 id: "content",
                 div {
@@ -98,6 +96,7 @@ pub fn Friends(cx: Scope<Props>) -> Element {
                     class: "hidden-on-desktop mobile-nav",
                     Nav {
                         account: cx.props.account.clone(),
+                        messaging: cx.props.messaging.clone(),
                     }
                 }
             },
