@@ -46,7 +46,7 @@ $(APP_NAME)-%: $(TARGET)-%
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Info.plist
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/uplink.icns
 ifeq ($(SIGNING_KEY),LOCAL)
-	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force $(APP_DIR)/$(APP_NAME)
+	@echo "Local Build, no signing"
 else
 	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s $(SIGNING_KEY) $(APP_DIR)/$(APP_NAME)
 endif
@@ -61,7 +61,11 @@ $(DMG_NAME)-%: $(APP_NAME)-%
 		-srcfolder $(APP_DIR) \
 		-ov -format UDZO
 	@echo "Packed '$(APP_NAME)' in '$(APP_DIR)'"
+ifeq ($(SIGNING_KEY),LOCAL)
+	@echo "Local Build, no signing"
+else
 	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s $(SIGNING_KEY) $(DMG_DIR)/$(DMG_NAME)
+endif
 install: $(INSTALL)-native ## Mount disk image
 install-universal: $(INSTALL)-native ## Mount universal disk image
 $(INSTALL)-%: $(DMG_NAME)-%

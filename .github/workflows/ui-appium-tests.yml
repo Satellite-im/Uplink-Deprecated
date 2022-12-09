@@ -39,7 +39,7 @@ jobs:
       - name: Make Build for Appium to run
         continue-on-error: true
         run: |
-          cargo run
+          make dmg SIGNING_KEY=LOCAL
       - name: Install Uplink Desktop App
         run: |
           cp -r target/release/macos/Uplink.app /Applications/
