@@ -1,8 +1,10 @@
+#![cfg_attr(not(run), windows_subsystem = "windows")]
 use crate::iutils::config::Config;
 use ::utils::Account;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
+use dioxus::desktop::wry::webview::FileDropEvent;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -42,9 +44,8 @@ pub mod themes;
 
 use tao::window::WindowBuilder;
 
+use state::{self, STATE};
 use tao::menu::{MenuBar as Menu, MenuItem};
-use state::STATE;
-use state;
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
@@ -54,20 +55,8 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
 
-static DROPPED_FILE: Lazy<RwLock<DroppedFile>> =
-    Lazy::new(|| RwLock::new(DroppedFile {files_local_path: Vec::new(), file_drag_event: FileDragEvent::None}));
-
-#[derive(PartialEq, Clone)]
-pub enum FileDragEvent {
-    Dropped,
-    None,
-}
-
-#[derive(Clone)]
-pub struct DroppedFile {
-    files_local_path: Vec<String>,
-    file_drag_event: FileDragEvent,
-}
+static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
+    Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
 
 #[derive(PartialEq, Props)]
 pub struct State {
@@ -187,7 +176,6 @@ fn main() {
         .with_inner_size(LogicalSize::new(950.0, 600.0))
         .with_min_inner_size(LogicalSize::new(330.0, 500.0));
 
-
     #[cfg(target_os = "macos")]
     dioxus::desktop::launch_with_props(
         App,
@@ -198,27 +186,11 @@ fn main() {
             storage,
         },
         |c| {
-            c.with_window(|_| window.with_menu(main_menu));
-            c.with_file_drop_handler(|_w, e| {
-                let mut dropped_file_local_path = format!("{:?}", e);
-                let file_drag_event = if dropped_file_local_path.contains("Dropped") {
-                    FileDragEvent::Dropped
-                 } else {
-                    FileDragEvent::None
-                };
-
-                dropped_file_local_path =
-                dropped_file_local_path.replace("Dropped([", "")
-                .replace("Hovered([", "")
-                .replace("])", "")
-                .replace('"', "");
-                let files_path: Vec<String> = dropped_file_local_path.split(",").map(|file_path| String::from(file_path)).collect();
-                *DROPPED_FILE.write() = DroppedFile {
-                    files_local_path: files_path,
-                    file_drag_event: file_drag_event,
-                };
-                true
-            })
+            c.with_window(|_| window.with_menu(main_menu))
+                .with_file_drop_handler(|_w, drag_event| {
+                    *DRAG_FILE_EVENT.write() = drag_event;
+                    true
+                })
         },
     );
 
@@ -231,7 +203,13 @@ fn main() {
             messaging,
             storage,
         },
-        |c| c.with_window(|_| window),
+        |c| {
+            c.with_window(|_| window)
+                .with_file_drop_handler(|_w, drag_event| {
+                    *DRAG_FILE_EVENT.write() = drag_event;
+                    true
+                })
+        },
     );
 }
 
@@ -309,15 +287,17 @@ fn App(cx: Scope<State>) -> Element {
                 Route { to: "/", unlock::Unlock { tesseract: cx.props.tesseract.clone() } }
                 Route { to: "/loading", loading::Loading { account: cx.props.account.clone() } },
                 Route { to: "/auth", auth::Auth { account: cx.props.account.clone() } },
-                Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone() } },
+                Route { to: "/main/files", main::files::Files { account: cx.props.account.clone(), storage: cx.props.storage.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/friends", main::friends::Friends { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
                 Route { to: "/main/settings", main::settings::Settings {
                     account: cx.props.account.clone(),
                     page_to_open: main::settings::sidebar::nav::Route::General,
+                    messaging: cx.props.messaging.clone()
                 }},
                 Route { to: "/main/settings/profile", main::settings::Settings {
                     account: cx.props.account.clone(),
                     page_to_open: main::settings::sidebar::nav::Route::Profile,
+                    messaging: cx.props.messaging.clone()
                 }},
                 Route { to: "/main", main::Main { account: cx.props.account.clone(), messaging: cx.props.messaging.clone() } },
             }

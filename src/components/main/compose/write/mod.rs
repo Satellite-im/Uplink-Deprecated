@@ -2,9 +2,9 @@ use crate::{
     components::reusable::textarea::TextArea, iutils::config::Config, Messaging, LANGUAGE,
 };
 use audio_factory::AudioFactory;
-use incognito_typing::ExtIncognitoTyping;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use incognito_typing::ExtIncognitoTyping;
 use state::STATE;
 use ui_kit::{
     button::{self, Button},

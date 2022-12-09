@@ -62,13 +62,15 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     // this one has a special name because of the other variable names within the use_future
     let list: UseRef<Vec<Message>> = use_ref(&cx, Vec::new).clone();
     // this one is for the rsx! macro. it is reversed for display purposes and defined here because `list` gets moved into the use_future
-    let messages: Vec<Message> = list.read().iter().rev().cloned().collect();
+    let messages: Vec<Message> = list.read().iter().cloned().collect();
 
     // this is used for reading the event stream.
     let current_chat = state
         .read()
         .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
+
+    let msg_script = include_str!("messages.js");
 
     // periodically refresh message timestamps
     use_future(&cx, (), move |_| {
@@ -325,35 +327,82 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
     let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
 
+    // get profile pictures for all senders in the conversation and cache them
+    let mut profile_pictures = HashMap::new();
+    for sender in senders.iter() {
+        if profile_pictures.contains_key(&sender) {
+            continue;
+        }
+
+        let profile_picture = iutils::get_pfp_from_did(sender.clone(), &cx.props.account.clone());
+        profile_pictures.insert(sender, profile_picture);
+    }
+
     cx.render(rsx! {
         div {
+            id: "scroll-messages",
             class: "messages",
+            div {
+                class: "encrypted-notif",
+                Icon {
+                    icon: Shape::LockClosed
+                }
+                p {
+                    "Messages secured by local E2E encryption."
+                }
+            },
             messages.iter()
                 .zip(next_sender)
                 .zip(prev_sender)
-                .map(|((message, next_sender), prev_sender)| (rg.clone(), message, next_sender, prev_sender))
-                .map(|(mut rg, message, next_sender, prev_sender)| {
+                .map(|((message, next_sender), prev_sender)| {
                     let message_id = message.id();
                     let conversation_id = message.conversation_id();
                     let msg_sender = message.sender();
                     let is_remote = ident.did_key() != msg_sender;
                     let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
                     let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
+                    let mut rg = rg.clone();
+
+
+                    let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
 
                     rsx! {
                         div {
                             key: "{message_id}",
                             style: "display: contents",
+                            "data-remote": "{is_remote}",
+                            message.replied().map(|replied| {
+                                let r = cx.props.messaging.clone();
+                                match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
+                                    Ok(message) => {
+                                        rsx!{
+                                            Reply {
+                                                // key: "{message_id}-reply",
+                                                message_id: message.id(),
+                                                message: message.value().join("\n"),
+                                                attachments_len: message.attachments().len(),
+                                                is_remote: is_remote,
+                                                account: cx.props.account.clone(),
+                                                sender: message.sender(),
+                                            }
+                                        }
+                                    },
+                                    // todo: if we don't want to display this, change message.replied().map to message.replied.and_then(), then 
+                                    // in the match statement return Some(Element) on Ok and None on error, with error logging as desired. 
+                                    Err(_) => { rsx!{ span { "Something went wrong" } } }
+                                }
+                            }),
                             Msg {
-                                // key: "{message_id}-reply",
-                                messaging: cx.props.messaging.clone(),message: message.clone(),
+                                messaging: cx.props.messaging.clone(),
+                                message: message.clone(),
                                 account: cx.props.account.clone(),
-                                sender: message.sender(),
+                                sender: msg_sender,
                                 remote: is_remote,
                                 // not sure why this works. I believe the calculations for is_last and is_first are correct but for an unknown reason the time and profile picture gets displayed backwards.
-                                last:  is_first,
-                                first: is_last,
+                                last:  is_last,
+                                first: is_first,
                                 middle: !is_last && !is_first,
+                                profile_picture: sender_picture,
                                 on_reply: move |reply| {
                                     if let Err(_e) = warp::async_block_in_place_uncheck(rg.reply(conversation_id, message_id, vec![reply])) {
                                         //TODO: Display error?
@@ -367,7 +416,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         Ok(message) => {
                                             rsx!{
                                                 Reply {
-                                                    // key: "{message_id}-reply",
                                                     message_id: message.id(),
                                                     message: message.value().join("\n"),
                                                     attachments_len: message.attachments().len(),
@@ -385,15 +433,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                         }
                     }
                 }),
-            div {
-                // key: "encrypted-notification-0001",
-                class: "encrypted-notif",
-                Icon {
-                    icon: Shape::LockClosed
-                }
-                p {
-                    "Messages secured by local E2E encryption."
-                }
+                script { "{msg_script}" 
             }
         }
     })

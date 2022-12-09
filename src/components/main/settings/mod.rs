@@ -1,4 +1,6 @@
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
+use ui_kit::button::Button;
 
 use crate::{
     components::main::settings::pages::{
@@ -7,7 +9,7 @@ use crate::{
     },
     components::reusable::page_header,
     state::Actions,
-    Account, STATE,
+    Account, Messaging, STATE,
 };
 
 use self::sidebar::nav::Route;
@@ -18,6 +20,7 @@ pub mod sidebar;
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    messaging: Messaging,
     page_to_open: Route,
 }
 
@@ -53,6 +56,7 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             class: "{sidebar_visibility}",
             sidebar::SettingsSidebar {
                 account: cx.props.account.clone(),
+                messaging: cx.props.messaging.clone(),
                 on_pressed: move |ne| {
                     active_page.set(ne);
                     state.write().dispatch(Actions::HideSidebar(true));
@@ -66,11 +70,22 @@ pub fn Settings(cx: Scope<Props>) -> Element {
             div {
                 id: "content",
                 page_header::PageHeader {
-                    content_start: cx.render(rsx! {Fragment()}),
+                    content_start: cx.render(rsx! {
+                        div {
+                            class: "mobile-back-button",
+                            Button {
+                                icon: Shape::ArrowLeft,
+                                state: ui_kit::button::State::Secondary,
+                                on_pressed: move |_| {
+                                    let state = use_atom_ref(&cx, STATE).clone();
+                                    state.write().dispatch(Actions::HideSidebar(false));
+                                },
+                            },
+                        },
+                    }),
                     content_center: cx.render(rsx! {
                         h1 { "{active_page_string}" }
                     }),
-                    content_end: cx.render(rsx! {Fragment()}),
                     hide_on_desktop: true,
                 },
                 div {

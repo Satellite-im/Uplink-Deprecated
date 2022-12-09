@@ -1,19 +1,19 @@
-pub mod friend;
+pub mod find;
+pub mod list_type_button;
 pub mod request;
+pub mod requests;
 pub mod sidebar;
-
-use std::{
-    collections::{HashMap, HashSet},
-    time::Duration,
-};
+pub mod users_list;
 
 use crate::{
-    components::main::friends::{friend::Friend, sidebar::Sidebar},
-    components::reusable::page_header,
-    Account, Messaging, STATE,
+    components::main::friends::sidebar::Sidebar,
+    components::main::friends::{
+        find::FindFriends, list_type_button::ListTypeButton, requests::FriendRequests,
+        users_list::UsersList,
+    },
+    components::reusable::nav::Nav,
+    Account, Messaging,
 };
-
-use crate::iutils::get_username_from_did;
 
 use dioxus::prelude::*;
 
@@ -21,12 +21,6 @@ use dioxus::prelude::*;
 struct UsernameAndDID {
     username: String,
     did: warp::crypto::DID,
-}
-
-#[derive(PartialEq)]
-struct FriendListAlpha {
-    letter: char,
-    friends: Vec<UsernameAndDID>,
 }
 
 #[derive(Props, PartialEq)]
@@ -39,136 +33,73 @@ pub struct Props {
 pub fn Friends(cx: Scope<Props>) -> Element {
     log::debug!("rendering Friends");
     let add_error = use_state(&cx, String::new);
-    let disp_friends = use_state(&cx, Vec::new);
-    let friends = use_ref(&cx, HashSet::new);
 
-    let state = use_atom_ref(&cx, STATE).clone();
-    let sidebar_visibility = match state.read().hide_sidebar {
-        false => "mobile-sidebar-visible",
-        true => "mobile-sidebar-hidden",
-    };
+    let show_friend_list = use_state(&cx, || true);
 
-    use_future(
-        &cx,
-        (friends, &cx.props.account.clone(), disp_friends),
-        |(friends, mp, disp_friends)| async move {
-            loop {
-                let friends_list: HashSet<_> =
-                    HashSet::from_iter(mp.list_friends().unwrap_or_default());
-
-                if *friends.read() != friends_list {
-                    log::debug!("updating friends list ");
-                    if let Some(new_disp) = order_friend_list(&friends_list, &mp) {
-                        *friends.write_silent() = friends_list;
-                        disp_friends.set(new_disp);
-                    }
-                }
-
-                tokio::time::sleep(Duration::from_millis(1000)).await;
-            }
-        },
-    );
-
-    let alpha: Vec<_> = "abcdefghijklmnopqrstuvwxyz"
-        .to_uppercase()
-        .chars()
-        .collect();
+    let incoming_requests = cx
+        .props
+        .account
+        .list_incoming_request()
+        .unwrap_or_default()
+        .is_empty();
+    let outgoing_requests = cx
+        .props
+        .account
+        .list_outgoing_request()
+        .unwrap_or_default()
+        .is_empty();
 
     cx.render(rsx! {
         div {
             id: "friends",
-            class: "{sidebar_visibility}",
-            Sidebar { account: cx.props.account.clone(), add_error: add_error.clone()},
+            class: "mobile-sidebar-hidden",
+            Sidebar { account: cx.props.account.clone(), messaging: cx.props.messaging.clone(), add_error: add_error.clone()},
             div {
                 id: "content",
-                page_header::PageHeader {
-                    content_start: cx.render(rsx! {Fragment()}),
-                    content_center: cx.render(rsx! {
-                        h1 { "Friends" }
-                    }),
-                    content_end: cx.render(rsx! {Fragment()}),
-                    hide_on_desktop: true,
-                },
                 div {
-                    class: "main",
-                    div {
-                        class: "friends-list",
-                        disp_friends.iter().map(|friends_per_char_list| {
-                            let first_username_char = friends_per_char_list.letter;
-                            rsx!(
-                                div {
-                                    class: "friends-separator",
-                                    h5 {
-                                        id: "{first_username_char}",
-                                        "{first_username_char}"
-                                    }
-                                }
-                                friends_per_char_list.friends.iter().map(|user| {
-                                    rsx!(
-                                        Friend {
-                                            account: cx.props.account.clone(),
-                                            messaging: cx.props.messaging.clone(),
-                                            friend: user.did.clone(),
-                                            friend_username: user.username.clone(),
-                                            on_chat: move |_| {
-                                                add_error.set("".into());
-                                                use_router(&cx).push_route("/main", None, None);
-                                            }
-                                        }
-                                    )
-                                }),
-                            )
-                        }),
+                    class: "mobile-wrap",
+                    FindFriends { account: cx.props.account.clone(), add_error: add_error.clone(), is_compact: true },
+                },
+                div{
+                    class: "user-category",
+                    ListTypeButton{
+                        text:String::from("All"),
+                        active: **show_friend_list,
+                        on_pressed:move |_|show_friend_list.set(true)
                     },
-                    ul {
-                        alpha.iter().map(|letter| {
-                            rsx!( li { a { href: "#{letter}", prevent_default: "onclick", rel: "noopener noreferrer", "{letter}", } } )
-                        })
+                    ListTypeButton{
+                        text:String::from("Blocked"),
+                        active: !**show_friend_list,
+                        on_pressed: move |_|show_friend_list.set(false)
+                    },
+                },
+                div{
+                   class: "scroll-container",
+                   (incoming_requests || outgoing_requests).then(|| {
+                       rsx! {
+                           div {
+                               class: "mobile-wrap",
+                                   FriendRequests { account: cx.props.account.clone(), add_error: add_error.clone() },
+                           },
+                       }
+                   }),
+                   div{
+                       class:"main",
+                       UsersList {
+                           account:cx.props.account.clone(),
+                           messaging: cx.props.messaging.clone(),
+                           show_friend_list:**show_friend_list,
+                       },
+                   },
+                },
+                span {
+                    class: "hidden-on-desktop mobile-nav",
+                    Nav {
+                        account: cx.props.account.clone(),
+                        messaging: cx.props.messaging.clone(),
                     }
                 }
-            }
+            },
         }
     })
-}
-
-fn order_friend_list(
-    friend_did_list: &HashSet<warp::crypto::DID>,
-    account: &Account,
-) -> Option<Vec<FriendListAlpha>> {
-    // Get all friends username. sort them
-    let mut total_friends_list: Vec<UsernameAndDID> = friend_did_list
-        .iter()
-        .map(|did| {
-            let _friend_username = get_username_from_did(did.clone(), account);
-            UsernameAndDID {
-                username: _friend_username,
-                did: did.clone(),
-            }
-        })
-        .collect();
-    total_friends_list.sort_by(|a, b| a.username.cmp(&b.username));
-
-    // split by letter. the vectors will be sorted already
-    let mut sublists: HashMap<char, Vec<UsernameAndDID>> = HashMap::new();
-    for friend in total_friends_list {
-        let start = friend.username.to_uppercase().chars().next()?;
-        match sublists.get_mut(&start) {
-            Some(list) => list.push(friend),
-            None => {
-                let _ = sublists.insert(start, vec![friend]);
-            }
-        };
-    }
-    // turn into a vec and sort it.
-    let mut ordered_sublists: Vec<FriendListAlpha> = sublists
-        .iter()
-        .map(|(k, v)| FriendListAlpha {
-            letter: *k,
-            friends: v.clone(),
-        })
-        .collect();
-
-    ordered_sublists.sort_by(|l, r| l.letter.cmp(&r.letter));
-
-    Some(ordered_sublists)
 }

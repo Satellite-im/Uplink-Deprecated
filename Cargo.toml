@@ -72,6 +72,7 @@ humansize = "2.0.0"
 
 audio-factory = { path = "extensions/native/audio-factory" }
 emoji-selector = { path = "extensions/native/emoji-selector" }
+fuzzy-matcher = "0.3.7"
 incognito-typing = { path = "extensions/native/incognito-typing" }
 
 [build-dependencies]

@@ -1,18 +1,14 @@
 use dioxus::prelude::*;
 
-use crate::{components::reusable::toolbar, state::Actions, STATE};
-
-use dioxus_heroicons::outline::Shape;
-use ui_kit::button::Button;
-
+use crate::components::reusable::toolbar;
 #[derive(Props)]
 pub struct Props<'a> {
     // The content to be displayed at the start of the page header
-    content_start: Element<'a>,
+    content_start: Option<Element<'a>>,
     // The content to be displayed at the center of the page header
-    content_center: Element<'a>,
+    content_center: Option<Element<'a>>,
     // The content to be displayed at the end of the page header
-    content_end: Element<'a>,
+    content_end: Option<Element<'a>>,
     // Whether the page header should be hidden on desktop
     hide_on_desktop: bool,
 }
@@ -21,8 +17,6 @@ pub struct Props<'a> {
 pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Log a debug message
     log::debug!("rendering PageHeading");
-
-    let state = use_atom_ref(&cx, STATE).clone();
 
     // Determine the visibility class for the page header
     let header_visibility = match cx.props.hide_on_desktop {
@@ -37,25 +31,11 @@ pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             // Apply the visibility class
             class: "{header_visibility}",
             toolbar::Toolbar {
-                controls: cx.render(rsx! {
-                    div {}
-                }),
+                controls: cx.render(rsx! { Fragment {} }),
                 div {
                     class: "toolbar-content",
                     div {
                         class: "toolbar-start",
-                        div {
-                            class: "mobile-back-button",
-                            Button {
-                                icon: Shape::ArrowLeft,
-                                state: ui_kit::button::State::Secondary,
-                                // When the button is pressed, hide the sidebar
-                                on_pressed: move |_| {
-                                    state.write().dispatch(Actions::HideSidebar(false));
-                                },
-                            },
-                        },
-                        // Render the start content
                         &cx.props.content_start
                     },
                     div {

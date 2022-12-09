@@ -1,3 +1,4 @@
+use crate::DEFAULT_PATH;
 use dioxus::prelude::*;
 use libloading::{Library, Symbol};
 use once_cell::sync::Lazy;
@@ -5,7 +6,6 @@ use std::ffi::OsStr;
 use std::sync::Arc;
 use std::{collections::HashMap, fs};
 use warp::logging::tracing::{error, info};
-use crate::DEFAULT_PATH;
 
 type ComponentFn = unsafe fn() -> Box<Component>;
 type InfoFn = unsafe fn() -> Box<ExtensionInfo>;

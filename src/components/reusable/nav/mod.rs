@@ -2,14 +2,18 @@ use ::utils::notifications::PushNotification;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use futures::StreamExt;
+use state::{Actions, STATE};
 use ui_kit::{
     button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
     numeric_indicator::NumericIndicator,
 };
 
-use crate::{Account, LANGUAGE};
-use warp::multipass::MultiPassEventKind;
+use crate::{Account, Messaging, LANGUAGE};
+use warp::{
+    multipass::MultiPassEventKind,
+    raygun::{Conversation, ConversationType},
+};
 
 #[derive(PartialEq, Eq, Clone, Copy)]
 pub enum NavEvent {
@@ -23,12 +27,15 @@ pub enum NavEvent {
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: Account,
+    messaging: Messaging,
 }
 
 #[allow(non_snake_case)]
 pub fn Nav(cx: Scope<Props>) -> Element {
     log::debug!("rendering reusable Nav");
+    let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read().clone();
+    let rg = cx.props.messaging.clone();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
         multipass.list_incoming_request().unwrap_or_default().len()
@@ -49,8 +56,8 @@ pub fn Nav(cx: Scope<Props>) -> Element {
 
     use_future(
         &cx,
-        (reqCount, &multipass),
-        |(reqCount, mut multipass)| async move {
+        (reqCount, &multipass, &rg),
+        |(reqCount, mut multipass, mut rg)| async move {
             // Used to make sure everything is initialized before proceeding.
             let new_friend_request_notification = l.new_friend_request.to_string().to_owned();
 
@@ -94,23 +101,46 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                         reqCount.with_mut(|count| *count += 1);
                     }
                     MultiPassEventKind::IncomingFriendRequestRejected { .. } => {
-                        log::debug!("updating friend request count");
+                        log::debug!("friend request rejected");
                         if *(reqCount.get()) != 0 {
                             log::debug!("close friend request");
                             reqCount.with_mut(|count| *count -= 1);
                         }
                     }
                     MultiPassEventKind::IncomingFriendRequestClosed { .. } => {
-                        log::debug!("updating friend request count");
+                        log::debug!("friend reqeust cancelled");
                         if *(reqCount.get()) != 0 {
                             log::debug!("close friend request");
                             reqCount.with_mut(|count| *count -= 1);
                         }
                     }
-                    MultiPassEventKind::FriendAdded { .. } => {
-                        log::debug!("updating friend request count");
+                    MultiPassEventKind::FriendAdded { did } => {
+                        log::debug!("added friend: {}", &did);
                         if *(reqCount.get()) != 0 {
                             reqCount.with_mut(|count| *count -= 1);
+                        }
+                        log::debug!("creating chat");
+                        let _result = rg.create_conversation(&did).await;
+                    }
+                    MultiPassEventKind::FriendRemoved { did } => {
+                        log::debug!("removing friend {}", &did);
+                        if let Ok(convs) = rg.list_conversations().await {
+                            let to_remove: Vec<&Conversation> = convs
+                                .iter()
+                                .filter(|c| c.conversation_type() == ConversationType::Direct)
+                                .filter(|c| c.recipients().contains(&did))
+                                .collect();
+                            for c in to_remove {
+                                match rg.delete(c.id(), None).await {
+                                    Ok(_) => {
+                                        state.write().dispatch(Actions::RemoveConversation(c.id()));
+                                        log::info!("successfully deleted conversation")
+                                    }
+                                    Err(error) => {
+                                        log::error!("error when deleting conversation: {error}")
+                                    }
+                                };
+                            }
                         }
                     }
                     _ => {}

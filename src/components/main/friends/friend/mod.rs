@@ -23,15 +23,16 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
-    let state = use_atom_ref(&cx, STATE);
 
     let mp = cx.props.account.clone();
     let mut rg = cx.props.messaging.clone();
+    let friend = cx.props.friend.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
 
     let profile_picture = iutils::get_pfp_from_did(cx.props.friend.clone(), &mp);
+    let state = use_atom_ref(&cx, STATE);
 
     cx.render(rsx! {
         div {
@@ -73,8 +74,10 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                         Button {
                             icon: Shape::ChatBubbleBottomCenterText,
                             on_pressed: move |_| {
-                                let conversation =
-                                match warp::async_block_in_place_uncheck(rg.create_conversation(&cx.props.friend)) {
+                                let conversation_response = warp::async_block_in_place_uncheck(
+                                    rg.create_conversation(&friend)
+                                );
+                                let conversation = match conversation_response {
                                     Ok(v) => v,
                                     Err(warp::error::Error::ConversationExist { conversation }) => conversation,
                                     Err(e) => {
@@ -82,7 +85,6 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                         return;
                                     }
                                 };
-
                                 state.write().dispatch(Actions::ChatWith(conversation));
                                 cx.props.on_chat.call(());
 
@@ -92,15 +94,10 @@ pub fn Friend<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             icon: Shape::XMark,
                             state: ui_kit::button::State::Danger,
                             on_pressed: move |_| {
-                                let mut multipass = cx.props.account.clone();
-                                let did_to_remove = cx.props.friend.clone();
-                                match multipass.remove_friend(&did_to_remove) {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        log::debug!("error removing friend");
-                                    }
+                                // the RemoveFriend event will be detected and the conversation will be removed
+                                if let Err(e) = mp.remove_friend(cx.props.friend) {
+                                    log::error!("failed to remove friend: {e}"); 
                                 }
-                                // todo: remove the conversation?
                             }
                         }
                     )}

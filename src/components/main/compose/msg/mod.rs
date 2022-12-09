@@ -4,11 +4,13 @@ use embeds::LinkEmbed;
 use linkify::LinkFinder;
 use pulldown_cmark::{html, Options, Parser};
 
+use state::{Actions, STATE};
 use ui_kit::{
     button::Button,
     context_menu::{ContextItem, ContextMenu},
     profile_picture::PFP,
 };
+use utils::Account;
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
@@ -17,7 +19,7 @@ use crate::{
         self,
         get_meta::{get_meta, SiteMeta},
     },
-    Account, Messaging, LANGUAGE,
+    Messaging, LANGUAGE,
 };
 
 mod attachment;
@@ -26,20 +28,22 @@ use attachment::Attachment;
 
 #[derive(Props)]
 pub struct Props<'a> {
-    messaging: Messaging,
     message: Message,
+    messaging: Messaging,
     account: Account,
     sender: DID,
     remote: bool,
     first: bool,
     middle: bool,
     last: bool,
+    profile_picture: std::option::Option<std::string::String>,
     on_reply: EventHandler<'a, String>,
 }
 
 #[allow(non_snake_case)]
 pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering compose/Msg");
+    let state = use_atom_ref(&cx, STATE).clone();
     let finder = LinkFinder::new();
     let content = cx.props.message.value();
     let attachments = cx.props.message.attachments();
@@ -112,10 +116,8 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         false => "message-wrap animate__animated animate__pulse animate__slideInRight",
     };
 
-    let profile_picture =
-        iutils::get_pfp_from_did(cx.props.sender.clone(), &cx.props.account.clone());
-    let profile_picture2 = profile_picture.clone();
-    let profile_picture3 = profile_picture.clone();
+    let profile_picture2 = cx.props.profile_picture.clone();
+    let profile_picture3 = cx.props.profile_picture.clone();
 
     // Set up options and parser. Strikethroughs are not part of the CommonMark standard
     // and we therefore must enable it explicitly.
@@ -168,7 +170,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 e.cancel_bubble();
                             },
                             PFP {
-                                src: profile_picture,
+                                src: cx.props.profile_picture.clone(),
                                 size: ui_kit::profile_picture::Size::Normal
                             },
                             div {
@@ -235,6 +237,30 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 onpressed: move |_| popout.set(true),
                                 text: String::from("Reply"),
                                 icon: Shape::ArrowUturnLeft,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    state
+                                    .write()
+                                    .dispatch(Actions::HideConversation(cx.props.message.conversation_id()));
+                                },
+                                text: String::from("Hide Chat"),
+                                danger: true,
+                                icon: Shape::Trash,
+                            },
+                            ContextItem {
+                                onpressed: move |_| {
+                                    // when the FriendRemoved event is detected, the covnersation will be removed
+                                    // todo: do we want to be able to delete and re-add a friend and keep the previous conversation? maybe the users won't care if they don't know they can have that feature. 
+                                    let mut multipass = cx.props.account.clone();
+                                    let did_to_remove = cx.props.sender.clone();
+                                    if multipass.remove_friend(&did_to_remove).is_err() {
+                                        log::debug!("error removing friend");
+                                    }
+                                },
+                                text: String::from("Remove Friend"),
+                                danger: true,
+                                icon: Shape::XCircle,
                             }
                         }} else {rsx!{
                             ContextItem {
