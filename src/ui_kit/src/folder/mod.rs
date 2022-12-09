@@ -79,8 +79,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
                                         match parent_directory.remove_item(&file_name) {
                                             Ok(_) => {
-                                                let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
-                                                eval_script.eval(&file_leave_folder_js);
+                                              
                                                 *drag_over_folder.write_silent() = false;
                                                 // TODO: Remove all files inside this folder
                                                 log::info!("file from directory was deleted.");
@@ -90,6 +89,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 },
                                     Err(error) => log::error!("Error adding file into directory: {error}"),
                                 };
+                                let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
+                                eval_script.eval(&file_leave_folder_js);
                             }
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
