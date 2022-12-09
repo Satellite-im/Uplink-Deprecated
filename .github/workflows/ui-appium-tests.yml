@@ -42,9 +42,9 @@ jobs:
           make dmg SIGNING_KEY=LOCAL
       - name: Install Uplink Desktop App
         run: |
-          hdiutil attach ./target/release/macos/Uplink.dmg
+          hdiutil attach target/release/macos/Uplink.dmg
           cp -r /Volumes/Uplink.dmg /Applications/
-          hdiutil detach ./target/release/macos/Uplink.dmg
+          hdiutil detach target/release/macos/Uplink.dmg
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
         with:
