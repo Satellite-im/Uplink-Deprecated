@@ -128,13 +128,14 @@ impl ExtensionManager {
 }
 
 #[allow(non_snake_case)]
-pub fn get_renders<'src>(location: ExtensionType, enable: bool) -> Vec<LazyNodes<'src, 'src>> {
+pub fn get_renders<'src>(location: ExtensionType, enable: bool, ext_enabled: Vec<String>) -> Vec<LazyNodes<'src, 'src>> {
     if enable {
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
         if let Some(items) = extensions {
             let nodes: Vec<LazyNodes> = items
                 .iter()
+                .filter(|ext| ext_enabled.contains(&ext.info.name))
                 .map(|ext| {
                     let Ext = ext.component;
                     rsx!(div { Ext {} })
