@@ -35,6 +35,10 @@ pub fn Nav(cx: Scope<Props>) -> Element {
     log::debug!("rendering reusable Nav");
     let state = use_atom_ref(&cx, STATE).clone();
     let l = use_atom_ref(&cx, LANGUAGE).read().clone();
+    let router = use_router(&cx).clone();
+    let router2 = router.clone();
+    let router3 = router.clone();
+    let router4 = router.clone();
     let rg = cx.props.messaging.clone();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
@@ -154,7 +158,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             class: "nav",
             Button {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main", None, None);
+                    router.replace_route("/main", None, None);
                 },
                 state: if active.eq(&NavEvent::Home) {
                     button::State::Primary
@@ -165,7 +169,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             },
             Button {
                 on_pressed: move |_| {
-                    use_router(&cx).push_route("/main/files", None, None);
+                    router2.replace_route("/main/files", None, None);
                 },
                 state: if active.eq(&NavEvent::Files) {
                     button::State::Primary
@@ -184,7 +188,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 },
                 Button {
                     on_pressed: move |_| {
-                        use_router(&cx).push_route("/main/friends", None, None);
+                        router3.replace_route("/main/friends", None, None);
                     },
                     state: if active.eq(&NavEvent::Friends) {
                         button::State::Primary
@@ -247,7 +251,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 },
                 Button {
                     on_pressed: move |_| {
-                        use_router(&cx).push_route("/main/settings", None, None);
+                        router4.replace_route("/main/settings", None, None);
                     },
                     state: if active.eq(&NavEvent::Settings) {
                         button::State::Primary
