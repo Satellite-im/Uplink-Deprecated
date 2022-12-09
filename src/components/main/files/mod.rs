@@ -61,7 +61,6 @@ pub fn Files(cx: Scope<Props>) -> Element {
         if &*parent_directory.read().name() == "root" {
             match file_storage.open_directory("main_directory") {
                 Ok(directory) => {
-                    println!("Arrivind here");
                     parent_directory.with_mut(|dir| *dir = directory.clone());
                     log::info!("Main directory was opened. {:?}", directory.name());
                 },

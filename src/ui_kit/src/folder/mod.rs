@@ -48,6 +48,18 @@ pub fn Folder(cx: Scope<Props>) -> Element {
          div {
             id: "{folder_id}-folder",
             class: "item file",
+            onclick: move |_| {
+                let file_storage = cx.props.storage.clone();
+                let folder_name = cx.props.name.clone();
+                let parent_directory = cx.props.parent_directory.clone();
+                match file_storage.open_directory(&folder_name) {
+                    Ok(directory) => {
+                        parent_directory.with_mut(|dir| *dir = directory.clone());
+                        log::info!("{folder_name} was opened. {:?}", directory.name());
+                    },
+                    Err(error) => log::error!("Error opening folder: {error}"),
+                };
+            },
             ContextMenu {
                 parent: format!("{}-folder", folder_id),
                 items: cx.render(
@@ -124,18 +136,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     }
                 });
             },
-                onclick: move |_| {
-                    let file_storage = cx.props.storage.clone();
-                    let folder_name = cx.props.name.clone();
-                    let parent_directory = cx.props.parent_directory.clone();
-                    match file_storage.open_directory(&folder_name) {
-                        Ok(directory) => {
-                            parent_directory.with_mut(|dir| *dir = directory.clone());
-                            log::info!("{folder_name} was opened. {:?}", directory.name());
-                        },
-                        Err(error) => log::error!("Error opening folder: {error}"),
-                    };
-                },
+
                 Icon { icon: Shape::Folder },
                 if *is_renaming.read() {
                     rsx! ( input {
