@@ -409,27 +409,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     }
                                 }
                             }
-                            match message.replied() {
-                                Some(replied) => {
-                                    let r = cx.props.messaging.clone();
-                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                        Ok(message) => {
-                                            rsx!{
-                                                Reply {
-                                                    message_id: message.id(),
-                                                    message: message.value().join("\n"),
-                                                    attachments_len: message.attachments().len(),
-                                                    is_remote: is_remote,
-                                                    account: cx.props.account.clone(),
-                                                    sender: message.sender(),
-                                                }
-                                            }
-                                        },
-                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                    }
-                                },
-                                _ => rsx!{ div {  } }
-                            }
                         }
                     }
                 }),
