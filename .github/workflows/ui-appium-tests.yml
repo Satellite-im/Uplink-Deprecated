@@ -52,8 +52,6 @@ jobs:
         run: |
           cd appium-tests && npm install
 
-      - name: Enable opening app not codesigned
-        run: sudo spctl --master-disable
       - name: Install and Run Appium Server 📱
         run: |
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
