@@ -18,7 +18,7 @@ use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 use ui_kit::button::Button;
-use warp::error::Error;
+use warp::{error::Error, constellation::Progression};
 
 use crate::{Storage, DRAG_FILE_EVENT};
 use tokio::io::AsyncWriteExt;
@@ -289,25 +289,66 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
         count_index_for_duplicate_filename += 1;
     }
 
-    // let file_stream = file_storage.get_stream(&filename).await;
-    let tokio_file = tokio::fs::File::open(&filename).await;
+    let tokio_file = match tokio::fs::File::open(&local_path).await {
+            Ok(file) => file, 
+            Err(error) => {
+                log::error!("Error on get tokio file, cancelling upload action, error: {error}");
+                return;
+            }
+    };
+
+    let total_size_for_stream = match tokio_file.metadata().await {
+        Ok(data) => Some(data.len() as usize),
+        Err(error) => {
+            log::error!("Error getting metadata: {:?}", error);
+            None
+        },
+    };
+
     let file_stream = ReaderStream::new(tokio_file)
         .filter_map(|x| async { x.ok() })
         .map(|x| x.into());
-    // let total_size_for_stream = match tokio_file.clone().metadata() {
-    //     Ok(data) => return data.len() as usize,
-    //     Err(error) => log::error!("Error getting metadata: {:?}", error),
-    // };
-    let total_size_for_stream = match tokio_file.clone().metadata() {
-        Ok(data) => data.len() as usize,
-        Err(error) => log::error!("Error getting metadata: {:?}", error),
-    };
 
     match file_storage
-        .put_stream(&filename, Some(total_size_for_stream), file_stream.boxed())
+        .put_stream(&filename, total_size_for_stream, file_stream.boxed())
         .await
     {
-        Ok(ConstellationProgressStream) => {
+        Ok(mut upload_progress) => {
+            while let Some(upload_progress) = upload_progress.next().await {
+                match upload_progress {
+                    Progression::CurrentProgress {
+                        name,
+                        current,
+                        total,
+                    } => {
+                        println!("Written {} MB for {name}", current / 1024 / 1024);
+                        if let Some(total) = total {
+                            println!(
+                                "{}% completed",
+                                (((current as f64) / (total as f64)) * 100.) as usize
+                            )
+                        }
+                    }
+                    Progression::ProgressComplete { name, total } => {
+                        println!(
+                            "{name} has been uploaded with {} MB",
+                            total.unwrap_or_default() / 1024 / 1024
+                        );
+                    }
+                    Progression::ProgressFailed {
+                        name,
+                        last_size,
+                        error,
+                    } => {
+                        println!(
+                            "{name} failed to upload at {} MB due to: {}",
+                            last_size.unwrap_or_default(),
+                            error.unwrap_or_default()
+                        );
+                    }
+                }
+
+            };
             log::info!("{:?} file uploaded!", &filename);
 
             match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
