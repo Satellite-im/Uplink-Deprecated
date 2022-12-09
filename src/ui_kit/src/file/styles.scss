@@ -17,6 +17,10 @@
   width: fit-content;
   justify-content: flex-start;
   cursor: pointer;
+
+  svg {
+    margin-top: 10px;
+  }
 }
 label {
   margin-top: 0.1rem;
