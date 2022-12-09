@@ -12,7 +12,8 @@ jobs:
       - name: Rebase
         run: |
           # Check if the comment contains the `/rebase` command
-          if [[ "$GITHUB_EVENT_PATH" == *"/rebase"* ]]; then
+          COMMENT_BODY=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/comments/$GITHUB_EVENT_ID" | jq -r .body)
+          if [[ "$COMMENT_BODY" == *"/rebase"* ]]; then
             # Rebase the pull request
-            git rebase origin/dev
+            git rebase origin/main
           fi
