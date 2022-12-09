@@ -29,6 +29,7 @@ pub enum Actions {
     HideSidebar(bool),
     //DeselectChat,
     SetShowPrerelaseNotice(bool),
+    SetExtensionEnabled(String, bool),
     // SendNotification(String, String, Sounds),
 }
 
@@ -42,7 +43,7 @@ pub struct PersistedState {
     // RayGun receives messages from conversations whether or not the conversation is on the chats sidebar.
     // although these conversations aren't displayed, Uplink needs to track them so that if the user opens the chat,
     // the correct information is displayed.
-    pub all_chats: HashMap<Uuid, Conversation>,
+    pub all_chats: HashMap<Uuid, ConversationInfo>,
     /// a list of favorited conversations.
     /// Uuid is for Conversation and can be used to look things up in all_chats
     pub favorites: HashSet<Uuid>,
@@ -51,6 +52,7 @@ pub struct PersistedState {
     pub total_unreads: u32,
     pub show_prerelease_notice: bool,
     pub send_typing: bool,
+    pub enabled_extensions: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -139,16 +141,16 @@ impl PersistedState {
         match action {
             Actions::AddConversation(conversation) => {
                 log::debug!("PersistedState: AddConversation");
-                self.all_chats
-                    .entry(conversation.id())
-                    .or_insert_with(|| conversation.clone());
+                let ci =
+                    self.all_chats
+                        .entry(conversation.id())
+                        .or_insert_with(|| ConversationInfo {
+                            conversation: conversation.clone(),
+                            ..Default::default()
+                        });
                 self.active_chats
                     .entry(conversation.id())
-                    .or_insert(ConversationInfo {
-                        conversation,
-                        creation_time: DateTime::from(Local::now()),
-                        ..Default::default()
-                    });
+                    .or_insert(ci.clone());
             }
             Actions::RemoveConversation(conversation_id) => {
                 log::debug!("PersistedState: RemoveConversation");
@@ -168,7 +170,14 @@ impl PersistedState {
             }
             Actions::HideConversation(conversation_id) => {
                 log::debug!("PersistedState: HideChat");
-                self.active_chats.remove(&conversation_id);
+                match self.active_chats.remove(&conversation_id) {
+                    Some(conv) => {
+                        self.all_chats.insert(conversation_id.clone(), conv);
+                    }
+                    None => {
+                        log::error!("hide conversation called for non-active chat");
+                    }
+                }
                 if self.selected_chat == Some(conversation_id) {
                     self.selected_chat = None;
                 }
@@ -194,13 +203,9 @@ impl PersistedState {
                         match self.active_chats.entry(uuid) {
                             Entry::Occupied(_) => {}
                             Entry::Vacant(vacant) => {
-                                vacant.insert(ConversationInfo {
-                                    conversation: conv.clone(),
-                                    ..Default::default()
-                                });
+                                vacant.insert(conv.clone());
                             }
                         }
-                        // set selected_chat
                         self.selected_chat = Some(uuid);
                     }
                     None => {
@@ -213,8 +218,9 @@ impl PersistedState {
             //}
             Actions::ChatWith(conversation) => {
                 log::debug!("PersistedState: ChatWith");
-                // add to active_chats if not already there
-                self.active_chats
+                // if this conversation was newly created, add it here
+                let ci = self
+                    .all_chats
                     .entry(conversation.id())
                     .or_insert(ConversationInfo {
                         conversation: conversation.clone(),
@@ -223,10 +229,9 @@ impl PersistedState {
                 // set selected_chat
                 self.selected_chat = Some(conversation.id());
 
-                // if this conversation was newly created, add it here
-                self.all_chats
+                self.active_chats
                     .entry(conversation.id())
-                    .or_insert(conversation);
+                    .or_insert(ci.clone());
             }
             Actions::UpdateConversation(info) => {
                 log::debug!("PersistedState: UpdateConversation");
@@ -239,6 +244,15 @@ impl PersistedState {
             Actions::HideSidebar(slide_bar_bool) => {
                 log::debug!("PersistedState: HideSidebar");
                 self.hide_sidebar = slide_bar_bool;
+            }
+            Actions::SetExtensionEnabled(name, enabled) => {
+                log::debug!("PersistedState: SetExtensionEnabled {}: {}", name, enabled);
+                match enabled {
+                    true => if !self.enabled_extensions.contains(&name) {},
+                    false => {
+                        self.enabled_extensions.retain(|x| *x != name);
+                    }
+                }
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 log::debug!("PersistedState: SetShowPrerelaseNotice");
