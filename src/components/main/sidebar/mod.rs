@@ -1,8 +1,4 @@
-use std::{
-    borrow::Borrow,
-    cell::RefCell,
-    collections::HashMap,
-};
+use std::{borrow::Borrow, cell::RefCell, collections::HashMap};
 
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
