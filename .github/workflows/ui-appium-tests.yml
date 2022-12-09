@@ -98,68 +98,6 @@ jobs:
             Uplink-Mac-Universal.zip
             Uplink-Mac-Universal.zip.sha256.txt
 
-  #jobs:
-  #build:
-  #runs-on: macos-latest
-
-  #steps:
-  #- name: Checkout working directory 🔖
-  #  uses: actions/checkout@v3
-
-  #- name: Set up cargo cache
-  #  uses: actions/cache@v3
-  #  continue-on-error: false
-  #  with:
-  #    path: |
-  #      ~/.cargo/bin/
-  #      ~/.cargo/registry/index/
-  #      ~/.cargo/registry/cache/
-  #      ~/.cargo/git/db/
-  #      target/
-  #    key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-  #    restore-keys: ${{ runner.os }}-cargo-
-
-  #- name: Update Homebrew
-  #  run: |
-  #    brew update --preinstall
-  #    cat "$(brew --repository)/Library/Taps/homebrew/homebrew-core/Formula/protobuf.rb" > .github/brew-formulae
-
-  #- name: Configure Homebrew cache
-  #  uses: actions/cache@v3
-  #  with:
-  #    path: |
-  #      ~/Library/Caches/Homebrew/protobuf--*
-  #      ~/Library/Caches/Homebrew/downloads/*--protobuf-*
-  #    key: brew-${{ hashFiles('.github/brew-formulae') }}
-  #    restore-keys: brew-
-
-  #- name: Install Homebrew dependencies
-  #  run: |
-  #    env HOMEBREW_NO_AUTO_UPDATE=1 brew install protobuf
-
-  #- name: Install Rust
-  #  uses: actions-rs/toolchain@v1
-  #  with:
-  #    toolchain: stable
-  #    profile: minimal
-  #    override: true
-
-  #- name: Install Protobuf
-  #  continue-on-error: true
-  #  run: |
-  #    brew update
-  #    brew install protobuf
-
-  #- name: Build the app
-  #  run: |
-  #    cargo build --release
-
-  #- name: Archive the app
-  #  uses: actions/upload-artifact@v1
-  #  with:
-  #    name: app-macos
-  #    path: target/release/uplink
-
   test:
     needs: build-app
     runs-on: macos-latest
@@ -193,14 +131,6 @@ jobs:
       - name: Install NPM dependencies 📦
         run: |
           cd appium-tests && npm install
-
-      #- name: Install Uplink Desktop App
-      #  run: |
-      #    cd ./appium-tests/apps
-      #    ls -la
-      #    hdiutil attach ./appium-tests/apps/Uplink.dmg
-      #    cp -r /Volumes/Uplink.dmg /Applications/
-      #    hdiutil detach ./appium-tests/apps/Uplink.dmg
 
       - name: Install and Run Appium Server 📱
         run: |
