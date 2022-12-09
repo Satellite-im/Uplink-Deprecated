@@ -62,10 +62,10 @@ ui_kit = { path = "src/ui_kit" }
 utils = { path = "src/utils" }
 state = { path = "src/state" }
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f"}
-warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f" }
-warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f" }
-warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", rev = "45d1034c5b26ad1c76e7be4aec5113cba09a2f1f" }
+warp = { git = "https://github.com/Satellite-im/Warp", branch = "warp/sync"}
+warp-mp-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/sync" }
+warp-rg-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/sync" }
+warp-fs-ipfs = { git = "https://github.com/Satellite-im/Warp", branch = "warp/sync" }
 arboard = "3.1.0"
 fs2 = "0.4.3"
 humansize = "2.0.0"
