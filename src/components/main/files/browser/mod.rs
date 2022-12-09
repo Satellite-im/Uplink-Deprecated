@@ -45,7 +45,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
          id: "browser",
-            (cx.props.show_new_folder).then(|| rsx!(
+            (cx.props.show_new_folder).then(|| 
+                rsx!(
                 div {
                     class: "item file",
                     NewFolder {
@@ -55,7 +56,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         parent_directory: parent_directory.clone(),
                     }
                 }
-            )),
+            )
+            ),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
                 rsx!(

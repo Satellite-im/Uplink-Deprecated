@@ -282,6 +282,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, current_director
                 match file_storage.root_directory().get_item(&filename) {
                     Ok(item) => {
                         let current_directory_name = current_directory.name();
+                
                         match current_directory.add_item(item.clone()) {
                             Ok(_) => log::info!("Added {:?} to current directory {current_directory_name}", item),
                             Err(error) => log::error!("add item to current directory {current_directory_name}: {error}"),
@@ -309,11 +310,9 @@ async fn set_thumbnail_if_file_is_image(
     let file = file_storage.get_buffer(&filename_to_save).await?;
 
     // Guarantee that is an image that has been uploaded
-    let image = ImageReader::new(Cursor::new(&file))
+    ImageReader::new(Cursor::new(&file))
         .with_guessed_format()?
         .decode()?;
-
-    let image_thumbnail = image.thumbnail(70, 70);
 
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
     let mime = match parts_of_filename

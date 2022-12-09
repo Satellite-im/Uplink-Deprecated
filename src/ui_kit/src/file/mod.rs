@@ -150,6 +150,9 @@ pub fn File(cx: Scope<Props>) -> Element {
                                 *val.write_silent() = evt.value.to_string();
                             },
                             onkeyup: move |evt| {
+                                if evt.key_code == KeyCode::Escape {
+                                    hide_edit_name_element(cx);
+                                }
                                 if evt.key_code == KeyCode::Enter {
                                     let file_storage = cx.props.storage.clone();
                                     let old_file_name = &*file_name_complete_ref.read();

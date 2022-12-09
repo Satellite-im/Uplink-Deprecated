@@ -25,10 +25,9 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
     let folder_name = use_state(&cx, || String::from("New Folder"));
     let is_renaming = use_ref(&cx, || true);    
     let show_new_folder = cx.props.show_new_folder.clone();
-
-    let new_folder_js = include_str!("./new_folder.js");
-
     let parent_directory_ref = cx.props.parent_directory.clone();
+    
+    let new_folder_js = include_str!("./new_folder.js");
 
     cx.render(rsx! {
         script { "{new_folder_js}" }
@@ -47,6 +46,9 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                             folder_name.set(evt.value.to_string());
                         },
                         onkeyup: move |evt| {
+                            if evt.key_code == KeyCode::Escape {
+                                show_new_folder.set(false);
+                            }
                             if evt.key_code == KeyCode::Enter {
                                 *is_renaming.write() = false;
                                 let file_storage = cx.props.storage.clone();

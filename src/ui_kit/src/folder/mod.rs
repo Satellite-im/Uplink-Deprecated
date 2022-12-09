@@ -62,12 +62,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                     let folder_name = cx.props.name.clone();
                                     match parent_directory.write().remove_item(&folder_name) {
                                         Ok(_) => {
-                                            println!("Folder deleted: ");
+                                            // TODO: Remove all files inside this folder
                                             log::info!("{folder_name} was deleted.");
                                         },
-                                        Err(error) => {
-                                            println!("error: {:?}", error);
-                                            log::error!("Error deleting folder: {error}")},
+                                        Err(error) => log::error!("Error deleting folder: {error}"),
                                     }
                                 },
                                 icon: Shape::Trash,
@@ -93,7 +91,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 Icon { icon: Shape::Folder },
                 if *is_renaming.read() {
                     rsx! ( input {
-                        class: "new_folder_input",
+                        class: "new_folder_input-{folder_id}",
                         autofocus: "true",
                         placeholder: "New Folder",
                         oninput: move |evt| {
@@ -127,12 +125,13 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         }
                     })
                 } else {
-                   rsx!(     p { "{folder_name}" },
-                   label {
-                       "{children} item(s)"
-                   })
+                   rsx!(
+                    p { "{folder_name}" },
+                   )
                 }
-    
+                rsx!(label {
+                    "{children} item(s)"
+                })
             }
         }
     })
