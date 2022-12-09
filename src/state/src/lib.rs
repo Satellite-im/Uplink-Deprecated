@@ -29,6 +29,7 @@ pub enum Actions {
     HideSidebar(bool),
     //DeselectChat,
     SetShowPrerelaseNotice(bool),
+    SetExtensionEnabled(String, bool),
     // SendNotification(String, String, Sounds),
 }
 
@@ -51,6 +52,7 @@ pub struct PersistedState {
     pub total_unreads: u32,
     pub show_prerelease_notice: bool,
     pub send_typing: bool,
+    pub enabled_extensions: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize, Default, Clone, Eq, PartialEq)]
@@ -233,6 +235,20 @@ impl PersistedState {
             Actions::HideSidebar(slide_bar_bool) => {
                 log::debug!("PersistedState: HideSidebar");
                 self.hide_sidebar = slide_bar_bool;
+            }
+            Actions::SetExtensionEnabled(name, enabled) => {
+                log::debug!("PersistedState: SetExtensionEnabled {}: {}", name, enabled);
+                match enabled {
+                    true => {
+                        if !self.enabled_extensions.contains(&name) {
+                            self.enabled_extensions.push(name);
+                        }
+                    }
+                    false => {
+                        self.enabled_extensions.retain(|x| *x != name);
+                    }
+                }
+
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 log::debug!("PersistedState: SetShowPrerelaseNotice");

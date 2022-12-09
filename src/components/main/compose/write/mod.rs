@@ -5,6 +5,7 @@ use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use incognito_typing::ExtIncognitoTyping;
+use state::STATE;
 use ui_kit::{
     button::{self, Button},
     context_menu::{ContextItem, ContextMenu},
@@ -26,8 +27,14 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
     let text = use_state(&cx, String::new);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let state = use_atom_ref(&cx, STATE).read();
+    let ext_enabled = state.enabled_extensions.clone();
 
-    let exts = get_renders(ExtensionType::ChatbarIcon, config.extensions.enable);
+    let exts = get_renders(
+        ExtensionType::ChatbarIcon,
+        config.extensions.enable,
+        ext_enabled.clone(),
+    );
 
     cx.render(rsx! {
         div {
@@ -65,8 +72,12 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
             })
             div {
                 class: "chatbar_extensions",
-                AudioFactory::render(),
-                ExtIncognitoTyping::render(),
+                ext_enabled.clone().contains(&AudioFactory::info().name).then(|| rsx!{
+                    AudioFactory::render()
+                })
+                ext_enabled.clone().contains(&ExtIncognitoTyping::info().name).then(|| rsx!{
+                    ExtIncognitoTyping::render()
+                })
             },
             div {
                 id: "send",

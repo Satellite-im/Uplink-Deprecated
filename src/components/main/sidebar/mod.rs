@@ -56,7 +56,8 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
         active_chat.set(_active_chat);
     }
 
-    let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable);
+    let ext_enabled = state.read().enabled_extensions.clone();
+    let exts = get_renders(ExtensionType::SidebarWidget, config.extensions.enable, ext_enabled);
 
     let notifications_tx = use_coroutine(&cx, |mut rx: UnboundedReceiver<Message>| async move {
         while let Some(msg) = rx.next().await {
