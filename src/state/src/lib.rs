@@ -248,7 +248,6 @@ impl PersistedState {
                         self.enabled_extensions.retain(|x| *x != name);
                     }
                 }
-
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 log::debug!("PersistedState: SetShowPrerelaseNotice");
