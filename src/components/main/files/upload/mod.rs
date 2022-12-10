@@ -7,7 +7,7 @@ use std::{
 
 use dioxus::{
     core::to_owned,
-    desktop::{use_window, wry::webview::FileDropEvent},
+    desktop::{use_window, wry::webview::FileDropEvent, DesktopContext},
     events::MouseEvent,
     prelude::*,
 };
@@ -18,10 +18,9 @@ use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
 use ui_kit::button::Button;
-use warp::{error::Error, constellation::Progression};
+use warp::{constellation::Progression, error::Error};
 
 use crate::{Storage, DRAG_FILE_EVENT};
-use tokio::io::AsyncWriteExt;
 use tokio_util::io::ReaderStream;
 
 #[derive(Props)]
@@ -44,16 +43,13 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
     let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
 
-    let file_being_uploaded_js = "document.getElementById('dropzone').value = 'Uploading...'";
-
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
         to_owned![
             file_storage,
             drag_over_dropzone,
             eval_script,
             file_leave_dropzone_js,
-            file_over_dropzone_js,
-            file_being_uploaded_js
+            file_over_dropzone_js
         ];
         async move {
             while let Some(action) = rx.next().await {
@@ -92,10 +88,13 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
                                 *drag_over_dropzone.write_silent() = false;
-                                // TODO(use_eval): Try new solution in the future
-                                eval_script.eval(&file_being_uploaded_js);
                                 for file_path in &files_local_path {
-                                    upload_file(file_storage.clone(), file_path.clone()).await;
+                                    upload_file(
+                                        file_storage.clone(),
+                                        file_path.clone(),
+                                        eval_script.clone(),
+                                    )
+                                    .await;
                                     log::info!("{} file uploaded!", file_path.to_string_lossy());
                                 }
                                 // TODO(use_eval): Try new solution in the future
@@ -172,10 +171,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 };
                                 let file_storage = cx.props.storage.clone();
                                 cx.spawn({
-                                    to_owned![file_storage, files_local_path];
+                                    to_owned![file_storage, files_local_path, eval_script];
                                     async move {
                                         for file_path in &files_local_path {
-                                            upload_file(file_storage.clone(), file_path.clone()).await;
+                                            upload_file(file_storage.clone(), file_path.clone(), eval_script.clone()).await;
                                         }
                                     }
                                 });
@@ -249,7 +248,7 @@ fn get_drag_file_event() -> FileDropEvent {
     drag_file_event
 }
 
-async fn upload_file(file_storage: Storage, file_path: PathBuf) {
+async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext) {
     let mut filename = match file_path
         .file_name()
         .map(|file| file.to_string_lossy().to_string())
@@ -290,11 +289,11 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
     }
 
     let tokio_file = match tokio::fs::File::open(&local_path).await {
-            Ok(file) => file, 
-            Err(error) => {
-                log::error!("Error on get tokio file, cancelling upload action, error: {error}");
-                return;
-            }
+        Ok(file) => file,
+        Err(error) => {
+            log::error!("Error on get tokio file, cancelling upload action, error: {error}");
+            return;
+        }
     };
 
     let total_size_for_stream = match tokio_file.metadata().await {
@@ -302,7 +301,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
         Err(error) => {
             log::error!("Error getting metadata: {:?}", error);
             None
-        },
+        }
     };
 
     let file_stream = ReaderStream::new(tokio_file)
@@ -323,6 +322,18 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
                     } => {
                         println!("Written {} MB for {name}", current / 1024 / 1024);
                         if let Some(total) = total {
+                            let mut selector_without_percentage =
+                                "document.getElementById('dropzone').value = '".to_owned();
+
+                            let percentage =
+                                ((((current as f64) / (total as f64)) * 100.) as usize).to_string();
+                            selector_without_percentage.push_str(&percentage);
+
+                            let ending_string = "% uploaded'";
+                            selector_without_percentage.push_str(ending_string);
+
+                            eval_script.eval(&selector_without_percentage);
+
                             println!(
                                 "{}% completed",
                                 (((current as f64) / (total as f64)) * 100.) as usize
@@ -347,8 +358,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf) {
                         );
                     }
                 }
-
-            };
+            }
             log::info!("{:?} file uploaded!", &filename);
 
             match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
