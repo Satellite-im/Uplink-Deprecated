@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    components::main::compose::{msg::Msg, reply::Reply},
+    components::main::compose::{divider::Divider, msg::Msg, reply::Reply},
     iutils,
     state::{Actions, LastMsgSent},
     Account, Messaging, STATE,
@@ -69,6 +69,12 @@ pub fn Messages(cx: Scope<Props>) -> Element {
         .read()
         .selected_chat
         .and_then(|x| state.read().active_chats.get(&x).cloned());
+
+    let first_unread_message_id = current_chat
+        .clone()
+        .unwrap_or_default()
+        .first_unread_message_id
+        .unwrap_or_default();
 
     let msg_script = include_str!("messages.js");
 
@@ -324,6 +330,7 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     let senders: Vec<DID> = current_chat
         .map(|info| info.conversation.recipients())
         .unwrap_or_default();
+    let messages_len = messages.len();
 
     // get profile pictures for all senders in the conversation and cache them
     let mut profile_pictures = HashMap::new();
@@ -399,6 +406,14 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                     Err(_) => { rsx!{ span { "Something went wrong" } } }
                                 }
                             }),
+                            (message_id == first_unread_message_id).then(||
+                                rsx! {
+                                    Divider {
+                                        date: message.date(),
+                                        num_unread: (messages_len - idx).try_into().unwrap(),
+                                    }
+                                }
+                            )
                             Msg {
                                 messaging: cx.props.messaging.clone(),
                                 message: message.clone(),

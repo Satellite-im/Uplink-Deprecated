@@ -3,7 +3,7 @@ use dioxus::fermi::AtomRef;
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::{Ord, Ordering},
-    collections::{HashMap, HashSet},
+    collections::{hash_map::Entry, HashMap, HashSet},
 };
 use uuid::Uuid;
 use warp::raygun::Conversation;
@@ -70,6 +70,8 @@ pub struct ConversationInfo {
     pub num_unread_messages: u32,
     /// the first two lines of the last message sent
     pub last_msg_sent: Option<LastMsgSent>,
+    /// the first unread message set when the chat is not active
+    pub first_unread_message_id: Option<Uuid>,
     /// the time the conversation was created. used to sort the chats
     pub creation_time: DateTime<Utc>,
 }
@@ -190,13 +192,20 @@ impl PersistedState {
             }
             Actions::ShowConversation(uuid) => {
                 log::debug!("PersistedState: ShowChat");
+                if let Some(prev_uuid) = self.selected_chat {
+                    let mut selected_chat = self.active_chats.get_mut(&prev_uuid).unwrap();
+                    selected_chat.first_unread_message_id = None;
+                }
                 // look up uuid in all_chats
                 match self.all_chats.get(&uuid) {
                     // add to active_chats
                     Some(conv) => {
-                        // todo: get last message sent and put it in the ConversationInfo
-                        self.active_chats.insert(uuid, conv.clone());
-                        // set selected_chat
+                        match self.active_chats.entry(uuid) {
+                            Entry::Occupied(_) => {}
+                            Entry::Vacant(vacant) => {
+                                vacant.insert(conv.clone());
+                            }
+                        }
                         self.selected_chat = Some(uuid);
                     }
                     None => {
@@ -248,7 +257,6 @@ impl PersistedState {
                         self.enabled_extensions.retain(|x| *x != name);
                     }
                 }
-
             }
             Actions::SetShowPrerelaseNotice(value) => {
                 log::debug!("PersistedState: SetShowPrerelaseNotice");
