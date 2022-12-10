@@ -114,7 +114,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                         hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
-                                        let parent_directory = parent_directory_ref.with(|dir| dir.clone());
+                                        let parent_directory = &*parent_directory_ref.read();
                                         cx.spawn({
                                             to_owned![file_storage, file_name, parent_directory];
                                             async move {

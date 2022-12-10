@@ -20,11 +20,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
-    let parent_directory = cx.props.parent_directory.clone();
 
     use_future(
         &cx,
-        (files, files_sorted, &parent_directory),
+        (files, files_sorted, &cx.props.parent_directory.clone()),
         |(files, files_sorted, parent_directory_ref)| async move {
             loop {
 
@@ -43,7 +42,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
-    let parent_directory_name = parent_directory.read().name();
+    let parent_directory_name =  cx.props.parent_directory.clone().read().name();
     cx.render(rsx! {
         h5 {
             margin_left: "8px",
@@ -59,24 +58,31 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         state: State::Primary,
                         storage: cx.props.storage.clone(),
                         show_new_folder: cx.props.show_new_folder.clone(),
-                        parent_directory: parent_directory.clone(),
+                        parent_directory:  cx.props.parent_directory.clone(),
                     }
                 }
             )
             ),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
-                rsx!(
-                    Folder {
+                let dir_name = directory.name();
+                if dir_name == "placeholder_dir" {
+                    rsx!( div {
                         key: "{key}",
-                        name: directory.name(),
-                        state: State::Primary,
-                        id: key.to_string(),
-                        size: directory.size(),
-                        children: 0,
-                        storage: cx.props.storage.clone(),
-                        parent_directory: cx.props.parent_directory.clone(),
                     })
+                } else {
+                    rsx!(
+                        Folder {
+                            key: "{key}",
+                            name: directory.name(),
+                            state: State::Primary,
+                            id: key.to_string(),
+                            size: directory.size(),
+                            children: 0,
+                            storage: cx.props.storage.clone(),
+                            parent_directory:  cx.props.parent_directory.clone(),
+                        })
+                }
             })
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
                 let file_extension = std::path::Path::new(&file.name())
@@ -98,7 +104,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         size: file.size(),
                         thumbnail: file.thumbnail(),
                         storage: cx.props.storage.clone(),
-                        parent_directory: cx.props.parent_directory.clone(),
+                        parent_directory:  cx.props.parent_directory.clone(),
                     } )
             })
         }

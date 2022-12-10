@@ -33,16 +33,22 @@ pub fn Folder(cx: Scope<Props>) -> Element {
         State::Secondary => "secondary",
     };
 
-    let folder_name = use_state(&cx, || cx.props.name.clone());
+    let folder_name_fmt = format_folder_name_to_show(cx.props.name.clone());
+
+    let folder_name_formatted_state = use_state(&cx, || folder_name_fmt);
+
+    let folder_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
+
     let folder_id = use_state(&cx, || cx.props.id.clone());
     let children = use_state(&cx, || cx.props.children.clone());
-    let is_renaming = use_ref(&cx, || false);   
     let parent_directory_ref = cx.props.parent_directory.clone();
     let drag_over_folder = use_ref(&cx, || false);
     let eval_script = use_window(&cx).clone();
 
     let file_over_folder_js = include_str!("./file_over_folder.js").replace("folder-id", folder_id);
     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
+
+    let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
 
     cx.render(rsx! {
          div {
@@ -56,9 +62,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 use_eval(&cx)(&file_over_folder_js);
                 *drag_over_folder.write_silent() = true;
                 let file_storage = cx.props.storage.clone();
-                let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
+                let parent_directory = &*cx.props.parent_directory.read();
                 cx.spawn({
-                    to_owned![parent_directory, file_storage, folder_name, drag_over_folder, eval_script, folder_id];
+                    to_owned![parent_directory, file_storage, folder_name_complete_ref, drag_over_folder, eval_script, folder_id];
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
@@ -71,6 +77,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                     Ok(current_directory) => current_directory, 
                                     Err(_) => return,
                                 };
+                                let folder_name = folder_name_complete_ref.with(|name| name.clone());
                                 let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
                                 let file = root_directory.get_item(&file_name).unwrap();
                                 match current_directory.add_item(file.clone()) {
@@ -103,7 +110,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 icon: Shape::PencilSquare,
                                 onpressed: move |_| {
-                                    *is_renaming.write() = true;
+                                    //TODO(File): Investigate in a way to replace use_eval in the future
+                                    // Use js script to show edit file name element
+                                     use_eval(&cx)(&show_edit_name_script);
                                 },
                                 text: String::from("Rename")
                             },
@@ -111,7 +120,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 onpressed: move |_| {
                                     let folder_name = cx.props.name.clone();
-                                    let parent_directory = parent_directory_ref.with(|dir| dir.clone());
+                                    let parent_directory = &*parent_directory_ref.read();
                                     match parent_directory.remove_item(&folder_name) {
                                         Ok(_) => {
                                             // TODO: Remove all files inside this folder
@@ -130,7 +139,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             class: "folder {class}",  
             onclick: move |_| {
                 let file_storage = cx.props.storage.clone();
-                let folder_name = cx.props.name.clone();
+                let folder_name = &*folder_name_complete_ref.read();
                 let parent_directory = cx.props.parent_directory.clone();
                 match file_storage.open_directory(&folder_name) {
                     Ok(directory) => {
@@ -141,37 +150,90 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 };
             },         
             Icon { icon: Shape::Folder },
-                p { "{folder_name}" },
-                label {
-                "{children} item(s)"
-                }
-                // if *is_renaming.read() {
-                //     rsx! ( input {
-                //         class: "new_folder_input-{folder_id}",
-                //         autofocus: "true",
-                //         placeholder: "New Folder",
-                //         oninput: move |evt| {
-                //             folder_name.set(evt.value.to_string());
-                //         },
-                //         onkeyup: move |evt| {
-                //             if evt.key_code == KeyCode::Enter {
-                //                 *is_renaming.write() = false;
-                //                 println!("Create new folder: {}", folder_name.clone());
-                //             }
-                //         }
-                //     })
-                // } else {
-                //    rsx!(
-                    
-                //    )
-                // }
-              
+               {
+                let val = use_ref(&cx, String::new);
+                let complete_folder_name = folder_name_complete_ref.read();
+                let folder_id = folder_id.clone();
+                    rsx! ( 
+                        p { 
+                            id: "{folder_id}-name-normal",
+                            "{folder_name_formatted_state}" },
+                        input {
+                        id: "{folder_id}-input",
+                        display: "none",
+                        class: "new_folder_input",
+                        placeholder: "{complete_folder_name}",
+                        onchange: move |evt| {
+                            val.set(evt.value.to_string());
+                        },
+                        onkeyup: move |evt| {
+                            if evt.key_code == KeyCode::Escape {
+                                hide_edit_name_element(cx.clone());
+                            }
+                            if evt.key_code == KeyCode::Enter {
+                                let file_storage = cx.props.storage.clone();
+                                let old_folder_name = &*folder_name_complete_ref.read();
+                                let new_folder_name = val.read();
+                                hide_edit_name_element(cx.clone());
+                                if !new_folder_name.trim().is_empty() {
+                                    cx.spawn({
+                                        to_owned![file_storage, old_folder_name, new_folder_name, folder_name_formatted_state, folder_name_complete_ref];
+                                        async move {
+                                            let new_folder_name = format_args!("{}", new_folder_name.trim()).to_string();
+
+                                            match file_storage.rename(&old_folder_name, &new_folder_name).await {
+                                                Ok(_) => {
+                                                let new_file_name_fmt =
+                                                format_folder_name_to_show(new_folder_name.clone());
+                                                    *folder_name_complete_ref.write_silent() = new_folder_name.clone();
+                                                    folder_name_formatted_state.set(new_file_name_fmt);
+                                                    log::info!("{old_folder_name} renamed to {new_folder_name}");
+                                                },
+                                                Err(error) => log::error!("Error renaming file: {error}"),
+                                            };
+                                        }
+                                    });
+
+                                }
+
+                            }
+                        }
+                    }
+                    label {
+                        "{children} item(s)"
+                        }
+                )
+                } 
             }
         }
     })
 }
 
+fn hide_edit_name_element(cx: Scope<Props>) {
+    //TODO(File): Investigate in a way to replace use_eval in the future
+    // Use js script to hide edit file name element
+    let hide_edit_name_script =
+        include_str!("./hide_edit_name.js").replace("folder_id", &cx.props.id.clone());
+    use_eval(&cx)(&hide_edit_name_script);
+}
+
 fn get_drag_file_event_in_app() -> DragFileInApp {
     let drag_file_event_in_app = DRAG_FILE_IN_APP_EVENT.read().clone();
     drag_file_event_in_app
+}
+
+fn format_folder_name_to_show(folder_name: String) -> String {
+    let mut new_folder_name = folder_name.clone();
+
+    if new_folder_name.len() > 10 {
+        new_folder_name = match &new_folder_name.get(0..5) {
+            Some(name_sliced) => format!(
+                "{}...{}",
+                name_sliced,
+                &new_folder_name[new_folder_name.len() - 3..].to_string(),
+            ),
+            None => new_folder_name.clone(),
+        };
+    }
+    new_folder_name
 }

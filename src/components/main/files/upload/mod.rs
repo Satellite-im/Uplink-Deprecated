@@ -86,7 +86,7 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
-                                let parent_directory = parent_directory_ref.with(|dir| dir.clone());
+                                let parent_directory = &*parent_directory_ref.read();
                                 *drag_over_dropzone.write_silent() = false;
                                 // TODO(use_eval): Try new solution in the future
                                 eval_script.eval(&file_being_uploaded_js);
