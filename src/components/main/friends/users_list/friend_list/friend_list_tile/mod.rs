@@ -9,7 +9,10 @@ use ui_kit::{
 };
 use warp::crypto::DID;
 
-use crate::{iutils, state::Actions, Messaging, STATE, components::main::friends::users_list::friend_list::friend_list_tile::more_menu::MoreMenu};
+use crate::{
+    components::main::friends::users_list::friend_list::friend_list_tile::more_menu::MoreMenu,
+    iutils, state::Actions, Messaging, STATE,
+};
 use utils::Account;
 
 #[derive(Props)]
@@ -25,16 +28,18 @@ pub struct Props<'a> {
 pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     log::debug!("rendering Friend");
 
-    let mut mp = cx.props.account.clone();
+    let mp = cx.props.account.clone();
     let mut rg = cx.props.messaging.clone();
-    let friend = cx.props.friend.clone();
 
     let username = cx.props.friend_username.clone();
     let show_skeleton = username.is_empty();
 
     let profile_picture = iutils::get_pfp_from_did(cx.props.friend.clone(), &mp);
     let state = use_atom_ref(&cx, STATE);
-    let show_more_menu = use_state(&cx, || false);
+
+    let friend_id = &cx.props.friend.to_string()[8..];
+
+    let show_more_menu_script = include_str!("./show_more_menu.js").replace("friend_id", friend_id);
 
     cx.render(rsx! {
         div {
@@ -88,29 +93,32 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                             return;
                                         }
                                     };
-    
                                     state.write().dispatch(Actions::ChatWith(conversation));
                                     cx.props.on_chat.call(());
-    
                                 }
                         },
                         div{
-                            class:"more-menu",
-                            Button{
-                                icon:Shape::EllipsisVertical,
-                                state: ui_kit::button::State::Secondary,
-                                text: "More".to_string(),
-                                hide_text: true,
-                                on_pressed: move |_| {
-                                    show_more_menu.set(!show_more_menu)
-                                }
-                            }, 
-                            (show_more_menu).then(||rsx!{
-                                MoreMenu{
-                                    account: cx.props.account.clone(),
-                                    friend:cx.props.friend.clone(),
-                                }                          
-                            })
+                            div{
+                                id:"{friend_id}-more-button",
+                                Button{
+                                    icon:Shape::EllipsisVertical,
+                                    state: ui_kit::button::State::Secondary,
+                                    text: "More".to_string(),
+                                    hide_text: true,
+                                    on_pressed: move |_| {
+                                        use_eval(&cx)(&show_more_menu_script);
+                                    }
+                                },
+                            },
+                            div{
+                                     id:"{friend_id}-more-menu",
+                                     class: "more_menu",
+                                     display: "none",
+                                     MoreMenu{
+                                     account: cx.props.account.clone(),
+                                     friend:cx.props.friend.clone(),
+                                    },
+                            },
                         }
                     )}
                 }

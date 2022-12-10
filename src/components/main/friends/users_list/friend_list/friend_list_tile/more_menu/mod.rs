@@ -11,9 +11,11 @@ pub struct MoreMenuProps {
 
 #[allow(non_snake_case)]
 pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
+    let friend_id = &cx.props.friend.to_string()[8..];
+    let script = include_str!("./more_menu.js").replace("friend_id", &friend_id);
+
     let more_memu = rsx!(
-        div { class: "more_menu",
-                    Button {
+            Button {
                         text:"Remove Friend".to_string(),
                         state: ui_kit::button::State::Transparent,
                         on_pressed: move |_| {
@@ -28,7 +30,7 @@ pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
                                 //todo: remove the conversation?
                             }
                         },
-                        Button {
+            Button {
                             text:"Block Friend".to_string(),
                             state: ui_kit::button::State::Transparent,
                             on_pressed: move |_| {
@@ -41,7 +43,8 @@ pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
                                      }
                                  }
                              }
-                         },}
+                    },
+            script { "{script}"}
     );
     cx.render(more_memu)
 }
