@@ -23,6 +23,9 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
     log::debug!("rendering Unlock");
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
+    let router = use_router(&cx).clone();
+    let router2 = router.clone();
+    let router3 = router.clone();
 
     let pin = use_state(&cx, String::new);
     let show_tip = use_state(&cx, || false);
@@ -78,7 +81,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                                         let tesseract = cx.props.tesseract.clone();
                                         match tesseract.unlock(pin.as_bytes()) {
                                             Ok(_) => {
-                                                use_router(&cx).push_route("/loading", None, None)
+                                                router.replace_route("/loading", None, None)
                                             },
                                             Err(_) => error.set(l2.invalid_pin.clone()),
                                         }
@@ -138,7 +141,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                         if evt.value.len() >= 4 && tesseract_available {
                             let tesseract = cx.props.tesseract.clone();
                             if tesseract.unlock(evt.value.as_ref()).is_ok() {
-                                use_router(&cx).push_route("/loading", None, None)
+                                router2.replace_route("/loading", None, None)
                             }
                         }
                     },
@@ -149,7 +152,7 @@ pub fn Unlock(cx: Scope<UnlockProps>) -> Element {
                             } else {
                                 let tesseract = cx.props.tesseract.clone();
                                 match tesseract.unlock(pin.as_bytes()) {
-                                    Ok(_) => use_router(&cx).push_route("/loading", None, None),
+                                    Ok(_) => router3.replace_route("/loading", None, None),
                                     Err(_) => error.set(l.invalid_pin.clone()),
                                 }
                             }

@@ -36,7 +36,7 @@ pub struct Props<'a> {
     first: bool,
     middle: bool,
     last: bool,
-    profile_picture: std::option::Option<std::string::String>,
+    profile_picture: Option<String>,
     on_reply: EventHandler<'a, String>,
 }
 

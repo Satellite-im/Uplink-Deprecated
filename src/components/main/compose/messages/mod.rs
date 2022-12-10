@@ -321,11 +321,9 @@ pub fn Messages(cx: Scope<Props>) -> Element {
     );
 
     let rg = cx.props.messaging.clone();
-    let senders: Vec<DID> = messages.iter().map(|msg| msg.sender()).collect();
-    // messages has already been reversed
-    let idx_range = 0..messages.len();
-    let next_sender = idx_range.clone().map(|idx| senders.get(idx + 1));
-    let prev_sender = idx_range.map(|idx| if idx == 0 { None } else { senders.get(idx - 1) });
+    let senders: Vec<DID> = current_chat
+        .map(|info| info.conversation.recipients())
+        .unwrap_or_default();
 
     // get profile pictures for all senders in the conversation and cache them
     let mut profile_pictures = HashMap::new();
@@ -352,19 +350,28 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                 }
             },
             messages.iter()
-                .zip(next_sender)
-                .zip(prev_sender)
-                .map(|((message, next_sender), prev_sender)| {
+                .enumerate()
+                .map(|(idx, message)| {
                     let message_id = message.id();
                     let conversation_id = message.conversation_id();
                     let msg_sender = message.sender();
                     let is_remote = ident.did_key() != msg_sender;
-                    let is_last = next_sender.map(|next_sender| *next_sender != msg_sender).unwrap_or(true);
-                    let is_first = prev_sender.map(|prev_sender| *prev_sender != msg_sender).unwrap_or(true);
                     let mut rg = rg.clone();
-
-
                     let sender_picture = profile_pictures.get(&msg_sender).and_then(|pbp| pbp.clone()).unwrap_or_default();
+
+                    let is_first = if idx == 0 {
+                        false
+                    } else {
+                        let prev_message = &messages[idx - 1];
+                        prev_message.sender() != msg_sender
+                    };
+
+                    let is_last = if idx == messages.len() - 1 {
+                        true
+                    } else {
+                        let next_message = &messages[idx + 1];
+                        next_message.sender() != msg_sender
+                    };
 
                     rsx! {
                         div {
@@ -408,27 +415,6 @@ pub fn Messages(cx: Scope<Props>) -> Element {
                                         //TODO: Display error?
                                     }
                                 }
-                            }
-                            match message.replied() {
-                                Some(replied) => {
-                                    let r = cx.props.messaging.clone();
-                                    match warp::async_block_in_place_uncheck(r.get_message(conversation_id, replied)) {
-                                        Ok(message) => {
-                                            rsx!{
-                                                Reply {
-                                                    message_id: message.id(),
-                                                    message: message.value().join("\n"),
-                                                    attachments_len: message.attachments().len(),
-                                                    is_remote: is_remote,
-                                                    account: cx.props.account.clone(),
-                                                    sender: message.sender(),
-                                                }
-                                            }
-                                        },
-                                        Err(_) => { rsx!{ span { "Something went wrong" } } }
-                                    }
-                                },
-                                _ => rsx!{ div {  } }
                             }
                         }
                     }

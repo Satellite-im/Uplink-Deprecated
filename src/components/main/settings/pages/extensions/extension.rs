@@ -2,6 +2,8 @@ use dioxus::prelude::*;
 use dioxus_heroicons::{outline::Shape, Icon};
 use ui_kit::switch::Switch;
 use utils::extensions::ExtensionInfo;
+use crate::STATE;
+use crate::state::Actions;
 
 #[derive(Props, Eq, PartialEq)]
 pub struct Props {
@@ -11,6 +13,14 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn ExtensionOptions(cx: Scope<Props>) -> Element {
     log::debug!("rendering extension settings");
+
+    let state = use_atom_ref(&cx, STATE);
+    let name = &cx.props.extension.name;
+    let is_enabled = state.read().enabled_extensions.contains(name);
+    let toggle = move |_| state.write().dispatch(
+        Actions::SetExtensionEnabled(name.clone(), !is_enabled)
+    );
+
 
     cx.render(rsx! {
         div {
@@ -35,8 +45,8 @@ pub fn ExtensionOptions(cx: Scope<Props>) -> Element {
                 div {
                     class: "toggle",
                     Switch {
-                        active: true,
-                        on_change: move |_| {}
+                        active: is_enabled,
+                        on_change: toggle
                     }
                 }
             }
