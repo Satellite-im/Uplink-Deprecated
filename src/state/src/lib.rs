@@ -248,7 +248,11 @@ impl PersistedState {
             Actions::SetExtensionEnabled(name, enabled) => {
                 log::debug!("PersistedState: SetExtensionEnabled {}: {}", name, enabled);
                 match enabled {
-                    true => if !self.enabled_extensions.contains(&name) {},
+                    true => {
+                        if !self.enabled_extensions.contains(&name) {
+                            self.enabled_extensions.push(name);
+                        }
+                    }
                     false => {
                         self.enabled_extensions.retain(|x| *x != name);
                     }
