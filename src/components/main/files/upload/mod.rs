@@ -320,7 +320,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
                         current,
                         total,
                     } => {
-                        println!("Written {} MB for {name}", current / 1024 / 1024);
+                        log::info!("Written {} MB for {name}", current / 1024 / 1024);
                         if let Some(total) = total {
                             let mut selector_without_percentage =
                                 "document.getElementById('dropzone').value = '".to_owned();
@@ -334,14 +334,14 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
 
                             eval_script.eval(&selector_without_percentage);
 
-                            println!(
+                            log::info!(
                                 "{}% completed",
                                 (((current as f64) / (total as f64)) * 100.) as usize
                             )
                         }
                     }
                     Progression::ProgressComplete { name, total } => {
-                        println!(
+                        log::info!(
                             "{name} has been uploaded with {} MB",
                             total.unwrap_or_default() / 1024 / 1024
                         );
@@ -351,7 +351,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
                         last_size,
                         error,
                     } => {
-                        println!(
+                        log::info!(
                             "{name} failed to upload at {} MB due to: {}",
                             last_size.unwrap_or_default(),
                             error.unwrap_or_default()
