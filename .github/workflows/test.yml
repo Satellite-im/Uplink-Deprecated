@@ -1,0 +1,18 @@
+name: Rebase
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rebase
+        run: |
+          # Check if the comment contains the `/rebase` command
+          if [[ "$GITHUB_EVENT_PATH" == *"/rebase"* ]]; then
+            # Rebase the pull request
+            git rebase origin/dev
+          fi

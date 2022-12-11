@@ -26,6 +26,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     log::debug!("rendering Auth");
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
+    let router = use_router(&cx).clone();
 
     let username = use_state(&cx, String::new);
     let valid_username = username.len() >= 4;
@@ -68,7 +69,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             }
                         }
                         window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                        use_router(&cx).push_route("/loading", None, None);
+                        router.replace_route("/loading", None, None);
                     }
                     Err(warp::error::Error::InvalidLength { .. }) => {
                         error.set("Username length is invalid".into())
