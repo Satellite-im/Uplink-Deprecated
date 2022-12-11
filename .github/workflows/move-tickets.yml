@@ -11,21 +11,18 @@ jobs:
       - uses: actions/checkout@v2
       - name: Get Issue ID
         run: |
-          # Extract the issue ID from the pull request description
-          # The issue ID is expected to be in the format "#<issue-number>"
-          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/Satellite-im/Uplink/pulls/$GITHUB_EVENT_ID")
-          ISSUE_ID=$(echo "$PR" | jq -r '.body' | grep -o "#[0-9]*")
-          # Remove the "#" character from the issue ID
-          ISSUE_ID=${ISSUE_ID:1}
+          # Print the value of the $GITHUB_TOKEN placeholder
+          echo "GITHUB_TOKEN = $GITHUB_TOKEN"
 
-      - name: Get PR Open Column ID
-        run: |
-          # Get the list of columns for the project
-          COLUMNS=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/Satellite-im/Uplink/projects/4/columns")
-          # Parse the response using jq to find the ID of the column with the name "PR Open"
-          COLUMN_ID=$(echo "$COLUMNS" | jq -r '.[] | select(.name == "PR Open") | .id')
+          # Print the URL of the API endpoint
+          API_URL="https://api.github.com/repos/Satellite-im/Uplink/pulls/$GITHUB_EVENT_ID"
+          echo "API_URL = $API_URL"
 
-      - name: Move Issue to PR Open Column
-        run: |
-          # Move the issue to the PR Open column
-          curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/projects/columns/$COLUMN_ID/cards" -d "{\"content_id\":$ISSUE_ID,\"content_type\":\"Issue\"}"
+          # Get the pull request data from the API
+          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "$API_URL")
+
+          # Check the exit code of the curl command
+          if [ $? -ne 0 ]; then
+            echo "Error: failed to get pull request data"
+            exit 1
+         
