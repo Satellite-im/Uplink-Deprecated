@@ -2,7 +2,7 @@ name: Add Draft Label
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    types: [opened, edited]
 
 jobs:
   add-draft-label:
@@ -32,3 +32,4 @@ jobs:
               echo "Error: failed to add draft label to pull request"
               exit 1
             fi
+         
