@@ -2,7 +2,7 @@ name: Add Draft Label
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, synchronize, reopened, edited]
 
 jobs:
   add-draft-label:
