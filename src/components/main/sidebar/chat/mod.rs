@@ -172,6 +172,12 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             log::debug!("sidebar/chat streamed a message");
                             tx_chan.send(msg.clone());
                             unread_count.modify(|x| x + 1);
+                            if state.read().selected_chat
+                                != Some(conversation_info.conversation.id())
+                                && conversation_info.num_unread_messages == 0
+                            {
+                                conversation_info.first_unread_message_id = Some(msg.id())
+                            }
                             // will silently remain zero if you only use *unread_count
                             conversation_info.num_unread_messages = *unread_count.current();
                             conversation_info.last_msg_sent = Some(LastMsgSent::new(&msg.value()));

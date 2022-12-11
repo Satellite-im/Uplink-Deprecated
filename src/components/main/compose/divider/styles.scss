@@ -1,0 +1,39 @@
+.msg-divider {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+
+  .msg-divider-label {
+    font-size: var(--text-small);
+    font-family: "Space Mono", monospace;
+    background: var(--theme-primary);
+    color: var(--theme-text-bright);
+    padding: 0 0.2rem 0 0.4rem;
+    border-radius: 4px;
+    position: relative;
+    height: 22px;
+    display: flex;
+    align-items: center;
+
+    &::after {
+      content: "";
+      display: block;
+      border: 8.5px solid var(--theme-primary);
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+      transform: translate(50%, -50%) rotate(45deg);
+      border-radius: 4px;
+      width: 17px;
+      height: 17px;
+      position: absolute;
+      top: 50%;
+      right: 3px;
+    }
+  }
+
+  .msg-divider-line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: var(--theme-primary);
+  }
+}

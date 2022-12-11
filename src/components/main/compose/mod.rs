@@ -1,3 +1,4 @@
+pub mod divider;
 pub mod messages;
 pub mod msg;
 pub mod reply;
