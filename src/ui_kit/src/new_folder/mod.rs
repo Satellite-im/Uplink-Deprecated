@@ -63,10 +63,6 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                                         match file_storage.create_directory(&new_directory_path, true).await {
                                             Ok(_) => {
                                                 let new_directory = root_directory.get_item(&new_directory_path).unwrap().directory().unwrap_or_default();
-                                                let placeholder_dir = Directory::new("placeholder_dir");
-                                                // TODO(NewFolder): Refactor later to not be necessary add placeholder dir
-                                                // Added placeholder dir, because without it, dioxus lost reference
-                                                new_directory.add_directory(placeholder_dir).unwrap();
                                                 parent_directory_ref.with_mut(|dir| dir.add_directory(new_directory.clone()).unwrap());
                                                 show_new_folder.set(false);
                                                 log::info!("New directory created. {:?}", new_directory);

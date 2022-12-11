@@ -65,13 +65,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             ),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
-                let dir_name = directory.name();
-                if dir_name == "placeholder_dir" {
-                    rsx!( div {
-                        key: "{key}",
-                    })
-                } else {
-                    rsx!(
+                    rsx!{
+                         div {
+                            key: "{key}-placeholder",
+                        }
                         Folder {
                             key: "{key}",
                             name: directory.name(),
@@ -81,8 +78,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             children: 0,
                             storage: cx.props.storage.clone(),
                             parent_directory:  cx.props.parent_directory.clone(),
-                        })
-                }
+                        }}
+               
             })
             files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
                 let file_extension = std::path::Path::new(&file.name())
