@@ -1,0 +1,22 @@
+name: Add Draft Label
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  add-draft-label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add Draft Label
+        run: |
+          # Get the current status of the pull request
+          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/Uplink/pulls/$GITHUB_EVENT_ID")
+          PR_IS_DRAFT=$(echo "$PR" | jq -r '.draft')
+
+          # Check if the pull request is in draft status
+          if [ "$PR_IS_DRAFT" == "true" ]; then
+            # Add the "draft" label to the pull request
+            curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/Uplink/issues/$GITHUB_EVENT_NUMBER/labels" -d '["draft"]'
+          fi
