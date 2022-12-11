@@ -27,6 +27,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
     let window = use_window(&cx);
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let router = use_router(&cx).clone();
+    let router_acc = router.clone();
 
     let username = use_state(&cx, String::new);
     let valid_username = username.len() >= 4;
@@ -69,7 +70,7 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                             }
                         }
                         window.set_title(&format!("{} - {}", username, WINDOW_SUFFIX_NAME));
-                        router.replace_route("/loading", None, None);
+                        router_acc.replace_route("/loading", None, None);
                     }
                     Err(warp::error::Error::InvalidLength { .. }) => {
                         error.set("Username length is invalid".into())
@@ -184,6 +185,11 @@ pub fn Auth(cx: Scope<Props>) -> Element {
                                 false => button::State::Secondary,
                             },
                             on_pressed:  move |_| new_account2(),
+                        },
+                        Button {
+                            icon: Shape::Check,
+                            text: String::from("Recover Account"),
+                            on_pressed:  move |_| router.clone().replace_route("/restore", None, None),
                         }
                     }
                 }

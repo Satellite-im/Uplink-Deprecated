@@ -67,5 +67,6 @@ pub fn make() -> Language {
         start_one: String::from("Start one"),
         auth_tooltip: String::from("Only four to six characters allowed"),
         new_friend_request: String::from("New Friend Request"),
+        restore_account: String::from("Restore Account"),
     }
 }
