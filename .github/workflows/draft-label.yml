@@ -31,5 +31,4 @@ jobs:
             if [ $? -ne 0 ]; then
               echo "Error: failed to add draft label to pull request"
               exit 1
-            fi
-         
+            fi   
