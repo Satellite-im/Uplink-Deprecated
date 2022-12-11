@@ -12,11 +12,23 @@ jobs:
       - name: Add Draft Label
         run: |
           # Get the current status of the pull request
-          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/Uplink/pulls/$GITHUB_EVENT_ID")
-          PR_IS_DRAFT=$(echo "$PR" | jq -r '.draft')
+          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls/$GITHUB_EVENT_ID")
+          if [ $? -ne 0 ]; then
+            echo "Error: failed to get pull request data"
+            exit 1
+          fi
 
           # Check if the pull request is in draft status
+          PR_IS_DRAFT=$(echo "$PR" | jq -r '.draft')
+          if [ $? -ne 0 ]; then
+            echo "Error: failed to parse pull request data"
+            exit 1
+          fi
+
           if [ "$PR_IS_DRAFT" == "true" ]; then
             # Add the "draft" label to the pull request
-            curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/Uplink/issues/$GITHUB_EVENT_NUMBER/labels" -d '["draft"]'
-          fi
+            curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/$GITHUB_EVENT_NUMBER/labels" -d '["draft"]'
+            if [ $? -ne 0 ]; then
+              echo "Error: failed to add draft label to pull request"
+              exit 1
+            fi
