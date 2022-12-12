@@ -71,8 +71,10 @@ If `accessibilityID`'s can't be used, for example, then for Mac2 driver, -ios cl
 ## Demo Videos
 
 - Running the Appium UI Tests Locally:
-[![Local Execution](https://user-images.githubusercontent.com/35935591/207117081-38abc062-c1a6-41c3-a9d5-4c985ecfd603.mov)
+
+https://user-images.githubusercontent.com/35935591/207117081-38abc062-c1a6-41c3-a9d5-4c985ecfd603.mov
 
 - Execution of Appium UI Tests as PR check on CI:
-[![CI Execution](https://user-images.githubusercontent.com/35935591/207117109-61815285-b94c-4db8-add3-1da56dce516f.mov)
+
+https://user-images.githubusercontent.com/35935591/207117109-61815285-b94c-4db8-add3-1da56dce516f.mov
 
