@@ -36,6 +36,8 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => String::from(""),
     };
 
+    let hide_text = cx.props.hide_text.unwrap_or(false);
+
     let mut class = String::from("button ");
     class += match cx.props.large {
         Some(_) => "button-lg ",
@@ -53,7 +55,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => "",
     };
     // add class if text length is 0
-    if text.is_empty() {
+    if text.is_empty() || hide_text {
         class += " button-icon-only";
     }
 
