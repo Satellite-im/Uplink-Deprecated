@@ -1,6 +1,6 @@
 # Uplink - UI Test Automation Framework
 
-Test Automation Framework designed to create UI tests in webdriverIO using Appium for MacOS Uplink application now, and Windows app in the future
+Test Automation Framework designed to create UI tests in webdriverIO using Appium for MacOS Uplink application now, and Windows app in the future 
 
 ## Based on
 
