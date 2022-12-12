@@ -11,7 +11,7 @@ pub struct Props {
 pub fn Divider<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     let num_unread = **(use_state(&cx, || cx.props.num_unread));
     let date = cx.props.date.with_timezone(&Local);
-    let label_date = if date.date() == Local::today() {
+    let label_date = if date.date_naive() == Local::now().date_naive() {
         date.format("%R").to_string()
     } else {
         date.format("%R %x").to_string()
