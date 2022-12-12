@@ -50,6 +50,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     };
     cx.render(rsx! {
         h5 {
+            margin_left: "8px",
             "{parent_directory_name}"},
         div {
          id: "browser",
@@ -74,12 +75,11 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             key: "{key}-placeholder",
                         }
                         Folder {
-                            key: "{key}",
+                            key: "{key}"
                             name: directory.name(),
                             state: State::Primary,
                             id: key.to_string(),
                             size: directory.size(),
-                            children: 0,
                             storage: cx.props.storage.clone(),
                             parent_directory:  cx.props.parent_directory.clone(),
                         }}

@@ -65,7 +65,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                             log::info!("Main directory was opened. {:?}", directory.name());
                             break;
                         },
-                        Err(error) => log::error!("Error opening folder: {error}"),
+                        Err(error) => log::error!("Error getting item as directory: {error}"),
                     };
                 }, 
                 Err(error) => {
@@ -73,7 +73,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         Ok(_) => {
                             log::info!("main directory created.")
                         },
-                        Err(error) => log::error!("Error creating directory: {error}"),
+                        Err(error) => log::error!("Error creating main directory: {error}"),
                     };
                     log::error!("get item from root directory: {error}");}
             };

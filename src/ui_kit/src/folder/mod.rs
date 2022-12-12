@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use dioxus::{prelude::*, core::to_owned, desktop::use_window};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
@@ -21,7 +23,7 @@ pub struct Props {
     size: usize,
     // Maximum amount of items something like HFS Plus could store is 2 billion items
     // Seems to align closet to the 32 bit uint range.
-    children: usize,
+    // children: usize,
     storage: Storage,
     parent_directory: UseRef<Directory>,
 }
@@ -40,15 +42,32 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let folder_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let folder_id = use_state(&cx, || cx.props.id.clone());
-    let children = use_state(&cx, || cx.props.children.clone());
     let parent_directory_ref = cx.props.parent_directory.clone();
     let drag_over_folder = use_ref(&cx, || false);
+    let dir_items_len = use_state(&cx, || 0);
+
     let eval_script = use_window(&cx).clone();
 
     let file_over_folder_js = include_str!("./file_over_folder.js").replace("folder-id", folder_id);
     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
+
+    use_future(&cx, (&cx.props.storage.clone(), dir_items_len, &cx.props.name.clone()),
+     |(file_storage, dir_items_len, current_dir_name)| async move {
+        match file_storage.root_directory().get_item(&current_dir_name) {
+            Ok(item) => {
+                match item.get_directory() {
+                    Ok(directory) => {
+                        dir_items_len.set(directory.get_items().len());
+                        log::info!("Update dir {:?} items quantity", directory.name());
+                    },
+                    Err(error) => log::error!("Error get item as directory: {error}"),
+                };
+            }, 
+            Err(error) =>  log::error!("Error get items quantity on a directory: {error}")
+        };
+    });
 
     cx.render(rsx! {
          div {
@@ -200,7 +219,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         }
                     }
                     label {
-                        "{children} item(s)"
+                        "{dir_items_len} item(s)"
                         }
                 )
                 } 
