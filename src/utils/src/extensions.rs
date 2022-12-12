@@ -128,7 +128,11 @@ impl ExtensionManager {
 }
 
 #[allow(non_snake_case)]
-pub fn get_renders<'src>(location: ExtensionType, enable: bool, ext_enabled: Vec<String>) -> Vec<LazyNodes<'src, 'src>> {
+pub fn get_renders<'src>(
+    location: ExtensionType,
+    enable: bool,
+    ext_enabled: Vec<String>,
+) -> Vec<LazyNodes<'src, 'src>> {
     if enable {
         let extensions = ExtensionManager::instance().extensions.get(&location);
 
