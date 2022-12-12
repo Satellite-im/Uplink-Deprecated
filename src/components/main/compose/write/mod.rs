@@ -4,6 +4,7 @@ use crate::{
 use audio_factory::AudioFactory;
 use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
+use emoji_selector::EmojiSelector;
 use incognito_typing::ExtIncognitoTyping;
 use state::STATE;
 use ui_kit::{
@@ -77,6 +78,9 @@ pub fn Write<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 })
                 ext_enabled.clone().contains(&ExtIncognitoTyping::info().name).then(|| rsx!{
                     ExtIncognitoTyping::render()
+                })
+                ext_enabled.clone().contains(&EmojiSelector::info().name).then(|| rsx!{
+                    EmojiSelector::render()
                 })
             },
             div {
