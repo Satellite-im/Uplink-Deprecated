@@ -1,20 +1,7 @@
-use std::time::Duration;
-
-use dioxus::desktop::use_window;
 use dioxus::router::use_router;
 use dioxus::{events::FormEvent, prelude::*};
 use dioxus_heroicons::outline::Shape;
-use dioxus_heroicons::Icon;
-use mime::*;
-use regex::RegexSet;
-use rfd::FileDialog;
-use sir::css;
-use tokio::time::sleep;
-use ui_kit::{
-    button::{self, Button},
-    input::Input,
-};
-use warp::multipass::identity::IdentityUpdate;
+use ui_kit::{button::Button, input::Input};
 
 use crate::{Account, LANGUAGE, WINDOW_SUFFIX_NAME};
 
@@ -34,7 +21,7 @@ pub fn Restore(cx: Scope<Props>) -> Element {
 
     let mut mp = cx.props.account.clone();
     let mut new_account = move || {
-        mp.get_sync_identity(&passphrase).unwrap();
+        mp.restore_identity_from_mnemonic(&passphrase).unwrap();
         router.replace_route("/loading", None, None);
     };
     let mut new_account2 = new_account.clone();

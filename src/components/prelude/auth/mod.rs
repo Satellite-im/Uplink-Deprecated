@@ -11,6 +11,7 @@ use ui_kit::{
     button::{self, Button},
     input::Input,
 };
+use warp::crypto::keypair::{generate_mnemonic_phrase, PhraseType};
 use warp::multipass::identity::IdentityUpdate;
 
 use crate::{Account, LANGUAGE, WINDOW_SUFFIX_NAME};
@@ -58,7 +59,10 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             } else if matches.matched(1) {
                 error.set("Illegal input in username".into())
             } else {
-                match mp.create_identity(Some(username), None) {
+                let passphrase = generate_mnemonic_phrase(PhraseType::Standard);
+                println!("Passphrase for {:?}", passphrase.clone().to_string());
+
+                match mp.create_identity(Some(username), Some(passphrase.to_string().as_str())) {
                     Ok(_) => {
                         if !profile_picture_is_empty {
                             if let Err(e) =

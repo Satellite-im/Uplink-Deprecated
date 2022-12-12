@@ -42,10 +42,11 @@ pub mod iutils;
 pub mod language;
 pub mod themes;
 
-use tao::window::WindowBuilder;
-
 use state::{self, STATE};
-use tao::menu::{MenuBar as Menu, MenuItem};
+use tao::{
+    menu::{MenuBar as Menu, MenuItem},
+    window::WindowBuilder,
+};
 
 static TOAST_MANAGER: AtomRef<ToastManager> = |_| ToastManager::default();
 static LANGUAGE: AtomRef<Language> = |_| Language::by_locale(AvailableLanguages::EnUS);
@@ -153,7 +154,7 @@ fn main() {
     let tesseract = match Tesseract::from_file(DEFAULT_PATH.read().join(".keystore")) {
         Ok(tess) => tess,
         Err(_) => {
-            //doesnt exist so its set
+            //doesn't exist so its set
             let tess = Tesseract::default();
             tess.set_file(DEFAULT_PATH.read().join(".keystore"));
             tess.set_autosave();

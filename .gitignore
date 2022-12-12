@@ -27,3 +27,6 @@ appium-tests/node_modules/
 appium-tests/package-lock.json
 appium-tests/appium.log
 appium-tests/test-results/
+
+# Local data folder for testing
+.testing_accounts/*
