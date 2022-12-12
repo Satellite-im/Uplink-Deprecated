@@ -36,10 +36,7 @@ pub fn Button<'a>(cx: Scope<'a, Props>) -> Element<'a> {
         None => String::from(""),
     };
 
-    let hide_text = match cx.props.hide_text.clone() {
-        Some(v) => v,
-        None => false,
-    };
+    let hide_text = cx.props.hide_text.unwrap_or(false);
 
     let mut class = String::from("button ");
     class += match cx.props.large {
