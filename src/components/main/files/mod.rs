@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::{time::Duration, collections::HashSet};
 
 use dioxus::prelude::*;
 
@@ -46,9 +46,13 @@ pub fn Files(cx: Scope<Props>) -> Element {
     };   
 
     let parent_directory = use_ref(&cx, || root_directory.clone());
+    let parent_dir_items = use_ref(&cx,  HashSet::new);
+
 
     
-    use_future(&cx, (&file_storage, parent_directory), |(mut file_storage, parent_directory)| async move {
+    use_future(&cx, (&file_storage, parent_directory, parent_dir_items), 
+    |(mut file_storage, parent_directory, parent_dir_items)| 
+    async move {
       let parent_dir = parent_directory.with(|dir| dir.clone());
       if parent_dir.name() == "root" {
         loop {
@@ -57,6 +61,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                     match item.get_directory() {
                         Ok(directory) => {
                             parent_directory.with_mut(|dir| *dir = directory.clone());
+                            parent_dir_items.with_mut(|_| directory.get_items());
                             log::info!("Main directory was opened. {:?}", directory.name());
                             break;
                         },
@@ -125,6 +130,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         storage: cx.props.storage.clone(),
                         show_new_folder: show_new_folder.clone(),
                         parent_directory: parent_directory.clone(),
+                        parent_dir_items: parent_dir_items.with(|i| i.clone()),
                     }
                     span {
                         class: "hidden-on-desktop mobile-nav",

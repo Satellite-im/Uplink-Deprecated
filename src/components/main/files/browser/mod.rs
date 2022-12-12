@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 
 use crate::Storage;
 use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
-use warp::constellation::{item::ItemType, directory::Directory};
+use warp::constellation::{item::{ItemType, Item}, directory::Directory};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -12,13 +12,14 @@ pub struct Props {
     storage: Storage,
     show_new_folder: UseState<bool>,
     parent_directory: UseRef<Directory>,
+    parent_dir_items: HashSet<Item>,
 }
 
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
 
-    let files = use_ref(&cx, HashSet::new);
+    let files = use_ref(&cx, || cx.props.parent_dir_items.clone());
     let files_sorted = use_state(&cx, Vec::new);
 
     use_future(
