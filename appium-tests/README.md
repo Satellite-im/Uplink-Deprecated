@@ -67,3 +67,12 @@ If `accessibilityID`'s can't be used, for example, then for Mac2 driver, -ios cl
 - For now, to run the tests, we need to manually install the application on our local machine, before running the tests
 - Tests running on Windows - To add these, we need to start adding the windows UI locators for the elements and then modify the tests to run on both platforms
 - Tests running on Ubuntu - To add these, we need to start adding the Ubuntu UI locators for the elements and then modify the tests to run on both platforms. Also, there is no official driver for appium to run tests under Ubuntu. Unfortunately, there is only one third-party driver that we need to validate that it is secure and works correctly before implementing it inside the project
+
+## Demo Videos
+
+- Running the Appium UI Tests Locally:
+https://user-images.githubusercontent.com/35935591/207117081-38abc062-c1a6-41c3-a9d5-4c985ecfd603.mov
+
+- Execution of Appium UI Tests as PR check on CI:
+https://user-images.githubusercontent.com/35935591/207117109-61815285-b94c-4db8-add3-1da56dce516f.mov
+
