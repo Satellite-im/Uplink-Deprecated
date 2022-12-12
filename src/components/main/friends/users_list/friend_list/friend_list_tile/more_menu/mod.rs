@@ -22,9 +22,9 @@ pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_remove = cx.props.friend.clone();
                                 match multipass.remove_friend(&did_to_remove) {
-                                    Ok(_) => {}
-                                    Err(_) => {
-                                        log::debug!("error removing friend");
+                                    Ok(_) => {log::info!("removing friend succeed")}
+                                    Err(e) => {
+                                        log::error!("failed in removing friend : {}",e.to_string());
                                     }
                                 }
                                 //todo: remove the conversation?
