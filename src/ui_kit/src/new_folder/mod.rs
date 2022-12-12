@@ -49,13 +49,7 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                             if evt.key_code == KeyCode::Enter {
 
                                 let file_storage = cx.props.storage.clone();
-                                let root_directory = match file_storage.current_directory() {
-                                    Ok(current_directory) => current_directory, 
-                                    Err(error) => {
-                                        log::error!("Not possible to get root directory, error: {:?}", error);
-                                        Directory::default()
-                                    },
-                                };
+                                let root_directory = file_storage.root_directory();
                                 let new_directory_path = format!("{}", folder_name.clone());
                                 cx.spawn({
                                     to_owned![file_storage, new_directory_path, root_directory, parent_directory_ref, show_new_folder];

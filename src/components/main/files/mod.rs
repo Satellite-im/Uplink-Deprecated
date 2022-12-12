@@ -2,8 +2,6 @@ use std::{time::Duration, collections::HashSet};
 
 use dioxus::prelude::*;
 
-use warp::constellation::directory::Directory;
-
 // use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
     components::main::files::{
@@ -37,24 +35,16 @@ pub fn Files(cx: Scope<Props>) -> Element {
 
     let file_storage = cx.props.storage.clone();
 
-    let root_directory = match file_storage.current_directory() {
-        Ok(current_directory) => current_directory, 
-        Err(error) => {
-            log::error!("Not possible to get root directory, error: {:?}", error);
-            Directory::default()
-        },
-    };   
+    let root_directory = file_storage.root_directory();   
 
     let parent_directory = use_ref(&cx, || root_directory.clone());
     let parent_dir_items = use_ref(&cx,  HashSet::new);
-
-
     
     use_future(&cx, (&file_storage, parent_directory, parent_dir_items), 
     |(mut file_storage, parent_directory, parent_dir_items)| 
     async move {
       let parent_dir = parent_directory.with(|dir| dir.clone());
-      if parent_dir.name() == "root" {
+      if parent_dir.name().eq("root") {
         loop {
             match file_storage.root_directory().get_item("main_directory") {
                 Ok(item) => {

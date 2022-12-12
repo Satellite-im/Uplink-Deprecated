@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use dioxus::{prelude::*, core::to_owned, desktop::use_window};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
@@ -92,10 +90,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             }
                             let drag_file_event_in_app = get_drag_file_event_in_app();
                             if let Some(file_name) = drag_file_event_in_app.file_name {
-                                let root_directory = match file_storage.current_directory() {
-                                    Ok(current_directory) => current_directory, 
-                                    Err(_) => return,
-                                };
+                                let root_directory = file_storage.root_directory();  
                                 let folder_name = folder_name_complete_ref.with(|name| name.clone());
                                 let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
                                 let file = root_directory.get_item(&file_name).unwrap();

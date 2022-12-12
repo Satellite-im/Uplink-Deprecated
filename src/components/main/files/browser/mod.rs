@@ -18,7 +18,6 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
-
     let files = use_ref(&cx, || cx.props.parent_dir_items.clone());
     let files_sorted = use_state(&cx, Vec::new);
 
