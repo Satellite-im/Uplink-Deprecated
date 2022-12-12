@@ -384,7 +384,7 @@ async fn set_thumbnail_if_file_is_image(
         .with_guessed_format()?
         .decode()?;
 
-    let image_thumbnail = image.thumbnail(70, 70);
+    let _image_thumbnail = image.thumbnail(70, 70);
 
     // Since files selected are filtered to be jpg, jpeg, png or svg the last branch is not reachable
     let mime = match parts_of_filename
