@@ -82,3 +82,7 @@ jobs:
           path: |
             Uplink-Mac-Universal.zip
             Uplink-Mac-Universal.zip.sha256.txt
+      - name: Copy file to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Uplink-Mac-Universal.zip

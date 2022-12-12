@@ -39,3 +39,11 @@ jobs:
           name: Uplink-Windows
           path: |
             target/debug/uplink.exe
+        - name: Compress Windows Build
+          shell: powershell
+          run: |
+            Compress-Archive target/debug/uplink.exe target/debug/Uplink-Win.zip
+        - name: Copy file to release
+          uses: softprops/action-gh-release@v1
+          with:
+            files: target/debug/Uplink-Win.zip
