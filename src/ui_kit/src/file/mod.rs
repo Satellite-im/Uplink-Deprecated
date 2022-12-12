@@ -168,27 +168,32 @@ pub fn File(cx: Scope<Props>) -> Element {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
+                                    let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
                                     hide_edit_name_element(cx);
 
                                     if !new_file_name.trim().is_empty() {
+
                                         cx.spawn({
-                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
+                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref, parent_directory];
                                             async move {
                                                 let new_file_name_with_extension = format_args!("{}.{}", new_file_name.trim(), file_extension.clone()).to_string();
+                                                if let Ok(_) = parent_directory.rename_item(&old_file_name, &new_file_name_with_extension) {
+                                                    match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
+                                                        Ok(_) => {
+                                                        let new_file_name_fmt =
+                                                            format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
+    
+                                                            *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
+                                                            file_name_formatted_state.set(new_file_name_fmt);
+    
+    
+                                                            log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
+                                                        },
+                                                        Err(error) => log::error!("Error renaming file: {error}"),
+                                                    };
+                                                }
 
-                                                match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
-                                                    Ok(_) => {
-                                                    let new_file_name_fmt =
-                                                        format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
-
-                                                        *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
-                                                        file_name_formatted_state.set(new_file_name_fmt);
-
-
-                                                        log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
-                                                    },
-                                                    Err(error) => log::error!("Error renaming file: {error}"),
-                                                };
+                                               
                                             }
                                         });
 
