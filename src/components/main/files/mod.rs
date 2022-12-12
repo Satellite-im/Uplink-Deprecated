@@ -48,30 +48,37 @@ pub fn Files(cx: Scope<Props>) -> Element {
     let parent_directory = use_ref(&cx, || root_directory.clone());
 
     
-    use_future(&cx, (&file_storage, parent_directory, &root_directory), |(mut file_storage, parent_directory, root_directory)| async move {
-        if !root_directory.has_item("main_directory") {
-            match file_storage.create_directory("main_directory", true).await {
-                Ok(_) => {
-                    log::info!("main directory created.")
-                },
-                Err(error) => log::error!("Error creating directory: {error}"),
+    use_future(&cx, (&file_storage, parent_directory), |(mut file_storage, parent_directory)| async move {
+      let parent_dir = parent_directory.with(|dir| dir.clone());
+      if parent_dir.name() == "root" {
+        loop {
+            match file_storage.root_directory().get_item("main_directory") {
+                Ok(item) => {
+                    match item.get_directory() {
+                        Ok(directory) => {
+                            parent_directory.with_mut(|dir| *dir = directory.clone());
+                            log::info!("Main directory was opened. {:?}", directory.name());
+                            break;
+                        },
+                        Err(error) => log::error!("Error opening folder: {error}"),
+                    };
+                }, 
+                Err(error) => {
+                    match file_storage.create_directory("main_directory", true).await {
+                        Ok(_) => {
+                            log::info!("main directory created.")
+                        },
+                        Err(error) => log::error!("Error creating directory: {error}"),
+                    };
+                    log::error!("get item from root directory: {error}");}
             };
-        };
-
-        if &*parent_directory.read().name() == "root" {
-            match file_storage.open_directory("main_directory") {
-                Ok(directory) => {
-                    parent_directory.with_mut(|dir| *dir = directory.clone());
-                    log::info!("Main directory was opened. {:?}", directory.name());
-                },
-                Err(error) => log::error!("Error opening folder: {error}"),
-            };
-        }
-            tokio::time::sleep(Duration::from_millis(100)).await;
-            return;
+            tokio::time::sleep(Duration::from_millis(500)).await;
+    
+           }
+      }
+    
         });
         
-  
     let st = use_atom_ref(&cx, STATE).clone();
     let sidebar_visibility = match st.read().hide_sidebar {
         false => "sidebar-visible",
@@ -98,10 +105,12 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         class: "flex-row top-container",
                         Toolbar {
                             on_new_folder: move |_| {
-                                show_new_folder.set(!show_new_folder);
+                                show_new_folder.set(true);
+                                show_upload.set(false);
                             },
                             on_show_upload: move |_| {
                                 show_upload.set(true);
+                                show_new_folder.set(false);
                             }
                         },
                         Upload {

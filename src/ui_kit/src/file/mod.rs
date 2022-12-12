@@ -63,7 +63,6 @@ pub fn File(cx: Scope<Props>) -> Element {
             draggable: "true", 
             float: "right",
             ondragend: move |_| {
-                println!("Drag start");
                 let file_name = &*file_name_complete_ref.read();
                 *DRAG_FILE_IN_APP_EVENT.write() = DragFileInApp::new_file(file_name.clone());
             },
