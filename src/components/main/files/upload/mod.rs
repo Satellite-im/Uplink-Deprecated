@@ -265,7 +265,7 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
     let file = PathBuf::from(&original);
 
     loop {
-        if !current_directory.has_item(&filename) {
+        if !file_storage.root_directory().has_item(&filename) {
             break;
         }
         let file_extension = file.extension().and_then(OsStr::to_str).map(str::to_string);

@@ -42,10 +42,13 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
-    let parent_directory_name =  cx.props.parent_directory.clone().read().name();
+    let parent_directory_name =  if cx.props.parent_directory.clone().read().name() == "root" {
+        "loading...".to_owned()
+    } else {
+        cx.props.parent_directory.clone().read().name()
+    };
     cx.render(rsx! {
         h5 {
-            margin_left: "8px",
             "{parent_directory_name}"},
         div {
          id: "browser",
