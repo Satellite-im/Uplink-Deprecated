@@ -1,3 +1,4 @@
+pub mod confirmation_modal;
 pub mod nav;
 pub mod page_header;
 pub mod popout;

@@ -98,9 +98,9 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                 }
                         },
                         div{
-                            div{
+                            div {
                                 id:"{friend_id}-more-button",
-                                Button{
+                                Button {
                                     icon:Shape::EllipsisVertical,
                                     state: ui_kit::button::State::Secondary,
                                     text: "More".to_string(),
@@ -110,14 +110,15 @@ pub fn FriendListTile<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     }
                                 },
                             },
-                            div{
-                                     id:"{friend_id}-more-menu",
-                                     class: "more_menu",
-                                     display: "none",
-                                     MoreMenu{
-                                     account: cx.props.account.clone(),
-                                     friend:cx.props.friend.clone(),
-                                    },
+                            div {
+                                id:"{friend_id}-more-menu",
+                                class: "more_menu",
+                                display: "none",
+                                MoreMenu {
+                                    account: cx.props.account.clone(),
+                                    friend: cx.props.friend.clone(),
+                                    friend_username: cx.props.friend_username.clone(),
+                                },
                             },
                         }
                     )}

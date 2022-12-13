@@ -1,0 +1,24 @@
+#confirmation-modal {
+  padding: 1rem;
+  margin: 16px;
+  background: var(--theme-secondary);
+  border-radius: 20px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .modal-description {
+    font-size: 1.125rem;
+    font-weight: 400;
+    padding-bottom: 0.5rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
