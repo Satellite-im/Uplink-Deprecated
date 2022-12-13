@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 
-// use crate::components::main::files::sidebar::usage::{Usage, UsageStats};
 use crate::{
     components::main::files::{
         browser::FileBrowser, sidebar::Sidebar, toolbar::Toolbar, upload::Upload,
@@ -33,8 +32,8 @@ pub fn Files(cx: Scope<Props>) -> Element {
 
     let st = use_atom_ref(&cx, STATE).clone();
     let sidebar_visibility = match st.read().hide_sidebar {
-        false => "sidebar-visible",
-        true => "sidebar-hidden",
+        false => "mobile-sidebar-visible",
+        true => "mobile-sidebar-hidden",
     };
 
     cx.render(rsx! {

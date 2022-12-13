@@ -14,7 +14,7 @@ use utils::Account;
 use warp::{crypto::DID, raygun::Message};
 
 use crate::{
-    components::reusable::textarea::TextArea,
+    components::reusable::{popout::Popout, textarea::TextArea},
     iutils::{
         self,
         get_meta::{get_meta, SiteMeta},
@@ -150,77 +150,66 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
     cx.render(rsx! (
         div {
             class: "wrapper {remote}",
-            (popout).then(|| rsx!(
+            Popout {
+                is_visible: popout.clone(),
+                remote: remote.to_string(),
                 div {
-                    class: "popout-mask {remote}",
+                    class: "message-wrap {slide_class}",
                     div {
-                        class: "close",
-                        Button {
-                            icon: Shape::XMark,
-                            on_pressed: move |_| {
-                                popout.set(false);
-                            }
+                        class: "user-message",
+                        onclick: move |e| {
+                            e.cancel_bubble();
                         },
-                    },
-                    div {
-                        class: "message-wrap {slide_class}",
+                        PFP {
+                            src: cx.props.profile_picture.clone(),
+                            size: ui_kit::profile_picture::Size::Normal
+                        },
                         div {
-                            class: "user-message",
-                            onclick: move |e| {
-                                e.cancel_bubble();
-                            },
-                            PFP {
-                                src: cx.props.profile_picture.clone(),
-                                size: ui_kit::profile_picture::Size::Normal
-                            },
+                            class: "value popout {first} {middle} {last}",
                             div {
-                                class: "value popout {first} {middle} {last}",
-                                div {
-                                    class: "message-content",
-                                    dangerous_inner_html: "{output1}",
-                                    has_links.then(|| rsx!{
-                                        LinkEmbed {
-                                            meta: meta2
-                                        }
-                                    }),
-                                    div {
-                                        attachment_list2
+                                class: "message-content",
+                                dangerous_inner_html: "{output1}",
+                                has_links.then(|| rsx!{
+                                    LinkEmbed {
+                                        meta: meta2
                                     }
-                                },
-                            },
-                        }
-                        div {
-                            class: "controls reply-container",
-                            onclick: move |e| {
-                                e.cancel_bubble();
-                            },
-                            Button {
-                                icon: Shape::FaceSmile,
-                                on_pressed: move |_| {}
-                            },
-                            TextArea {
-                                messaging: cx.props.messaging.clone(),
-                                placeholder: l.send_a_reply.to_string(),
-                                on_input: move |_| {}
-                                on_submit: move |e| {
-                                    cx.props.on_reply.call(e);
-
-                                    popout.set(false);
-                                },
-                                text: text.clone(),
-                            },
-                            Button {
-                                icon: Shape::ArrowRight,
-                                state: ui_kit::button::State::Secondary,
-                                on_pressed: move |_| {
-                                    cx.props.on_reply.call(text.clone().to_string());
-                                    popout.set(false);
+                                }),
+                                div {
+                                    attachment_list2
                                 }
+                            },
+                        },
+                    }
+                    div {
+                        class: "controls reply-container",
+                        onclick: move |e| {
+                            e.cancel_bubble();
+                        },
+                        Button {
+                            icon: Shape::FaceSmile,
+                            on_pressed: move |_| {}
+                        },
+                        TextArea {
+                            messaging: cx.props.messaging.clone(),
+                            placeholder: l.send_a_reply.to_string(),
+                            on_input: move |_| {}
+                            on_submit: move |e| {
+                                cx.props.on_reply.call(e);
+                                popout.set(false);
+                            },
+                            text: text.clone(),
+                        },
+                        Button {
+                            icon: Shape::ArrowRight,
+                            state: ui_kit::button::State::Secondary,
+                            on_pressed: move |_| {
+                                cx.props.on_reply.call(text.clone().to_string());
+                                popout.set(false);
                             }
                         }
                     }
                 }
-            )),
+            },
             div {
                 class: "message {remote} {hover_class}",
                 id: "{id}-message",

@@ -199,8 +199,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                                     is_active: active_chat == Some(conversation_info.conversation.id()),
                                     tx_chan: notifications_tx.clone(),
                                     on_pressed: move |uuid| {
-                                        // on press, change state so CSS class flips to show the chat
-                                        //state.write().dispatch(Actions::HideSidebar(true));
+                                        // hide the sidebar if it's visible for mobile view
+                                        state.write().dispatch(Actions::HideSidebar(true));
+
                                         if *active_chat != Some(uuid) {
                                             state.write().dispatch(Actions::ShowConversation(conversation_info.conversation.id()));
                                             active_chat.set(Some(uuid));
