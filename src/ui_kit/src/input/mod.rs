@@ -2,17 +2,15 @@ use dioxus::{events::FormEvent, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 
-use crate::context_menu::{ContextItem, ContextMenu};
+use crate::{
+    context_menu::{ContextItem, ContextMenu},
+    select::SelectOption,
+};
 
 #[derive(PartialEq, Eq)]
 pub enum State {
     Success,
     Danger,
-}
-#[derive(PartialEq, Eq, Clone, Debug)]
-pub struct SelectOption {
-    pub value: String,
-    pub label: String,
 }
 
 #[derive(Props)]
