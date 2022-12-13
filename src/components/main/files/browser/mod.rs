@@ -97,7 +97,9 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 rsx!(
                     div {
                         onclick: move |_| {
-                            cx.props.show_new_folder.set(false);
+                            if *cx.props.show_new_folder {
+                                cx.props.show_new_folder.set(false);
+                            }
                         },
                         File {
                             key: "{key}",
