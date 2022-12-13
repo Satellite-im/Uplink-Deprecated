@@ -95,17 +95,23 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 let key = file.id();
 
                 rsx!(
-                    File {
-                        key: "{key}",
-                        name: file.name(),
-                        state: State::Secondary,
-                        id: key.to_string(),
-                        kind: file_extension,
-                        size: file.size(),
-                        thumbnail: file.thumbnail(),
-                        storage: cx.props.storage.clone(),
-                        parent_directory:  cx.props.parent_directory.clone(),
-                    } )
+                    div {
+                        onclick: move |_| {
+                            cx.props.show_new_folder.set(false);
+                        },
+                        File {
+                            key: "{key}",
+                            name: file.name(),
+                            state: State::Secondary,
+                            id: key.to_string(),
+                            kind: file_extension,
+                            size: file.size(),
+                            thumbnail: file.thumbnail(),
+                            storage: cx.props.storage.clone(),
+                            parent_directory:  cx.props.parent_directory.clone(),
+                        } 
+                    }
+                   )
             })
         }
     })

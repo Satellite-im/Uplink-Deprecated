@@ -1,5 +1,4 @@
-use dioxus::{prelude::*, core::to_owned, desktop::use_window};
-use dioxus_elements::u;
+use dioxus::{prelude::*, core::to_owned};
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 use utils::Storage;
