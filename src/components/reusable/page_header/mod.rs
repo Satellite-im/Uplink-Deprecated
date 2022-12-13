@@ -16,7 +16,7 @@ pub struct Props<'a> {
 #[allow(non_snake_case)]
 pub fn PageHeader<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     // Log a debug message
-    log::debug!("rendering PageHeading");
+    log::debug!("rendering PageHeader");
 
     // Determine the visibility class for the page header
     let header_visibility = match cx.props.hide_on_desktop {

@@ -4,7 +4,6 @@ use ::utils::Account;
 use clap::Parser;
 use core::time;
 use dioxus::desktop::tao;
-use dioxus::desktop::wry::webview::FileDropEvent;
 use dioxus::router::{Route, Router};
 use dioxus::{desktop::tao::dpi::LogicalSize, prelude::*};
 use dioxus_heroicons::outline::Shape;
@@ -24,7 +23,7 @@ use tracing::metadata::LevelFilter;
 use tracing_subscriber::EnvFilter;
 use ui_kit::context_menu::{ContextItem, ContextMenu};
 use unic_langid::LanguageIdentifier;
-use utils::{Storage, DEFAULT_PATH};
+use utils::{Storage, DEFAULT_PATH, DRAG_FILE_EVENT};
 use warp::{
     constellation::Constellation, multipass::MultiPass, raygun::RayGun, sync::RwLock,
     tesseract::Tesseract,
@@ -54,9 +53,6 @@ pub const WINDOW_SUFFIX_NAME: &str = "Uplink";
 
 static DEFAULT_WINDOW_NAME: Lazy<RwLock<String>> =
     Lazy::new(|| RwLock::new(String::from(WINDOW_SUFFIX_NAME)));
-
-static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
-    Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
 
 #[derive(PartialEq, Props)]
 pub struct State {

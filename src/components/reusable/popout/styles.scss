@@ -1,0 +1,27 @@
+#popout {
+  .popout-mask {
+    z-index: 2;
+    align-items: center;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    bottom: 0;
+    display: inline-flex;
+    justify-content: center;
+    left: var(--sidebar-width);
+    overflow: hidden;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: blur 0.2s;
+
+    .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+
+    @media only screen and (max-width: 600px) {
+      left: 0;
+    }
+  }
+}
