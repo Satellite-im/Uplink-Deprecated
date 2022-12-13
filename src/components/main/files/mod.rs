@@ -82,6 +82,11 @@ pub fn Files(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             id: "files",
+            onclick: move |_| {
+                if **show_new_folder {
+                    show_new_folder.set(false);
+                }
+            },
             onmouseover: |_| {
                 // HACK(Windows): Block upload file if drop it anywhere on screen out
                 // TODO(Temp): Temp solution to drag and drop work on Windows

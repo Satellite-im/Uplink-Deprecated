@@ -1,4 +1,5 @@
-use dioxus::{prelude::*, core::to_owned};
+use dioxus::{prelude::*, core::to_owned, desktop::use_window};
+use dioxus_elements::u;
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 use utils::Storage;
@@ -30,6 +31,9 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
+            onclick: move |_| {
+                cx.props.show_new_folder.set(true);
+            },
             id: "new-folder-id",
             div {
                 class: "folder {class}",
