@@ -12,7 +12,6 @@ pub struct Props {
     state: State,
     storage: Storage,
     show_new_folder: UseState<bool>,
-    parent_directory: UseRef<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -23,9 +22,7 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
     };
 
     let folder_name = use_state(&cx, || String::from("New Folder"));
-    let show_new_folder = cx.props.show_new_folder.clone();
-    let parent_directory_ref = cx.props.parent_directory.clone();
-    
+    let show_new_folder = cx.props.show_new_folder.clone();    
     let new_folder_js = include_str!("./new_folder.js");
 
     cx.render(rsx! {
@@ -52,17 +49,14 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                             if evt.key_code == KeyCode::Enter {
                                 if !folder_name.is_empty() {
                                     let file_storage = cx.props.storage.clone();
-                                    let root_directory = file_storage.root_directory();
                                     let new_directory_path = format!("{}", folder_name.clone());
                                     cx.spawn({
-                                        to_owned![file_storage, new_directory_path, root_directory, parent_directory_ref, show_new_folder];
+                                        to_owned![file_storage, new_directory_path, show_new_folder];
                                         async move {                            
                                             match file_storage.create_directory(&new_directory_path, true).await {
                                                 Ok(_) => {
-                                                    let new_directory = root_directory.get_item(&new_directory_path).unwrap().directory().unwrap_or_default();
-                                                    parent_directory_ref.with_mut(|dir| dir.add_directory(new_directory.clone()).unwrap());
                                                     show_new_folder.set(false);
-                                                    log::info!("New directory created. {:?}", new_directory);
+                                                    log::info!("New directory created. {:?}", new_directory_path);
                                                 },
                                                 Err(error) => log::error!("Error creating directory: {error}"),
                                             };

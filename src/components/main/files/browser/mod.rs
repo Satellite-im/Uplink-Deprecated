@@ -1,10 +1,11 @@
 use std::{collections::HashSet, time::Duration};
 
 use dioxus::prelude::*;
+use dioxus_heroicons::outline::Shape;
 
 use crate::Storage;
-use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
-use warp::constellation::{item::{ItemType, Item}, directory::Directory};
+use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder, button::Button};
+use warp::constellation::{item::{ItemType}, directory::Directory};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -12,23 +13,23 @@ pub struct Props {
     storage: Storage,
     show_new_folder: UseState<bool>,
     parent_directory: UseRef<Directory>,
-    parent_dir_items: HashSet<Item>,
 }
 
 #[allow(non_snake_case)]
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
-    let files = use_ref(&cx, || cx.props.parent_dir_items.clone());
+    let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
+    let parendt_directory_ref = cx.props.parent_directory.clone();
+    let current_directory = cx.props.storage.current_directory().unwrap_or_default();
 
     use_future(
         &cx,
-        (files, files_sorted, &cx.props.parent_directory.clone()),
-        |(files, files_sorted, parent_directory_ref)| async move {
-            loop {
+        (files, files_sorted, &current_directory),
+        |(files, files_sorted, current_directory)| async move {
 
-                let parent_directory = parent_directory_ref.with(|dir| dir.clone());
-                let files_updated: HashSet<_> = HashSet::from_iter(parent_directory.get_items());
+            loop {
+                let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
 
                 if *files.read() != files_updated {
                     log::debug!("updating files list");
@@ -42,15 +43,33 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
-    let parent_directory_name =  if cx.props.parent_directory.clone().read().name() == "root" {
-        "loading...".to_owned()
-    } else {
-        cx.props.parent_directory.clone().read().name()
-    };
+    let parent_directory_name =  cx.props.parent_directory.clone().read().name();
     cx.render(rsx! {
-        h5 {
-            margin_left: "8px",
-            "{parent_directory_name}"},
+        div {
+            flex_direction: "row",
+            div {
+                display: "inline-block",
+                Button {
+                    icon: Shape::Home,
+                    on_pressed: move |_| {
+                        let mut file_storage = cx.props.storage.clone();
+                        loop {
+                            let current_dir = file_storage.current_directory().unwrap();
+                            if  current_dir.name() == "root" {
+                                parendt_directory_ref.with_mut(|dir| *dir = current_dir.clone());
+                                break;
+                            }
+                            file_storage.go_back().unwrap();
+                        }
+                    },
+                },
+            }
+          
+            h5 {
+                display: "inline-block",
+                margin_left: "8px",
+                "{parent_directory_name}"},
+        }
         div {
          id: "browser",
             (cx.props.show_new_folder).then(|| 
@@ -62,7 +81,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         state: State::Primary,
                         storage: cx.props.storage.clone(),
                         show_new_folder: cx.props.show_new_folder.clone(),
-                        parent_directory:  cx.props.parent_directory.clone(),
                     }
                 }
             )

@@ -152,16 +152,23 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             div {
             class: "folder {class}",  
             onclick: move |_| {
-                let file_storage = cx.props.storage.clone();
+                let mut file_storage = cx.props.storage.clone();
                 let folder_name = &*folder_name_complete_ref.read();
                 let parent_directory = cx.props.parent_directory.clone();
-                match file_storage.open_directory(&folder_name) {
-                    Ok(directory) => {
-                        parent_directory.with_mut(|dir| *dir = directory.clone());
-                        log::info!("{folder_name} was opened. {:?}", directory.name());
+                match file_storage.select(&folder_name) {
+                    Ok(_) => {
+                        match file_storage.current_directory() {
+                            Ok(directory) => {
+                                println!("Current dir now is {:?}", directory.name());
+                                parent_directory.with_mut(|dir| *dir = directory.clone());
+                                log::info!("{folder_name} was opened. {:?}", directory.name());
+                            },
+                            Err(error) => println!("Error opening folder: {error}"),
+                        };
                     },
-                    Err(error) => log::error!("Error opening folder: {error}"),
+                    Err(error) => println!("Error selecting new current directory folder: {error}"),
                 };
+                
             },         
             Icon { icon: Shape::Folder },
                {
