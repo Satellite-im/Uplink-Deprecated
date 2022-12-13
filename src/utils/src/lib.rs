@@ -74,7 +74,7 @@ pub static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
 pub static DRAG_FILE_IN_APP_EVENT: Lazy<RwLock<DragFileInApp>> =
     Lazy::new(|| RwLock::new(DragFileInApp::cancel()));
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub struct DragFileInApp {
     pub file_name: Option<String>,
 }
