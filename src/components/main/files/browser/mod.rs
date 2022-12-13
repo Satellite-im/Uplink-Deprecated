@@ -1,11 +1,12 @@
 use std::{collections::HashSet, time::Duration};
 
-use dioxus::{prelude::*, core::exports::bumpalo::collections::vec};
-use dioxus_heroicons::outline::Shape;
+use dioxus::{prelude::*, core::to_owned};
 
 use crate::Storage;
-use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder, button::Button};
+use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
 use warp::constellation::{item::{ItemType}, directory::Directory};
+
+use super::FILES_STATE;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -21,27 +22,33 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
     let current_directory = cx.props.storage.current_directory().unwrap_or_default();
-    let root_directory = cx.props.storage.root_directory();
-    let file_system_directories = use_ref(&cx, || vec![root_directory.name()]);
+    let file_system_directories = use_atom_ref(&cx, FILES_STATE);
 
-    use_future(
-        &cx,
-        (files, files_sorted, &current_directory, file_system_directories),
-        |(files, files_sorted, current_directory, file_system_directories)| async move {
+    cx.spawn({
+        to_owned![file_system_directories, current_directory];
+        async move {
+            let dir_names_vec = file_system_directories.read().clone();
+            let dir_names_vec_len = file_system_directories.read().len().clone();
             let final_dir = file_system_directories.clone().read().last().unwrap().clone();
             let current_dir_name = current_directory.name().clone();
             
-            if !file_system_directories.read().contains(&current_directory.name()) {
-                file_system_directories.with_mut(|i| i.insert(i.len(), current_directory.name()))
+            if !dir_names_vec.contains(&current_directory.name()) {
+                file_system_directories.write().insert(dir_names_vec_len, current_directory.name());
             } else {
                 if final_dir != current_dir_name && final_dir != "root"  {
-                    file_system_directories.with_mut(|i| i.remove(i.len() - 1));
+                    file_system_directories.write().remove(dir_names_vec_len - 1);
                 }
             }
+        }
+    });
 
+
+    use_future(
+        &cx,
+        (files, files_sorted, &current_directory),
+        |(files, files_sorted, current_directory)| async move {
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
-
                 if *files.read() != files_updated {
                     log::debug!("updating files list");
                     *files.write_silent() = files_updated.clone();

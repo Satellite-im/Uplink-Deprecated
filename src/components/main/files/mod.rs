@@ -13,6 +13,8 @@ use utils::DRAG_FILE_EVENT;
 #[cfg(target_os = "windows")]
 use dioxus::desktop::wry::webview::FileDropEvent;
 
+pub static FILES_STATE: AtomRef<Vec<String>> = |_| vec![String::from("root")];
+
 pub mod browser;
 pub mod sidebar;
 pub mod toolbar;

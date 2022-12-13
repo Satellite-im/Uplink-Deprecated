@@ -190,14 +190,13 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 let file_storage = cx.props.storage.clone();
                                 let old_folder_name = &*folder_name_complete_ref.read();
                                 let new_folder_name = val.read();
-                                let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
                                 hide_edit_name_element(cx.clone());
                                 if !new_folder_name.trim().is_empty() {
                                     cx.spawn({
-                                        to_owned![file_storage, old_folder_name, new_folder_name, folder_name_formatted_state, folder_name_complete_ref, parent_directory];
+                                        to_owned![file_storage, old_folder_name, new_folder_name, folder_name_formatted_state, folder_name_complete_ref];
                                         async move {
                                             let new_folder_name = format_args!("{}", new_folder_name.trim()).to_string();
-                                            if let Ok(_) = parent_directory.rename_item(&old_folder_name, &new_folder_name) {
+                                          
                                                 match file_storage.rename(&old_folder_name, &new_folder_name).await {
                                                     Ok(_) => {
                                                     let new_file_name_fmt =
@@ -208,7 +207,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                                     },
                                                     Err(error) => log::error!("Error renaming file: {error}"),
                                                 };
-                                            }
+                                          
                                         }
                                     });
 
