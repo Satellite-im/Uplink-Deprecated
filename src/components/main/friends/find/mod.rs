@@ -87,7 +87,36 @@ pub fn FindFriends(
                 Input {
                     placeholder: l.add_placeholder.clone(),
                     on_change: on_change,
-                    on_enter: move |_| {}
+                    on_enter: move |_| {
+                        let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
+                        match did {
+                            Ok(d) => {
+                                match account.clone()
+                                    .send_request(&d)
+                                {
+                                    Ok(_) => {
+                                        let single_toast = ToastInfo {
+                                            position: Position::TopRight,
+                                            ..ToastInfo::simple(&l3.request_sent)
+                                        };
+                                        let _id = toast.write().popup(single_toast);
+                                        add_error.set("".into());
+                                    }
+                                    Err(e) => {
+                                        add_error.set(match e {
+                                            warp::error::Error::CannotSendFriendRequest => l3.couldnt_send.to_string(),
+                                            warp::error::Error::FriendRequestExist => l3.already_sent.to_string(),
+                                            warp::error::Error::CannotSendSelfFriendRequest => l3.add_self.to_string(),
+                                            warp::error::Error::FriendExist => l3.friend_exist.to_string(),
+                                            _ => l3.something_went_wrong.to_string()
+                                        })
+                                    },
+                                };
+                            },
+                            Err(_) => add_error.set(l3.invalid_code.to_string()),
+                        }
+                        remote_friend.set("".into());
+                    },
                     options: search_results.get().clone(),
                     on_item_selected: move |item:String| {
                         remote_friend.set(item);
