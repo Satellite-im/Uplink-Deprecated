@@ -1,0 +1,19 @@
+name: Rebase
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rebase
+        run: |
+          # Check if the comment contains the `/rebase` command
+          COMMENT_BODY=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "https://api.github.com/repos/$GITHUB_REPOSITORY/issues/comments/$GITHUB_EVENT_ID" | jq -r .body)
+          if [[ "$COMMENT_BODY" == *"/rebase"* ]]; then
+            # Rebase the pull request
+            git rebase origin/dev
+          fi

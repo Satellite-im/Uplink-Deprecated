@@ -1,0 +1,28 @@
+name: Move Tickets to PR Open Column
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  move-tickets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Issue ID
+        run: |
+          # Print the value of the $GITHUB_TOKEN placeholder
+          echo "GITHUB_TOKEN = $GITHUB_TOKEN"
+
+          # Print the URL of the API endpoint
+          API_URL="https://api.github.com/repos/Satellite-im/Uplink/pulls/$GITHUB_EVENT_ID"
+          echo "API_URL = $API_URL"
+
+          # Get the pull request data from the API
+          PR=$(curl -H "Authorization: token $GITHUB_TOKEN" -X GET "$API_URL")
+
+          # Check the exit code of the curl command
+          if [ $? -ne 0 ]; then
+            echo "Error: failed to get pull request data"
+            exit 1
+         
