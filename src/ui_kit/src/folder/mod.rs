@@ -51,19 +51,14 @@ pub fn Folder(cx: Scope<Props>) -> Element {
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
 
-    use_future(&cx, (&cx.props.storage.clone(), dir_items_len, &cx.props.name.clone()),
-     |(file_storage, dir_items_len, current_dir_name)| async move {
-        match file_storage.root_directory().get_item(&current_dir_name) {
-            Ok(item) => {
-                match item.get_directory() {
-                    Ok(directory) => {
-                        dir_items_len.set(directory.get_items().len());
-                        log::info!("Update dir {:?} items quantity", directory.name());
-                    },
-                    Err(error) => log::error!("Error get item as directory: {error}"),
-                };
+    use_future(&cx, (&cx.props.storage.clone(), dir_items_len),
+     |(file_storage, dir_items_len)| async move {
+        match file_storage.current_directory() {
+            Ok(current_dir) => {
+                dir_items_len.set(current_dir.get_items().len());
+                log::info!("Update dir {:?} items quantity", current_dir.name());
             }, 
-            Err(error) =>  log::error!("Error get items quantity on a directory: {error}")
+            Err(error) => log::error!("Error get items quantity on a directory: {error}")
         };
     });
 

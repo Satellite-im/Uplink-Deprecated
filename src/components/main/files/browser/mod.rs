@@ -1,6 +1,6 @@
 use std::{collections::HashSet, time::Duration};
 
-use dioxus::prelude::*;
+use dioxus::{prelude::*, core::exports::bumpalo::collections::vec};
 use dioxus_heroicons::outline::Shape;
 
 use crate::Storage;
@@ -20,13 +20,24 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
-    let parendt_directory_ref = cx.props.parent_directory.clone();
     let current_directory = cx.props.storage.current_directory().unwrap_or_default();
+    let root_directory = cx.props.storage.root_directory();
+    let file_system_directories = use_ref(&cx, || vec![root_directory.name()]);
 
     use_future(
         &cx,
-        (files, files_sorted, &current_directory),
-        |(files, files_sorted, current_directory)| async move {
+        (files, files_sorted, &current_directory, file_system_directories),
+        |(files, files_sorted, current_directory, file_system_directories)| async move {
+            let final_dir = file_system_directories.clone().read().last().unwrap().clone();
+            let current_dir_name = current_directory.name().clone();
+            
+            if !file_system_directories.read().contains(&current_directory.name()) {
+                file_system_directories.with_mut(|i| i.insert(i.len(), current_directory.name()))
+            } else {
+                if final_dir != current_dir_name && final_dir != "root"  {
+                    file_system_directories.with_mut(|i| i.remove(i.len() - 1));
+                }
+            }
 
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
@@ -43,32 +54,35 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         },
     );
 
-    let parent_directory_name =  cx.props.parent_directory.clone().read().name();
     cx.render(rsx! {
         div {
-            flex_direction: "row",
-            div {
-                display: "inline-block",
-                Button {
-                    icon: Shape::Home,
-                    on_pressed: move |_| {
+            file_system_directories.read().iter().map(|dir_name| {
+                let dir_name2 = dir_name.clone();
+                rsx! (
+                    h5 {
+                        display: "inline-block",
+                        margin_left: "8px",
+                        ">"
+                    },
+                    h5 {
+                    class : "dir_names_navigation",
+                    display: "inline-block",
+                    prevent_default: "onclick",
+                    onclick: move |_| {
                         let mut file_storage = cx.props.storage.clone();
                         loop {
-                            let current_dir = file_storage.current_directory().unwrap();
-                            if  current_dir.name() == "root" {
-                                parendt_directory_ref.with_mut(|dir| *dir = current_dir.clone());
+                            let current_dir = file_storage.current_directory().unwrap_or_default();
+                            if  current_dir.name() == dir_name2.to_owned() {
+                                cx.needs_update();
                                 break;
                             }
-                            file_storage.go_back().unwrap();
+                            file_storage.go_back().unwrap_or_default();
                         }
                     },
-                },
-            }
-          
-            h5 {
-                display: "inline-block",
-                margin_left: "8px",
-                "{parent_directory_name}"},
+                    margin_left: "8px",
+                  "{dir_name}"
+                })
+            }),
         }
         div {
          id: "browser",

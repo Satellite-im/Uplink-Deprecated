@@ -2,8 +2,6 @@ use dioxus::{prelude::*, core::to_owned};
 use dioxus_heroicons::{outline::Shape, Icon};
 use dioxus_html::KeyCode;
 use utils::Storage;
-use warp::constellation::directory::Directory;
-
 use super::folder::State;
 
 // Remember: owned props must implement PartialEq!
