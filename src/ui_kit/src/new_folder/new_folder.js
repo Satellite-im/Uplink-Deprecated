@@ -20,8 +20,3 @@ document.addEventListener("click", (event) => {
     show_input_and_focus()
   }
 })
-document.addEventListener("keyup", (event) => {
-  if (event.key == "Enter" || event.key == "Escape") {
-    new_folder.style.display = "none"
-  }
-})
