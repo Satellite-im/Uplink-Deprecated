@@ -3,6 +3,7 @@ pub mod notifications;
 pub mod sounds;
 
 use clap::Parser;
+use dioxus::desktop::wry::webview::FileDropEvent;
 use once_cell::sync::Lazy;
 use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
@@ -66,3 +67,25 @@ pub static DEFAULT_PATH: Lazy<RwLock<PathBuf>> = Lazy::new(|| {
         _ => dirs::home_dir().unwrap_or_default().join(".warp"),
     })
 });
+
+pub static DRAG_FILE_EVENT: Lazy<RwLock<FileDropEvent>> =
+    Lazy::new(|| RwLock::new(FileDropEvent::Cancelled));
+
+
+pub static DRAG_FILE_IN_APP_EVENT: Lazy<RwLock<DragFileInApp>> =
+    Lazy::new(|| RwLock::new(DragFileInApp::cancel() ));
+
+#[derive(PartialEq, Clone)]
+pub struct DragFileInApp {
+    pub file_name: Option<String>,
+}
+
+impl DragFileInApp {
+    pub fn new_file(file_name: String) -> Self {
+        DragFileInApp { file_name: Some(file_name)}
+    }
+
+    pub fn cancel() -> Self {
+        DragFileInApp { file_name: None}
+    }
+}
