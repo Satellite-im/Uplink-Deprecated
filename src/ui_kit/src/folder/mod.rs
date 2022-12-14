@@ -75,7 +75,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             if let Some(file_name) = drag_file_event_in_app.file_name {
                                 let current_directory = file_storage.current_directory().unwrap_or_default();  
                                 let folder_name = folder_name_complete_ref.with(|name| name.clone());
-                                let directory_target = current_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
+                                let directory_target = current_directory.get_item(&folder_name).unwrap().get_directory().unwrap_or_default();
                                 let file = current_directory.get_item(&file_name).unwrap();
                                 match directory_target.add_item(file.clone()) {
                                     Ok(_) => {
@@ -137,20 +137,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             onclick: move |_| {
                 let mut file_storage = cx.props.storage.clone();
                 let folder_name = &*folder_name_complete_ref.read();
-                // let parent_directory = cx.props.parent_directory.clone();
                 match file_storage.select(&folder_name) {
-                    Ok(_) => {
-                        cx.props.update_current_dir.set(());
-                        // match file_storage.current_directory() {
-                        //     Ok(directory) => {
-                        //         println!("Current dir now is {:?}", directory.name());
-                        //         parent_directory.with_mut(|dir| *dir = directory.clone());
-                        //         log::info!("{folder_name} was opened. {:?}", directory.name());
-                        //     },
-                        //     Err(error) => println!("Error opening folder: {error}"),
-                        // };
-                    },
-                    Err(error) => println!("Error selecting new current directory folder: {error}"),
+                    Ok(_) => cx.props.update_current_dir.set(()),
+                    Err(error) => log::error!("Error selecting new current directory folder: {error}"),
                 };
                 
             },         
