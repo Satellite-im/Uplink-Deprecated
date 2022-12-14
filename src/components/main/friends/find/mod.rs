@@ -9,10 +9,7 @@ use dioxus_toast::{Position, ToastInfo};
 
 use crate::{Account, LANGUAGE, TOAST_MANAGER};
 
-use ui_kit::{
-    button::Button,
-    input::{Input, SelectOption},
-};
+use ui_kit::{button::Button, input::Input, select::SelectOption};
 
 use warp::{crypto::DID, multipass::identity::Identifier};
 

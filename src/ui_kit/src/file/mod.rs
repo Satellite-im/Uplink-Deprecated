@@ -177,7 +177,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                             to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref, parent_directory];
                                             async move {
                                                 let new_file_name_with_extension = format_args!("{}.{}", new_file_name.trim(), file_extension.clone()).to_string();
-                                                if let Ok(_) = parent_directory.rename_item(&old_file_name, &new_file_name_with_extension) {
+                                                if parent_directory.rename_item(&old_file_name, &new_file_name_with_extension).is_ok() {
                                                     match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
                                                         Ok(_) => {
                                                         let new_file_name_fmt =

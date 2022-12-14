@@ -1,8 +1,10 @@
 use dioxus::prelude::*;
+use futures::StreamExt;
 use utils::Account;
+use warp::multipass::MultiPassEventKind;
 mod friend_list_tile;
 
-use std::{collections::HashSet, time::Duration};
+use std::{collections::HashSet};
 
 use crate::{
     components::main::friends::users_list::{
@@ -26,20 +28,50 @@ pub fn FriendList(cx: Scope<FriendListProps>) -> Element {
     use_future(
         &cx,
         (friends, &cx.props.account.clone(), disp_friends),
-        |(friends, mp, disp_friends)| async move {
-            loop {
-                let friends_list: HashSet<_> =
-                    HashSet::from_iter(mp.list_friends().unwrap_or_default());
+        |(friends, mut mp, disp_friends)| async move {
+            let mut stream = loop {
+                match mp.subscribe() {
+                    Ok(stream) => break stream,
+                    Err(e) => match e {
+                        //Note: Used as a precaution for future checks
+                        warp::error::Error::MultiPassExtensionUnavailable => {
+                            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+                        }
+                        //TODO: log error
+                        //Note: Shouldnt give any other error but if it does to probably file as a bug
+                        _ => return,
+                    },
+                };
+            };
 
-                if *friends.read() != friends_list {
-                    log::debug!("updating friends list ");
-                    if let Some(new_disp) = order_friend_list(&friends_list, &mp) {
-                        *friends.write_silent() = friends_list;
-                        disp_friends.set(new_disp);
-                    }
+            let friends_list: HashSet<_> =
+                HashSet::from_iter(mp.list_friends().unwrap_or_default());
+
+            if *friends.read() != friends_list {
+                log::debug!("updating friends list ");
+                if let Some(new_disp) = order_friend_list(&friends_list, &mp) {
+                    *friends.write_silent() = friends_list;
+                    disp_friends.set(new_disp);
                 }
+            }
 
-                tokio::time::sleep(Duration::from_millis(1000)).await;
+            // one can process other events such as event sent, closed, accepted, etc
+            while let Some(event) = stream.next().await {
+                match event {
+                    MultiPassEventKind::FriendAdded { did } => {
+                        friends.write_silent().insert(did);
+                        if let Some(new_disp) = order_friend_list(&friends.read(), &mp) {
+                            disp_friends.set(new_disp);
+                        }
+                    }
+                    MultiPassEventKind::FriendRemoved { did } => {
+                        friends.write_silent().remove(&did);
+                        if let Some(new_disp) = order_friend_list(&friends.read(), &mp) {
+                            disp_friends.set(new_disp);
+                        }
+                    }
+                    _ => {}
+                }
             }
         },
     );
