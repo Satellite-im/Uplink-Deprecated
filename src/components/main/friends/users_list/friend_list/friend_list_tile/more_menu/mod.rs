@@ -12,7 +12,7 @@ pub struct MoreMenuProps {
 #[allow(non_snake_case)]
 pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
     let friend_id = &cx.props.friend.to_string()[8..];
-    let script = include_str!("./more_menu.js").replace("friend_id", &friend_id);
+    let script = include_str!("./more_menu.js").replace("friend_id", friend_id);
 
     let more_memu = rsx!(
             Button {

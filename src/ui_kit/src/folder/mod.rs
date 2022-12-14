@@ -49,7 +49,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let file_over_folder_js = include_str!("./file_over_folder.js").replace("folder-id", folder_id);
     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
 
-    let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
+    let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", folder_id);
 
     use_future(&cx, (&cx.props.storage.clone(), dir_items_len, &cx.props.name.clone()),
      |(file_storage, dir_items_len, current_dir_name)| async move {
@@ -85,7 +85,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
-                            if drop_allowed == false {
+                            if !drop_allowed {
                                 break;
                             }
                             let drag_file_event_in_app = get_drag_file_event_in_app();
@@ -155,7 +155,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 let file_storage = cx.props.storage.clone();
                 let folder_name = &*folder_name_complete_ref.read();
                 let parent_directory = cx.props.parent_directory.clone();
-                match file_storage.open_directory(&folder_name) {
+                match file_storage.open_directory(folder_name) {
                     Ok(directory) => {
                         parent_directory.with_mut(|dir| *dir = directory.clone());
                         log::info!("{folder_name} was opened. {:?}", directory.name());
@@ -182,20 +182,20 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         },
                         onkeyup: move |evt| {
                             if evt.key_code == KeyCode::Escape {
-                                hide_edit_name_element(cx.clone());
+                                hide_edit_name_element(cx);
                             }
                             if evt.key_code == KeyCode::Enter {
                                 let file_storage = cx.props.storage.clone();
                                 let old_folder_name = &*folder_name_complete_ref.read();
                                 let new_folder_name = val.read();
                                 let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
-                                hide_edit_name_element(cx.clone());
+                                hide_edit_name_element(cx);
                                 if !new_folder_name.trim().is_empty() {
                                     cx.spawn({
                                         to_owned![file_storage, old_folder_name, new_folder_name, folder_name_formatted_state, folder_name_complete_ref, parent_directory];
                                         async move {
                                             let new_folder_name = format_args!("{}", new_folder_name.trim()).to_string();
-                                            if let Ok(_) = parent_directory.rename_item(&old_folder_name, &new_folder_name) {
+                                            if parent_directory.rename_item(&old_folder_name, &new_folder_name).is_ok() {
                                                 match file_storage.rename(&old_folder_name, &new_folder_name).await {
                                                     Ok(_) => {
                                                     let new_file_name_fmt =
@@ -238,9 +238,7 @@ fn get_drag_file_event_in_app() -> DragFileInApp {
     drag_file_event_in_app
 }
 
-fn format_folder_name_to_show(folder_name: String) -> String {
-    let mut new_folder_name = folder_name.clone();
-
+fn format_folder_name_to_show(mut new_folder_name: String) -> String {
     if new_folder_name.len() > 10 {
         new_folder_name = match &new_folder_name.get(0..5) {
             Some(name_sliced) => format!(
