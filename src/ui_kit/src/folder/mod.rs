@@ -31,8 +31,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
         State::Secondary => "secondary",
     };
 
-    let children = cx.props.children.clone();
-    let dir_size = format_folder_size(cx.props.size.clone());
+    let children = cx.props.children;
+    let dir_size = format_folder_size(cx.props.size);
 
 
     let folder_name_fmt = format_folder_name_to_show(cx.props.name.clone());
@@ -75,7 +75,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             if let Some(file_name) = drag_file_event_in_app.file_name {
                                 let current_directory = file_storage.current_directory().unwrap_or_default();  
                                 let folder_name = folder_name_complete_ref.with(|name| name.clone());
-                                let directory_target = current_directory.get_item(&folder_name).unwrap().get_directory().unwrap_or_default();
+                               let directory_target = match current_directory.get_item(&folder_name).and_then(|item| item.get_directory()) {
+                                    Ok(dir) => dir,
+                                    _ => return
+                              };
                                 let file = current_directory.get_item(&file_name).unwrap();
                                 match directory_target.add_item(file.clone()) {
                                     Ok(_) => {
@@ -137,7 +140,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             onclick: move |_| {
                 let mut file_storage = cx.props.storage.clone();
                 let folder_name = &*folder_name_complete_ref.read();
-                match file_storage.select(&folder_name) {
+                match file_storage.select(folder_name) {
                     Ok(_) => cx.props.update_current_dir.set(()),
                     Err(error) => log::error!("Error selecting new current directory folder: {error}"),
                 };

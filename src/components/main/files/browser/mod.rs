@@ -90,7 +90,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                     cx.needs_update();
                                     break;
                                 }
-                                file_storage.go_back().unwrap_or_default();
+                                if let Err(error) = file_storage.go_back() {
+                                    log::error!("Error on go back a directory: {error}");
+                                    break;
+                                };
                             }
                         },
                       "{dir_name}"
@@ -110,7 +113,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                         cx.needs_update();
                                         break;
                                     }
-                                    file_storage.go_back().unwrap_or_default();
+                                    if let Err(error) = file_storage.go_back() {
+                                        log::error!("Error on go back a directory: {error}");
+                                        break;
+                                    };
                                 }
                             },
                             Icon {
@@ -143,9 +149,11 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             ),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
-                let dir =  directory.get_directory().unwrap_or_default();
-                let dir_items_len = dir.get_items().len();
-                let dir_size = dir.size();
+                let (dir_items_len, dir_size) =  if let Ok(dir) = directory.get_directory() {
+                    (dir.get_items().len(), dir.size())
+                } else {
+                    (0, 0)
+                };
                     rsx!{
                          div {
                             key: "{key}-placeholder",

@@ -258,7 +258,10 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
     let mut file_storage = file_storage.clone();
     let original = filename.clone();
     let file = PathBuf::from(&original);
-    let current_directory = file_storage.current_directory().unwrap_or_default();
+    let current_directory = match file_storage.current_directory() {
+        Ok(current_dir) => current_dir, 
+        _ => return
+    };
 
     loop {
         if !current_directory.has_item(&filename) {
@@ -367,7 +370,7 @@ async fn set_thumbnail_if_file_is_image(
     file_storage: Storage,
     filename_to_save: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let item = file_storage.current_directory().unwrap().get_item(&filename_to_save)?;
+    let item = file_storage.current_directory()?.get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
     let file = file_storage.get_buffer(&filename_to_save).await?;
