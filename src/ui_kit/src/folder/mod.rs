@@ -2,8 +2,6 @@ use dioxus::{prelude::*, core::to_owned, desktop::use_window};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
-use warp::constellation::directory::{Directory};
-
 use crate::context_menu::{ContextItem, ContextMenu};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
@@ -21,9 +19,9 @@ pub struct Props {
     size: usize,
     // Maximum amount of items something like HFS Plus could store is 2 billion items
     // Seems to align closet to the 32 bit uint range.
-    // children: usize,
+    children: usize,
     storage: Storage,
-    parent_directory: UseRef<Directory>,
+    update_current_dir: UseState<()>,
 }
 
 #[allow(non_snake_case)]
@@ -33,6 +31,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
         State::Secondary => "secondary",
     };
 
+    let children = cx.props.children.clone();
+    let dir_size = format_folder_size(cx.props.size.clone());
+
+
     let folder_name_fmt = format_folder_name_to_show(cx.props.name.clone());
 
     let folder_name_formatted_state = use_state(&cx, || folder_name_fmt);
@@ -40,9 +42,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let folder_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
     let folder_id = use_state(&cx, || cx.props.id.clone());
-    let parent_directory_ref = cx.props.parent_directory.clone();
     let drag_over_folder = use_ref(&cx, || false);
-    let dir_items_len = use_state(&cx, || 0);
 
     let eval_script = use_window(&cx).clone();
 
@@ -50,17 +50,6 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
-
-    use_future(&cx, (&cx.props.storage.clone(), dir_items_len),
-     |(file_storage, dir_items_len)| async move {
-        match file_storage.current_directory() {
-            Ok(current_dir) => {
-                dir_items_len.set(current_dir.get_items().len());
-                log::info!("Update dir {:?} items quantity", current_dir.name());
-            }, 
-            Err(error) => log::error!("Error get items quantity on a directory: {error}")
-        };
-    });
 
     cx.render(rsx! {
          div {
@@ -74,9 +63,8 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 use_eval(&cx)(&file_over_folder_js);
                 *drag_over_folder.write_silent() = true;
                 let file_storage = cx.props.storage.clone();
-                let parent_directory = &*cx.props.parent_directory.read();
                 cx.spawn({
-                    to_owned![parent_directory, file_storage, folder_name_complete_ref, drag_over_folder, eval_script, folder_id];
+                    to_owned![file_storage, folder_name_complete_ref, drag_over_folder, eval_script, folder_id];
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
@@ -85,16 +73,15 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             }
                             let drag_file_event_in_app = get_drag_file_event_in_app();
                             if let Some(file_name) = drag_file_event_in_app.file_name {
-                                let root_directory = file_storage.root_directory();  
+                                let current_directory = file_storage.current_directory().unwrap_or_default();  
                                 let folder_name = folder_name_complete_ref.with(|name| name.clone());
-                                let current_directory = root_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
-                                let file = root_directory.get_item(&file_name).unwrap();
-                                match current_directory.add_item(file.clone()) {
+                                let directory_target = current_directory.get_item(&folder_name).unwrap().get_directory().unwrap();
+                                let file = current_directory.get_item(&file_name).unwrap();
+                                match directory_target.add_item(file.clone()) {
                                     Ok(_) => {
                                         tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                                        match parent_directory.remove_item(&file_name) {
+                                        match current_directory.remove_item(&file_name) {
                                             Ok(_) => {
-                                              
                                                 *drag_over_folder.write_silent() = false;
                                                 // TODO: Remove all files inside this folder
                                                 log::info!("file from directory was deleted.");
@@ -129,8 +116,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             ContextItem {
                                 onpressed: move |_| {
                                     let folder_name = cx.props.name.clone();
-                                    let parent_directory = &*parent_directory_ref.read();
-                                    match parent_directory.remove_item(&folder_name) {
+                                    let file_storage = cx.props.storage.clone();
+                                    let current_directory = file_storage.current_directory().unwrap_or_default();  
+                                    match current_directory.remove_item(&folder_name) {
                                         Ok(_) => {
                                             // TODO: Remove all files inside this folder
                                             log::info!("{folder_name} was deleted.");
@@ -149,17 +137,18 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             onclick: move |_| {
                 let mut file_storage = cx.props.storage.clone();
                 let folder_name = &*folder_name_complete_ref.read();
-                let parent_directory = cx.props.parent_directory.clone();
+                // let parent_directory = cx.props.parent_directory.clone();
                 match file_storage.select(&folder_name) {
                     Ok(_) => {
-                        match file_storage.current_directory() {
-                            Ok(directory) => {
-                                println!("Current dir now is {:?}", directory.name());
-                                parent_directory.with_mut(|dir| *dir = directory.clone());
-                                log::info!("{folder_name} was opened. {:?}", directory.name());
-                            },
-                            Err(error) => println!("Error opening folder: {error}"),
-                        };
+                        cx.props.update_current_dir.set(());
+                        // match file_storage.current_directory() {
+                        //     Ok(directory) => {
+                        //         println!("Current dir now is {:?}", directory.name());
+                        //         parent_directory.with_mut(|dir| *dir = directory.clone());
+                        //         log::info!("{folder_name} was opened. {:?}", directory.name());
+                        //     },
+                        //     Err(error) => println!("Error opening folder: {error}"),
+                        // };
                     },
                     Err(error) => println!("Error selecting new current directory folder: {error}"),
                 };
@@ -217,7 +206,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         }
                     }
                     label {
-                        "{dir_items_len} item(s)"
+                        "{dir_size}"
+                        }
+                    label {
+                        "{children} item(s)"
                         }
                 )
                 } 
@@ -237,6 +229,29 @@ fn hide_edit_name_element(cx: Scope<Props>) {
 fn get_drag_file_event_in_app() -> DragFileInApp {
     let drag_file_event_in_app = DRAG_FILE_IN_APP_EVENT.read().clone();
     drag_file_event_in_app
+}
+
+fn format_folder_size(folder_size: usize) -> String {
+    if folder_size == 0 {
+        return String::from("0 bytes");
+    }
+    let base_1024: f64 = 1024.0;
+    let size_f64: f64 = folder_size as f64;
+
+    let i = (size_f64.log10() / base_1024.log10()).floor();
+    let size_formatted = size_f64 / base_1024.powf(i);
+
+    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
+    let mut size_formatted_string = format!(
+        "{size:.*} {size_suffix}",
+        1,
+        size = size_formatted,
+        size_suffix = file_size_suffix
+    );
+    if size_formatted_string.contains(".0") {
+        size_formatted_string = size_formatted_string.replace(".0", "");
+    }
+    size_formatted_string
 }
 
 fn format_folder_name_to_show(folder_name: String) -> String {

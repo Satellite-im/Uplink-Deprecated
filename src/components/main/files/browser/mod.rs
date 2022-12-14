@@ -4,7 +4,7 @@ use dioxus::{prelude::*, core::to_owned};
 
 use crate::Storage;
 use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
-use warp::constellation::{item::{ItemType}, directory::Directory};
+use warp::constellation::{item::{ItemType}};
 
 use super::FILES_STATE;
 
@@ -13,7 +13,6 @@ pub struct Props {
     account: crate::Account,
     storage: Storage,
     show_new_folder: UseState<bool>,
-    parent_directory: UseRef<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -22,25 +21,28 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
     let current_directory = cx.props.storage.current_directory().unwrap_or_default();
+    let root_directory = cx.props.storage.root_directory();
     let file_system_directories = use_atom_ref(&cx, FILES_STATE);
-
+    let update_current_dir = use_state(&cx, || ());
+    
     cx.spawn({
-        to_owned![file_system_directories, current_directory];
+        to_owned![file_system_directories, current_directory, root_directory];
         async move {
-            let dir_names_vec = file_system_directories.read().clone();
-            let dir_names_vec_len = file_system_directories.read().len().clone();
+            let dir_vec = file_system_directories.read().clone();
+            let dir_len = file_system_directories.read().len().clone();
             let final_dir = file_system_directories.clone().read().last().unwrap().clone();
-            let current_dir_name = current_directory.name().clone();
-            
-            if !dir_names_vec.contains(&current_directory.name()) {
-                file_system_directories.write().insert(dir_names_vec_len, current_directory.name());
+            let current_dir = current_directory.clone();
+
+            if !dir_vec.contains(&current_directory) {
+                file_system_directories.write().insert(dir_len, current_dir.clone());
             } else {
-                if final_dir != current_dir_name && final_dir != "root"  {
-                    file_system_directories.write().remove(dir_names_vec_len - 1);
+                if final_dir != current_dir && final_dir != root_directory  {
+                    file_system_directories.write().remove(dir_len - 1);
                 }
             }
         }
     });
+
 
 
     use_future(
@@ -63,30 +65,29 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            file_system_directories.read().iter().map(|dir_name| {
-                let dir_name2 = dir_name.clone();
+            file_system_directories.read().iter().map(|directory| {
+                let dir_name = directory.name().clone();
+                let dir_id = directory.id().clone();
                 rsx! (
                     h5 {
-                        display: "inline-block",
                         margin_left: "8px",
-                        ">"
-                    },
+                        display: "inline-block",
+                        ">"},
                     h5 {
-                    class : "dir_names_navigation",
+                    class: "dir_paths_navigation",
+                    margin_left: "8px",
                     display: "inline-block",
-                    prevent_default: "onclick",
                     onclick: move |_| {
                         let mut file_storage = cx.props.storage.clone();
                         loop {
                             let current_dir = file_storage.current_directory().unwrap_or_default();
-                            if  current_dir.name() == dir_name2.to_owned() {
+                            if  current_dir.id() == dir_id {
                                 cx.needs_update();
                                 break;
                             }
                             file_storage.go_back().unwrap_or_default();
                         }
                     },
-                    margin_left: "8px",
                   "{dir_name}"
                 })
             }),
@@ -108,6 +109,9 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             ),
             files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
+                let dir =  directory.get_directory().unwrap_or_default();
+                let dir_items_len = dir.get_items().len();
+                let dir_size = dir.size();
                     rsx!{
                          div {
                             key: "{key}-placeholder",
@@ -117,9 +121,10 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             name: directory.name(),
                             state: State::Primary,
                             id: key.to_string(),
-                            size: directory.size(),
+                            size: dir_size,
+                            children: dir_items_len,
                             storage: cx.props.storage.clone(),
-                            parent_directory:  cx.props.parent_directory.clone(),
+                            update_current_dir: update_current_dir.clone(),
                         }}
                
             })
@@ -149,7 +154,6 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             size: file.size(),
                             thumbnail: file.thumbnail(),
                             storage: cx.props.storage.clone(),
-                            parent_directory:  cx.props.parent_directory.clone(),
                         } 
                     }
                    )
