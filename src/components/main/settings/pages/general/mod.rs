@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::{iutils::config::Config, Account};
-use ui_kit::switch::Switch;
+use ui_kit::{input::*, select::*, switch::Switch};
 
 #[derive(Props, PartialEq)]
 pub struct Props {
@@ -36,6 +36,28 @@ pub fn General(cx: Scope<Props>) -> Element {
                             config.general.show_splash = !config.general.show_splash;
                             let _ = config.save();
                         }
+                    }
+                }
+            }
+            div {
+                class: "item",
+                div {
+                    class: "description",
+                    label {
+                        "Theme"
+                    },
+                    p {
+                        "Select a theme for Uplink."
+                    },
+                },
+                div {
+                    class: "interactive",
+                    Select {
+                        on_change: move |_| {},
+                        value: String::from("dark"),
+                        options: vec![
+                            SelectOption { value: String::from("dark"), label: String::from("Dark") },
+                        ]
                     }
                 }
             }

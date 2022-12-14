@@ -15,5 +15,6 @@
     background-color: var(--theme-primary);
     outline: none;
     cursor: pointer;
+    user-select: none;
   }
 }
