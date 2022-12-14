@@ -4,7 +4,7 @@ use utils::Account;
 use warp::multipass::MultiPassEventKind;
 mod friend_list_tile;
 
-use std::{collections::HashSet};
+use std::collections::HashSet;
 
 use crate::{
     components::main::friends::users_list::{
