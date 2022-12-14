@@ -34,11 +34,12 @@ describe("Create Account on Uplink Desktop", async () => {
   })
 
   it("Attempt to use a PIN with more than 6 characters and assert error message", async () => {
-    await (await CreatePinScreen.pinInput).setValue("1234567")
-    await expect(await CreatePinScreen.maxLengthMessage).toBeDisplayed()
-    await expect(await CreatePinScreen.maxLengthMessage).toHaveTextContaining(
-      "Only four to six characters allowed",
-    )
+    await (await CreatePinScreen.pinInput).setValue("1234567890").then(() => {
+      expect(CreatePinScreen.maxLengthMessage).toBeDisplayed()
+      expect(CreatePinScreen.maxLengthMessage).toHaveTextContaining(
+        "Only four to six characters allowed",
+      )
+    })
   })
 
   it("Type a valid PIN with 4 characters and go to next page", async () => {
