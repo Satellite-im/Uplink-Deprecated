@@ -64,6 +64,8 @@ pub struct Language {
     pub start_one: String,
     pub auth_tooltip: String,
     pub new_friend_request: String,
+    pub cancel: String,
+    pub confirm: String,
 }
 
 impl Language {

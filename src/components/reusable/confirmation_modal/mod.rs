@@ -1,8 +1,7 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::outline::Shape;
 use ui_kit::button::Button;
 
-use crate::components::reusable::popout::Popout;
+use crate::{components::reusable::popout::Popout, LANGUAGE};
 
 #[inline_props]
 #[allow(non_snake_case)]
@@ -15,6 +14,7 @@ pub fn ConfirmationModal<'a>(
 ) -> Element<'a> {
     // Log a debug message
     log::debug!("rendering ConfirmationModal");
+    let l = use_atom_ref(&cx, LANGUAGE).read();
 
     let handleConfirmation = move |_| {
         is_visible.set(false);
@@ -25,9 +25,10 @@ pub fn ConfirmationModal<'a>(
        Popout {
            is_visible: is_visible.clone(),
            remote: "confirmation-modal".to_string(),
+           hide_close_button: true,
            div {
                id: "confirmation-modal",
-               h2 {
+               h3 {
                    class: "modal-title",
                    "{title}",
                },
@@ -38,14 +39,14 @@ pub fn ConfirmationModal<'a>(
                div {
                    class: "modal-actions",
                    Button {
-                       icon: Shape::XMark,
+                       text: l.cancel.to_string(),
                        state: ui_kit::button::State::Danger,
                        on_pressed: move |_| {
-                           is_visible.set(false);
+                          is_visible.set(false);
                        }
                    },
                    Button {
-                       icon: Shape::Check,
+                       text: l.confirm.to_string(),
                        on_pressed: handleConfirmation,
                    },
                },
