@@ -150,7 +150,7 @@ impl PersistedState {
                         });
                 self.active_chats
                     .entry(conversation.id())
-                    .or_insert(ci.clone());
+                    .or_insert_with(||ci.clone());
             }
             Actions::RemoveConversation(conversation_id) => {
                 log::debug!("PersistedState: RemoveConversation");
@@ -172,7 +172,7 @@ impl PersistedState {
                 log::debug!("PersistedState: HideChat");
                 match self.active_chats.remove(&conversation_id) {
                     Some(conv) => {
-                        self.all_chats.insert(conversation_id.clone(), conv);
+                        self.all_chats.insert(conversation_id, conv);
                     }
                     None => {
                         log::error!("hide conversation called for non-active chat");
@@ -231,7 +231,7 @@ impl PersistedState {
 
                 self.active_chats
                     .entry(conversation.id())
-                    .or_insert(ci.clone());
+                    .or_insert_with(|| ci.clone());
             }
             Actions::UpdateConversation(info) => {
                 log::debug!("PersistedState: UpdateConversation");

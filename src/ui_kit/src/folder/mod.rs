@@ -49,7 +49,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     let file_over_folder_js = include_str!("./file_over_folder.js").replace("folder-id", folder_id);
     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", folder_id);
 
-    let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", &folder_id);
+    let show_edit_name_script = include_str!("./show_edit_name.js").replace("folder_id", folder_id);
 
     cx.render(rsx! {
          div {
@@ -68,7 +68,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
-                            if drop_allowed == false {
+                            if !drop_allowed {
                                 break;
                             }
                             let drag_file_event_in_app = get_drag_file_event_in_app();
@@ -162,7 +162,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                         },
                         onkeyup: move |evt| {
                             if evt.key_code == KeyCode::Escape {
-                                hide_edit_name_element(cx.clone());
+                                hide_edit_name_element(cx);
                             }
                             if evt.key_code == KeyCode::Enter {
                                 let file_storage = cx.props.storage.clone();

@@ -5,8 +5,7 @@ use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
 
-use super::folder::State;
-use crate::context_menu::{ContextItem, ContextMenu};
+use crate::{context_menu::{ContextItem, ContextMenu}, folder::State};
 use rfd::FileDialog;
 
 // Remember: owned props must implement PartialEq!

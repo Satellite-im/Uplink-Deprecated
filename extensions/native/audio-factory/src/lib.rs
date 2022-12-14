@@ -5,7 +5,7 @@ use sir::css;
 
 use ui_kit::{
     button::{self, Button},
-    select::Select,
+    select::*,
     switch::Switch,
 };
 use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
@@ -276,7 +276,10 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                                 children: cx.render(rsx! {
                                     Select {
                                         on_change: move |_v| {},
-                                        options: vec![String::from("MP4")]
+                                        value: String::from("mp4"),
+                                        options: vec![
+                                            SelectOption { label: String::from("MP4"), value: String::from("mp4") },
+                                        ]
                                     }
                                 })
                             },
@@ -288,8 +291,24 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                             children: cx.render(rsx! {
                                 Select {
                                     on_change: move |_v| {},
+                                    value: String::from("720-30"),
                                     // TODO: Automate this
-                                    options: vec![String::from("8K-120"), String::from("8K-60"), String::from("4K-120"), String::from("4K-60"), String::from("4K-30"), String::from("1080-120"), String::from("1080-60"), String::from("1080-30"), String::from("720-120"), String::from("720-60"), String::from("720-30"), String::from("360-120"), String::from("360-60"), String::from("360-30")]
+                                    options: vec![
+                                        SelectOption { label: String::from("8K-120"), value: String::from("8K-120") },
+                                        SelectOption { label: String::from("8K-60"), value: String::from("8K-60") },
+                                        SelectOption { label: String::from("4K-120"), value: String::from("4K-120") },
+                                        SelectOption { label: String::from("4K-60"), value: String::from("4K-60") },
+                                        SelectOption { label: String::from("4K-30"), value: String::from("4K-30") },
+                                        SelectOption { label: String::from("1080-120"), value: String::from("1080-120") },
+                                        SelectOption { label: String::from("1080-60"), value: String::from("1080-60") },
+                                        SelectOption { label: String::from("1080-30"), value: String::from("1080-30") },
+                                        SelectOption { label: String::from("720-120"), value: String::from("720-120") },
+                                        SelectOption { label: String::from("720-60"), value: String::from("720-60") },
+                                        SelectOption { label: String::from("720-30"), value: String::from("720-30") },
+                                        SelectOption { label: String::from("360-120"), value: String::from("360-120") },
+                                        SelectOption { label: String::from("360-60"), value: String::from("360-60") },
+                                        SelectOption { label: String::from("360-30"), value: String::from("360-30") }
+                                    ]
                                 }
                             })
                         },
@@ -302,7 +321,23 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                                 children: cx.render(rsx! {
                                     Select {
                                         on_change: move |_v| {},
-                                        options: vec![String::from("FFV1"), String::from("FAAC"), String::from("HEVC"), String::from("AAC"), String::from("Ape"), String::from("AIFF"), String::from("FLAC"), String::from("MP3"), String::from("MP4"), String::from("Opus"), String::from("Ogg Vorbis"), String::from("Speex"), String::from("Wav"), String::from("WavPack")]
+                                        value: String::from("mp3"),
+                                        options: vec![
+                                            SelectOption { label: String::from("FFV1"), value: String::from("ffv1") },
+                                            SelectOption { label: String::from("FAAC"), value: String::from("faac") },
+                                            SelectOption { label: String::from("HEVC"), value: String::from("hevc") },
+                                            SelectOption { label: String::from("AAC"), value: String::from("aac") },
+                                            SelectOption { label: String::from("Ape"), value: String::from("ape") },
+                                            SelectOption { label: String::from("AIFF"), value: String::from("aiff") },
+                                            SelectOption { label: String::from("FLAC"), value: String::from("flac") },
+                                            SelectOption { label: String::from("MP3"), value: String::from("mp3") },
+                                            SelectOption { label: String::from("MP4"), value: String::from("mp4") },
+                                            SelectOption { label: String::from("Opus"), value: String::from("opus") },
+                                            SelectOption { label: String::from("Ogg Vorbis"), value: String::from("ogg vorbis") },
+                                            SelectOption { label: String::from("Speex"), value: String::from("speex") },
+                                            SelectOption { label: String::from("Wav"), value: String::from("wav") },
+                                            SelectOption { label: String::from("WavPack"), value: String::from("wavpack") }
+                                        ]
                                     }
                                 })
                             },
@@ -314,7 +349,10 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
                             children: cx.render(rsx! {
                                 Select {
                                     on_change: move |_v| {},
-                                    options: vec![String::from("LOSSLESS")]
+                                    value: String::from("lossless"),
+                                    options: vec![
+                                        SelectOption { label: String::from("LOSSLESS"), value: String::from("lossless") }
+                                    ]
                                 }
                             })
                         },
