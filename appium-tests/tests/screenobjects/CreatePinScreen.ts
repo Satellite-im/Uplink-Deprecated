@@ -13,9 +13,9 @@ const SELECTORS = {
     WORLD_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[2]',
     ERROR_MESSAGE_INVALID_PIN:
-      "//XCUIElementTypeWebView/XCUIElementTypeGroup[4]/XCUIElementTypeStaticText",
+      "-ios predicate string:elementType == 48 AND value == 'Your pin must be at least 4 characters.　'",
     MAX_LENGTH_TEXT:
-      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[4]/XCUIElementTypeButton',
+      "-ios predicate string:elementType == 9 AND title == 'Only four to six characters allowed'",
   },
 }
 
