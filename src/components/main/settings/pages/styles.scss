@@ -1,21 +1,31 @@
 #settings {
+  .wrapper > .content {
+    display: flex;
+    justify-content: center;
+
+    > .padded {
+      max-width: 720px;
+      width: 100%;
+    }
+  }
+
   .item {
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
     width: 100%;
     padding: 1rem 0;
     border-bottom: 1px solid var(--theme-borders);
+    gap: 1rem;
 
     .description {
-      width: 60%;
       text-align: left;
+      flex-grow: 1;
     }
 
     .interactive {
-      width: 40%;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: end;
     }
   }
 
