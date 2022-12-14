@@ -1,6 +1,7 @@
 use std::{collections::HashSet, time::Duration};
 
 use dioxus::{prelude::*, core::to_owned};
+use dioxus_heroicons::{Icon, outline::Shape};
 
 use crate::Storage;
 use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
@@ -62,36 +63,69 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             }
         },
     );
+    let root_dir_id = root_directory.id();
+    let current_dir_items_len = current_directory.get_items().len();
+    let current_dir_size = format_folder_size(current_directory.size());
 
     cx.render(rsx! {
         div {
             file_system_directories.read().iter().map(|directory| {
                 let dir_name = directory.name().clone();
                 let dir_id = directory.id().clone();
-                rsx! (
-                    h5 {
+                if dir_id != root_dir_id {
+                    rsx! (
+                        h5 {
+                            margin_left: "8px",
+                            display: "inline-block",
+                            ">"},
+                        h5 {
+                        class: "dir_paths_navigation",
                         margin_left: "8px",
                         display: "inline-block",
-                        ">"},
-                    h5 {
-                    class: "dir_paths_navigation",
-                    margin_left: "8px",
-                    display: "inline-block",
-                    onclick: move |_| {
-                        let mut file_storage = cx.props.storage.clone();
-                        loop {
-                            let current_dir = file_storage.current_directory().unwrap_or_default();
-                            if  current_dir.id() == dir_id {
-                                cx.needs_update();
-                                break;
+                        onclick: move |_| {
+                            let mut file_storage = cx.props.storage.clone();
+                            loop {
+                                let current_dir = file_storage.current_directory().unwrap_or_default();
+                                if  current_dir.id() == dir_id {
+                                    cx.needs_update();
+                                    break;
+                                }
+                                file_storage.go_back().unwrap_or_default();
                             }
-                            file_storage.go_back().unwrap_or_default();
+                        },
+                      "{dir_name}"
+                    })
+                } else {
+                    rsx!(
+                        div {
+                            class: "dir_paths_navigation",
+                            margin_left: "8px",
+                            padding_top: "4px",
+                            display: "inline-block",
+                            onclick: move |_| {
+                                let mut file_storage = cx.props.storage.clone();
+                                loop {
+                                    let current_dir = file_storage.current_directory().unwrap_or_default();
+                                    if  current_dir.id() == root_dir_id {
+                                        cx.needs_update();
+                                        break;
+                                    }
+                                    file_storage.go_back().unwrap_or_default();
+                                }
+                            },
+                            Icon {
+                                icon: Shape::Home
+                            }
                         }
-                    },
-                  "{dir_name}"
-                })
-            }),
+                    )
+                } 
+            },
+        ),
         }
+        label {
+            margin_left: "8px",
+            "{current_dir_size} / {current_dir_items_len} item(s)"
+            },
         div {
          id: "browser",
             (cx.props.show_new_folder).then(|| 
@@ -160,4 +194,28 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             })
         }
     })
+}
+
+
+fn format_folder_size(folder_size: usize) -> String {
+    if folder_size == 0 {
+        return String::from("0 bytes");
+    }
+    let base_1024: f64 = 1024.0;
+    let size_f64: f64 = folder_size as f64;
+
+    let i = (size_f64.log10() / base_1024.log10()).floor();
+    let size_formatted = size_f64 / base_1024.powf(i);
+
+    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
+    let mut size_formatted_string = format!(
+        "{size:.*} {size_suffix}",
+        1,
+        size = size_formatted,
+        size_suffix = file_size_suffix
+    );
+    if size_formatted_string.contains(".0") {
+        size_formatted_string = size_formatted_string.replace(".0", "");
+    }
+    size_formatted_string
 }
