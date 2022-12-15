@@ -15,7 +15,7 @@ use dioxus_heroicons::outline::Shape;
 
 use futures::StreamExt;
 use ui_kit::button::Button;
-use warp::{ constellation::directory::Directory, error::Error};
+use warp::{error::Error};
 use image::io::Reader as ImageReader;
 use mime::*;
 use rfd::FileDialog;
@@ -29,7 +29,6 @@ pub struct Props<'a> {
     storage: crate::Storage,
     show: bool,
     on_hide: EventHandler<'a, MouseEvent>,
-    parent_directory: UseRef<Directory>,
 }
 
 enum Action {
@@ -45,10 +44,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let file_over_dropzone_js = include_str!("./file_over_dropzone.js");
     let file_leave_dropzone_js = include_str!("./file_leave_dropzone.js");
 
-    let parent_directory_ref = cx.props.parent_directory.clone();
-
     let upload_file_dropped_routine = use_coroutine(&cx, |mut rx: UnboundedReceiver<Action>| {
-        to_owned![parent_directory_ref, file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js];
+        to_owned![file_storage, drag_over_dropzone, eval_script, file_leave_dropzone_js, file_over_dropzone_js];
         async move {
             while let Some(action) = rx.next().await {
                 match action {
@@ -85,14 +82,12 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                             }
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_event {
-                                let parent_directory = &*parent_directory_ref.read();
                                 *drag_over_dropzone.write_silent() = false;
                                 for file_path in &files_local_path {
                                     upload_file(
                                         file_storage.clone(),
                                         file_path.clone(),
                                         eval_script.clone(),
-                                        parent_directory.clone(),
                                     )
                                     .await;
                                     tokio::time::sleep(std::time::Duration::from_millis(150)).await;
@@ -172,10 +167,10 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                 };
                                 let file_storage = cx.props.storage.clone();
                                 cx.spawn({
-                                    to_owned![file_storage, files_local_path, eval_script, parent_directory_ref];
+                                    to_owned![file_storage, files_local_path, eval_script];
                                     async move {
                                         for file_path in &files_local_path {
-                                            upload_file(file_storage.clone(), file_path.clone(), eval_script.clone(), parent_directory_ref.read().clone()).await;
+                                            upload_file(file_storage.clone(), file_path.clone(), eval_script.clone()).await;
                                         }
                                     }
                                 });
@@ -249,7 +244,7 @@ fn get_drag_file_event() -> FileDropEvent {
     drag_file_event
 }
 
-async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext,current_directory: Directory ) {
+async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext) {
     let mut filename = match file_path
         .file_name()
         .map(|file| file.to_string_lossy().to_string())
@@ -263,9 +258,13 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
     let mut file_storage = file_storage.clone();
     let original = filename.clone();
     let file = PathBuf::from(&original);
+    let current_directory = match file_storage.current_directory() {
+        Ok(current_dir) => current_dir, 
+        _ => return
+    };
 
     loop {
-        if !file_storage.root_directory().has_item(&filename) {
+        if !current_directory.has_item(&filename) {
             break;
         }
         let file_extension = file.extension().and_then(OsStr::to_str).map(str::to_string);
@@ -353,19 +352,6 @@ async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: Des
                     }
                 }
             }
-            match file_storage.root_directory().get_item(&filename) {
-                Ok(item) => {
-                    let current_directory_name = current_directory.name();
-                    match current_directory.add_item(item.clone()) {
-                        Ok(_) => {
-                            tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                            log::info!("Added {:?} to current directory {current_directory_name}", item);
-                        },
-                        Err(error) => log::error!("add item to current directory {current_directory_name}: {error}"),
-                    };
-                }, 
-                Err(error) => log::error!("get item from root directory: {error}")
-            };
             match set_thumbnail_if_file_is_image(file_storage.clone(), filename.clone()).await {
                 Ok(success) => log::info!("{:?}", success), 
                 Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
@@ -384,7 +370,7 @@ async fn set_thumbnail_if_file_is_image(
     file_storage: Storage,
     filename_to_save: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let item = file_storage.root_directory().get_item(&filename_to_save)?;
+    let item = file_storage.current_directory()?.get_item(&filename_to_save)?;
     let parts_of_filename: Vec<&str> = filename_to_save.split('.').collect();
 
     let file = file_storage.get_buffer(&filename_to_save).await?;
