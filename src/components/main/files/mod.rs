@@ -90,6 +90,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         account: cx.props.account.clone(),
                         storage: cx.props.storage.clone(),
                         show_new_folder: show_new_folder.clone(),
+                        show_upload:  show_upload.clone(),
                         dir_paths: dir_paths.clone(),
                     }
                     span {

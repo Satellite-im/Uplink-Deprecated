@@ -13,6 +13,7 @@ pub struct Props {
     account: crate::Account,
     storage: Storage,
     show_new_folder: UseState<bool>,
+    show_upload: UseState<bool>,
     dir_paths: UseRef<Vec<PathBuf>>,
 }
 
@@ -28,8 +29,8 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     use_future(
         &cx,
-        (files, files_sorted, &current_directory, &cx.props.storage.clone(), &cx.props.dir_paths.clone()),
-        |(files, files_sorted, current_directory, files_storage, dir_paths)| async move {
+        (files, files_sorted, &current_directory, &cx.props.storage.clone(), &cx.props.dir_paths.clone(), &cx.props.show_upload.clone(), &cx.props.show_new_folder.clone()),
+        |(files, files_sorted, current_directory, files_storage, dir_paths, show_upload, show_new_folder)| async move {
            
             let current_dir_path = files_storage.get_path().clone();
             let dir_paths_vec = dir_paths.with(|vec| vec.clone());
@@ -38,11 +39,16 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
             if !dir_paths_vec.contains(&current_dir_path) {
                 dir_paths.write().insert(dir_paths_len, current_dir_path);
+                show_upload.set(false);
+                show_new_folder.set(false);
             } else {
                 if final_dir_path != current_dir_path {
                     dir_paths.write().remove(dir_paths_len - 1);
+                    show_upload.set(false);
+                    show_new_folder.set(false);
                 }
             } 
+            
 
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
