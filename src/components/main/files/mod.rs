@@ -38,7 +38,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
             .any(|dir_path_buf| dir_path_buf == &path.to_path_buf()) {
             break;
         }
-        dir_paths.write().insert(0, path.to_path_buf());     
+        dir_paths.write_silent().insert(0, path.to_path_buf());     
     };
 
     let st = use_atom_ref(&cx, STATE).clone();

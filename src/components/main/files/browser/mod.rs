@@ -21,35 +21,19 @@ pub struct Props {
 pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     let files = use_ref(&cx, HashSet::new);
-    let files_sorted = use_state(&cx, Vec::new);
+    let files_sorted = use_ref(&cx, Vec::new);
     let root_directory = cx.props.storage.root_directory();
     let current_directory = cx.props.storage.current_directory().unwrap_or(root_directory.clone());
     let update_current_dir = use_state(&cx, || ());
     let dir_paths = cx.props.dir_paths.clone();
 
+    load_files_in_current_direcotry(&current_directory, files_sorted, files); 
+    load_dir_navigation_logic(cx, &dir_paths);
+
     use_future(
         &cx,
-        (files, files_sorted, &current_directory, &cx.props.storage.clone(), &cx.props.dir_paths.clone(), &cx.props.show_upload.clone(), &cx.props.show_new_folder.clone()),
-        |(files, files_sorted, current_directory, files_storage, dir_paths, show_upload, show_new_folder)| async move {
-           
-            let current_dir_path = files_storage.get_path().clone();
-            let dir_paths_vec = dir_paths.with(|vec| vec.clone());
-            let dir_paths_len = dir_paths.read().len().clone();
-            let final_dir_path = dir_paths.read().last().unwrap().clone();
-
-            if !dir_paths_vec.contains(&current_dir_path) {
-                dir_paths.write().insert(dir_paths_len, current_dir_path);
-                show_upload.set(false);
-                show_new_folder.set(false);
-            } else {
-                if final_dir_path != current_dir_path {
-                    dir_paths.write().remove(dir_paths_len - 1);
-                    show_upload.set(false);
-                    show_new_folder.set(false);
-                }
-            } 
-            
-
+        (files, files_sorted, &current_directory),
+        |(files, files_sorted, current_directory)| async move {
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
                 if *files.read() != files_updated {
@@ -57,16 +41,18 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                     *files.write_silent() = files_updated.clone();
                     let mut total_files_list: Vec<_> = files_updated.iter().cloned().collect();
                     total_files_list.sort_by_key(|b| std::cmp::Reverse(b.modified()));
-                    files_sorted.set(total_files_list);
+                    *files_sorted.write() = total_files_list;
                 }
                 tokio::time::sleep(Duration::from_secs(1)).await;
             }
         },
     );
+
     let root_dir_id = root_directory.id();
     let current_dir_items_len = current_directory.get_items().len();
     let current_dir_size = format_folder_size(current_directory.size());
 
+    println!("Render");
     cx.render(rsx! {
         div {
             dir_paths.read().iter().map(|current_dir_path| {
@@ -126,7 +112,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                 }
             )
             ),
-            files_sorted.iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
+            files_sorted.read().iter().filter(|item| item.item_type() == ItemType::DirectoryItem).map(|directory| {
                 let key = directory.id();
                 let (dir_items_len, dir_size) =  if let Ok(dir) = directory.get_directory() {
                     (dir.get_items().len(), dir.size())
@@ -149,7 +135,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         }}
                
             })
-            files_sorted.iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
+            files_sorted.read().iter().filter(|item| item.item_type() == ItemType::FileItem).map(|file| {
                 let file_extension = std::path::Path::new(&file.name())
                     .extension()
                     .unwrap_or_else(|| std::ffi::OsStr::new(""))
@@ -181,6 +167,38 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
             })
         }
     })
+
+    
+}
+
+fn load_files_in_current_direcotry(current_directory: &warp::constellation::directory::Directory, 
+    files_sorted: &UseRef<Vec<warp::constellation::item::Item>>, files: &UseRef<HashSet<warp::constellation::item::Item>>) {
+    let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
+    if files_sorted.read().is_empty() || *files.read() != files_updated {
+        log::debug!("updating files list");
+        *files.write_silent() = files_updated.clone();
+        let mut total_files_list: Vec<_> = files_updated.iter().cloned().collect();
+        total_files_list.sort_by_key(|b| std::cmp::Reverse(b.modified()));
+        *files_sorted.write_silent() = total_files_list;
+    }
+}
+
+fn load_dir_navigation_logic(cx: Scope<Props>, dir_paths: &UseRef<Vec<PathBuf>>) {
+    let current_dir_path = cx.props.storage.get_path().clone();
+    let dir_paths_vec = dir_paths.with(|vec| vec.clone());
+    let dir_paths_len = dir_paths.read().len().clone();
+    let final_dir_path = dir_paths.read().last().unwrap().clone();
+    if !dir_paths_vec.contains(&current_dir_path) {
+        dir_paths.write_silent().insert(dir_paths_len, current_dir_path);
+    // show_upload.set(false);
+    // show_new_folder.set(false);
+        } else {
+    if final_dir_path != current_dir_path {
+        dir_paths.write_silent().remove(dir_paths_len - 1);
+        // show_upload.set(false);
+        // show_new_folder.set(false);
+    }
+        }
 }
 
 
