@@ -1,5 +1,3 @@
-use std::{time::Duration, collections::HashSet};
-
 use dioxus::prelude::*;
 
 use crate::{
@@ -31,48 +29,18 @@ pub struct Props {
 pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
+    let dir_paths = use_ref(&cx, Vec::new);
+    let current_dir_pathbuf = cx.props.storage.get_path();
+    let mut current_dir_path = current_dir_pathbuf.as_path().ancestors();
 
-    let file_storage = cx.props.storage.clone();
+    while let Some(path) = current_dir_path.next() {
+        if dir_paths.read().iter()
+            .any(|dir_path_buf| dir_path_buf == &path.to_path_buf()) {
+            break;
+        }
+        dir_paths.write().insert(0, path.to_path_buf());     
+    };
 
-    let root_directory = file_storage.root_directory();   
-
-    let parent_directory = use_ref(&cx, || root_directory.clone());
-    let parent_dir_items = use_ref(&cx,  HashSet::new);
-    
-    use_future(&cx, (&file_storage, parent_directory, parent_dir_items), 
-    |(mut file_storage, parent_directory, parent_dir_items)| 
-    async move {
-      let parent_dir = parent_directory.with(|dir| dir.clone());
-      if parent_dir.name().eq("root") {
-        loop {
-            match file_storage.root_directory().get_item("main_directory") {
-                Ok(item) => {
-                    match item.get_directory() {
-                        Ok(directory) => {
-                            parent_directory.with_mut(|dir| *dir = directory.clone());
-                            parent_dir_items.with_mut(|_| directory.get_items());
-                            log::info!("Main directory was opened. {:?}", directory.name());
-                            break;
-                        },
-                        Err(error) => log::error!("Error getting item as directory: {error}"),
-                    };
-                }, 
-                Err(error) => {
-                    match file_storage.create_directory("main_directory", true).await {
-                        Ok(_) => {
-                            log::info!("main directory created.")
-                        },
-                        Err(error) => log::error!("Error creating main directory: {error}"),
-                    };
-                    log::error!("get item from root directory: {error}");}
-            };
-            tokio::time::sleep(Duration::from_millis(500)).await;
-    
-           }
-      }
-    
-        });
-        
     let st = use_atom_ref(&cx, STATE).clone();
     let sidebar_visibility = match st.read().hide_sidebar {
         false => "mobile-sidebar-visible",
@@ -116,15 +84,14 @@ pub fn Files(cx: Scope<Props>) -> Element {
                             storage: cx.props.storage.clone(),
                             show: **show_upload,
                             on_hide: move |_| show_upload.set(false),
-                            parent_directory: parent_directory.clone()
                         },
                     },
                     FileBrowser {
                         account: cx.props.account.clone(),
                         storage: cx.props.storage.clone(),
                         show_new_folder: show_new_folder.clone(),
-                        parent_directory: parent_directory.clone(),
-                        parent_dir_items: parent_dir_items.with(|i| i.clone()),
+                        show_upload:  show_upload.clone(),
+                        dir_paths: dir_paths.clone(),
                     }
                     span {
                         class: "hidden-on-desktop mobile-nav",

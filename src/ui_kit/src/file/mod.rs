@@ -4,10 +4,8 @@ use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
 use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
-use warp::constellation::directory::Directory;
 
-use super::folder::State;
-use crate::context_menu::{ContextItem, ContextMenu};
+use crate::{context_menu::{ContextItem, ContextMenu}, folder::State};
 use rfd::FileDialog;
 
 // Remember: owned props must implement PartialEq!
@@ -20,7 +18,6 @@ pub struct Props {
     size: usize,
     thumbnail: String,
     storage: Storage,
-    parent_directory: UseRef<Directory>,
 }
 
 #[allow(non_snake_case)]
@@ -40,8 +37,6 @@ pub fn File(cx: Scope<Props>) -> Element {
 
     let file_size = format_file_size(cx.props.size);
     let file_thumb = &cx.props.thumbnail.clone();
-
-    let parent_directory_ref = cx.props.parent_directory.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
     let file_component = if cx.props.thumbnail.is_empty() {
@@ -113,18 +108,12 @@ pub fn File(cx: Scope<Props>) -> Element {
                                         hide_edit_name_element(cx);
                                         let file_storage = cx.props.storage.clone();
                                         let file_name = &*file_name_complete_ref.read();
-                                        let parent_directory = &*parent_directory_ref.read();
                                         cx.spawn({
-                                            to_owned![file_storage, file_name, parent_directory];
+                                            to_owned![file_storage, file_name];
                                             async move {
                                                 match file_storage.remove(&file_name, true).await {
-                                                    Ok(_) => {
-                                                        if let Err(error) = parent_directory.remove_item(&file_name) {
-                                                            log::error!("Error removing file from directory: {}, error: {error}", parent_directory.name());
-                                                        }
-                                                        log::info!("{file_name} was deleted.");
-                                                    },
-                                                    Err(error) => log::info!("Error deleting file: {error}"),
+                                                    Ok(_) => log::info!("{file_name} was deleted."),
+                                                    Err(error) => log::error!("Error deleting file: {error}"),
                                                 };
                                             }
                                         });
@@ -168,32 +157,23 @@ pub fn File(cx: Scope<Props>) -> Element {
                                     let old_file_name = &*file_name_complete_ref.read();
                                     let file_extension = cx.props.kind.clone();
                                     let new_file_name = val.read();
-                                    let parent_directory = cx.props.parent_directory.with(|dir| dir.clone());
                                     hide_edit_name_element(cx);
 
                                     if !new_file_name.trim().is_empty() {
-
                                         cx.spawn({
-                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref, parent_directory];
+                                            to_owned![file_storage, old_file_name, new_file_name, file_extension, file_name_formatted_state, file_name_complete_ref];
                                             async move {
                                                 let new_file_name_with_extension = format_args!("{}.{}", new_file_name.trim(), file_extension.clone()).to_string();
-                                                if parent_directory.rename_item(&old_file_name, &new_file_name_with_extension).is_ok() {
                                                     match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
                                                         Ok(_) => {
                                                         let new_file_name_fmt =
                                                             format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
-    
                                                             *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
                                                             file_name_formatted_state.set(new_file_name_fmt);
-    
-    
                                                             log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
                                                         },
                                                         Err(error) => log::error!("Error renaming file: {error}"),
                                                     };
-                                                }
-
-                                               
                                             }
                                         });
 

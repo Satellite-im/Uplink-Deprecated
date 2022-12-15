@@ -38,3 +38,13 @@
     }
   }
 }
+
+.dir_paths_navigation {
+  justify-content: center;
+
+  &:hover {
+    color: var(--theme-primary);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
