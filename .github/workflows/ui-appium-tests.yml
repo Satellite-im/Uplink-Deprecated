@@ -36,13 +36,13 @@ jobs:
           profile: minimal
           override: true
 
-      # - name: Install Protobuf
-      ## Only if on github runners, self host not needed
-      #   continue-on-error: true
-      #   run: |
-      #     brew update
-      #     brew install protobuf
-      #     brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
+      - name: Install Protobuf
+        # Only if on github runners, self host not needed
+        continue-on-error: true
+        run: |
+          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install protobuf
+          brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
 
       - name: Add Targets
         env:
