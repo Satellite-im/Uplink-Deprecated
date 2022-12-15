@@ -29,33 +29,29 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        shell: zsh {0}
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
+      # - name: Install Rust
+      #   uses: actions-rs/toolchain@v1
+      #   with:
+      #     toolchain: stable
+      #     profile: minimal
+      #     override: true
 
-      - name: Install Protobuf
-        continue-on-error: true
-        shell: zsh {0}
-        run: |
-          pwd
-          brew update
-          brew install protobuf
-          brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
+      # - name: Install Protobuf
+      ## Only if on github runners, self host not needed
+      #   continue-on-error: true
+      #   run: |
+      #     brew update
+      #     brew install protobuf
+      #     brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
 
       - name: Add Targets
         env:
           MACOSX_DEPLOYMENT_TARGET: "11.7.1"
-        shell: zsh {0}
         run: |
-          rustup target add x86_64-apple-darwin aarch64-apple-darwin
+          rustup target add aarch64-apple-darwin
 
       - name: Make Build for Appium to run
         continue-on-error: true
-        shell: zsh {0}
         run: |
           make dmg SIGNING_KEY=LOCAL
 
