@@ -58,7 +58,7 @@ jobs:
           make dmg SIGNING_KEY=LOCAL
 
       - name: Copy App to Applications Folder
-        working-directory: appium-tests/apps
+        continue-on-error: true
         run: |
           rm -rf /Applications/Uplink.app
           cp -r target/release/macos/Uplink.app /Applications/
