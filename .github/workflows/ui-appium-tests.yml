@@ -73,6 +73,7 @@ jobs:
           cd appium-tests && npm install
 
       - name: Install and Run Appium Server 📱
+        continue-on-error: true
         run: |
           chmod +x ./appium-tests/scripts/run_appium_macos_server.sh
           ./appium-tests/scripts/run_appium_macos_server.sh
