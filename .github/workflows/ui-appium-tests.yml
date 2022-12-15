@@ -39,6 +39,7 @@ jobs:
       - name: Install Protobuf
         continue-on-error: true
         run: |
+          pwd
           brew update
           brew install protobuf
           brew install cmake rustup-init gstreamer gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav gst-rtsp-server gst-editing-services
