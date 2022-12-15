@@ -31,6 +31,7 @@ jobs:
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
+        shell: zsh {0}
         with:
           toolchain: stable
           profile: minimal
@@ -38,6 +39,7 @@ jobs:
 
       - name: Install Protobuf
         continue-on-error: true
+        shell: zsh {0}
         run: |
           pwd
           brew update
@@ -47,11 +49,13 @@ jobs:
       - name: Add Targets
         env:
           MACOSX_DEPLOYMENT_TARGET: "11.7.1"
+        shell: zsh {0}
         run: |
           rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
       - name: Make Build for Appium to run
         continue-on-error: true
+        shell: zsh {0}
         run: |
           make dmg SIGNING_KEY=LOCAL
 
