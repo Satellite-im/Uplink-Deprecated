@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use warp::constellation::{directory::Directory};
 
 use crate::{
     components::main::files::{
@@ -13,8 +12,6 @@ use crate::{
 use utils::DRAG_FILE_EVENT;
 #[cfg(target_os = "windows")]
 use dioxus::desktop::wry::webview::FileDropEvent;
-
-pub static FILES_STATE: AtomRef<Vec<Directory>> = |_| Vec::new();
 
 pub mod browser;
 pub mod sidebar;
@@ -32,17 +29,18 @@ pub struct Props {
 pub fn Files(cx: Scope<Props>) -> Element {
     let show_new_folder = use_state(&cx, || false);
     let show_upload = use_state(&cx, || false);
+    let dir_paths = use_ref(&cx, Vec::new);
+    let current_dir_pathbuf = cx.props.storage.get_path();
+    let mut current_dir_path = current_dir_pathbuf.as_path().ancestors();
 
-    let file_storage = cx.props.storage.clone();
-        
-    let root_dir = file_storage.root_directory();
+    while let Some(path) = current_dir_path.next() {
+        if dir_paths.read().iter()
+            .any(|dir_path_buf| dir_path_buf == &path.to_path_buf()) {
+            break;
+        }
+        dir_paths.write().insert(0, path.to_path_buf());     
+    };
 
-    let files_state = use_atom_ref(&cx, FILES_STATE).clone();
-
-    if files_state.read().is_empty() {
-        files_state.write().insert(0, root_dir.clone());
-    }
-        
     let st = use_atom_ref(&cx, STATE).clone();
     let sidebar_visibility = match st.read().hide_sidebar {
         false => "mobile-sidebar-visible",
@@ -92,6 +90,7 @@ pub fn Files(cx: Scope<Props>) -> Element {
                         account: cx.props.account.clone(),
                         storage: cx.props.storage.clone(),
                         show_new_folder: show_new_folder.clone(),
+                        dir_paths: dir_paths.clone(),
                     }
                     span {
                         class: "hidden-on-desktop mobile-nav",

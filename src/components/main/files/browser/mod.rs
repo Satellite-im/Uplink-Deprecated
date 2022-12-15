@@ -1,19 +1,19 @@
-use std::{collections::HashSet, time::Duration};
+use std::{collections::HashSet, time::Duration, path::{PathBuf, Path}};
 
-use dioxus::{prelude::*, core::to_owned};
+use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
 
 use crate::Storage;
 use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
 use warp::constellation::{item::{ItemType}};
-
-use super::FILES_STATE;
+mod lib;
 
 #[derive(Props, PartialEq)]
 pub struct Props {
     account: crate::Account,
     storage: Storage,
     show_new_folder: UseState<bool>,
+    dir_paths: UseRef<Vec<PathBuf>>,
 }
 
 #[allow(non_snake_case)]
@@ -21,35 +21,29 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
-    let current_directory = cx.props.storage.current_directory().unwrap_or_default();
     let root_directory = cx.props.storage.root_directory();
-    let file_system_directories = use_atom_ref(&cx, FILES_STATE);
+    let current_directory = cx.props.storage.current_directory().unwrap_or(root_directory.clone());
     let update_current_dir = use_state(&cx, || ());
-    
-    cx.spawn({
-        to_owned![file_system_directories, current_directory, root_directory];
-        async move {
-            let dir_vec = file_system_directories.read().clone();
-            let dir_len = file_system_directories.read().len().clone();
-            let final_dir = file_system_directories.clone().read().last().unwrap().clone();
-            let current_dir = current_directory.clone();
-
-            if !dir_vec.contains(&current_directory) {
-                file_system_directories.write().insert(dir_len, current_dir.clone());
-            } else {
-                if final_dir != current_dir && final_dir != root_directory  {
-                    file_system_directories.write().remove(dir_len - 1);
-                }
-            }
-        }
-    });
-
-
+    let dir_paths = cx.props.dir_paths.clone();
 
     use_future(
         &cx,
-        (files, files_sorted, &current_directory),
-        |(files, files_sorted, current_directory)| async move {
+        (files, files_sorted, &current_directory, &cx.props.storage.clone(), &cx.props.dir_paths.clone()),
+        |(files, files_sorted, current_directory, files_storage, dir_paths)| async move {
+            
+            let current_dir_path = files_storage.get_path().clone();
+            let dir_paths_vec = dir_paths.with(|vec| vec.clone());
+            let dir_paths_len = dir_paths.read().len().clone();
+            let final_dir_path = dir_paths.read().last().unwrap().clone();
+
+            if !dir_paths_vec.contains(&current_dir_path) {
+                dir_paths.write().insert(dir_paths_len, current_dir_path);
+            } else {
+                if final_dir_path != current_dir_path {
+                    dir_paths.write().remove(dir_paths_len - 1);
+                }
+            } 
+
             loop {
                 let files_updated: HashSet<_> = HashSet::from_iter(current_directory.get_items());
                 if *files.read() != files_updated {
@@ -69,9 +63,15 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
-            file_system_directories.read().iter().map(|directory| {
+            dir_paths.read().iter().map(|current_dir_path| {
+                let directory = match root_directory.get_item_by_path(&current_dir_path.to_str().unwrap_or_default())
+                .and_then(|item| item.get_directory()) {
+                    Ok(dir) => {dir},
+                    _ => root_directory.clone(),
+                };
                 let dir_name = directory.name().clone();
                 let dir_id = directory.id().clone();
+                
                 if dir_id != root_dir_id {
                     rsx! (
                         h5 {
@@ -82,20 +82,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                         class: "dir_paths_navigation",
                         margin_left: "8px",
                         display: "inline-block",
-                        onclick: move |_| {
-                            let mut file_storage = cx.props.storage.clone();
-                            loop {
-                                let current_dir = file_storage.current_directory().unwrap_or_default();
-                                if  current_dir.id() == dir_id {
-                                    cx.needs_update();
-                                    break;
-                                }
-                                if let Err(error) = file_storage.go_back() {
-                                    log::error!("Error on go back a directory: {error}");
-                                    break;
-                                };
-                            }
-                        },
+                        onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), dir_id),
                       "{dir_name}"
                     })
                 } else {
@@ -105,20 +92,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             margin_left: "8px",
                             padding_top: "4px",
                             display: "inline-block",
-                            onclick: move |_| {
-                                let mut file_storage = cx.props.storage.clone();
-                                loop {
-                                    let current_dir = file_storage.current_directory().unwrap_or_default();
-                                    if  current_dir.id() == root_dir_id {
-                                        cx.needs_update();
-                                        break;
-                                    }
-                                    if let Err(error) = file_storage.go_back() {
-                                        log::error!("Error on go back a directory: {error}");
-                                        break;
-                                    };
-                                }
-                            },
+                            onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), dir_id),
                             Icon {
                                 icon: Shape::Home
                             }
@@ -227,3 +201,4 @@ fn format_folder_size(folder_size: usize) -> String {
     }
     size_formatted_string
 }
+
