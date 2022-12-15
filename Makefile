@@ -33,7 +33,11 @@ $(TARGET)-universal:
 	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --release --target=x86_64-apple-darwin
 	MACOSX_DEPLOYMENT_TARGET="10.11" cargo build --release --target=aarch64-apple-darwin
 	@lipo target/{x86_64,aarch64}-apple-darwin/release/$(TARGET) -create -output $(APP_BINARY)
+ifeq ($(SIGNING_KEY),LOCAL)
+	@echo "Local Build, no signing"
+else
 	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s $(SIGNING_KEY) $(APP_BINARY)
+endif
 app: $(APP_NAME)-native ## Create a Uplink.app
 app-universal: $(APP_NAME)-universal ## Create a universal Uplink.app
 $(APP_NAME)-%: $(TARGET)-%
@@ -45,7 +49,11 @@ $(APP_NAME)-%: $(TARGET)-%
 	@echo "Created '$(APP_NAME)' in '$(APP_DIR)'"
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Info.plist
 	xattr -c $(APP_DIR)/$(APP_NAME)/Contents/Resources/uplink.icns
+ifeq ($(SIGNING_KEY),LOCAL)
+	@echo "Local Build, no signing"
+else
 	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s $(SIGNING_KEY) $(APP_DIR)/$(APP_NAME)
+endif
 dmg: $(DMG_NAME)-native ## Create a Uplink.dmg
 dmg-universal: $(DMG_NAME)-universal ## Create a universal Uplink.dmg
 $(DMG_NAME)-%: $(APP_NAME)-%
@@ -57,7 +65,11 @@ $(DMG_NAME)-%: $(APP_NAME)-%
 		-srcfolder $(APP_DIR) \
 		-ov -format UDZO
 	@echo "Packed '$(APP_NAME)' in '$(APP_DIR)'"
+ifeq ($(SIGNING_KEY),LOCAL)
+	@echo "Local Build, no signing"
+else
 	/usr/bin/codesign -vvv --deep --entitlements $(ASSETS_DIR)/entitlements.plist --strict --options=runtime --force -s $(SIGNING_KEY) $(DMG_DIR)/$(DMG_NAME)
+endif
 install: $(INSTALL)-native ## Mount disk image
 install-universal: $(INSTALL)-native ## Mount universal disk image
 $(INSTALL)-%: $(DMG_NAME)-%
