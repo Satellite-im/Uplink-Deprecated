@@ -23,6 +23,7 @@ config.capabilities = [
       command: 'do shell script "rm -rf ~/.warp"',
     },
     // @ts-ignore
+    "appium:showServerLogs": true,
     "appium:bundleId": "im.satellite.uplink",
     "appium:newCommandTimeout": 240,
   },

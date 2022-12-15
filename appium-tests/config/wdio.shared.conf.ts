@@ -145,10 +145,12 @@ export const config: WebdriverIO.Config = {
     if (error) {
       let imageFile = await driver.takeScreenshot()
       let imageFolder
-      if (driver.isAndroid) {
-        imageFolder = join(process.cwd(), "./test-results/android", test.parent)
+      if (driver.capabilities["automationName"] === "mac2") {
+        imageFolder = join(process.cwd(), "./test-results/macos", test.parent)
+      } else if (driver.capabilities["automationName"] === "windows") {
+        imageFolder = join(process.cwd(), "./test-results/windows", test.parent)
       } else {
-        imageFolder = join(process.cwd(), "./test-results/ios", test.parent)
+        imageFolder = join(process.cwd(), "./test-results/ubuntu", test.parent)
       }
       await mkdirp(imageFolder)
       await fsp.writeFile(
