@@ -1,4 +1,4 @@
-use std::{collections::HashSet, time::Duration, path::{PathBuf, Path}};
+use std::{collections::HashSet, time::Duration, path::{PathBuf}};
 
 use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
@@ -26,11 +26,13 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let update_current_dir = use_state(&cx, || ());
     let dir_paths = cx.props.dir_paths.clone();
 
+
+
     use_future(
         &cx,
         (files, files_sorted, &current_directory, &cx.props.storage.clone(), &cx.props.dir_paths.clone()),
         |(files, files_sorted, current_directory, files_storage, dir_paths)| async move {
-            
+           
             let current_dir_path = files_storage.get_path().clone();
             let dir_paths_vec = dir_paths.with(|vec| vec.clone());
             let dir_paths_len = dir_paths.read().len().clone();
@@ -64,41 +66,40 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     cx.render(rsx! {
         div {
             dir_paths.read().iter().map(|current_dir_path| {
-                let directory = match root_directory.get_item_by_path(&current_dir_path.to_str().unwrap_or_default())
+              if let Ok(directory) = root_directory.get_item_by_path(&current_dir_path.to_str().unwrap_or_default())
                 .and_then(|item| item.get_directory()) {
-                    Ok(dir) => {dir},
-                    _ => root_directory.clone(),
-                };
-                let dir_name = directory.name().clone();
-                let dir_id = directory.id().clone();
-                
-                if dir_id != root_dir_id {
-                    rsx! (
-                        h5 {
-                            margin_left: "8px",
-                            display: "inline-block",
-                            ">"},
-                        h5 {
-                        class: "dir_paths_navigation",
-                        margin_left: "8px",
-                        display: "inline-block",
-                        onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), dir_id),
-                      "{dir_name}"
-                    })
-                } else {
-                    rsx!(
-                        div {
+                    let dir_name = directory.name().clone();
+                    let dir_id = directory.id().clone();
+                        rsx! (
+                            h5 {
+                                margin_left: "8px",
+                                display: "inline-block",
+                                ">"},
+                            h5 {
                             class: "dir_paths_navigation",
                             margin_left: "8px",
-                            padding_top: "4px",
                             display: "inline-block",
                             onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), dir_id),
-                            Icon {
-                                icon: Shape::Home
+                          "{dir_name}"
+                        })
+                } else {
+                    if current_dir_path.to_string_lossy().to_string().is_empty() {
+                        rsx!(
+                            div {
+                                class: "dir_paths_navigation",
+                                margin_left: "8px",
+                                padding_top: "4px",
+                                display: "inline-block",
+                                onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), root_dir_id),
+                                Icon {
+                                    icon: Shape::Home
+                                }
                             }
-                        }
-                    )
-                } 
+                        )
+                    } else {
+                        rsx!(div{})
+                    }
+                }
             },
         ),
         }
