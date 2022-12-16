@@ -19,19 +19,21 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await expect(await FilesScreen.filesTitle).toHaveTextContaining("Files")
     await expect(await FilesScreen.folderName).toBeDisplayed()
     await expect(await FilesScreen.folderName).toHaveTextContaining("Folder 1")
-    // Following lines needs to be changed after the latest merge affecting Files functionalities
-    /*await expect(await FilesScreen.mainDirectoryText).toBeDisplayed()
-    await expect(await FilesScreen.mainDirectoryText).toHaveTextContaining(
-      "main_directory",
-    )
+    await expect(await FilesScreen.homeDirectoryButton).toBeDisplayed()
+    await expect(await FilesScreen.usedSpaceFolderText).toBeDisplayed()
+    await expect(await FilesScreen.usedSpaceFolderText).toHaveTextContaining([
+      /[. 0-9]+bytes /,
+      "/ ",
+      /. 0-9]+item\(s\)/i,
+    ])
     await expect(await FilesScreen.availableSpaceIndicatorText).toBeDisplayed()
     await expect(
       await FilesScreen.availableSpaceIndicatorText,
-    ).toHaveTextContaining("Free")
+    ).toHaveTextContaining(/[. 0-9] Free/i)
     await expect(await FilesScreen.usedSpaceIndicatorText).toBeDisplayed()
     await expect(await FilesScreen.usedSpaceIndicatorText).toHaveTextContaining(
-      "GB / ",
-    )*/
+      [/[. 0-9]+(KB|MB|GB) /, "/ ", /. 0-9]+(KB|MB|GB)/i],
+    )
   })
 
   it("Click on Folder 1 and validate that subfolders are displayed", async () => {

@@ -1,9 +1,6 @@
 import AppScreen from "./AppScreen"
 import { customPredicateString } from "./../helpers/commands"
 
-const regExAvailableSpace: string = "‘[. 0-9]+(KB|MB|GB) / [. 0-9]+(KB|MB|GB)’"
-const regExUsedSpace: string = "‘[. 0-9] Free’"
-
 const SELECTORS = {
   MACOS: {
     WINDOW: "-ios class chain:**/XCUIElementTypeWindow",
@@ -12,13 +9,30 @@ const SELECTORS = {
     SUBFOLDER_ONE_NAME: customPredicateString("48", "value", "Subdir1"),
     SUBFOLDER_TWO_NAME: customPredicateString("48", "value", "Subdir2"),
     SUBFOLDER_THREE_NAME: customPredicateString("48", "value", "f3"),
-    MAIN_DIRECTORY_TEXT: customPredicateString("48", "value", "main_directory"),
+    HOME_DIRECTORY_BUTTON:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[7]/XCUIElementTypeGroup',
+    USED_SPACE_FOLDER_TEXT: customPredicateString(
+      "48",
+      "value",
+      "bytes",
+      "CONTAINS",
+    ),
     AVAILABLE_SPACE_INDICATOR_BAR:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[3]',
-    AVAILABLE_SPACE_INDICATOR_TEXT: `-ios predicate string:elementType == 48 AND value MATCHES ${regExAvailableSpace}`,
+    AVAILABLE_SPACE_INDICATOR_TEXT: customPredicateString(
+      "48",
+      "value",
+      "Free",
+      "CONTAINS",
+    ),
     USED_SPACE_INDICATOR_BAR:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[4]',
-    USED_SPACE_INDICATOR_TEXT: `-ios predicate string:elementType == 48 AND value MATCHES ${regExUsedSpace}`,
+    USED_SPACE_INDICATOR_TEXT: customPredicateString(
+      "48",
+      "value",
+      "GB",
+      "CONTAINS",
+    ),
     DELETE_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[5]',
     ADD_FOLDER_BUTTON:
@@ -53,24 +67,28 @@ class FilesScreen extends AppScreen {
     return $(SELECTORS.MACOS.FOLDER_NAME)
   }
 
-  get mainDirectoryText() {
-    return $(SELECTORS.MACOS.MAIN_DIRECTORY_TEXT)
+  get homeDirectoryButton() {
+    return $(SELECTORS.MACOS.HOME_DIRECTORY_BUTTON)
+  }
+
+  get usedSpaceFolderText() {
+    return $$(SELECTORS.MACOS.USED_SPACE_FOLDER_TEXT)[0]
   }
 
   get availableSpaceIndicatorBar() {
-    return $(SELECTORS.MACOS.AVAILABLE_SPACE_INDICATOR_BAR)
+    return $$(SELECTORS.MACOS.AVAILABLE_SPACE_INDICATOR_BAR)[0]
   }
 
   get availableSpaceIndicatorText() {
-    return $(SELECTORS.MACOS.AVAILABLE_SPACE_INDICATOR_TEXT)
+    return $$(SELECTORS.MACOS.AVAILABLE_SPACE_INDICATOR_TEXT)[0]
   }
 
   get usedSpaceIndicatorBar() {
-    return $(SELECTORS.MACOS.USED_SPACE_INDICATOR_BAR)
+    return $$(SELECTORS.MACOS.USED_SPACE_INDICATOR_BAR)[0]
   }
 
   get usedSpaceIndicatorText() {
-    return $(SELECTORS.MACOS.USED_SPACE_INDICATOR_TEXT)
+    return $$(SELECTORS.MACOS.USED_SPACE_INDICATOR_TEXT)[0]
   }
 
   get deleteFolderButton() {

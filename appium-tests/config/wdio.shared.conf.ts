@@ -44,6 +44,7 @@ export const config: WebdriverIO.Config = {
   /**
    * NOTE: This is just a place holder and will be overwritten by each specific configuration
    */
+  maxInstances: 10,
   capabilities: [],
   //
   // ===================
@@ -83,12 +84,12 @@ export const config: WebdriverIO.Config = {
    * NOTE: This has been increased for more stable Appium Native app
    * tests because they can take a bit longer.
    */
-  waitforTimeout: 15000,
+  waitforTimeout: 10000,
   // Default timeout in milliseconds for request
   // if browser driver or grid doesn't send response
-  connectionRetryTimeout: 60000,
+  connectionRetryTimeout: 12000,
   // Default request retries count
-  connectionRetryCount: 1,
+  connectionRetryCount: 3,
   // Test runner services
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
@@ -100,6 +101,7 @@ export const config: WebdriverIO.Config = {
   // - wdio.shared.sauce.conf.ts
   // configuration files
   services: [],
+
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
   // see also: https://webdriver.io/docs/frameworks
