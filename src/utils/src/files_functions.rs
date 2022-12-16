@@ -9,7 +9,7 @@ use image::io::Reader as ImageReader;
 
 use crate::Storage;
 
-pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext, drag_and_drop_on_target_folder: bool, folder_name: Option<String>) {
+pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext) {
     let mut filename = match file_path
         .file_name()
         .map(|file| file.to_string_lossy().to_string())
@@ -23,14 +23,6 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
     let mut file_storage = file_storage.clone();
     let original = filename.clone();
     let file = PathBuf::from(&original);
-    let folder_name = folder_name.unwrap_or_default();
-
-    if drag_and_drop_on_target_folder && !folder_name.is_empty() {
-        match file_storage.select(&folder_name) {
-            Ok(_) => (),
-            Err(error) => log::error!("Error selecting new current directory folder: {error}"),
-        };
-    }
 
     let current_directory = match file_storage.current_directory() {
         Ok(current_dir) => current_dir, 
@@ -130,13 +122,6 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
                 Ok(success) => log::info!("{:?}", success), 
                 Err(error) => log::error!("Error on update thumbnail: {:?}", error), 
             }  
-
-            if drag_and_drop_on_target_folder {
-                if let Err(error) = file_storage.go_back() {
-                    log::error!("Error on go back a directory: {error}");
-                };
-            }
-
             log::info!("{:?} file uploaded!", &filename);
         }, 
         Err(error) => log::error!("Error when upload file: {:?}", error)

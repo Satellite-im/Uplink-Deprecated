@@ -2,6 +2,7 @@ use std::{collections::HashSet, time::Duration, path::{PathBuf}};
 
 use dioxus::prelude::*;
 use dioxus_heroicons::{Icon, outline::Shape};
+use utils::files_functions;
 
 use crate::Storage;
 use ui_kit::{file::File, folder::{State, Folder}, new_folder::NewFolder};
@@ -65,7 +66,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     );
     let root_dir_id = root_directory.id();
     let current_dir_items_len = current_directory.get_items().len();
-    let current_dir_size = format_folder_size(current_directory.size());
+    let current_dir_size = files_functions::format_item_size(current_directory.size());
 
     cx.render(rsx! {
         div {
@@ -182,28 +183,3 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
         }
     })
 }
-
-
-fn format_folder_size(folder_size: usize) -> String {
-    if folder_size == 0 {
-        return String::from("0 bytes");
-    }
-    let base_1024: f64 = 1024.0;
-    let size_f64: f64 = folder_size as f64;
-
-    let i = (size_f64.log10() / base_1024.log10()).floor();
-    let size_formatted = size_f64 / base_1024.powf(i);
-
-    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    let mut size_formatted_string = format!(
-        "{size:.*} {size_suffix}",
-        1,
-        size = size_formatted,
-        size_suffix = file_size_suffix
-    );
-    if size_formatted_string.contains(".0") {
-        size_formatted_string = size_formatted_string.replace(".0", "");
-    }
-    size_formatted_string
-}
-

@@ -78,19 +78,25 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_out_app {
                                 if !files_local_path.is_empty() {
                                     *drag_over_folder.write_silent() = false;
+                                    match file_storage.select(&folder_name_complete_ref.read().clone()) {
+                                        Ok(_) => (),
+                                        Err(error) => log::error!("Error selecting new current directory folder: {error}"),
+                                    };
                                     for file_path in &files_local_path {
                                         files_functions::upload_file(
                                             file_storage.clone(),
                                             file_path.clone(),
                                             eval_script.clone(), 
-                                            true, 
-                                            Some(folder_name_complete_ref.read().clone()),
                                         )
                                         .await;
                                         tokio::time::sleep(std::time::Duration::from_millis(150)).await;
                                         log::info!("{} file uploaded!", file_path.to_string_lossy());
-                                        update_current_dir.set(());
+                                       
                                     }
+                                    if let Err(error) = file_storage.go_back() {
+                                        log::error!("Error on go back a directory: {error}");
+                                    };
+                                    update_current_dir.set(());
                                     break;
                                 }
                         
@@ -162,13 +168,12 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             div {
             class: "folder {class}",  
             onclick: move |_| {
-                let mut file_storage = cx.props.storage.clone();
-                let folder_name = &*folder_name_complete_ref.read();
-                match file_storage.select(folder_name) {
-                    Ok(_) => cx.props.update_current_dir.set(()),
-                    Err(error) => log::error!("Error selecting new current directory folder: {error}"),
-                };
-                
+                    let mut file_storage = cx.props.storage.clone();
+                    let folder_name = &*folder_name_complete_ref.read();
+                    match file_storage.select(folder_name) {
+                        Ok(_) => cx.props.update_current_dir.set(()),
+                        Err(error) => log::error!("Error selecting new current directory folder: {error}"),
+                    };
             },         
             Icon { icon: Shape::Folder },
                {

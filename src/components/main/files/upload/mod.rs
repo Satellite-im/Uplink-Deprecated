@@ -80,8 +80,6 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                         file_storage.clone(),
                                         file_path.clone(),
                                         eval_script.clone(),
-                                        false,
-                                        None,
                                     )
                                     .await;
                                     tokio::time::sleep(std::time::Duration::from_millis(150)).await;
@@ -165,8 +163,8 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     async move {
                                         for file_path in &files_local_path {
                                             files_functions::upload_file(file_storage.clone(), file_path.clone(), 
-                                            eval_script.clone(), false,
-                                            None,).await;
+                                            eval_script.clone(),
+                                        ).await;
                                         }
                                     }
                                 });
