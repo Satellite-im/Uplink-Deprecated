@@ -4,7 +4,7 @@ use dioxus::desktop::DesktopContext;
 use futures::StreamExt;
 use mime::*;
 use tokio_util::io::ReaderStream;
-use warp::{constellation::Progression, error::Error};
+use warp::{constellation::{Progression, directory::Directory}, error::Error};
 use image::io::Reader as ImageReader;
 
 use crate::Storage;
@@ -19,7 +19,6 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
     };
 
     let local_path = Path::new(&file_path).to_string_lossy().to_string();
-    let mut count_index_for_duplicate_filename = 1;
     let mut file_storage = file_storage.clone();
     let original = filename.clone();
     let file = PathBuf::from(&original);
@@ -29,23 +28,7 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
         _ => return
     };
 
-    loop {
-        if !current_directory.has_item(&filename) {
-            break;
-        }
-        let file_extension = file.extension().and_then(OsStr::to_str).map(str::to_string);
-        let file_stem = file.file_stem().and_then(OsStr::to_str).map(str::to_string);
-
-        filename = match (file_stem, file_extension) {
-            (Some(file_stem), Some(file_extension)) => {
-                format!("{file_stem} ({count_index_for_duplicate_filename}).{file_extension}")
-            }
-            _ => format!("{original} ({count_index_for_duplicate_filename})"),
-        };
-
-        log::info!("Duplicate name, changing file name to {}", &filename);
-        count_index_for_duplicate_filename += 1;
-    }
+    filename = verify_duplicate_name(current_directory, filename.clone(), file);
 
     let tokio_file = match tokio::fs::File::open(&local_path).await {
         Ok(file) => file,
@@ -130,6 +113,30 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
 
 
     
+}
+
+pub fn verify_duplicate_name(current_directory: Directory, filename: String, file_pathbuf: PathBuf) -> String {
+    let mut count_index_for_duplicate_filename = 1;
+    let mut new_file_name = filename.clone();
+    let original = filename.clone();
+    loop {
+        if !current_directory.has_item(&new_file_name) {
+            break;
+        }
+        let file_extension = file_pathbuf.extension().and_then(OsStr::to_str).map(str::to_string);
+        let file_stem = file_pathbuf.file_stem().and_then(OsStr::to_str).map(str::to_string);
+
+        new_file_name = match (file_stem, file_extension) {
+            (Some(file_stem), Some(file_extension)) => {
+                format!("{file_stem} ({count_index_for_duplicate_filename}).{file_extension}")
+            }
+            _ => format!("{original} ({count_index_for_duplicate_filename})"),
+        };
+
+        log::info!("Duplicate name, changing file name to {}", new_file_name);
+        count_index_for_duplicate_filename += 1;
+    }
+    new_file_name
 }
 
 async fn set_thumbnail_if_file_is_image(

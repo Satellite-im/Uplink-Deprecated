@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use dioxus::{prelude::*, core::to_owned, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
@@ -76,6 +78,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             let drag_file_out_app = get_drag_file_event_out_app();
 
                             if let FileDropEvent::Dropped(files_local_path) = drag_file_out_app {
+                              
                                 if !files_local_path.is_empty() {
                                     *drag_over_folder.write_silent() = false;
                                     match file_storage.select(&folder_name_complete_ref.read().clone()) {
@@ -101,31 +104,39 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 }
                         
 
-                            if let Some(file_name) = drag_file_event_in_app.file_name {
-                                let current_directory = file_storage.current_directory().unwrap_or_default();  
-                                let folder_name = folder_name_complete_ref.with(|name| name.clone());
-                               let directory_target = match current_directory.get_item(&folder_name).and_then(|item| item.get_directory()) {
-                                    Ok(dir) => dir,
-                                    _ => return
-                              };
-                                let file = current_directory.get_item(&file_name).unwrap();
-                                match directory_target.add_item(file.clone()) {
-                                    Ok(_) => {
-                                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                                        match current_directory.remove_item(&file_name) {
+                                if let Some(file_name) = drag_file_event_in_app.file_name {
+                                    *drag_over_folder.write_silent() = false;
+                                    let mut file_name = file_name.clone();
+                                    let current_directory = file_storage.current_directory().unwrap_or_default();  
+                                    let folder_name = folder_name_complete_ref.with(|name| name.clone());
+                                    let directory_target = match current_directory.get_item(&folder_name).and_then(|item| item.get_directory()) {
+                                            Ok(dir) => dir,
+                                            _ => return
+                                    };
+                                    let file = current_directory.get_item(&file_name).unwrap();
+
+                                    file_name = files_functions::verify_duplicate_name(directory_target.clone(), 
+                                    file.name().clone(), PathBuf::from(file.name().clone()));
+
+                                    if let Ok(_) = file.rename(&file_name) {
+                                        match directory_target.add_item(file.clone()) {
                                             Ok(_) => {
-                                                *drag_over_folder.write_silent() = false;
-                                                // TODO: Remove all files inside this folder
-                                                log::info!("file from directory was deleted.");
-                                            },
-                                            Err(error) => log::error!("Error deleting file from directory: {error}"),
-                                        }
-                                },
-                                    Err(error) => log::error!("Error adding file into directory: {error}"),
-                                };
-                                let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
-                                eval_script.eval(&file_leave_folder_js);
-                            }
+                                                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                                                match current_directory.remove_item(&file_name) {
+                                                    Ok(_) => {
+                                                        *drag_over_folder.write_silent() = false;
+                                                        // TODO: Remove all files inside this folder
+                                                        log::info!("file from directory was deleted.");
+                                                    },
+                                                    Err(error) => log::error!("Error deleting file from directory: {error}"),
+                                                }
+                                        },
+                                            Err(error) => println!("Error adding file into directory: {error}"),
+                                        };
+                                    }                              
+                                    let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
+                                    eval_script.eval(&file_leave_folder_js);
+                                }
                         }
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
