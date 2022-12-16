@@ -56,8 +56,6 @@ jobs:
         continue-on-error: true
         run: |
           make dmg SIGNING_KEY=LOCAL
-      - name: Enable opening app not codesigned
-        run: spctl --master-disable
       - name: Copy App to Applications Folder
         continue-on-error: true
         run: |
