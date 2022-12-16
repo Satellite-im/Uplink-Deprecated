@@ -116,9 +116,14 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                     let file = current_directory.get_item(&file_name).unwrap();
 
                                     file_name = files_functions::verify_duplicate_name(directory_target.clone(), 
-                                    file.name().clone(), PathBuf::from(file.name().clone()));
-
-                                    if let Ok(_) = file.rename(&file_name) {
+                                    file.name().clone(), PathBuf::from(file.name()));
+                                    if file_name.ne(&file.name()) {
+                                       if let Err(error) =  file.rename(&file_name) {
+                                        log::error!("Error renaming file to move into another folder: {error}");
+                                        return;
+                                       }
+                                    }
+                                      
                                         match directory_target.add_item(file.clone()) {
                                             Ok(_) => {
                                                 tokio::time::sleep(std::time::Duration::from_millis(100)).await;
@@ -133,7 +138,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                         },
                                             Err(error) => println!("Error adding file into directory: {error}"),
                                         };
-                                    }                              
+                                                              
                                     let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
                                     eval_script.eval(&file_leave_folder_js);
                                 }
