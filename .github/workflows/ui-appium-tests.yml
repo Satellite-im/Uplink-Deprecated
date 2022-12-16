@@ -56,12 +56,14 @@ jobs:
         continue-on-error: true
         run: |
           make dmg SIGNING_KEY=LOCAL
-
+      - name: Enable opening app not codesigned
+        run: sudo spctl --master-disable
       - name: Copy App to Applications Folder
         continue-on-error: true
         run: |
           rm -rf /Applications/Uplink.app
           cp -r target/release/macos/Uplink.app /Applications/
+          sudo xattr -r -d com.apple.quarantine /Applications/Uplink.app
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3

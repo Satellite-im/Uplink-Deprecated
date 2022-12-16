@@ -2,5 +2,5 @@
 set -ex
 npm install -g appium@next
 appium -v
-appium driver install mac2
+{ appium driver install mac2 } || { appium driver update mac2 }
 appium driver list
