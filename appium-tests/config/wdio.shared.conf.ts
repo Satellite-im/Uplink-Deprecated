@@ -1,3 +1,5 @@
+const kill = require("kill-port")
+
 /**
  * All not needed configurations, for this boilerplate, are removed.
  * If you want to know which configuration options you have then you can
@@ -13,7 +15,7 @@ export const config: WebdriverIO.Config = {
   runner: "local",
   //host: "localhost",
   port: 4723,
-  path: "/wd/hub",
+  path: "/wd/hub/",
 
   //
   // ==================
@@ -50,6 +52,9 @@ export const config: WebdriverIO.Config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
+  onComplete: async function (exitCode, config, capabilities, results) {
+    await kill(4723, "tcp")
+  },
   logLevel: "error",
   // Set specific log levels per logger
   // loggers:

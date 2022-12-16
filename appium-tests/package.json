@@ -30,6 +30,7 @@
     "@wdio/spec-reporter": "^7.19.7",
     "eslint-plugin-wdio": "^7.19.4",
     "ts-node": "^10.8.0",
-    "typescript": "^4.6.4"
+    "typescript": "^4.6.4",
+    "kill-port": "^1.6.1"
   }
 }
