@@ -89,20 +89,20 @@ jobs:
       - name: Quit Application before starting tests
         run: osascript -e 'quit app "Uplink.app"'
 
-      - name: Run WebdriverIO tests on MacOS
-        working-directory: ./appium-tests
-        run: npm run mac.ci
+      # - name: Run WebdriverIO tests on MacOS
+      #   working-directory: ./appium-tests
+      #   run: npm run mac.ci
 
       - name: Upload Screenshots if tests failed 📷
         uses: actions/upload-artifact@v3
-        if: failure()
+        # if: failure()
         with:
           name: appium-screenshots
           path: appium-tests/test-results/ios
 
       - name: Upload Appium Log if tests failed 📷
         uses: actions/upload-artifact@v3
-        if: failure()
+        # if: failure()
         with:
           name: appium-log
           path: appium-tests/appium.log
