@@ -28,7 +28,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let dir_paths = cx.props.dir_paths.clone();
 
     load_files_in_current_direcotry(&current_directory, files_sorted, files); 
-    load_dir_navigation_logic(cx, &dir_paths);
+    load_dir_navigation_logic(cx, &dir_paths, cx.props.show_upload.clone(), cx.props.show_new_folder.clone());
 
     use_future(
         &cx,
@@ -183,20 +183,25 @@ fn load_files_in_current_direcotry(current_directory: &warp::constellation::dire
     }
 }
 
-fn load_dir_navigation_logic(cx: Scope<Props>, dir_paths: &UseRef<Vec<PathBuf>>) {
+fn load_dir_navigation_logic(cx: Scope<Props>, dir_paths: &UseRef<Vec<PathBuf>>, show_upload: UseState<bool>,show_new_folder:UseState<bool>  ) {
     let current_dir_path = cx.props.storage.get_path().clone();
     let dir_paths_vec = dir_paths.with(|vec| vec.clone());
     let dir_paths_len = dir_paths.read().len().clone();
     let final_dir_path = dir_paths.read().last().unwrap().clone();
     if !dir_paths_vec.contains(&current_dir_path) {
         dir_paths.write_silent().insert(dir_paths_len, current_dir_path);
-    // show_upload.set(false);
-    // show_new_folder.set(false);
+        if *show_upload || *show_new_folder {
+            show_upload.set(false);
+            show_new_folder.set(false);
+        }
+
         } else {
     if final_dir_path != current_dir_path {
         dir_paths.write_silent().remove(dir_paths_len - 1);
-        // show_upload.set(false);
-        // show_new_folder.set(false);
+        if *show_upload || *show_new_folder {
+            show_upload.set(false);
+            show_new_folder.set(false);
+        }
     }
         }
 }
