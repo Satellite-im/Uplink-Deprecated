@@ -1,9 +1,8 @@
 use dioxus::{prelude::*, core::to_owned, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
-use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp, DRAG_FILE_EVENT};
+use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp, DRAG_FILE_EVENT, files_functions};
 use crate::context_menu::{ContextItem, ContextMenu};
-use utils::files_functions;
 
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum State {
@@ -33,10 +32,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     };
 
     let children = cx.props.children;
-    let dir_size = format_folder_size(cx.props.size);
+    let dir_size = files_functions::format_item_size(cx.props.size);
 
 
-    let folder_name_fmt = format_folder_name_to_show(cx.props.name.clone());
+    let folder_name_fmt = files_functions::format_item_name(cx.props.name.clone(), None, true);
 
     let folder_name_formatted_state = use_state(&cx, || folder_name_fmt);
 
@@ -94,7 +93,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                     }
                                     break;
                                 }
-                            }
+                        
 
                             if let Some(file_name) = drag_file_event_in_app.file_name {
                                 let current_directory = file_storage.current_directory().unwrap_or_default();  
@@ -121,6 +120,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
                                 eval_script.eval(&file_leave_folder_js);
                             }
+                        }
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
                     }
@@ -205,7 +205,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                                 match file_storage.rename(&old_folder_name, &new_folder_name).await {
                                                     Ok(_) => {
                                                     let new_file_name_fmt =
-                                                    format_folder_name_to_show(new_folder_name.clone());
+                                                    files_functions::format_item_name(new_folder_name.clone(), None, true);
                                                         *folder_name_complete_ref.write_silent() = new_folder_name.clone();
                                                         folder_name_formatted_state.set(new_file_name_fmt);
                                                         log::info!("{old_folder_name} renamed to {new_folder_name}");
@@ -250,43 +250,4 @@ fn get_drag_file_event_in_app() -> DragFileInApp {
 fn get_drag_file_event_out_app() -> FileDropEvent {
     let drag_file_event_out_app = DRAG_FILE_EVENT.read().clone();
     drag_file_event_out_app
-}
-
-fn format_folder_size(folder_size: usize) -> String {
-    if folder_size == 0 {
-        return String::from("0 bytes");
-    }
-    let base_1024: f64 = 1024.0;
-    let size_f64: f64 = folder_size as f64;
-
-    let i = (size_f64.log10() / base_1024.log10()).floor();
-    let size_formatted = size_f64 / base_1024.powf(i);
-
-    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    let mut size_formatted_string = format!(
-        "{size:.*} {size_suffix}",
-        1,
-        size = size_formatted,
-        size_suffix = file_size_suffix
-    );
-    if size_formatted_string.contains(".0") {
-        size_formatted_string = size_formatted_string.replace(".0", "");
-    }
-    size_formatted_string
-}
-
-fn format_folder_name_to_show(folder_name: String) -> String {
-    let mut new_folder_name = folder_name.clone();
-
-    if new_folder_name.len() > 10 {
-        new_folder_name = match &new_folder_name.get(0..5) {
-            Some(name_sliced) => format!(
-                "{}...{}",
-                name_sliced,
-                &new_folder_name[new_folder_name.len() - 3..].to_string(),
-            ),
-            None => new_folder_name.clone(),
-        };
-    }
-    new_folder_name
 }

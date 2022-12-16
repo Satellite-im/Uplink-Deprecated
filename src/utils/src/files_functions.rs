@@ -187,3 +187,64 @@ async fn set_thumbnail_if_file_is_image(
         Err(Box::from(Error::InvalidItem))
     }
 }
+
+pub fn format_item_size(item_size: usize) -> String {
+    if item_size == 0 {
+        return String::from("0 bytes");
+    }
+    let base_1024: f64 = 1024.0;
+    let size_f64: f64 = item_size as f64;
+
+    let i = (size_f64.log10() / base_1024.log10()).floor();
+    let size_formatted = size_f64 / base_1024.powf(i);
+
+    let item_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
+    let mut size_formatted_string = format!(
+        "{size:.*} {size_suffix}",
+        1,
+        size = size_formatted,
+        size_suffix = item_size_suffix
+    );
+    if size_formatted_string.contains(".0") {
+        size_formatted_string = size_formatted_string.replace(".0", "");
+    }
+    size_formatted_string
+}
+
+pub fn format_item_name(item_name: String, file_kind: Option<String>, is_folder: bool) -> String {
+    let mut new_item_name = item_name.clone();
+    let item = PathBuf::from(&new_item_name);
+
+    if is_folder {
+        if new_item_name.len() > 10 {
+            new_item_name = match &new_item_name.get(0..5) {
+                Some(name_sliced) => format!(
+                    "{}...{}",
+                    name_sliced,
+                    &new_item_name[new_item_name.len() - 3..].to_string(),
+                ),
+                None => new_item_name.clone(),
+            };
+        }
+    } else {
+        let file_kind = file_kind.unwrap_or_default();
+        let file_stem = item
+        .file_stem()
+        .and_then(OsStr::to_str)
+        .map(str::to_string)
+        .unwrap_or_default();
+
+    if file_stem.len() > 10 {
+        new_item_name = match &item_name.get(0..5) {
+            Some(name_sliced) => format!(
+                "{}...{}.{}",
+                name_sliced,
+                &file_stem[file_stem.len() - 3..].to_string(),
+                file_kind
+            ),
+            None => item_name.clone(),
+        };
+    }
+    }
+new_item_name
+}

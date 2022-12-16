@@ -1,9 +1,7 @@
-use std::{ffi::OsStr, path::PathBuf};
-
 use dioxus::{core::to_owned, prelude::*};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
-use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
+use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp, files_functions};
 
 use crate::{context_menu::{ContextItem, ContextMenu}, folder::State};
 use rfd::FileDialog;
@@ -29,13 +27,13 @@ pub fn File(cx: Scope<Props>) -> Element {
 
     let file_id = cx.props.id.clone();
 
-    let file_name_fmt = format_file_name_to_show(cx.props.name.clone(), cx.props.kind.clone());
+    let file_name_fmt = files_functions::format_item_name(cx.props.name.clone(), Some(cx.props.kind.clone()), false);
 
     let file_name_formatted_state = use_state(&cx, || file_name_fmt);
 
     let file_name_complete_ref = use_ref(&cx, || cx.props.name.clone());
 
-    let file_size = format_file_size(cx.props.size);
+    let file_size = files_functions::format_item_size(cx.props.size);
     let file_thumb = &cx.props.thumbnail.clone();
 
     let show_edit_name_script = include_str!("./show_edit_name.js").replace("file_id", &file_id);
@@ -167,7 +165,7 @@ pub fn File(cx: Scope<Props>) -> Element {
                                                     match file_storage.rename(&old_file_name, &new_file_name_with_extension).await {
                                                         Ok(_) => {
                                                         let new_file_name_fmt =
-                                                            format_file_name_to_show(new_file_name_with_extension.clone(), file_extension);
+                                                        files_functions::format_item_name(new_file_name_with_extension.clone(), Some(file_extension), false);
                                                             *file_name_complete_ref.write_silent() = new_file_name_with_extension.clone();
                                                             file_name_formatted_state.set(new_file_name_fmt);
                                                             log::info!("{old_file_name} renamed to {new_file_name_with_extension}");
@@ -201,45 +199,4 @@ fn hide_edit_name_element(cx: Scope<Props>) {
     use_eval(&cx)(&hide_edit_name_script);
 }
 
-fn format_file_size(file_size: usize) -> String {
-    let base_1024: f64 = 1024.0;
-    let size_f64: f64 = file_size as f64;
 
-    let i = (size_f64.log10() / base_1024.log10()).floor();
-    let size_formatted = size_f64 / base_1024.powf(i);
-
-    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    let mut size_formatted_string = format!(
-        "{size:.*} {size_suffix}",
-        1,
-        size = size_formatted,
-        size_suffix = file_size_suffix
-    );
-    if size_formatted_string.contains(".0") {
-        size_formatted_string = size_formatted_string.replace(".0", "");
-    }
-    size_formatted_string
-}
-
-fn format_file_name_to_show(file_name: String, file_kind: String) -> String {
-    let mut new_file_name = file_name.clone();
-    let file = PathBuf::from(&new_file_name);
-    let file_stem = file
-        .file_stem()
-        .and_then(OsStr::to_str)
-        .map(str::to_string)
-        .unwrap_or_default();
-
-    if file_stem.len() > 10 {
-        new_file_name = match &file_name.get(0..5) {
-            Some(name_sliced) => format!(
-                "{}...{}.{}",
-                name_sliced,
-                &file_stem[file_stem.len() - 3..].to_string(),
-                file_kind
-            ),
-            None => file_name.clone(),
-        };
-    }
-    new_file_name
-}
