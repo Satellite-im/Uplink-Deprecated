@@ -63,7 +63,7 @@ jobs:
         run: |
           rm -rf /Applications/Uplink.app
           cp -r target/release/macos/Uplink.app /Applications/
-          sudo xattr -r -d com.apple.quarantine /Applications/Uplink.app
+          xattr -r -d com.apple.quarantine /Applications/Uplink.app
 
       - name: Setup Node.js 🔨
         uses: actions/setup-node@v3
