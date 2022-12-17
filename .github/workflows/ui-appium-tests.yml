@@ -144,6 +144,25 @@ jobs:
           cd /Applications/
           ls -la
 
+      - name: Enable Accessibility Access for Xcode Helper
+        run: |
+          /usr/bin/osascript -e 'tell application "System Preferences"
+          activate
+          set current pane to pane "com.apple.preference.security"
+          reveal anchor "Privacy_Accessibility" of current pane
+          end tell'
+          /usr/bin/osascript -e 'tell application "System Preferences"
+          activate
+          tell application "System Events" to click checkbox 1 of tab group 1 of window "Security & Privacy"
+          end tell'
+          /usr/bin/osascript -e 'tell application "System Preferences"
+          activate
+          tell application "System Events" to click checkbox 1 of tab group 1 of window "Security & Privacy"
+          end tell'
+        env:
+          PATH: /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+          XCODE_HELPER_APP: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Xcode/Agents/Xcode\ Helper.app
+
       - name: Open Application for the first time
         run: open /Applications/Uplink.app
 
