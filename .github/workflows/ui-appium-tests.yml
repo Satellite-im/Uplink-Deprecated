@@ -19,8 +19,14 @@ jobs:
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
+      - name: Disable SIP to grant permission
+        run: csrutil disable
+
       - name: Enable accessibility permissions
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access VALUES('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,1,NULL,NULL,NULL,NULL,NULL,NULL,1551941368);"
+
+      - name: Enable SIP again
+        run: csrutil enable
 
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
