@@ -147,7 +147,7 @@ jobs:
       - name: Grant accessibility access to Xcode Helper
         run: |
           sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
-          automationmodetool enable-automationmode-without-authentication
+          sudo automationmodetool enable-automationmode-without-authentication
         env:
           LC_ALL: en_US.UTF-8
           LANG: en_US.UTF-8
