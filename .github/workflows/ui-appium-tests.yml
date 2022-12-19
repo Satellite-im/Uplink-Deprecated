@@ -106,6 +106,11 @@ jobs:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
+      - name: Setup XCode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - name: Enable opening app not codesigned
         run: sudo spctl --master-disable
 
@@ -145,21 +150,6 @@ jobs:
           ls -la
 
       - name: Validate XCode Helper grants for accessibility before running applescript
-        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
-
-      - name: Grant accessibility access to Xcode Helper
-        run: |
-          open -a "System Preferences"
-          sleep 5
-          osascript -e 'tell application "System Preferences" to reveal anchor "Privacy_Accessibility"'
-          sleep 2
-          osascript -e 'tell application "System Preferences" to activate'
-          sleep 2
-          osascript -e 'tell application "System Preferences" to set the checkbox "Xcode Helper" of list 1 of tab group 1 of window "Security & Privacy" to true'
-          sleep 2
-          osascript -e 'tell application "System Preferences" to quit'
-
-      - name: Validate XCode Helper grants for accessibility after running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
       - name: Open Application for the first time
