@@ -16,10 +16,12 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Install tccutil.py
+      - name: Install Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.7"
+
+      - name: Install tccutil.py
         run: |
           python -m pip install --upgrade git+https://github.com/jacobsalmela/tccutil
 
