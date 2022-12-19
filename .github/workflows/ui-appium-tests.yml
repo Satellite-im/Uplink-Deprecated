@@ -16,6 +16,27 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Install tccutil.py
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+        run: |
+          python -m pip install --upgrade git+https://github.com/jacobsalmela/tccutil
+
+      - name: Validate XCode Helper grants for accessibility before running applescript
+        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
+
+      - name: Enable accessibility permissions
+        run: |
+          BUNDLE_ID=$(mdls -name kMDItemCFBundleIdentifier -r com.apple.dt.Xcode-Helper)
+          ACCESS_ENABLED=$(tccutil.py get -b $BUNDLE_ID | grep -c '"com.apple.dt.Xcode-Helper" = 1')
+          if [[ $ACCESS_ENABLED -eq 0 ]]; then
+            tccutil.py enable -b $BUNDLE_ID
+          fi
+
+      - name: Validate XCode Helper grants for accessibility before running applescript
+        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
+
       - name: Set up cargo cache
         uses: actions/cache@v3
         continue-on-error: false
@@ -106,13 +127,15 @@ jobs:
       - name: Checkout working directory 🔖
         uses: actions/checkout@v3
 
-      - name: Setup XCode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
-
       - name: Enable opening app not codesigned
         run: sudo spctl --master-disable
+
+      - name: Install tccutil.py
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+        run: |
+          python -m pip install --upgrade git+https://github.com/jacobsalmela/tccutil
 
       - name: Download the app 🗳️
         uses: actions/download-artifact@v1
@@ -151,6 +174,14 @@ jobs:
 
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
+
+      - name: Enable accessibility permissions
+        run: |
+          BUNDLE_ID=$(mdls -name kMDItemCFBundleIdentifier -r com.apple.dt.Xcode-Helper)
+          ACCESS_ENABLED=$(tccutil.py get -b $BUNDLE_ID | grep -c '"com.apple.dt.Xcode-Helper" = 1')
+          if [[ $ACCESS_ENABLED -eq 0 ]]; then
+            tccutil.py enable -b $BUNDLE_ID
+          fi
 
       - name: Open Application for the first time
         run: open /Applications/Uplink.app
