@@ -23,12 +23,7 @@ jobs:
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
       - name: Enable accessibility permissions
-        run: |
-          BUNDLE_ID=$(mdls -name kMDItemCFBundleIdentifier -r com.apple.dt.Xcode-Helper)
-          ACCESS_ENABLED=$(tccutil.py get -b $BUNDLE_ID | grep -c '"com.apple.dt.Xcode-Helper" = 1')
-          if [[ $ACCESS_ENABLED -eq 0 ]]; then
-            tccutil.py enable -b $BUNDLE_ID
-          fi
+        run: sudo tccutil.py --list
 
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
