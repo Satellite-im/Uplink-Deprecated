@@ -139,12 +139,13 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                             Err(error) => println!("Error adding file into directory: {error}"),
                                         };
                                                               
-                                    let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
-                                    eval_script.eval(&file_leave_folder_js);
+                                    
                                 }
                         }
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
+                        let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
+                        eval_script.eval(&file_leave_folder_js);
                     }
                 });
             },
