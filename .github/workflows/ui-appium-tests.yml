@@ -146,6 +146,7 @@ jobs:
 
       - name: Grant accessibility access to Xcode Helper
         run: |
+          sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access"
           sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT or REPLACE INTO access VALUES('kTCCServiceAccessibility','com.apple.dt.Xcode.helper',0,1,1,NULL);"
         env:
           LC_ALL: en_US.UTF-8
