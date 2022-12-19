@@ -20,7 +20,7 @@ jobs:
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
       - name: Enable accessibility permissions
-        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access VALUES('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,NULL,NULL);"
+        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access VALUES('kTCCServiceAccessibility','com.apple.dt.Xcode-Helper',0,1,1,1,NULL,NULL,NULL,NULL,NULL,NULL,1551941368);"
 
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
