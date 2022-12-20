@@ -16,9 +16,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Validate XCode Helper grants for accessibility before running applescript
-        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
-
       - name: Enable accessibility permissions
         run: run: |
           osascript -e 'tell application "System Preferences" to set current pane to pane "com.apple.preference.security"'
