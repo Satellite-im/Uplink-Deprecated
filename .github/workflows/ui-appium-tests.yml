@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Enable accessibility permissions
-        run: run: |
+        run: |
           osascript -e 'tell application "System Preferences" to set current pane to pane "com.apple.preference.security"'
           osascript -e 'tell application "System Events" to tell process "System Preferences" 
             set value of checkbox "Xcode Helper" of table 1 of scroll area 1 of tab group 1 of window "Security & Privacy" to true 
