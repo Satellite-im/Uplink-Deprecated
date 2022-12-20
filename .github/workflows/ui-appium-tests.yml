@@ -26,9 +26,6 @@ jobs:
             set value of checkbox "Xcode Helper" of table 1 of scroll area 1 of tab group 1 of window "Security & Privacy" to true 
             end tell'
 
-      - name: Enable SIP again
-        run: csrutil enable
-
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
