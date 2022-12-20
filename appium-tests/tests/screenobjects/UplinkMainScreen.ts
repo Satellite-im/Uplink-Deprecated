@@ -13,16 +13,18 @@ const SELECTORS = {
 
     NO_ACTIVE_CHATS_TEXT:
       '-ios predicate string:value == "No active chats, wanna make one?"',
-    CHATS_BUTTON:
+    NEW_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[1]',
-    FILES_BUTTON:
+    CHATS_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[2]',
-    CONTACTS_BUTTON:
+    FILES_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[3]',
-    SETTINGS_BUTTON:
+    CONTACTS_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[4]',
-    START_ONE_BUTTON:
+    SETTINGS_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[5]',
+    START_ONE_BUTTON:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[6]',
   },
 }
 
@@ -53,6 +55,10 @@ class UplinkMainScreen extends AppScreen {
 
   get noActiveChatsText() {
     return $(SELECTORS.MACOS.NO_ACTIVE_CHATS_TEXT)
+  }
+
+  get newButton() {
+    return $(SELECTORS.MACOS.NEW_BUTTON)
   }
 
   get chatsButton() {
