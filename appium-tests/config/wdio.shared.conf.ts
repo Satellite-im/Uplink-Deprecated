@@ -17,8 +17,8 @@ export const config: WebdriverIO.Config = {
   // on a remote machine).
   runner: "local",
   //host: "localhost",
-  port: 4723,
-  path: "/wd/hub",
+  //port: 4723,
+  //path: "/wd/hub",
 
   //
   // ==================
