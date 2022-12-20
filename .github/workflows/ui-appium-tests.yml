@@ -108,6 +108,12 @@ jobs:
             Uplink-Mac-Universal.zip
             Uplink-Mac-Universal.zip.sha256.txt
 
+      - name: Upload screenshot of GH runner if there is any failure 📷
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        if: failure()
+        with:
+          file-name: "desktop.jpg"
+
   test:
     needs: build-app
     runs-on: macos-latest
