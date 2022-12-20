@@ -1,12 +1,14 @@
 pub mod extensions;
 pub mod notifications;
 pub mod sounds;
+pub mod files_functions;
 
 use clap::Parser;
 use dioxus::desktop::wry::webview::FileDropEvent;
 use once_cell::sync::Lazy;
 use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
+
 
 use warp::{constellation::Constellation, multipass::MultiPass, sync::RwLock};
 
