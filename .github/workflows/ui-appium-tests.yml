@@ -16,16 +16,6 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
-      - name: Enable accessibility permissions
-        run: |
-          osascript -e 'tell application "System Preferences" to set current pane to pane "com.apple.preference.security"'
-          osascript -e 'tell application "System Events" to tell process "System Preferences" 
-            set value of checkbox "Xcode Helper" of table 1 of scroll area 1 of tab group 1 of window "Security & Privacy" to true 
-            end tell'
-
-      - name: Validate XCode Helper grants for accessibility before running applescript
-        run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
-
       - name: Set up cargo cache
         uses: actions/cache@v3
         continue-on-error: false
@@ -108,12 +98,6 @@ jobs:
             Uplink-Mac-Universal.zip
             Uplink-Mac-Universal.zip.sha256.txt
 
-      - name: Upload screenshot of GH runner if there is any failure 📷
-        uses: OrbitalOwen/desktop-screenshot-action@0.1
-        if: failure()
-        with:
-          file-name: "desktop.jpg"
-
   test:
     needs: build-app
     runs-on: macos-latest
@@ -124,9 +108,6 @@ jobs:
 
       - name: Enable opening app not codesigned
         run: sudo spctl --master-disable
-
-      - name: Install tccutil.py
-        run: brew install tccutil
 
       - name: Download the app 🗳️
         uses: actions/download-artifact@v1
@@ -166,25 +147,6 @@ jobs:
       - name: Validate XCode Helper grants for accessibility before running applescript
         run: sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access WHERE client='com.apple.dt.Xcode-Helper'"
 
-      - name: Enable accessibility permissions
-        run: |
-          BUNDLE_ID=$(mdls -name kMDItemCFBundleIdentifier -r com.apple.dt.Xcode-Helper)
-          ACCESS_ENABLED=$(tccutil.py get -b $BUNDLE_ID | grep -c '"com.apple.dt.Xcode-Helper" = 1')
-          if [[ $ACCESS_ENABLED -eq 0 ]]; then
-            tccutil.py enable -b $BUNDLE_ID
-          fi
-
-      - name: Open Application for the first time
-        run: open /Applications/Uplink.app
-
-      - name: Take screenshot of GH runner
-        uses: OrbitalOwen/desktop-screenshot-action@0.1
-        with:
-          file-name: "desktop.jpg"
-
-      - name: Quit Application before starting tests
-        run: osascript -e 'quit app "Uplink.app"'
-
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
         run: npm run mac.ci
@@ -202,3 +164,9 @@ jobs:
         with:
           name: appium-log
           path: appium-tests/appium.log
+
+      - name: Upload screenshot of GH runner if there is any failure 📷
+        uses: OrbitalOwen/desktop-screenshot-action@0.1
+        if: failure()
+        with:
+          file-name: "desktop.jpg"
