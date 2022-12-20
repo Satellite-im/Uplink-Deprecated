@@ -1,7 +1,9 @@
-use dioxus::{prelude::*, core::to_owned, desktop::use_window};
+use std::path::PathBuf;
+
+use dioxus::{prelude::*, core::to_owned, desktop::{use_window, wry::webview::FileDropEvent}};
 use dioxus_elements::KeyCode;
 use dioxus_heroicons::{outline::Shape, Icon};
-use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp};
+use utils::{Storage, DRAG_FILE_IN_APP_EVENT, DragFileInApp, DRAG_FILE_EVENT, files_functions};
 use crate::context_menu::{ContextItem, ContextMenu};
 
 #[derive(PartialEq, Eq, Copy, Clone)]
@@ -32,10 +34,10 @@ pub fn Folder(cx: Scope<Props>) -> Element {
     };
 
     let children = cx.props.children;
-    let dir_size = format_folder_size(cx.props.size);
+    let dir_size = files_functions::format_item_size(cx.props.size);
 
 
-    let folder_name_fmt = format_folder_name_to_show(cx.props.name.clone());
+    let folder_name_fmt = files_functions::format_item_name(cx.props.name.clone(), None, true);
 
     let folder_name_formatted_state = use_state(&cx, || folder_name_fmt);
 
@@ -63,8 +65,9 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                 use_eval(&cx)(&file_over_folder_js);
                 *drag_over_folder.write_silent() = true;
                 let file_storage = cx.props.storage.clone();
+                let update_current_dir = cx.props.update_current_dir.clone();
                 cx.spawn({
-                    to_owned![file_storage, folder_name_complete_ref, drag_over_folder, eval_script, folder_id];
+                    to_owned![file_storage, folder_name_complete_ref, drag_over_folder, eval_script, folder_id, update_current_dir];
                     async move {
                         loop {
                             let drop_allowed = *drag_over_folder.read();
@@ -72,33 +75,84 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 break;
                             }
                             let drag_file_event_in_app = get_drag_file_event_in_app();
-                            if let Some(file_name) = drag_file_event_in_app.file_name {
-                                let current_directory = file_storage.current_directory().unwrap_or_default();  
-                                let folder_name = folder_name_complete_ref.with(|name| name.clone());
-                               let directory_target = match current_directory.get_item(&folder_name).and_then(|item| item.get_directory()) {
-                                    Ok(dir) => dir,
-                                    _ => return
-                              };
-                                let file = current_directory.get_item(&file_name).unwrap();
-                                match directory_target.add_item(file.clone()) {
-                                    Ok(_) => {
-                                        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-                                        match current_directory.remove_item(&file_name) {
+                            let drag_file_out_app = get_drag_file_event_out_app();
+
+                            if let FileDropEvent::Dropped(files_local_path) = drag_file_out_app {
+                              
+                                if !files_local_path.is_empty() {
+                                    *drag_over_folder.write_silent() = false;
+                                    match file_storage.select(&folder_name_complete_ref.read().clone()) {
+                                        Ok(_) => (),
+                                        Err(error) => log::error!("Error selecting new current directory folder: {error}"),
+                                    };
+                                    for file_path in &files_local_path {
+                                        files_functions::upload_file(
+                                            file_storage.clone(),
+                                            file_path.clone(),
+                                            eval_script.clone(), 
+                                        )
+                                        .await;
+                                        tokio::time::sleep(std::time::Duration::from_millis(150)).await;
+                                        log::info!("{} file uploaded!", file_path.to_string_lossy());
+                                       
+                                    }
+                                    if let Err(error) = file_storage.go_back() {
+                                        log::error!("Error on go back a directory: {error}");
+                                    };
+                                    update_current_dir.set(());
+                                    break;
+                                }
+                        
+
+                                if let Some(file_name) = drag_file_event_in_app.file_name {
+                                    *drag_over_folder.write_silent() = false;
+                                    let mut file_name = file_name.clone();
+                                    let current_directory = file_storage.current_directory().unwrap_or_default();  
+                                    let folder_name = folder_name_complete_ref.with(|name| name.clone());
+                                    let directory_target = match current_directory.get_item(&folder_name).and_then(|item| item.get_directory()) {
+                                            Ok(dir) => dir,
+                                            _ => return
+                                    };
+                                    
+                                    let file = match current_directory.get_item(&file_name) {
+                                        Ok(item) => item, 
+                                        Err(error) => {
+                                            log::error!("Error to get an item: {error}");
+                                            return;
+                                        },
+                                    };
+
+                                    file_name = files_functions::verify_duplicate_name(directory_target.clone(), 
+                                    file.name(), PathBuf::from(file.name()));
+                                    if file_name.ne(&file.name()) {
+                                       if let Err(error) =  file.rename(&file_name) {
+                                        log::error!("Error renaming file to move into another folder: {error}");
+                                        return;
+                                       }
+                                    }
+                                      
+                                        match directory_target.add_item(file.clone()) {
                                             Ok(_) => {
-                                                *drag_over_folder.write_silent() = false;
-                                                // TODO: Remove all files inside this folder
-                                                log::info!("file from directory was deleted.");
-                                            },
-                                            Err(error) => log::error!("Error deleting file from directory: {error}"),
-                                        }
-                                },
-                                    Err(error) => log::error!("Error adding file into directory: {error}"),
-                                };
-                                let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
-                                eval_script.eval(&file_leave_folder_js);
-                            }
+                                                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                                                match current_directory.remove_item(&file_name) {
+                                                    Ok(_) => {
+                                                        *drag_over_folder.write_silent() = false;
+                                                        // TODO: Remove all files inside this folder
+                                                        log::info!("file from directory was deleted.");
+                                                    },
+                                                    Err(error) => log::error!("Error deleting file from directory: {error}"),
+                                                }
+                                        },
+                                            Err(error) => println!("Error adding file into directory: {error}"),
+                                        };
+                                                              
+                                    
+                                }
+                        }
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
+                        let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
+                        eval_script.eval(&file_leave_folder_js);
                     }
                 });
             },
@@ -138,13 +192,12 @@ pub fn Folder(cx: Scope<Props>) -> Element {
             div {
             class: "folder {class}",  
             onclick: move |_| {
-                let mut file_storage = cx.props.storage.clone();
-                let folder_name = &*folder_name_complete_ref.read();
-                match file_storage.select(folder_name) {
-                    Ok(_) => cx.props.update_current_dir.set(()),
-                    Err(error) => log::error!("Error selecting new current directory folder: {error}"),
-                };
-                
+                    let mut file_storage = cx.props.storage.clone();
+                    let folder_name = &*folder_name_complete_ref.read();
+                    match file_storage.select(folder_name) {
+                        Ok(_) => cx.props.update_current_dir.set(()),
+                        Err(error) => log::error!("Error selecting new current directory folder: {error}"),
+                    };
             },         
             Icon { icon: Shape::Folder },
                {
@@ -181,7 +234,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                                 match file_storage.rename(&old_folder_name, &new_folder_name).await {
                                                     Ok(_) => {
                                                     let new_file_name_fmt =
-                                                    format_folder_name_to_show(new_folder_name.clone());
+                                                    files_functions::format_item_name(new_folder_name.clone(), None, true);
                                                         *folder_name_complete_ref.write_silent() = new_folder_name.clone();
                                                         folder_name_formatted_state.set(new_file_name_fmt);
                                                         log::info!("{old_folder_name} renamed to {new_folder_name}");
@@ -223,41 +276,7 @@ fn get_drag_file_event_in_app() -> DragFileInApp {
     drag_file_event_in_app
 }
 
-fn format_folder_size(folder_size: usize) -> String {
-    if folder_size == 0 {
-        return String::from("0 bytes");
-    }
-    let base_1024: f64 = 1024.0;
-    let size_f64: f64 = folder_size as f64;
-
-    let i = (size_f64.log10() / base_1024.log10()).floor();
-    let size_formatted = size_f64 / base_1024.powf(i);
-
-    let file_size_suffix = ["bytes", "KB", "MB", "GB", "TB"][i as usize];
-    let mut size_formatted_string = format!(
-        "{size:.*} {size_suffix}",
-        1,
-        size = size_formatted,
-        size_suffix = file_size_suffix
-    );
-    if size_formatted_string.contains(".0") {
-        size_formatted_string = size_formatted_string.replace(".0", "");
-    }
-    size_formatted_string
-}
-
-fn format_folder_name_to_show(folder_name: String) -> String {
-    let mut new_folder_name = folder_name.clone();
-
-    if new_folder_name.len() > 10 {
-        new_folder_name = match &new_folder_name.get(0..5) {
-            Some(name_sliced) => format!(
-                "{}...{}",
-                name_sliced,
-                &new_folder_name[new_folder_name.len() - 3..].to_string(),
-            ),
-            None => new_folder_name.clone(),
-        };
-    }
-    new_folder_name
+fn get_drag_file_event_out_app() -> FileDropEvent {
+    let drag_file_event_out_app = DRAG_FILE_EVENT.read().clone();
+    drag_file_event_out_app
 }
