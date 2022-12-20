@@ -98,7 +98,7 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                     }
                     // This event is emitted regardless of the accepting of an incoming or outgoing request
                     // so we will update both list without attempting to iterate
-                    // although iteration might be cheaper, its to reduce the complexitiy
+                    // although iteration might be cheaper, its to reduce the complexity
                     MultiPassEventKind::FriendAdded { .. } => {
                         let outgoing_list: HashSet<_> =
                             HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());

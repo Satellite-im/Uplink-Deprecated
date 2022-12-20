@@ -1,10 +1,8 @@
 use dioxus::prelude::*;
-use dioxus_heroicons::{outline::Shape};
+use dioxus_heroicons::outline::Shape;
 use emojis::{Group, UnicodeVersion};
 use sir::css;
-use ui_kit::{
-    button::{self, Button},
-};
+use ui_kit::button::{self, Button};
 use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
 
 static MAX_UNICODE_VER: UnicodeVersion = UnicodeVersion::new(11, 0);
@@ -38,61 +36,52 @@ impl BasicExtension for EmojiSelector {
     }
 
     fn render(cx: Scope) -> Element {
-        let styles = css!("
+        let styles = css!(
+            "
             border: 1px solid var(--theme-borders);
             background: var(--theme-background);
-            padding: 1rem;
+            padding: 0.25rem;
             position: absolute;
             z-index: 5;
             border-radius: 8px;
-            left: 1rem;
-            right: 1rem;
             bottom: 80px;
+            width: 600px;
             max-height: 60vh;
+            right: 20px;
+            max-width: calc(100% - 20px); // -20px is based on the 'right' attribute above
             overflow-y: scroll;
-            @media only screen and (min-width: 900px) {
-                left: 50%;
-            }
-            &:hover {
-                &::-webkit-scrollbar-thumb {
-                    background: var(--theme-primary) !important;
-                    opacity: 1;
-                }
-            }
-
-            .button {
-                width: 100%;
-                margin: 0 0 0.5rem 0 !important;
+            &::-webkit-scrollbar-thumb {
+                background: var(--theme-primary) !important;
+                opacity: 1;
             }
             .category {
                 display: inline-flex;
                 flex-direction: column;
-                flex-wrap: wrap;
-                border: 1px solid var(--theme-borders);
-                border-radius: 4px;
                 margin-bottom: 0.5rem;
-                padding: 0.5rem 1rem;
+                padding: 0.25rem;
                 width: 100%;
-                justify-content: center;
-                .name {
-                }
+
                 .items {
-                    display: flex;
-                    flex-wrap: wrap;
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
                     .item {
                         cursor: pointer;
                     }
                 }
             }
-        ");
+        "
+        );
 
         let is_opened = use_state(&cx, || false);
         let eval = use_eval(&cx);
         let insert = move |val: &str| {
-            eval(format!("
+            eval(format!(
+                "
                 document.querySelector('#TODO-textarea-input .dynamic-input').focus();
                 document.execCommand('insertText', false, '{}');
-            ", val));
+            ",
+                val
+            ));
         };
 
         let groups = Group::iter();
@@ -147,12 +136,11 @@ impl BasicExtension for EmojiSelector {
 }
 
 #[no_mangle]
-pub extern "C"
-fn ret_rend() -> Box<fn(Scope) -> Element> {
+pub extern "C" fn ret_rend() -> Box<fn(Scope) -> Element> {
     Box::new(EmojiSelector::render)
 }
 
 #[no_mangle]
-pub extern "C" fn ret_info() -> Box<ExtensionInfo>{
+pub extern "C" fn ret_info() -> Box<ExtensionInfo> {
     Box::new(EmojiSelector::info())
 }

@@ -15,7 +15,13 @@
     flex-direction: column;
 
     .scroll-container {
+      flex: 1;
       overflow-y: scroll;
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--theme-primary);
+        opacity: 1;
+      }
     }
 
     .user-category {
@@ -65,8 +71,6 @@
   .a-z-list {
     flex-direction: column;
     height: 100%;
-    float: right;
-    width: 16px;
     margin-right: 12px;
   }
 
