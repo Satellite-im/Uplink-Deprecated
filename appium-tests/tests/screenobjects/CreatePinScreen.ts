@@ -1,4 +1,5 @@
 import AppScreen from "./AppScreen"
+import { customPredicateString } from "../helpers/commands"
 
 const SELECTORS = {
   MACOS: {
@@ -12,10 +13,16 @@ const SELECTORS = {
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[1]',
     WORLD_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[2]',
-    ERROR_MESSAGE_INVALID_PIN:
-      "-ios predicate string:elementType == 48 AND value == 'Your pin must be at least 4 characters.　'",
-    MAX_LENGTH_TEXT:
-      "-ios predicate string:elementType == 9 AND title == 'Only four to six characters allowed'",
+    ERROR_MESSAGE_INVALID_PIN: customPredicateString(
+      "48",
+      "value",
+      "Your pin must be at least 4 characters.　",
+    ),
+    MAX_LENGTH_TEXT: customPredicateString(
+      "9",
+      "title",
+      "Only four to six characters allowed",
+    ),
   },
 }
 
