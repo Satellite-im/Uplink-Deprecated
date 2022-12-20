@@ -9,7 +9,7 @@ use image::io::Reader as ImageReader;
 
 use crate::Storage;
 
-pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext) {
+pub async fn upload_file(mut file_storage: Storage, file_path: PathBuf, eval_script: DesktopContext) {
     let mut filename = match file_path
         .file_name()
         .map(|file| file.to_string_lossy().to_string())
@@ -19,7 +19,6 @@ pub async fn upload_file(file_storage: Storage, file_path: PathBuf, eval_script:
     };
 
     let local_path = Path::new(&file_path).to_string_lossy().to_string();
-    let mut file_storage = file_storage.clone();
     let original = filename.clone();
     let file = PathBuf::from(&original);
 

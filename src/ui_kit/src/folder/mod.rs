@@ -113,10 +113,17 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                             Ok(dir) => dir,
                                             _ => return
                                     };
-                                    let file = current_directory.get_item(&file_name).unwrap();
+                                    
+                                    let file = match current_directory.get_item(&file_name) {
+                                        Ok(item) => item, 
+                                        Err(error) => {
+                                            log::error!("Error to get an item: {error}");
+                                            return;
+                                        },
+                                    };
 
                                     file_name = files_functions::verify_duplicate_name(directory_target.clone(), 
-                                    file.name().clone(), PathBuf::from(file.name()));
+                                    file.name(), PathBuf::from(file.name()));
                                     if file_name.ne(&file.name()) {
                                        if let Err(error) =  file.rename(&file_name) {
                                         log::error!("Error renaming file to move into another folder: {error}");
