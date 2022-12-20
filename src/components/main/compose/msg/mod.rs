@@ -239,7 +239,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                             },
                             ContextItem {
                                 onpressed: move |_| {
-                                    // when the FriendRemoved event is detected, the covnersation will be removed
+                                    // when the FriendRemoved event is detected, the conversation will be removed
                                     // todo: do we want to be able to delete and re-add a friend and keep the previous conversation? maybe the users won't care if they don't know they can have that feature. 
                                     let mut multipass = cx.props.account.clone();
                                     let did_to_remove = cx.props.sender.clone();
