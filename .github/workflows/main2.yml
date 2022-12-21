@@ -5,7 +5,7 @@ on:
 
 jobs:
   misspell:
-    if: ! github.event.pull_request.draft
+    if: github.event.pull_request.draft == 'false'
     name: runner / misspell
     runs-on: ubuntu-latest
     steps:
