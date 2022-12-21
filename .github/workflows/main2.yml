@@ -1,9 +1,8 @@
 name: reviewdog
 on:
   pull_request:
-    types:
-      - opened
-      - edited
+    types: [opened, synchronize, reopened, edited]
+
 jobs:
   misspell:
     name: runner / misspell
