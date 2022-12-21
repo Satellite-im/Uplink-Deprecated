@@ -13,4 +13,4 @@ jobs:
           github_token: ${{ secrets.github_token }}
           locale: "US"
           level: error
-          reporter: github-pr-check
+          reporter: "github-check"
