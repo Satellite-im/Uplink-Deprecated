@@ -5,7 +5,6 @@ on:
       - opened
 jobs:
   misspell:
-    if: ! github.event.pull_request.draft
     name: runner / misspell
     runs-on: ubuntu-latest
     steps:
