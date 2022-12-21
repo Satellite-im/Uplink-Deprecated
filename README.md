@@ -10,9 +10,9 @@
 
 <br/>
 
-Uplink is writen in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementaation of Warp feeaturexs in a universl application.
+Uplink is written in pure Rust with a UI in [Dioxus](https://github.com/DioxusLabs) (which is also written in Rust). It was developed to be a new foundation for the basic implementation of Warp features in a universal application.
 
-The goal should be to build a hyper-customizable appliation that can run anywhre and suport extensions.
+The goal should be to build a hyper-customizable application that can run anywhere and support extensions.
 
 ## Features
 
@@ -77,14 +77,6 @@ It's often necessary to reset your account for development, to do so just delete
 ## Troubleshooting
 
 If you see something about cmake or protoc then you likely need to install those and get them in your path. Often times just restarting your shell helps. Other errors are fixed with updating packages `cargo update` or getting the nightly `rustup update; rustup default nightly` or stable `rustup update; rustup default stable` version of rust.
-
-If you have this error
-
-`Blocking waiting for file lock on package cache`
-
-the fix is
-
-`rm -rf ~/.cargo/.package-cache` 
 
 ## Debugging
 - run uplink as follows: `RUST_LOG=debug target/debug/uplink`
