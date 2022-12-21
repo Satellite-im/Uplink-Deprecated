@@ -31,7 +31,7 @@ pub fn MediaContainer(cx: Scope<Props>) -> Element {
     };
 
     let mp = cx.props.account.clone();
-    let my_identity = mp.get_own_identity().unwrap();
+    let my_identity = warp::async_block_in_place_uncheck(mp.get_own_identity()).unwrap();
     let username = my_identity.username();
     let names = [username, String::from("Fake User")];
     let config = Config::load_config_or_default();
