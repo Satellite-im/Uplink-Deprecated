@@ -25,7 +25,7 @@ pub fn BlockedList(cx: Scope<BlockedListProps>) -> Element {
         |(block_users, mp, disp_block_users)| async move {
             loop {
                 let block_users_list: HashSet<_> =
-                    HashSet::from_iter(mp.block_list().unwrap_or_default());
+                    HashSet::from_iter(mp.block_list().await.unwrap_or_default());
 
                 if *block_users.read() != block_users_list {
                     log::debug!("updating block users list ");

@@ -8,7 +8,7 @@ pub struct Props {
 }
 
 #[allow(non_snake_case)]
-pub fn Divider<'a>(cx: Scope<'a, Props>) -> Element<'a> {
+pub fn Divider(cx: Scope<Props>) -> Element {
     let num_unread = **(use_state(&cx, || cx.props.num_unread));
     let date = cx.props.date.with_timezone(&Local);
     let label_date = if date.date_naive() == Local::now().date_naive() {

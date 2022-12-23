@@ -21,7 +21,7 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
-    let identity = account.get_own_identity().unwrap();
+    let identity = warp::async_block_in_place_uncheck(account.get_own_identity()).unwrap();
     let username = identity.username();
     let username2 = username.clone();
     let username_state = use_state(&cx, || username.clone());
@@ -66,8 +66,8 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                         } else if matches.matched(1){
                                             username_error.set(l2.username_error_illegal.to_string())
                                         } else {
-                                            if let Err(e) = account
-                                                .update_identity(IdentityUpdate::set_username(username_text.to_string()))
+                                            if let Err(e) = warp::async_block_in_place_uncheck(account
+                                                .update_identity(IdentityUpdate::set_username(username_text.to_string())))
                                             {
                                                 println!("Failed in updating status message:{}", e);
                                             }
@@ -98,8 +98,8 @@ pub fn Username(cx: Scope<Props>, account: Account) -> Element {
                                     } else if matches.matched(1){
                                         username_error.set(l3.username_error_illegal.to_string())
                                     } else {
-                                        if let Err(e) = account2
-                                            .update_identity(IdentityUpdate::set_username(username_text.to_string()))
+                                        if let Err(e) = warp::async_block_in_place_uncheck(account2
+                                            .update_identity(IdentityUpdate::set_username(username_text.to_string())))
                                         {
                                             println!("Failed in updating status message:{}", e);
                                         }

@@ -32,7 +32,7 @@ pub fn FindFriends(
 
     let copy_friend_id = move || {
         let mut clipboard = Clipboard::new().unwrap();
-        if let Ok(ident) = account2.get_own_identity() {
+        if let Ok(ident) = warp::async_block_in_place_uncheck(account2.get_own_identity()) {
             let single_toast = ToastInfo {
                 position: Position::TopRight,
                 ..ToastInfo::simple(&codeCopied)
@@ -60,7 +60,9 @@ pub fn FindFriends(
             return;
         }
 
-        if let Ok(results) = account.get_identity(Identifier::user_name(value.as_str())) {
+        if let Ok(results) = warp::async_block_in_place_uncheck(
+            account.get_identity(Identifier::user_name(value.as_str())),
+        ) {
             let opts = results
                 .iter()
                 .map(|result| SelectOption {
@@ -88,8 +90,8 @@ pub fn FindFriends(
                         let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                         match did {
                             Ok(d) => {
-                                match account.clone()
-                                    .send_request(&d)
+                                match warp::async_block_in_place_uncheck(account.clone()
+                                    .send_request(&d))
                                 {
                                     Ok(_) => {
                                         let single_toast = ToastInfo {
@@ -129,8 +131,8 @@ pub fn FindFriends(
                         let did = DID::try_from(format!("did:key:{}", remote_friend.clone()));
                         match did {
                             Ok(d) => {
-                                match account.clone()
-                                    .send_request(&d)
+                                match warp::async_block_in_place_uncheck(account.clone()
+                                    .send_request(&d))
                                 {
                                     Ok(_) => {
                                         let single_toast = ToastInfo {

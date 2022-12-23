@@ -44,24 +44,21 @@ pub fn NewFolder(cx: Scope<Props>) -> Element {
                             if evt.key_code == KeyCode::Escape {
                                 show_new_folder.set(false);
                             }
-                            if evt.key_code == KeyCode::Enter {
-                                if !folder_name.is_empty() {
-                                    let file_storage = cx.props.storage.clone();
-                                    let new_directory_path = format!("{}", folder_name.clone());
-                                    cx.spawn({
-                                        to_owned![file_storage, new_directory_path, show_new_folder];
-                                        async move {                            
-                                            match file_storage.create_directory(&new_directory_path, true).await {
-                                                Ok(_) => {
-                                                    show_new_folder.set(false);
-                                                    log::info!("New directory created. {:?}", new_directory_path);
-                                                },
-                                                Err(error) => log::error!("Error creating directory: {error}"),
-                                            };
-                                        }
-                                    });
-                                }
-                            
+                            if evt.key_code == KeyCode::Enter && !folder_name.is_empty() {
+                                let file_storage = cx.props.storage.clone();
+                                let new_directory_path = format!("{}", folder_name.clone());
+                                cx.spawn({
+                                    to_owned![file_storage, new_directory_path, show_new_folder];
+                                    async move {                            
+                                        match file_storage.create_directory(&new_directory_path, true).await {
+                                            Ok(_) => {
+                                                show_new_folder.set(false);
+                                                log::info!("New directory created. {:?}", new_directory_path);
+                                            },
+                                            Err(error) => log::error!("Error creating directory: {error}"),
+                                        };
+                                    }
+                                });
                             }
                         }
                     }

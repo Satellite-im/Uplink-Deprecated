@@ -21,7 +21,7 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
     let l = use_atom_ref(&cx, LANGUAGE).read();
     let l2 = l.clone();
     let l3 = l.clone();
-    let identity = account.get_own_identity().unwrap();
+    let identity = warp::async_block_in_place_uncheck(account.get_own_identity()).unwrap();
     let status_msg = match identity.status_message() {
         Some(msg) => msg,
         None => String::new(),
@@ -59,10 +59,10 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                                 if status_msg_text.len() > 128 {
                                     status_msg_error.set(l2.status_error_length.to_string());
                                 } else {
-                                    if let Err(e) = account
+                                    if let Err(e) = warp::async_block_in_place_uncheck(account
                                         .update_identity(IdentityUpdate::set_status_message(Some(
                                             status_msg_state.to_string(),
-                                        )))
+                                        ))))
                                     {
                                         println!("Failed in updating status message:{}", e);
                                     }
@@ -82,10 +82,10 @@ pub fn StatusMsg(cx: Scope<Props>, account: Account) -> Element {
                             if status_msg_text.len() > 128 {
                                 status_msg_error.set(l3.status_error_length.to_string());
                             } else {
-                                if let Err(e) = account2
+                                if let Err(e) = warp::async_block_in_place_uncheck(account2
                                     .update_identity(IdentityUpdate::set_status_message(Some(
                                         status_msg_state.to_string(),
-                                    )))
+                                    ))))
                                 {
                                     println!("Failed in updating status message:{}", e);
                                 }

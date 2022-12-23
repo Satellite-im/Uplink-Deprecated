@@ -60,12 +60,12 @@ pub fn Upload<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                                     let files_to_upload =
                                         format!("{} files to upload!", files_local_path.len());
                                     eval_script.eval(
-                                        &file_over_dropzone_js
+                                        file_over_dropzone_js
                                             .replace("file_path", &files_to_upload),
                                     );
                                 }
                                 Ordering::Equal => {
-                                    eval_script.eval(&file_over_dropzone_js.replace(
+                                    eval_script.eval(file_over_dropzone_js.replace(
                                         "file_path",
                                         &files_local_path[0].to_string_lossy(),
                                     ));
