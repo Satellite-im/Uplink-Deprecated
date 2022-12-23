@@ -55,7 +55,8 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
     let mut rg = cx.props.messaging.clone();
     let mp = cx.props.account.clone();
 
-    let ident = mp.get_own_identity().expect("Unexpected error <temp>");
+    let ident =
+        warp::async_block_in_place_uncheck(mp.get_own_identity()).expect("Unexpected error <temp>");
 
     let did = cx
         .props
@@ -66,7 +67,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
         //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
-        .filter_map(|did| mp.get_identity(did.clone().into()).ok())
+        .filter_map(|did| {
+            warp::async_block_in_place_uncheck(mp.get_identity(did.clone().into())).ok()
+        })
         //flatted the nested iterators
         .flatten()
         .map(|i| i.did_key())
@@ -82,7 +85,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
         //filters out our own did key in the iter
         .filter(|did| ident.did_key().ne(did))
         //tries get_identity so if it returns Option::Some it would be the map item, otherwise its filtered out
-        .filter_map(|did| mp.get_identity(did.clone().into()).ok())
+        .filter_map(|did| {
+            warp::async_block_in_place_uncheck(mp.get_identity(did.clone().into())).ok()
+        })
         //flatted the nested iterators
         .flatten()
         .map(|i| i.username())
@@ -107,7 +112,9 @@ pub fn Chat<'a>(cx: Scope<'a, Props<'a>>) -> Element<'a> {
                 .unwrap_or_default();
 
             loop {
-                if let Ok(current_status) = account.identity_status(&remote_did) {
+                if let Ok(current_status) =
+                    warp::async_block_in_place_uncheck(account.identity_status(&remote_did))
+                {
                     if *online_status.current() != current_status {
                         log::debug!("updating online_status ");
                         online_status.set(current_status);

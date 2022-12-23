@@ -14,7 +14,7 @@ pub fn Popout<'a>(
     log::debug!("rendering Popout");
 
     if !is_visible.get() {
-        return None.into();
+        return None;
     }
 
     cx.render(rsx! {

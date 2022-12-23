@@ -19,7 +19,7 @@ pub fn ActivityIndicator(cx: Scope<Props>) -> Element {
 
     use_future(&cx, (&account, status), |(account, status)| async move {
         loop {
-            if let Ok(current_status) = account.identity_status(&remote_did) {
+            if let Ok(current_status) = account.identity_status(&remote_did).await {
                 if *status != current_status {
                     status.set(current_status);
                 }
