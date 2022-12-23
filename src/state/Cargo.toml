@@ -14,4 +14,4 @@ serde_json = { version = "1.0" }
 serde = { version = "1.0", features = ["derive"] }
 uuid = { version = "1.0", features = ["serde", "v4"] }
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "28de9c079b5792c333a638dc972d8ec71747c670"}
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "ed3b5de968fb623a7d76170a5d7dd3f3c79d3e1b"}

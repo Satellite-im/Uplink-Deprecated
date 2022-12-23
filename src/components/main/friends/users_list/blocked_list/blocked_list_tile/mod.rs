@@ -72,7 +72,7 @@ pub fn BlockedListTile(cx: Scope<Props>) -> Element {
                             on_pressed: move |_| {
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_unblock = cx.props.friend.clone();
-                                match multipass.unblock(&did_to_unblock) {
+                                match warp::async_block_in_place_uncheck(multipass.unblock(&did_to_unblock)) {
                                     Ok(_) => {}
                                     Err(e) => {
                                         log::debug!("faied to unblock friend {}:{}", &cx.props.friend, e);

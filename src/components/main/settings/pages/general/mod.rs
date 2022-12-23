@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::{iutils::config::Config, Account};
-use ui_kit::{input::*, select::*, switch::Switch};
+use ui_kit::{select::*, switch::Switch};
 
 #[derive(Props, PartialEq)]
 pub struct Props {

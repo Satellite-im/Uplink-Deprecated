@@ -15,7 +15,7 @@ pub struct Props {
 #[allow(non_snake_case)]
 pub fn PhotoPicker(cx: Scope<Props>) -> Element {
     let mut account = cx.props.account.clone();
-    let identity = account.get_own_identity().unwrap();
+    let identity = warp::async_block_in_place_uncheck(account.get_own_identity()).unwrap();
     let base64_picture = identity.graphics().profile_picture();
     let image_state = use_state(&cx, || base64_picture.clone());
     let show_profile_picture = base64_picture.is_empty();
@@ -86,10 +86,10 @@ pub fn PhotoPicker(cx: Scope<Props>) -> Element {
                         }
                     };
 
-                    if let Err(e) =  account.update_identity(IdentityUpdate::set_graphics_picture(image)) {
+                    if let Err(e) = warp::async_block_in_place_uncheck(account.update_identity(IdentityUpdate::set_graphics_picture(image))) {
                         println!("{}", e);
                     }
-                    let identity = account.get_own_identity().unwrap();
+                    let identity = warp::async_block_in_place_uncheck(account.get_own_identity()).unwrap();
                     let image = identity.graphics().profile_picture();
                     image_state.set(image);
 

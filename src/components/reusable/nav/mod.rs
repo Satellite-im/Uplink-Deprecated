@@ -42,7 +42,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
     let rg = cx.props.messaging.clone();
     let multipass = cx.props.account.clone();
     let reqCount = use_state(&cx, || {
-        multipass.list_incoming_request().unwrap_or_default().len()
+        warp::async_block_in_place_uncheck(multipass.list_incoming_request()).unwrap_or_default().len()
     });
 
     let route = use_route(&cx).last_segment();
@@ -66,7 +66,7 @@ pub fn Nav(cx: Scope<Props>) -> Element {
             let new_friend_request_notification = l.new_friend_request.to_string().to_owned();
 
             let mut stream = loop {
-                match multipass.subscribe() {
+                match multipass.subscribe().await {
                     Ok(stream) => break stream,
                     Err(e) => match e {
                         //Note: Used as a precaution for future checks
@@ -86,8 +86,8 @@ pub fn Nav(cx: Scope<Props>) -> Element {
                 match event {
                     MultiPassEventKind::FriendRequestReceived { from } => {
                         // Use to show the name or did of who its from
-                        let name_or_did = multipass
-                            .get_identity(from.clone().into())
+                        let name_or_did = warp::async_block_in_place_uncheck(multipass
+                            .get_identity(from.clone().into()))
                             .ok()
                             .and_then(|list| list.first().cloned())
                             .map(|id| id.username())

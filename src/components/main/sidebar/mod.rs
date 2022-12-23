@@ -75,17 +75,12 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
     });
 
     // sort the chats by time (ascending order)
-    let mut chats: Vec<ConversationInfo> = state
-        .read()
-        .active_chats
-        .iter()
-        .map(|(_k, v)| v)
-        .cloned()
-        .collect();
+    let mut chats: Vec<ConversationInfo> = state.read().active_chats.values().cloned().collect();
     chats.sort();
 
     let mp = cx.props.account.clone();
-    let ident = mp.get_own_identity().expect("Unexpected error <temp>");
+    let ident =
+        warp::async_block_in_place_uncheck(mp.get_own_identity()).expect("Unexpected error <temp>");
 
     let matcher = SkimMatcherV2::default();
     let filtered_chats = chats.clone().into_iter().filter(|conv| {
@@ -104,7 +99,9 @@ pub fn Sidebar(cx: Scope<Props>) -> Element {
                 .recipients()
                 .iter()
                 .filter(|did| ident.did_key().ne(did))
-                .filter_map(|did| mp.get_identity(did.clone().into()).ok())
+                .filter_map(|did| {
+                    warp::async_block_in_place_uncheck(mp.get_identity(did.clone().into())).ok()
+                })
                 .flatten()
                 .map(|i| i.username())
                 .last()

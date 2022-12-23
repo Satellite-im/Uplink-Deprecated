@@ -27,7 +27,7 @@ pub fn get_username_from_conversation(
 }
 
 pub fn get_username_from_did(did: DID, mp: &Account) -> String {
-    let display_user = mp.get_identity(did.into()).unwrap_or_default();
+    let display_user = warp::async_block_in_place_uncheck(mp.get_identity(did.into())).unwrap_or_default();
     display_user
         .first()
         .map(Identity::username)
@@ -77,7 +77,7 @@ pub fn display_formatted_time(num: u64) -> String {
 }
 
 pub fn get_pfp_from_did(did: DID, mp: &Account) -> Option<String> {
-    let display_user = mp.get_identity(did.into()).unwrap_or_default();
+    let display_user = warp::async_block_in_place_uncheck(mp.get_identity(did.into())).unwrap_or_default();
     display_user
         .first()
         .map(|ident| ident.graphics().profile_picture())

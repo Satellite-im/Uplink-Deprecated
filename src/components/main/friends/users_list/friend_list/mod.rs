@@ -30,7 +30,7 @@ pub fn FriendList(cx: Scope<FriendListProps>) -> Element {
         (friends, &cx.props.account.clone(), disp_friends),
         |(friends, mut mp, disp_friends)| async move {
             let mut stream = loop {
-                match mp.subscribe() {
+                match mp.subscribe().await {
                     Ok(stream) => break stream,
                     Err(e) => match e {
                         //Note: Used as a precaution for future checks
@@ -45,7 +45,7 @@ pub fn FriendList(cx: Scope<FriendListProps>) -> Element {
             };
 
             let friends_list: HashSet<_> =
-                HashSet::from_iter(mp.list_friends().unwrap_or_default());
+                HashSet::from_iter(mp.list_friends().await.unwrap_or_default());
 
             if *friends.read() != friends_list {
                 log::debug!("updating friends list ");
