@@ -21,4 +21,4 @@ tokio-util = { version = "0.7", features = ["full"] }
 image = "0.24.5"
 futures = "0.3"
 
-warp = { git = "https://github.com/Satellite-im/Warp", rev = "cc6a5093b23efef04cff4e7e331260837a328625"}
+warp = { git = "https://github.com/Satellite-im/Warp", rev = "2e613905783eea42be036cb0a887ccac71dd4caa"}
