@@ -243,7 +243,7 @@ pub fn Msg<'a>(cx: Scope<'a, Props>) -> Element<'a> {
                                     // todo: do we want to be able to delete and re-add a friend and keep the previous conversation? maybe the users won't care if they don't know they can have that feature. 
                                     let mut multipass = cx.props.account.clone();
                                     let did_to_remove = cx.props.sender.clone();
-                                    if multipass.remove_friend(&did_to_remove).is_err() {
+                                    if warp::async_block_in_place_uncheck(multipass.remove_friend(&did_to_remove)).is_err() {
                                         log::debug!("error removing friend");
                                     }
                                 },

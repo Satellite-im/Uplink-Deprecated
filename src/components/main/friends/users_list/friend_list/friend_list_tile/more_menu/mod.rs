@@ -21,7 +21,7 @@ pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
                         on_pressed: move |_| {
                                 let mut multipass = cx.props.account.clone();
                                 let did_to_remove = cx.props.friend.clone();
-                                match multipass.remove_friend(&did_to_remove) {
+                                match warp::async_block_in_place_uncheck(multipass.remove_friend(&did_to_remove)) {
                                     Ok(_) => {log::info!("removing friend succeed")}
                                     Err(e) => {
                                         log::error!("failed in removing friend : {}",e.to_string());
@@ -36,7 +36,7 @@ pub fn MoreMenu(cx: Scope<MoreMenuProps>) -> Element {
                             on_pressed: move |_| {
                                  let mut multipass = cx.props.account.clone();
                                  let did_to_block = cx.props.friend.clone();
-                                 match multipass.block(&did_to_block) {
+                                 match warp::async_block_in_place_uncheck(multipass.block(&did_to_block)) {
                                      Ok(_) => {}
                                      Err(e) => {
                                          log::debug!("faied to block friend {}:{}", &cx.props.friend, e);

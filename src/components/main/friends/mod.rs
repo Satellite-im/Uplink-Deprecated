@@ -36,18 +36,14 @@ pub fn Friends(cx: Scope<Props>) -> Element {
 
     let show_friend_list = use_state(&cx, || true);
 
-    let incoming_requests = cx
-        .props
-        .account
-        .list_incoming_request()
-        .unwrap_or_default()
-        .is_empty();
-    let outgoing_requests = cx
-        .props
-        .account
-        .list_outgoing_request()
-        .unwrap_or_default()
-        .is_empty();
+    let incoming_requests =
+        warp::async_block_in_place_uncheck(cx.props.account.list_incoming_request())
+            .unwrap_or_default()
+            .is_empty();
+    let outgoing_requests =
+        warp::async_block_in_place_uncheck(cx.props.account.list_outgoing_request())
+            .unwrap_or_default()
+            .is_empty();
 
     cx.render(rsx! {
         div {

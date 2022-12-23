@@ -1,7 +1,7 @@
 use crate::components::main::friends::request::FriendRequest;
 use crate::{Account, LANGUAGE};
 
-use std::{collections::HashSet};
+use std::collections::HashSet;
 
 use dioxus::prelude::*;
 use futures::StreamExt;
@@ -17,10 +17,14 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
     let outgoingRequestsLang = { l.outgoing_requests.to_string() };
 
     let incoming: &UseState<HashSet<_>> = use_state(&cx, || {
-        HashSet::from_iter(account.list_incoming_request().unwrap_or_default())
+        HashSet::from_iter(
+            warp::async_block_in_place_uncheck(account.list_incoming_request()).unwrap_or_default(),
+        )
     });
     let outgoing: &UseState<HashSet<_>> = use_state(&cx, || {
-        HashSet::from_iter(account.list_outgoing_request().unwrap_or_default())
+        HashSet::from_iter(
+            warp::async_block_in_place_uncheck(account.list_outgoing_request()).unwrap_or_default(),
+        )
     });
 
     use_future(
@@ -28,7 +32,7 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
         (incoming, outgoing, &account.clone()),
         |(incoming, outgoing, mut account)| async move {
             let mut stream = loop {
-                match account.subscribe() {
+                match account.subscribe().await {
                     Ok(stream) => break stream,
                     Err(e) => match e {
                         //Note: Used as a precaution for future checks
@@ -43,9 +47,9 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
             };
 
             let incoming_list: HashSet<_> =
-                HashSet::from_iter(account.list_incoming_request().unwrap_or_default());
+                HashSet::from_iter(account.list_incoming_request().await.unwrap_or_default());
             let outgoing_list: HashSet<_> =
-                HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());
+                HashSet::from_iter(account.list_outgoing_request().await.unwrap_or_default());
 
             if *incoming != incoming_list {
                 log::debug!("updating incoming friend requests ");
@@ -63,16 +67,18 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                     //we will update outgoing request with the whole list
                     //regarding both incoming and outgoing
                     MultiPassEventKind::FriendRequestSent { .. } => {
-                        let outgoing_list: HashSet<_> =
-                            HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());
+                        let outgoing_list: HashSet<_> = HashSet::from_iter(
+                            account.list_outgoing_request().await.unwrap_or_default(),
+                        );
                         if *outgoing != outgoing_list {
                             log::debug!("updating outgoing friend requests ");
                             outgoing.set(outgoing_list);
                         }
                     }
                     MultiPassEventKind::FriendRequestReceived { .. } => {
-                        let incoming_list: HashSet<_> =
-                            HashSet::from_iter(account.list_incoming_request().unwrap_or_default());
+                        let incoming_list: HashSet<_> = HashSet::from_iter(
+                            account.list_incoming_request().await.unwrap_or_default(),
+                        );
                         if *incoming != incoming_list {
                             log::debug!("updating incoming friend requests ");
                             incoming.set(incoming_list);
@@ -100,15 +106,17 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                     // so we will update both list without attempting to iterate
                     // although iteration might be cheaper, its to reduce the complexity
                     MultiPassEventKind::FriendAdded { .. } => {
-                        let outgoing_list: HashSet<_> =
-                            HashSet::from_iter(account.list_outgoing_request().unwrap_or_default());
+                        let outgoing_list: HashSet<_> = HashSet::from_iter(
+                            account.list_outgoing_request().await.unwrap_or_default(),
+                        );
                         if *outgoing != outgoing_list {
                             log::debug!("updating outgoing friend requests ");
                             outgoing.set(outgoing_list);
                         }
 
-                        let incoming_list: HashSet<_> =
-                            HashSet::from_iter(account.list_incoming_request().unwrap_or_default());
+                        let incoming_list: HashSet<_> = HashSet::from_iter(
+                            account.list_incoming_request().await.unwrap_or_default(),
+                        );
                         if *incoming != incoming_list {
                             log::debug!("updating incoming friend requests ");
                             incoming.set(incoming_list);
@@ -133,8 +141,8 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                 account: account.clone(),
                                 request: request.clone(),
                                 on_accept: move |_| {
-                                    match account.clone()
-                                        .accept_request(&request.from())
+                                    match warp::async_block_in_place_uncheck(account.clone()
+                                        .accept_request(&request.from()))
                                     {
                                         Ok(_) => {
                                             add_error.set("".into());
@@ -147,8 +155,8 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                     }
                                 },
                                 on_deny: move |_| {
-                                    match account.clone()
-                                        .deny_request(&request.from())
+                                    match warp::async_block_in_place_uncheck(account.clone()
+                                        .deny_request(&request.from()))
                                     {
                                         Ok(_) => {
                                             add_error.set("".into());
@@ -175,8 +183,8 @@ pub fn FriendRequests(cx: Scope, account: Account, add_error: UseState<String>) 
                                 account: account.clone(),
                                 request: request.clone(),
                                 on_deny:  move |_| {
-                                    match account.clone()
-                                        .close_request(&request.to())
+                                    match warp::async_block_in_place_uncheck(account.clone()
+                                        .close_request(&request.to()))
                                     {
                                         Ok(_) => {
                                             add_error.set("".into());
