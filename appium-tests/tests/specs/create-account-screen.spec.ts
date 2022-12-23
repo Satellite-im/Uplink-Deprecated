@@ -18,19 +18,21 @@ describe("Create Account on Uplink Desktop", async () => {
   })
 
   it("Attempt to use an empty PIN", async () => {
-    await (await CreatePinScreen.pinInput).addValue("\n")
-    await expect(await CreatePinScreen.invalidPinMessage).toBeDisplayed()
-    await expect(await CreatePinScreen.invalidPinMessage).toHaveTextContaining(
-      "Your pin must be at least 4 characters",
-    )
+    await (await CreatePinScreen.pinInput).addValue("\n").then(() => {
+      expect(CreatePinScreen.invalidPinMessage).toBeDisplayed()
+      expect(CreatePinScreen.invalidPinMessage).toHaveTextContaining(
+        "Your pin must be at least 4 characters",
+      )
+    })
   })
 
   it("Attempt to use a PIN with less than 4 characters", async () => {
-    await (await CreatePinScreen.pinInput).setValue("123" + "\n")
-    await expect(await CreatePinScreen.invalidPinMessage).toBeDisplayed()
-    await expect(await CreatePinScreen.invalidPinMessage).toHaveTextContaining(
-      "Your pin must be at least 4 characters",
-    )
+    await (await CreatePinScreen.pinInput).setValue("123" + "\n").then(() => {
+      expect(CreatePinScreen.invalidPinMessage).toBeDisplayed()
+      expect(CreatePinScreen.invalidPinMessage).toHaveTextContaining(
+        "Your pin must be at least 4 characters",
+      )
+    })
   })
 
   it("Attempt to use a PIN with more than 6 characters and assert error message", async () => {
@@ -44,13 +46,14 @@ describe("Create Account on Uplink Desktop", async () => {
 
   it("Type a valid PIN with 4 characters and go to next page", async () => {
     await (await CreatePinScreen.pinInput).setValue("1234" + "\n")
-    await expect(await CreateAccountScreen.headerText).toBeDisplayed()
-    await driver.reset()
+    await expect(CreateAccountScreen.headerText).toBeDisplayed()
   })
 
   it("Type a valid PIN with 6 characters and go to next page", async () => {
-    await (await CreatePinScreen.pinInput).setValue("123456" + "\n")
-    await expect(await CreateAccountScreen.headerText).toBeDisplayed()
+    await driver.reset().then(() => {
+      CreatePinScreen.pinInput.setValue("123456" + "\n")
+      expect(CreateAccountScreen.headerText).toBeDisplayed()
+    })
   })
 
   it("Assert Create Username screen texts", async () => {
@@ -63,38 +66,40 @@ describe("Create Account on Uplink Desktop", async () => {
   })
 
   it("Attempt to provide an empty username", async () => {
-    await (await CreateAccountScreen.userInput).addValue("\n")
-    await expect(await CreateAccountScreen.errorMessageUsername).toBeDisplayed()
-    await expect(
-      await CreateAccountScreen.errorMessageUsername,
-    ).toHaveTextContaining("Username is required")
+    await (await CreateAccountScreen.userInput).addValue("\n").then(() => {
+      expect(CreateAccountScreen.errorMessageUsername).toBeDisplayed()
+      expect(CreateAccountScreen.errorMessageUsername).toHaveTextContaining(
+        "Username is required",
+      )
+    })
   })
 
   it("Attempt to provide a username with less than 4 characters", async () => {
-    await (await CreateAccountScreen.userInput).setValue("a" + "\n")
-    await expect(await CreateAccountScreen.errorMessageUsername).toBeDisplayed()
-    await expect(
-      await CreateAccountScreen.errorMessageUsername,
-    ).toHaveTextContaining(
-      "Username needs to be between 4 and 32 characters long",
-    )
+    await (await CreateAccountScreen.userInput)
+      .setValue("a" + "\n")
+      .then(() => {
+        expect(CreateAccountScreen.errorMessageUsername).toBeDisplayed()
+        expect(CreateAccountScreen.errorMessageUsername).toHaveTextContaining(
+          "Username needs to be between 4 and 32 characters long",
+        )
+      })
   })
 
   it("Attempt to provide a username with less more than 32 characters", async () => {
-    await (
-      await CreateAccountScreen.userInput
-    ).setValue("12345678901234567890123456789012345" + "\n") // Typing 35 characters
-    await expect(await CreateAccountScreen.errorMessageUsername).toBeDisplayed()
-    await expect(
-      await CreateAccountScreen.errorMessageUsername,
-    ).toHaveTextContaining(
-      "Username needs to be between 4 and 32 characters long",
-    )
+    // Typing 35 characters
+    await (await CreateAccountScreen.userInput)
+      .setValue("12345678901234567890123456789012345" + "\n")
+      .then(() => {
+        expect(CreateAccountScreen.errorMessageUsername).toBeDisplayed()
+        expect(CreateAccountScreen.errorMessageUsername).toHaveTextContaining(
+          "Username needs to be between 4 and 32 characters long",
+        )
+      })
   })
 
   it("Provide a valid username and go to next page", async () => {
     await (await CreateAccountScreen.userInput).setValue("qatest01" + "\n")
-    await expect(await UplinkMainScreen.noActiveChatsText).toBeDisplayed()
+    await expect(UplinkMainScreen.noActiveChatsText).toBeDisplayed()
   })
 
   // Skipped for now since driver.reset() is redirecting to Create Pin Screen instead of Enter Pin Screen
@@ -108,34 +113,38 @@ describe("Create Account on Uplink Desktop", async () => {
 
   // Skipped for now since driver.reset() is redirecting to Create Pin Screen instead of Enter Pin Screen
   xit("Enter an empty pin and assert error message", async () => {
-    await (await EnterPinScreen.pinInput).addValue("\n")
-    await expect(await EnterPinScreen.invalidPinMessage).toBeDisplayed()
-    await expect(await EnterPinScreen.invalidPinMessage).toHaveTextContaining(
-      "Invalid or incorrect pin supplied.",
-    )
+    await (await EnterPinScreen.pinInput).addValue("\n").then(() => {
+      expect(EnterPinScreen.invalidPinMessage).toBeDisplayed()
+      expect(EnterPinScreen.invalidPinMessage).toHaveTextContaining(
+        "Invalid or incorrect pin supplied.",
+      )
+    })
   })
 
   // Skipped for now since driver.reset() is redirecting to Create Pin Screen instead of Enter Pin Screen
   xit("Enter an wrong pin value and assert error message", async () => {
-    await (await EnterPinScreen.pinInput).setValue("9999" + "\n")
-    await expect(await EnterPinScreen.invalidPinMessage).toBeDisplayed()
-    await expect(await EnterPinScreen.invalidPinMessage).toHaveTextContaining(
-      "Invalid or incorrect pin supplied.",
-    )
+    await (await EnterPinScreen.pinInput).setValue("9999" + "\n").then(() => {
+      expect(EnterPinScreen.invalidPinMessage).toBeDisplayed()
+      expect(EnterPinScreen.invalidPinMessage).toHaveTextContaining(
+        "Invalid or incorrect pin supplied.",
+      )
+    })
   })
 
   // Skipped for now since driver.reset() is redirecting to Create Pin Screen instead of Enter Pin Screen
   xit("Enter a PIN with more than 6 characters and assert error message", async () => {
-    await (await EnterPinScreen.pinInput).setValue("1234567")
-    await expect(await EnterPinScreen.maxLengthMessage).toBeDisplayed()
-    await expect(await EnterPinScreen.maxLengthMessage).toHaveTextContaining(
-      "Only four to six characters allowed",
-    )
+    await (await EnterPinScreen.pinInput).setValue("1234567").then(() => {
+      expect(EnterPinScreen.maxLengthMessage).toBeDisplayed()
+      expect(EnterPinScreen.maxLengthMessage).toHaveTextContaining(
+        "Only four to six characters allowed",
+      )
+    })
   })
 
   // Skipped for now since driver.reset() is redirecting to Create Pin Screen instead of Enter Pin Screen
   xit("Enter a valid PIN to be redirected to main screen", async () => {
-    await (await EnterPinScreen.pinInput).setValue("123456" + "\n")
-    await expect(await UplinkMainScreen.noActiveChatsText).toBeDisplayed()
+    await (await EnterPinScreen.pinInput).setValue("123456" + "\n").then(() => {
+      expect(UplinkMainScreen.noActiveChatsText).toBeDisplayed()
+    })
   })
 })
