@@ -5,6 +5,7 @@ use sir::css;
 
 use ui_kit::{
     button::{self, Button},
+    outside::OutsideClick,
     select::*,
     switch::Switch,
 };
@@ -189,6 +190,7 @@ pub fn ExtAudioFactory(cx: Scope<Props>) -> Element {
 
     cx.render(rsx! {
         div {
+            id: "ext-audio-factory",
             class: "{styles}",
             div {
                 class: "row",
@@ -405,25 +407,18 @@ impl BasicExtension for AudioFactory {
         );
 
         // TODO: Icon should be a record icon, it should turn red and become a ovular shape like a normal button which includes the duration of the recording and turns the icon red
-        let factory_visible = use_state(&cx, || false);
-
         cx.render(rsx! {
             div {
                 id: "audio-factory",
                 class: "{styles}",
-                (factory_visible).then(|| rsx! {
+                OutsideClick {
                     ExtAudioFactory {
                         debug: false
                     }
-                }),
-                Button {
-                    icon: Shape::ViewfinderCircle,
-                    state: if **factory_visible {
-                        button::State::Primary
-                    } else {
-                        button::State::Secondary
+                    Button {
+                        icon: Shape::ViewfinderCircle,
+                        on_pressed: move |_| {}
                     }
-                    on_pressed: move |_| factory_visible.set(!factory_visible)
                 }
             }
         })
