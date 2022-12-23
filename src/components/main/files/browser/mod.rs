@@ -24,7 +24,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
     let files = use_ref(&cx, HashSet::new);
     let files_sorted = use_state(&cx, Vec::new);
     let root_directory = cx.props.storage.root_directory();
-    let current_directory = cx.props.storage.current_directory().unwrap_or(root_directory.clone());
+    let current_directory = cx.props.storage.current_directory().unwrap_or_else(|_| root_directory.clone());
     let update_current_dir = use_state(&cx, || ());
     let dir_paths = cx.props.dir_paths.clone();
 
@@ -35,19 +35,17 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
            
             let current_dir_path = files_storage.get_path().clone();
             let dir_paths_vec = dir_paths.with(|vec| vec.clone());
-            let dir_paths_len = dir_paths.read().len().clone();
+            let dir_paths_len = dir_paths.read().len();
             let final_dir_path = dir_paths.read().last().unwrap().clone();
 
             if !dir_paths_vec.contains(&current_dir_path) {
                 dir_paths.write().insert(dir_paths_len, current_dir_path);
                 show_upload.set(false);
                 show_new_folder.set(false);
-            } else {
-                if final_dir_path != current_dir_path {
-                    dir_paths.write().remove(dir_paths_len - 1);
-                    show_upload.set(false);
-                    show_new_folder.set(false);
-                }
+            } else if final_dir_path != current_dir_path {
+                dir_paths.write().remove(dir_paths_len - 1);
+                show_upload.set(false);
+                show_new_folder.set(false);
             } 
             
 
@@ -78,18 +76,18 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                             margin_left: "8px",
                             padding_top: "4px",
                             display: "inline-block",
-                            onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), root_dir_id),
+                            onclick: move |_| lib::go_back_dirs_with_loop(cx, root_dir_id),
                             Icon {
                                 icon: Shape::Home
                             }
                         }
                     )
                 } else {
-                match root_directory.get_item_by_path(&current_dir_path.to_str().unwrap_or_default())
+                match root_directory.get_item_by_path(current_dir_path.to_str().unwrap_or_default())
                     .and_then(|item| item.get_directory()) {
                     Ok(directory) => {
-                        let dir_name = directory.name().clone();
-                        let dir_id = directory.id().clone();
+                        let dir_name = directory.name();
+                        let dir_id = directory.id();
                             rsx! (
                                 h5 {
                                     margin_left: "8px",
@@ -99,7 +97,7 @@ pub fn FileBrowser(cx: Scope<Props>) -> Element {
                                 class: "dir_paths_navigation",
                                 margin_left: "8px",
                                 display: "inline-block",
-                                onclick: move |_| lib::go_back_dirs_with_loop(cx.clone(), dir_id),
+                                onclick: move |_| lib::go_back_dirs_with_loop(cx, dir_id),
                             "{dir_name}"
                             })
                     },       
