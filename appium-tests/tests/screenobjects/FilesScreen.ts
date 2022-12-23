@@ -39,6 +39,8 @@ const SELECTORS = {
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[3]',
     SETTINGS_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[4]',
+    DIRECTORY_TREE_ELEMENTS:
+      "-ios class chain:**/XCUIElementTypeWebView/XCUIElementTypeStaticText",
   },
 }
 
@@ -101,6 +103,10 @@ class FilesScreen extends AppScreen {
 
   get settingsButton() {
     return $(SELECTORS.MACOS.SETTINGS_BUTTON)
+  }
+
+  get directoryTreeElements() {
+    return $$(SELECTORS.MACOS.DIRECTORY_TREE_ELEMENTS)
   }
 }
 
