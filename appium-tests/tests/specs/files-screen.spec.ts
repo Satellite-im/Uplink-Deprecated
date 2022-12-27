@@ -1,31 +1,21 @@
 import FilesScreen from "../screenobjects/FilesScreen"
-import CreatePinScreen from "../screenobjects/CreatePinScreen"
-import CreateAccountScreen from "../screenobjects/CreateAccountScreen"
-import UplinkMainScreen from "../screenobjects/UplinkMainScreen"
 import { getPredicateForTextValueEqual } from "../helpers/commands"
 
 describe("Files Screen Tests on Uplink Desktop", async () => {
   before(async () => {
     // Create an account and go to Main Screen
-    await CreatePinScreen.waitForIsShown(true)
-    await (await CreatePinScreen.pinInput).setValue("1234" + "\n")
-    await CreateAccountScreen.waitForIsShown(true)
-    await (await CreateAccountScreen.userInput).setValue("filestest01" + "\n")
-    await UplinkMainScreen.waitForIsShown(true)
+    await FilesScreen.loginToMainScreen()
   })
 
   it("Go to Files Screen and validate text contents", async () => {
     // Click on Files Button and assert contents on screen are correct
-    await UplinkMainScreen.filesButton.click()
-    await expect(await FilesScreen.filesTitle).toBeDisplayed()
+    await FilesScreen.goToFilesScreen()
+    await FilesScreen.waitForElementsLoaded()
     await expect(await FilesScreen.filesTitle).toHaveTextContaining("Files")
-    await expect(await FilesScreen.folderName).toBeDisplayed()
     await expect(await FilesScreen.folderName).toHaveTextContaining("Folder 1")
-    await expect(await FilesScreen.availableSpaceIndicatorText).toBeDisplayed()
     await expect(
       await FilesScreen.availableSpaceIndicatorText,
     ).toHaveTextContaining(/[. 0-9] Free/i)
-    await expect(await FilesScreen.usedSpaceIndicatorText).toBeDisplayed()
     await expect(await FilesScreen.usedSpaceIndicatorText).toHaveTextContaining(
       [/[. 0-9]+(KB|MB|GB) /, "/ ", /. 0-9]+(KB|MB|GB)/i],
     )
@@ -33,71 +23,57 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
 
   it("Click on Folder 1 and validate that subfolders are displayed", async () => {
     // Click on main Folder from directory tree
-    await (await FilesScreen.folderName).click().then(() => {
-      // Locate subfolder elements
-      const firstSubfolder = $(getPredicateForTextValueEqual("Subdir1"))
-      const secondSubfolder = $(getPredicateForTextValueEqual("Subdir2"))
-      const thirdSubfolder = $(getPredicateForTextValueEqual("f3"))
-
-      // Assert subfolders are displayed and texts are matching
-      expect(firstSubfolder).toBeDisplayed()
-      expect(firstSubfolder).toHaveTextContaining("Subdir1")
-      expect(secondSubfolder).toBeDisplayed()
-      expect(secondSubfolder).toHaveTextContaining("Subdir2")
-      expect(thirdSubfolder).toBeDisplayed()
-      expect(thirdSubfolder).toHaveTextContaining("f3")
-    })
+    await FilesScreen.clickOnDirectoryTreeElement(FilesScreen.folderName)
+    await FilesScreen.validateSubfoldersDisplayed(["Subdir1", "Subdir2", "f3"])
   })
 
   it("Files Directory Tree - Display the whole tree", async () => {
     // Locate subfolder elements and click on them
-    await $(getPredicateForTextValueEqual("Subdir1")).click()
-    await $(getPredicateForTextValueEqual("Subdir2")).click()
-    await $(getPredicateForTextValueEqual("Subdir3"))
-      .click()
-      .then(() => {
-        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-        expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(7)
+    const subdir1 = await $(getPredicateForTextValueEqual("Subdir1"))
+    const subdir2 = await $(getPredicateForTextValueEqual("Subdir2"))
+    const subdir3 = await $(getPredicateForTextValueEqual("Subdir3"))
+    await FilesScreen.clickOnDirectoryTreeElement(subdir1)
+    await FilesScreen.clickOnDirectoryTreeElement(subdir2)
+    await FilesScreen.clickOnDirectoryTreeElement(subdir3)
 
-        // Assert subfolders are displayed and texts are matching
-        expect($(getPredicateForTextValueEqual("f1"))).toBeDisplayed()
-        expect($(getPredicateForTextValueEqual("f2"))).toBeDisplayed()
-        expect($(getPredicateForTextValueEqual("f3"))).toBeDisplayed()
-      })
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await expect(
+      await FilesScreen.directoryTreeElements,
+    ).toBeElementsArrayOfSize(7)
+
+    // Assert subfolders are displayed and texts are matching
+    await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"])
   })
 
   it("Files Directory Tree - Hide children elements", async () => {
     // Locate Subdir2 element and click on it
-    await $(getPredicateForTextValueEqual("Subdir2"))
-      .click()
-      .then(() => {
-        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-        expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(5)
+    const subdir2 = await $(getPredicateForTextValueEqual("Subdir2"))
+    await FilesScreen.clickOnDirectoryTreeElement(subdir2)
 
-        // Assert subfolders from Subdir2 does not exist in screen
-        expect($(getPredicateForTextValueEqual("Subdir3"))).not.toExist()
-        expect($(getPredicateForTextValueEqual("f2"))).not.toExist()
-      })
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await expect(
+      await FilesScreen.directoryTreeElements,
+    ).toBeElementsArrayOfSize(5)
+
+    // Assert subfolders from Subdir2 does not exist in screen
+    await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"])
   })
 
   it("Files Directory Tree - Hide all the tree", async () => {
     // Locate Main Folder element and click on it
-    await $(getPredicateForTextValueEqual("Folder 1"))
-      .click()
-      .then(() => {
-        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-        expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(1)
-      })
+    const folder1 = await $(getPredicateForTextValueEqual("Folder 1"))
+    await FilesScreen.clickOnDirectoryTreeElement(folder1)
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(1)
 
     // Assert subfolders from Subdir2 does not exist in screen
-    await expect(
-      await $(getPredicateForTextValueEqual("Subdir1")),
-    ).not.toExist()
-    await expect(await $(getPredicateForTextValueEqual("f1"))).not.toExist()
-    await expect(
-      await $(getPredicateForTextValueEqual("Subdir2")),
-    ).not.toExist()
-    await expect(await $(getPredicateForTextValueEqual("f2"))).not.toExist()
+    await FilesScreen.validateSubfoldersNotExisting([
+      "Subdir1",
+      "f1",
+      "Subdir2",
+      "f2",
+    ])
   })
 
   xit("Files Navigation - Go to Home when no folders are created", async () => {})

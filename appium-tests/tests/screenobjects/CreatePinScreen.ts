@@ -62,6 +62,29 @@ class CreatePinScreen extends AppScreen {
   get maxLengthMessage() {
     return $(SELECTORS.MACOS.MAX_LENGTH_TEXT)
   }
+
+  async enterPin(pin: string = "") {
+    await this.pinInput.setValue(pin)
+  }
+
+  async assertPinHasLessChars() {
+    await this.invalidPinMessage.waitForDisplayed()
+    await expect(this.invalidPinMessage).toHaveTextContaining(
+      "Your pin must be at least 4 characters",
+    )
+  }
+
+  async assertPinHasExceededChars() {
+    await this.maxLengthMessage.waitForDisplayed()
+    await expect(await this.maxLengthMessage).toHaveTextContaining(
+      "Only four to six characters allowed",
+    )
+  }
+
+  async resetApp() {
+    await driver.reset()
+    await this.headerText.waitForDisplayed()
+  }
 }
 
 export default new CreatePinScreen()

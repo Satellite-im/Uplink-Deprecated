@@ -48,6 +48,24 @@ class CreateAccountScreen extends AppScreen {
   get createAccountButton() {
     return $(SELECTORS.MACOS.CREATE_ACCOUNT_BUTTON)
   }
+
+  async enterUsername(username: string = "") {
+    await this.userInput.setValue(username + "\n")
+  }
+
+  async validateEmptyUsername() {
+    await this.errorMessageUsername.waitForDisplayed()
+    await expect(await this.errorMessageUsername).toHaveTextContaining(
+      "Username is required",
+    )
+  }
+
+  async validateUsernameWrongChars() {
+    await this.errorMessageUsername.waitForDisplayed()
+    await expect(await this.errorMessageUsername).toHaveTextContaining(
+      "Username needs to be between 4 and 32 characters long",
+    )
+  }
 }
 
 export default new CreateAccountScreen()

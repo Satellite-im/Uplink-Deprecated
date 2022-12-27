@@ -1,5 +1,9 @@
 import AppScreen from "./AppScreen"
 import { customPredicateString } from "./../helpers/commands"
+import { getPredicateForTextValueEqual } from "../helpers/commands"
+import CreatePinScreen from "./CreatePinScreen"
+import CreateAccountScreen from "./CreateAccountScreen"
+import UplinkMainScreen from "./UplinkMainScreen"
 
 const SELECTORS = {
   MACOS: {
@@ -107,6 +111,46 @@ class FilesScreen extends AppScreen {
 
   get directoryTreeElements() {
     return $$(SELECTORS.MACOS.DIRECTORY_TREE_ELEMENTS)
+  }
+
+  async loginToMainScreen(
+    pin: string = "1234" + "\n",
+    username: string = "filestest01" + "\n",
+  ) {
+    await CreatePinScreen.waitForIsShown(true)
+    await (await CreatePinScreen.pinInput).setValue(pin)
+    await CreateAccountScreen.waitForIsShown(true)
+    await (await CreateAccountScreen.userInput).setValue(username)
+    await UplinkMainScreen.waitForIsShown(true)
+  }
+
+  async goToFilesScreen() {
+    await this.filesButton.click()
+    await this.filesTitle.waitForDisplayed()
+  }
+
+  async waitForElementsLoaded() {
+    await this.folderName.waitForDisplayed()
+    await this.availableSpaceIndicatorText.waitForDisplayed()
+    await this.usedSpaceIndicatorText.waitForDisplayed()
+  }
+
+  async clickOnDirectoryTreeElement(folderToClick: WebdriverIO.Element) {
+    await folderToClick.click()
+  }
+
+  async validateSubfoldersDisplayed(foldersToDisplay: [String]) {
+    for (let folder of foldersToDisplay) {
+      const folderPredicate = $(getPredicateForTextValueEqual(folder))
+      await folderPredicate.waitForDisplayed()
+      await expect(folderPredicate).toHaveTextContaining(folder)
+    }
+  }
+
+  async validateSubfoldersNotExisting(foldersNotExisting: [String]) {
+    for (let folder of foldersNotExisting) {
+      await expect(await $(getPredicateForTextValueEqual(folder))).not.toExist()
+    }
   }
 }
 
