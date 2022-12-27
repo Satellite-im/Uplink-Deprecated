@@ -10,6 +10,7 @@ pub mod input_add_friend;
 pub mod loader;
 pub mod new_folder;
 pub mod numeric_indicator;
+pub mod outside;
 pub mod photo_picker;
 pub mod pin;
 pub mod popup;
