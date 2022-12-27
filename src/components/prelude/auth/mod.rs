@@ -57,14 +57,14 @@ pub fn Auth(cx: Scope<Props>) -> Element {
             } else if matches.matched(1) {
                 error.set("Illegal input in username".into())
             } else {
-                match mp.create_identity(Some(username), None) {
+                match warp::async_block_in_place_uncheck(mp.create_identity(Some(username), None)) {
                     Ok(_) => {
                         if !profile_picture_is_empty {
-                            if let Err(e) =
-                                mp.update_identity(IdentityUpdate::set_graphics_picture(
+                            if let Err(e) = warp::async_block_in_place_uncheck(mp.update_identity(
+                                IdentityUpdate::set_graphics_picture(
                                     profile_picture_state.to_string(),
-                                ))
-                            {
+                                ),
+                            )) {
                                 println!("{}", e);
                             }
                         }

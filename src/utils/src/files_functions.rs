@@ -117,7 +117,7 @@ pub async fn upload_file(mut file_storage: Storage, file_path: PathBuf, eval_scr
 pub fn verify_duplicate_name(current_directory: Directory, filename: String, file_pathbuf: PathBuf) -> String {
     let mut count_index_for_duplicate_filename = 1;
     let mut new_file_name = filename.clone();
-    let original = filename.clone();
+    let original = filename;
     loop {
         if !current_directory.has_item(&new_file_name) {
             break;

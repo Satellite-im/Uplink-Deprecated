@@ -31,9 +31,9 @@ pub fn Files(cx: Scope<Props>) -> Element {
     let show_upload = use_state(&cx, || false);
     let dir_paths = use_ref(&cx, Vec::new);
     let current_dir_pathbuf = cx.props.storage.get_path();
-    let mut current_dir_path = current_dir_pathbuf.as_path().ancestors();
+    let current_dir_path = current_dir_pathbuf.as_path().ancestors();
 
-    while let Some(path) = current_dir_path.next() {
+    for path in current_dir_path {
         if dir_paths.read().iter()
             .any(|dir_path_buf| dir_path_buf == &path.to_path_buf()) {
             break;

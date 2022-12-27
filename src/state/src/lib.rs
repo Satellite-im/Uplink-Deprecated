@@ -128,7 +128,7 @@ impl PersistedState {
     pub fn save(&self) {
         match serde_json::to_vec(self) {
             Ok(bytes) => {
-                match std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), &bytes) {
+                match std::fs::write(DEFAULT_PATH.read().join(".uplink.state.json"), bytes) {
                     Ok(_) => {}
                     Err(e) => eprintln!("error saving: {}", e),
                 }

@@ -24,7 +24,9 @@ pub fn Developer(cx: Scope<Props>) -> Element {
     let mut config = Config::load_config_or_default();
     let c = config.clone();
 
-    let did = if let Ok(ident) = cx.props.account.get_own_identity() {
+    let did = if let Ok(ident) =
+        warp::async_block_in_place_uncheck(cx.props.account.get_own_identity())
+    {
         ident.did_key().to_string()
     } else {
         DID::default().to_string()

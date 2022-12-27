@@ -152,7 +152,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                             tokio::time::sleep(std::time::Duration::from_millis(200)).await;
                         }
                         let file_leave_folder_js = include_str!("./file_leave_folder.js").replace("folder-id", &folder_id);
-                        eval_script.eval(&file_leave_folder_js);
+                        eval_script.eval(file_leave_folder_js);
                     }
                 });
             },
@@ -224,7 +224,7 @@ pub fn Folder(cx: Scope<Props>) -> Element {
                                 let file_storage = cx.props.storage.clone();
                                 let old_folder_name = &*folder_name_complete_ref.read();
                                 let new_folder_name = val.read();
-                                hide_edit_name_element(cx.clone());
+                                hide_edit_name_element(cx);
                                 if !new_folder_name.trim().is_empty() {
                                     cx.spawn({
                                         to_owned![file_storage, old_folder_name, new_folder_name, folder_name_formatted_state, folder_name_complete_ref];
