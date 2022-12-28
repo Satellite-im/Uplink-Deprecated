@@ -37,10 +37,12 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir3)
 
     // Assert subfolders are displayed and texts are matching
-    await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"])
-
-    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(7)
+    await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"]).then(
+      () => {
+        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+        FilesScreen.validateDirectoryTreeLength(7)
+      },
+    )
   })
 
   it("Files Directory Tree - Hide children elements", async () => {
@@ -49,10 +51,12 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir2)
 
     // Assert subfolders from Subdir2 does not exist in screen
-    await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"])
-
-    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(5)
+    await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"]).then(
+      () => {
+        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+        FilesScreen.validateDirectoryTreeLength(5)
+      },
+    )
   })
 
   it("Files Directory Tree - Hide all the tree", async () => {
