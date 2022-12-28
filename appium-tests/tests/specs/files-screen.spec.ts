@@ -37,9 +37,7 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir3)
 
     // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await expect(
-      await FilesScreen.directoryTreeElements,
-    ).toBeElementsArrayOfSize(7)
+    await FilesScreen.validateDirectoryTreeLength(7)
 
     // Assert subfolders are displayed and texts are matching
     await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"])
@@ -51,9 +49,7 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir2)
 
     // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await expect(
-      await FilesScreen.directoryTreeElements,
-    ).toBeElementsArrayOfSize(5)
+    await FilesScreen.validateDirectoryTreeLength(5)
 
     // Assert subfolders from Subdir2 does not exist in screen
     await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"])
@@ -65,7 +61,7 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(folder1)
 
     // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(1)
+    await FilesScreen.validateDirectoryTreeLength(1)
 
     // Assert subfolders from Subdir2 does not exist in screen
     await FilesScreen.validateSubfoldersNotExisting([

@@ -152,6 +152,10 @@ class FilesScreen extends AppScreen {
       await expect(await $(getPredicateForTextValueEqual(folder))).not.toExist()
     }
   }
+
+  async validateDirectoryTreeLength(size: Number = 0) {
+    await expect(this.directoryTreeElements).toBeElementsArrayOfSize(size)
+  }
 }
 
 export default new FilesScreen()
