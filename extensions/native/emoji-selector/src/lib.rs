@@ -2,7 +2,10 @@ use dioxus::prelude::*;
 use dioxus_heroicons::outline::Shape;
 use emojis::{Group, UnicodeVersion};
 use sir::css;
-use ui_kit::button::{self, Button};
+use ui_kit::{
+    button::{self, Button},
+    outside::OutsideClick,
+};
 use utils::extensions::{BasicExtension, ExtensionInfo, ExtensionType};
 
 static MAX_UNICODE_VER: UnicodeVersion = UnicodeVersion::new(11, 0);
@@ -72,7 +75,6 @@ impl BasicExtension for EmojiSelector {
         "
         );
 
-        let is_opened = use_state(&cx, || false);
         let eval = use_eval(&cx);
         let insert = move |val: &str| {
             eval(format!(
@@ -86,50 +88,47 @@ impl BasicExtension for EmojiSelector {
 
         let groups = Group::iter();
         cx.render(rsx! {
-            div {
-                class: "ext-emoji-selector",
-                (is_opened).then(|| rsx! {
-                    div {
-                        onblur: |_| println!("blur"),
-                        class: "{styles}",
-                        groups.map(|group| {
-                            let name = get_group_name(group);
-                            rsx!(
-                                div {
-                                    class: "category",
+                div {
+                    class: "ext-emoji-selector",
+                    rsx! {
+                        OutsideClick {
+                        div {
+                            onblur: |_| println!("blur"),
+                            class: "{styles}",
+                            groups.map(|group| {
+                                let name = get_group_name(group);
+                                rsx!(
                                     div {
-                                        class: "name",
-                                        label { "{name}" }
-                                    },
-                                    div {
-                                        class: "items",
-                                        group.emojis()
-                                            .filter(|v| v.unicode_version() <= MAX_UNICODE_VER)
-                                            .map(|v| {
-                                                let name = v.name();
-                                                let emoji = v.as_str();
-                                                rsx!(button {
-                                                    onclick: move |_| insert(emoji),
-                                                    class: "item",
-                                                    title: "{name}",
-                                                    "{v}"
+                                        class: "category",
+                                        div {
+                                            class: "name",
+                                            label { "{name}" }
+                                        },
+                                        div {
+                                            class: "items",
+                                            group.emojis()
+                                                .filter(|v| v.unicode_version() <= MAX_UNICODE_VER)
+                                                .map(|v| {
+                                                    let name = v.name();
+                                                    let emoji = v.as_str();
+                                                    rsx!(button {
+                                                        onclick: move |_| insert(emoji),
+                                                        class: "item",
+                                                        title: "{name}",
+                                                        "{v}"
+                                                    })
                                                 })
-                                            })
-                                    },
-                                }
-                            )
-                        })
+                                        },
+                                    }
+                                )
+                            })
+                        }
+                        Button {
+                            icon: Shape::FaceSmile,
+                            on_pressed: move |_| {}
+                        }
                     }
-                })
-                Button {
-                    icon: Shape::FaceSmile,
-                    state: if **is_opened {
-                        button::State::Primary
-                    } else {
-                        button::State::Secondary
-                    }
-                    on_pressed: move |_| is_opened.set(!is_opened)
-                }
+                } 
             }
         })
     }
