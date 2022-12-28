@@ -36,11 +36,11 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir2)
     await FilesScreen.clickOnDirectoryTreeElement(subdir3)
 
-    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(7)
-
     // Assert subfolders are displayed and texts are matching
     await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"])
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await FilesScreen.validateDirectoryTreeLength(7)
   })
 
   it("Files Directory Tree - Hide children elements", async () => {
@@ -48,20 +48,17 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     const subdir2 = await $(getPredicateForTextValueEqual("Subdir2"))
     await FilesScreen.clickOnDirectoryTreeElement(subdir2)
 
-    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(5)
-
     // Assert subfolders from Subdir2 does not exist in screen
     await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"])
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await FilesScreen.validateDirectoryTreeLength(5)
   })
 
   it("Files Directory Tree - Hide all the tree", async () => {
     // Locate Main Folder element and click on it
     const folder1 = await $(getPredicateForTextValueEqual("Folder 1"))
     await FilesScreen.clickOnDirectoryTreeElement(folder1)
-
-    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(1)
 
     // Assert subfolders from Subdir2 does not exist in screen
     await FilesScreen.validateSubfoldersNotExisting([
@@ -70,6 +67,9 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
       "Subdir2",
       "f2",
     ])
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await FilesScreen.validateDirectoryTreeLength(1)
   })
 
   xit("Files Navigation - Go to Home when no folders are created", async () => {})
