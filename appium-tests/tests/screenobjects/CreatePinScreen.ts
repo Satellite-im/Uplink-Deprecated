@@ -1,5 +1,6 @@
 import AppScreen from "./AppScreen"
 import { customPredicateString } from "../helpers/commands"
+import { getPredicateForTextValueEqual } from "../helpers/commands"
 
 const SELECTORS = {
   MACOS: {
@@ -13,15 +14,14 @@ const SELECTORS = {
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[1]',
     WORLD_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[2]',
-    ERROR_MESSAGE_INVALID_PIN: customPredicateString(
-      "48",
-      "value",
+    ERROR_MESSAGE_INVALID_PIN: getPredicateForTextValueEqual(
       "Your pin must be at least 4 characters.　",
     ),
     MAX_LENGTH_TEXT: customPredicateString(
       "9",
       "title",
       "Only four to six characters allowed",
+      "==",
     ),
   },
 }
@@ -65,20 +65,6 @@ class CreatePinScreen extends AppScreen {
 
   async enterPin(pin: string = "") {
     await this.pinInput.setValue(pin)
-  }
-
-  async assertPinHasLessChars() {
-    await this.invalidPinMessage.waitForDisplayed()
-    await expect(this.invalidPinMessage).toHaveTextContaining(
-      "Your pin must be at least 4 characters",
-    )
-  }
-
-  async assertPinHasExceededChars() {
-    await this.maxLengthMessage.waitForDisplayed()
-    await expect(await this.maxLengthMessage).toHaveTextContaining(
-      "Only four to six characters allowed",
-    )
   }
 
   async resetApp() {

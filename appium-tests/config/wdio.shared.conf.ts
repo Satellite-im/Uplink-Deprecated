@@ -1,8 +1,3 @@
-const fsp = require("fs").promises
-const mkdirp = require("mkdirp")
-
-import { join } from "path"
-
 /**
  * All not needed configurations, for this boilerplate, are removed.
  * If you want to know which configuration options you have then you can
@@ -56,7 +51,7 @@ export const config: WebdriverIO.Config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: "warn",
+  logLevel: "error",
   // Set specific log levels per logger
   // loggers:
   // - webdriver, webdriverio
@@ -143,21 +138,4 @@ export const config: WebdriverIO.Config = {
   /**
    * NOTE: No Hooks are used in this project, but feel free to add them if you need them.
    */
-  afterTest: async function (test, describe, { error }) {
-    if (error) {
-      let imageFile = await driver.takeScreenshot()
-      let imageFolder
-      if (driver.isAndroid) {
-        imageFolder = join(process.cwd(), "./test-results/android", test.parent)
-      } else {
-        imageFolder = join(process.cwd(), "./test-results/ios", test.parent)
-      }
-      await mkdirp(imageFolder)
-      await fsp.writeFile(
-        imageFolder + "/" + test.title + " - Failed.png",
-        imageFile,
-        "base64",
-      )
-    }
-  },
 }

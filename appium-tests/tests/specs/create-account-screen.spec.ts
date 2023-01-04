@@ -19,17 +19,26 @@ describe("Create Account on Uplink Desktop", async () => {
 
   it("Attempt to use an empty PIN", async () => {
     await CreatePinScreen.enterPin("\n")
-    await CreatePinScreen.assertPinHasLessChars()
+    await CreatePinScreen.invalidPinMessage.waitForDisplayed()
+    await expect(CreatePinScreen.invalidPinMessage).toHaveTextContaining(
+      "Your pin must be at least 4 characters",
+    )
   })
 
   it("Attempt to use a PIN with less than 4 characters", async () => {
     await CreatePinScreen.enterPin("123" + "\n")
-    await CreatePinScreen.assertPinHasLessChars()
+    await CreatePinScreen.invalidPinMessage.waitForDisplayed()
+    await expect(CreatePinScreen.invalidPinMessage).toHaveTextContaining(
+      "Your pin must be at least 4 characters",
+    )
   })
 
   it("Attempt to use a PIN with more than 6 characters and assert error message", async () => {
     await CreatePinScreen.enterPin("1234567890")
-    await CreatePinScreen.assertPinHasExceededChars()
+    await CreatePinScreen.maxLengthMessage.waitForDisplayed()
+    await expect(CreatePinScreen.maxLengthMessage).toHaveTextContaining(
+      "Only four to six characters allowed",
+    )
   })
 
   it("Type a valid PIN with 4 characters and go to next page", async () => {
@@ -54,12 +63,20 @@ describe("Create Account on Uplink Desktop", async () => {
 
   it("Attempt to provide an empty username", async () => {
     await CreateAccountScreen.enterUsername("")
-    await CreateAccountScreen.validateEmptyUsername()
+    await CreateAccountScreen.errorMessageUsername.waitForDisplayed()
+    await expect(
+      await CreateAccountScreen.errorMessageUsername,
+    ).toHaveTextContaining("Username is required")
   })
 
   it("Attempt to provide a username with less than 4 characters", async () => {
     await CreateAccountScreen.enterUsername("a")
-    await CreateAccountScreen.validateUsernameWrongChars()
+    await CreateAccountScreen.errorMessageUsername.waitForDisplayed()
+    await expect(
+      await CreateAccountScreen.errorMessageUsername,
+    ).toHaveTextContaining(
+      "Username needs to be between 4 and 32 characters long",
+    )
   })
 
   it("Attempt to provide a username with less more than 32 characters", async () => {
@@ -67,8 +84,12 @@ describe("Create Account on Uplink Desktop", async () => {
     await CreateAccountScreen.enterUsername(
       "12345678901234567890123456789012345",
     )
-
-    await CreateAccountScreen.validateUsernameWrongChars()
+    await CreateAccountScreen.errorMessageUsername.waitForDisplayed()
+    await expect(
+      await CreateAccountScreen.errorMessageUsername,
+    ).toHaveTextContaining(
+      "Username needs to be between 4 and 32 characters long",
+    )
   })
 
   it("Provide a valid username and go to next page", async () => {

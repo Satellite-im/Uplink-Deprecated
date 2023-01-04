@@ -1,4 +1,8 @@
+const fsp = require("fs").promises
+const mkdirp = require("mkdirp")
+
 import config from "./wdio.shared.local.appium.conf"
+import { join } from "path"
 
 // ============
 // Specs
@@ -26,5 +30,18 @@ config.capabilities = [
     "appium:newCommandTimeout": 240,
   },
 ]
+
+config.afterTest = async function (test, describe, { error }) {
+  if (error) {
+    let imageFile = await driver.takeScreenshot()
+    let imageFolder = join(process.cwd(), "./test-results/macos", test.parent)
+    await mkdirp(imageFolder)
+    await fsp.writeFile(
+      imageFolder + "/" + test.title + " - Failed.png",
+      imageFile,
+      "base64",
+    )
+  }
+}
 
 exports.config = config

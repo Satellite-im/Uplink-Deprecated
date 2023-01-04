@@ -24,7 +24,12 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
   it("Click on Folder 1 and validate that subfolders are displayed", async () => {
     // Click on main Folder from directory tree
     await FilesScreen.clickOnDirectoryTreeElement(FilesScreen.folderName)
-    await FilesScreen.validateSubfoldersDisplayed(["Subdir1", "Subdir2", "f3"])
+    const foldersToDisplay = ["Subdir1", "Subdir2", "f3"]
+    for (let folder of foldersToDisplay) {
+      const folderPredicate = $(getPredicateForTextValueEqual(folder))
+      await folderPredicate.waitForDisplayed()
+      await expect(folderPredicate).toHaveTextContaining(folder)
+    }
   })
 
   it("Files Directory Tree - Display the whole tree", async () => {
@@ -37,12 +42,15 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir3)
 
     // Assert subfolders are displayed and texts are matching
-    await FilesScreen.validateSubfoldersDisplayed(["f1", "f2", "f3"]).then(
-      () => {
-        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-        FilesScreen.validateDirectoryTreeLength(7)
-      },
-    )
+    const foldersToDisplay = ["f1", "f2", "f3"]
+    for (let folder of foldersToDisplay) {
+      const folderPredicate = $(getPredicateForTextValueEqual(folder))
+      await folderPredicate.waitForDisplayed()
+      await expect(folderPredicate).toHaveTextContaining(folder)
+    }
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(7)
   })
 
   it("Files Directory Tree - Hide children elements", async () => {
@@ -51,12 +59,13 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(subdir2)
 
     // Assert subfolders from Subdir2 does not exist in screen
-    await FilesScreen.validateSubfoldersNotExisting(["Subdir3", "f2"]).then(
-      () => {
-        // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-        FilesScreen.validateDirectoryTreeLength(5)
-      },
-    )
+    const foldersNotExisting = ["Subdir3", "f2"]
+    for (let folder of foldersNotExisting) {
+      await expect(await $(getPredicateForTextValueEqual(folder))).not.toExist()
+    }
+
+    // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
+    await expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(5)
   })
 
   it("Files Directory Tree - Hide all the tree", async () => {
@@ -65,26 +74,35 @@ describe("Files Screen Tests on Uplink Desktop", async () => {
     await FilesScreen.clickOnDirectoryTreeElement(folder1)
 
     // Assert subfolders from Subdir2 does not exist in screen
-    await FilesScreen.validateSubfoldersNotExisting([
-      "Subdir1",
-      "f1",
-      "Subdir2",
-      "f2",
-    ])
+    const foldersNotExisting = ["Subdir1", "f1", "Subdir2", "f2"]
+    for (let folder of foldersNotExisting) {
+      await expect(await $(getPredicateForTextValueEqual(folder))).not.toExist()
+    }
 
     // Ensure that directory tree length is matching with the number of folders/subfolders displayed on screen
-    await FilesScreen.validateDirectoryTreeLength(1)
+    await expect(FilesScreen.directoryTreeElements).toBeElementsArrayOfSize(1)
   })
 
-  xit("Files Navigation - Go to Home when no folders are created", async () => {})
+  it("Files Navigation - Go to Home when no folders are created", async () => {
+    await FilesScreen.goToHome()
+    await FilesScreen.homeButton.click()
+    const myLocator = await FilesScreen.homeButton.$$("~>")
+    await expect(myLocator).not.toExist()
+  })
 
-  xit("Files Navigation - Create a new folder", async () => {})
+  it("Files Navigation - Create a new folder", async () => {
+    await FilesScreen.createFolder("test01")
+    await expect(await $("~0 bytes")).toBeDisplayed()
+    await expect(await $("~0 item(s)")).toBeDisplayed()
+  })
 
   xit("Files Navigation - Create a folder with same name than other existing in same location", async () => {})
 
   xit("Files Navigation - Rename a folder", async () => {})
 
-  xit("Files Navigation - Navigate into a subfolder", async () => {})
+  it("Files Navigation - Navigate into a subfolder", async () => {
+    await FilesScreen.enterFolder("test01")
+  })
 
   xit("Files Navigation - Navigate into a parent folder", async () => {})
 

@@ -8,11 +8,11 @@ import UplinkMainScreen from "./UplinkMainScreen"
 const SELECTORS = {
   MACOS: {
     WINDOW: "-ios class chain:**/XCUIElementTypeWindow",
-    FILES_TITLE: customPredicateString("48", "value", "Files"),
-    FOLDER_NAME: customPredicateString("48", "value", "Folder 1"),
-    SUBFOLDER_ONE_NAME: customPredicateString("48", "value", "Subdir1"),
-    SUBFOLDER_TWO_NAME: customPredicateString("48", "value", "Subdir2"),
-    SUBFOLDER_THREE_NAME: customPredicateString("48", "value", "f3"),
+    FILES_TITLE: getPredicateForTextValueEqual("Files"),
+    FOLDER_NAME: getPredicateForTextValueEqual("Folder 1"),
+    SUBFOLDER_ONE_NAME: getPredicateForTextValueEqual("Subdir1"),
+    SUBFOLDER_TWO_NAME: getPredicateForTextValueEqual("Subdir2"),
+    SUBFOLDER_THREE_NAME: getPredicateForTextValueEqual("f3"),
     AVAILABLE_SPACE_INDICATOR_BAR:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[3]',
     AVAILABLE_SPACE_INDICATOR_TEXT: customPredicateString(
@@ -32,7 +32,7 @@ const SELECTORS = {
     DELETE_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[5]',
     ADD_FOLDER_BUTTON:
-      'ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[6]',
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[6]',
     ADD_FILE_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[7]',
     CHATS_BUTTON:
@@ -44,7 +44,9 @@ const SELECTORS = {
     SETTINGS_BUTTON:
       '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeButton[4]',
     DIRECTORY_TREE_ELEMENTS:
-      "-ios class chain:**/XCUIElementTypeWebView/XCUIElementTypeStaticText",
+      '-ios class chain:**/XCUIElementTypeWebView/XCUIElementTypeStaticText[`value != "0 bytes / 0 item(s)"`]',
+    HOME_BUTTON:
+      '-ios class chain:**/XCUIElementTypeWebView[`label == "Dioxus app"`]/XCUIElementTypeGroup[7]/XCUIElementTypeGroup',
   },
 }
 
@@ -113,6 +115,10 @@ class FilesScreen extends AppScreen {
     return $$(SELECTORS.MACOS.DIRECTORY_TREE_ELEMENTS)
   }
 
+  get homeButton() {
+    return $(SELECTORS.MACOS.HOME_BUTTON)
+  }
+
   async loginToMainScreen(
     pin: string = "1234" + "\n",
     username: string = "filestest01" + "\n",
@@ -139,23 +145,35 @@ class FilesScreen extends AppScreen {
     await folderToClick.click()
   }
 
-  async validateSubfoldersDisplayed(foldersToDisplay: [String]) {
-    for (let folder of foldersToDisplay) {
-      const folderPredicate = $(getPredicateForTextValueEqual(folder))
-      await folderPredicate.waitForDisplayed()
-      await expect(folderPredicate).toHaveTextContaining(folder)
-    }
+  async createFolder(folderName: String) {
+    await this.addFolderButton.click()
+    await $("~New Folder").setValue(folderName + "\n")
   }
 
-  async validateSubfoldersNotExisting(foldersNotExisting: [String]) {
-    for (let folder of foldersNotExisting) {
-      await expect(await $(getPredicateForTextValueEqual(folder))).not.toExist()
-    }
+  async enterFolder(folderName: String) {
+    const folder = await $("~" + folderName)
+    await folder.click()
   }
 
-  async validateDirectoryTreeLength(size: Number = 0) {
-    await expect(this.directoryTreeElements).toBeElementsArrayOfSize(size)
+  async goToHome() {
+    await this.homeButton.click()
   }
+
+  async goToParentFolder(folderName: String) {
+    await $("~" + folderName).click()
+  }
+
+  async goToFolder(folderName: String) {}
+
+  async renameFolder(currentName: String, newName: String) {}
+
+  async deleteFolder(folderName: String) {}
+
+  async uploadFile() {}
+
+  async downloadFile() {}
+
+  async moveFileToSubfolder(fileName: String, subfolderName: String) {}
 }
 
 export default new FilesScreen()
