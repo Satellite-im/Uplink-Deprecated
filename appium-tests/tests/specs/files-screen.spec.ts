@@ -4,7 +4,7 @@ import { getPredicateForTextValueEqual } from "../helpers/commands"
 describe("Files Screen Tests on Uplink Desktop", async () => {
   before(async () => {
     // Create an account and go to Main Screen
-    await FilesScreen.loginToMainScreen()
+    await FilesScreen.loginToMainScreen("123456" + "\n")
   })
 
   it("Go to Files Screen and validate text contents", async () => {

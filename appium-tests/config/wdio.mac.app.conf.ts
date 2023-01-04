@@ -22,9 +22,6 @@ config.capabilities = [
     // http://appium.io/docs/en/writing-running-appium/caps/
     // This is `appium:` for all Appium Capabilities which can be found here
     "appium:automationName": "mac2",
-    "appium:postrun": {
-      command: 'do shell script "rm -rf ~/.warp"',
-    },
     // @ts-ignore
     "appium:bundleId": "im.satellite.uplink",
     "appium:newCommandTimeout": 240,

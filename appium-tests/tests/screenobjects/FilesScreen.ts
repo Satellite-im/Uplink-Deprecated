@@ -1,8 +1,7 @@
 import AppScreen from "./AppScreen"
 import { customPredicateString } from "./../helpers/commands"
 import { getPredicateForTextValueEqual } from "../helpers/commands"
-import CreatePinScreen from "./CreatePinScreen"
-import CreateAccountScreen from "./CreateAccountScreen"
+import EnterPinScreen from "./EnterPinScreen"
 import UplinkMainScreen from "./UplinkMainScreen"
 
 const SELECTORS = {
@@ -119,14 +118,9 @@ class FilesScreen extends AppScreen {
     return $(SELECTORS.MACOS.HOME_BUTTON)
   }
 
-  async loginToMainScreen(
-    pin: string = "1234" + "\n",
-    username: string = "filestest01" + "\n",
-  ) {
-    await CreatePinScreen.waitForIsShown(true)
-    await (await CreatePinScreen.pinInput).setValue(pin)
-    await CreateAccountScreen.waitForIsShown(true)
-    await (await CreateAccountScreen.userInput).setValue(username)
+  async loginToMainScreen(pin: string) {
+    await EnterPinScreen.waitForIsShown(true)
+    await EnterPinScreen.enterPin(pin)
     await UplinkMainScreen.waitForIsShown(true)
   }
 

@@ -143,6 +143,7 @@ jobs:
           ls -la
           cd /Applications/
           ls -la
+          rm -rf ~/.warp
 
       - name: Run WebdriverIO tests on MacOS
         working-directory: ./appium-tests
@@ -153,7 +154,7 @@ jobs:
         if: failure()
         with:
           name: appium-screenshots
-          path: appium-tests/test-results/ios
+          path: appium-tests/test-results
 
       - name: Upload Appium Log if tests failed 📷
         uses: actions/upload-artifact@v3
